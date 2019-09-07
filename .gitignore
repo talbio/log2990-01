@@ -4,3 +4,9 @@
 
 # Keep the package-lock.json !
 !package-lock.json
+
+# For mac users :
+.DS_Store
+
+# Ignore WebStorm folder config
+.idea
