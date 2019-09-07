@@ -7,7 +7,7 @@ import Types from '../types';
 @injectable()
 export class DateController {
 
-    public router: Router;
+    router: Router;
 
     constructor(@inject(Types.DateService) private dateService: DateService) {
         this.configureRouter();

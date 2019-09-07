@@ -8,7 +8,7 @@ import Types from '../types';
 @injectable()
 export class IndexController {
 
-    public router: Router;
+    router: Router;
 
     constructor(@inject(Types.IndexService) private indexService: IndexService) {
         this.configureRouter();
