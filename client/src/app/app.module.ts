@@ -5,19 +5,19 @@ import { RouterModule, Routes } from '@angular/router';
 import {AppComponent} from './components/app/app.component';
 import { WelcomeModalComponent } from './components/app/welcome-modal/welcome-modal.component';
 
-const appRoutes: Routes = [
+const routes: Routes = [
    { path: 'welcome-modal', component: WelcomeModalComponent },
 ];
 
 @NgModule({
   declarations: [
     AppComponent,
+    WelcomeModalComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    RouterModule.forRoot(
-      appRoutes),
+    RouterModule.forRoot(routes),
   ],
   providers: [],
   bootstrap: [AppComponent],
