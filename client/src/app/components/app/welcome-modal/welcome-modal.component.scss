@@ -9,6 +9,7 @@ dialog::backdrop {
   }
 
   .modal-header {
+    text-align: center;
     margin: 0;
     padding-bottom: 0.6em;
     border-bottom: 1px solid;
@@ -16,6 +17,11 @@ dialog::backdrop {
 
   .modal-footer {
     border-top: 1px solid;
+  }
+
+  button {
+    float: right;
+    margin-top:5px;
   }
 
   
