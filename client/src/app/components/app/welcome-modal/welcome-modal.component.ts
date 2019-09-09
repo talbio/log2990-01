@@ -1,15 +1,21 @@
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
-    selector: 'app-welcome-modal',
-    templateUrl: './welcome-modal.component.html',
-    styleUrls: ['./welcome-modal.component.scss'],
-  })
+  selector: 'app-welcome-modal',
+  templateUrl: './welcome-modal.component.html',
+  styleUrls: ['./welcome-modal.component.scss'],
+})
 
 export class WelcomeModalComponent {
- showWelcomeModal: boolean;
+  show: boolean;
 
- constructor() {
-  this.showWelcomeModal = true;
+  constructor( private storage: StorageService) {
+    this.show = !this.storage.getWelcomeModalStatus();
   }
+
+  onChange(event: Event): void {
+    this.storage.setWelcomeModalStatus(event.returnValue);
+  }
+
 }
