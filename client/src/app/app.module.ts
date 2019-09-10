@@ -3,6 +3,7 @@ import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import {AppComponent} from './components/app/app.component';
+import { NewDrawingModalComponent } from './components/app/new-drawing-modal/new-drawing-modal.component';
 import { WelcomeModalComponent } from './components/app/welcome-modal/welcome-modal.component';
 import { StorageService } from './services/storage.service';
 
@@ -14,6 +15,7 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     WelcomeModalComponent,
+    NewDrawingModalComponent,
   ],
   imports: [
     BrowserModule,
