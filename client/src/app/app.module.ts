@@ -1,5 +1,6 @@
 import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
+import { MatDialogModule } from '@angular/material';
 import {BrowserModule} from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import {AppComponent} from './components/app/app.component';
@@ -19,6 +20,7 @@ const routes: Routes = [
   ],
   imports: [
     BrowserModule,
+    MatDialogModule,
     HttpClientModule,
     RouterModule.forRoot(routes),
   ],
