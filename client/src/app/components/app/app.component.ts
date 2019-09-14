@@ -1,4 +1,6 @@
 import {Component} from '@angular/core';
+import {MatDialog, MatDialogConfig} from '@angular/material';
+import {CreateDrawingDialogComponent} from './modals/create-drawing-dialog/create-drawing-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +9,16 @@ import {Component} from '@angular/core';
 })
 export class AppComponent {
   readonly title: string = 'dessin';
+
+  constructor(private dialog: MatDialog) {}
+
+  openDialog() {
+
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+
+    this.dialog.open(CreateDrawingDialogComponent, dialogConfig);
+  }
 }
