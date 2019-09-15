@@ -1,17 +1,67 @@
-<h2 mat-dialog-title>test</h2>
+<h2 mat-dialog-title>{{dialogTitle}}</h2>
 
-<mat-dialog-content [formGroup]="form">
+<mat-dialog-content [formGroup]="createDrawingForm">
+  <ul>
 
-  <mat-form-field>
-    <input matInput
-           placeholder="Course Description"
-           formControlName="description">
-  </mat-form-field>
+    <li>
+      <mat-form-field>
+        <input matInput
+               [(ngModel)]="this.height"
+               value="{{this.height}}"
+               placeholder="Entrez la hauteur"
+               formControlName="height">
+      </mat-form-field>
+      <div *ngIf="!createDrawingForm.get('height').valid">
+        Positive number required
+      </div>
+    </li>
 
+    <li>
+      <mat-form-field>
+        <input matInput
+               [(ngModel)]="this.width"
+               value="{{this.width}}"
+               placeholder="Entrez la largeur"
+               formControlName="height">
+      </mat-form-field>
+    </li>
 
+    <li>
+      <mat-form-field>
+        <input matInput
+               type="color"
+               value="{{hexColor}}"
+               [(ngModel)]="hexColor"
+               placeholder="Choisissez une couleur de fond">
+      </mat-form-field>
+    </li>
+
+    <li>
+      <mat-form-field>
+        <!--<span matPrefix>0x&nbsp;</span>-->
+        <input matInput
+               [(ngModel)]="hexColor"
+               value="{{this.hexColor}}"
+               placeholder="Ou spécifiez une valeur hex"
+               formControlName="hexColor">
+      </mat-form-field>
+    </li>
+
+    {{hexColor}}
+  </ul>
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button class="mat-raised-button"(click)="close()">Close</button>
-  <button class="mat-raised-button mat-primary"(click)="save()">Save</button>
+  <button class="mat-raised-button"
+          (click)="close()">
+    Annuler
+  </button>
+
+  <button class="mat-raised-button mat-primary"
+          [disabled] ="!createDrawingForm.valid"
+          (click)="save()">
+    Confirmer
+  </button>
 </mat-dialog-actions>
+
+
