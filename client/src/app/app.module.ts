@@ -10,7 +10,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
 import { AppComponent } from './components/app/app.component';
 import { CreateDrawingDialogComponent } from './components/app/modals/create-drawing-dialog/create-drawing-dialog.component';
-import { NewDrawingModalComponent } from './components/app/new-drawing-modal/new-drawing-modal.component';
 import { WelcomeModalComponent } from './components/app/welcome-modal/welcome-modal.component';
 import { StorageService } from './services/storage.service';
 
@@ -22,7 +21,6 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     WelcomeModalComponent,
-    NewDrawingModalComponent,
     CreateDrawingDialogComponent,
   ],
   imports: [

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-create-drawing-dialog',
@@ -13,7 +14,7 @@ export class CreateDrawingDialogComponent implements OnInit {
   protected height = 100;
   protected hexColor = '#FFFFFF';
 
-  constructor() {
+  constructor(public dialogRef: MatDialogRef<CreateDrawingDialogComponent>) {
     this.createDrawingForm = new FormGroup({
       height: new FormControl(Validators.min(0)),
       width: new FormControl(Validators.min(0)),
@@ -25,6 +26,7 @@ export class CreateDrawingDialogComponent implements OnInit {
   }
 
   close() {
+    this.dialogRef.close();
   }
 
   save() {
