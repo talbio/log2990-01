@@ -52,11 +52,11 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button class="mat-raised-button"
+  <button class="mat-raised-button mat-warn"
           (click)="close()">
     Annuler
   </button>
-
+  <div class="divider"></div>
   <button class="mat-raised-button mat-primary"
           [disabled] ="!createDrawingForm.valid"
           (click)="save()">
