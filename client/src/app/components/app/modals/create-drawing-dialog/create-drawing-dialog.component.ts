@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -10,8 +10,8 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class CreateDrawingDialogComponent implements OnInit {
   protected createDrawingForm: FormGroup;
   protected dialogTitle = 'Créer un nouveau dessin';
-  protected width = 100;
-  protected height = 100;
+  protected width: number;
+  protected height: number;
   protected hexColor = '#FFFFFF';
 
   constructor(public dialogRef: MatDialogRef<CreateDrawingDialogComponent>) {
@@ -23,6 +23,14 @@ export class CreateDrawingDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
   }
 
   close() {
@@ -30,5 +38,7 @@ export class CreateDrawingDialogComponent implements OnInit {
   }
 
   save() {
+    // TODO: send the attributes of the new drawing to a service which will create the drawing
+    this.dialogRef.close();
   }
 }
