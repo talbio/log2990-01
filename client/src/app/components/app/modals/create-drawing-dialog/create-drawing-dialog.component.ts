@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -8,21 +8,18 @@ import { MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./create-drawing-dialog.component.scss'],
 })
 export class CreateDrawingDialogComponent implements OnInit {
-  protected createDrawingForm: FormGroup;
+  protected drawingForm: FormGroup;
   protected dialogTitle = 'Créer un nouveau dessin';
-  protected width = 100;
-  protected height = 100;
-  protected hexColor = '#FFFFFF';
 
   constructor(public dialogRef: MatDialogRef<CreateDrawingDialogComponent>) {
-    this.createDrawingForm = new FormGroup({
-      height: new FormControl(Validators.min(0)),
-      width: new FormControl(Validators.min(0)),
-      hexColor: new FormControl(),
-    });
   }
 
   ngOnInit() {
+    this.drawingForm = new FormGroup({
+      height: new FormControl('100', [Validators.required, Validators.min(0)]),
+      width: new FormControl('100', [Validators.required, Validators.min(0)]),
+      hexColor: new FormControl('#FFFFFF', [Validators.required]),
+    });
   }
 
   close() {
@@ -30,5 +27,7 @@ export class CreateDrawingDialogComponent implements OnInit {
   }
 
   save() {
+    this.dialogRef.close(this.drawingForm.value);
   }
+
 }

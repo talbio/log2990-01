@@ -1,17 +1,17 @@
 <h2 mat-dialog-title>{{dialogTitle}}</h2>
 
-<mat-dialog-content [formGroup]="createDrawingForm">
+<mat-dialog-content [formGroup]="drawingForm" (ngSubmit)="save()">
   <ul>
 
     <li>
       <mat-form-field>
         <input matInput
-               [(ngModel)]="this.height"
-               value="{{this.height}}"
+               [ngClass]="value"
+               value="{{drawingForm.value.height}}"
                placeholder="Entrez la hauteur"
                formControlName="height">
       </mat-form-field>
-      <div *ngIf="!createDrawingForm.get('height').valid">
+      <div *ngIf="!drawingForm.get('height').valid">
         Positive number required
       </div>
     </li>
@@ -19,19 +19,22 @@
     <li>
       <mat-form-field>
         <input matInput
-               [(ngModel)]="this.width"
-               value="{{this.width}}"
+               [ngClass]="value"
+               value="{{drawingForm.value.width}}"
                placeholder="Entrez la largeur"
-               formControlName="height">
+               formControlName="width">
       </mat-form-field>
+      <div *ngIf="!drawingForm.get('width').valid">
+        Positive number required
+      </div>
     </li>
 
     <li>
       <mat-form-field>
         <input matInput
                type="color"
-               value="{{hexColor}}"
-               [(ngModel)]="hexColor"
+               value="{{drawingForm.value.hexColor}}"
+               [ngClass]="value"
                placeholder="Choisissez une couleur de fond">
       </mat-form-field>
     </li>
@@ -40,8 +43,8 @@
       <mat-form-field>
         <!--<span matPrefix>0x&nbsp;</span>-->
         <input matInput
-               [(ngModel)]="hexColor"
-               value="{{this.hexColor}}"
+               value="{{drawingForm.value.hexColor}}"
+               [ngClass]="value"
                placeholder="Ou spécifiez une valeur hex"
                formControlName="hexColor">
       </mat-form-field>
@@ -58,7 +61,7 @@
   </button>
 
   <button class="mat-raised-button mat-primary"
-          [disabled] ="!createDrawingForm.valid"
+          [disabled] ="!(drawingForm.status === 'VALID')"
           (click)="save()">
     Confirmer
   </button>
