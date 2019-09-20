@@ -29,6 +29,7 @@ export class CreateDrawingDialogComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
+    debugger;
     this.width = window.innerWidth;
     this.height = window.innerHeight;
   }
