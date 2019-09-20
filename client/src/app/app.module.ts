@@ -1,26 +1,25 @@
 import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
+import {MatSidenavModule} from '@angular/material/sidenav';
 import {BrowserModule} from '@angular/platform-browser';
-import { RouterModule, Routes } from '@angular/router';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {AppComponent} from './components/app/app.component';
-import { WelcomeModalComponent } from './components/app/welcome-modal/welcome-modal.component';
-import { StorageService } from './services/storage.service';
-
-const routes: Routes = [
-   { path: 'welcome-modal', component: WelcomeModalComponent },
-];
+import { LateralBarComponent } from './components/draw-view/lateral-bar/lateral-bar.component';
+import { WorkZoneComponent } from './components/draw-view/work-zone/work-zone.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    WelcomeModalComponent,
+    WorkZoneComponent,
+    LateralBarComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    RouterModule.forRoot(routes),
+    BrowserAnimationsModule,
+    MatSidenavModule,
   ],
-  providers: [StorageService],
+  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {
