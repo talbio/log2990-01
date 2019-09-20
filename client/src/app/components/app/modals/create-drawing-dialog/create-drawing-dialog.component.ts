@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -7,39 +7,97 @@ import { MatDialogRef } from '@angular/material/dialog';
   templateUrl: './create-drawing-dialog.component.html',
   styleUrls: ['./create-drawing-dialog.component.scss'],
 })
-export class CreateDrawingDialogComponent implements OnInit {
-  protected createDrawingForm: FormGroup;
-  protected dialogTitle = 'Créer un nouveau dessin';
-  protected width: number;
-  protected height: number;
-  protected hexColor = '#FFFFFF';
 
-  constructor(public dialogRef: MatDialogRef<CreateDrawingDialogComponent>) {
-    this.createDrawingForm = new FormGroup({
-      height: new FormControl(Validators.min(0)),
-      width: new FormControl(Validators.min(0)),
-      hexColor: new FormControl(),
-    });
+export class CreateDrawingDialogComponent implements OnInit {
+  protected drawingForm: FormGroup;
+  protected dialogTitle = 'Créer un nouveau dessin';
+  protected whiteColor = '#FFFFFF';
+
+  constructor(private dialogRef: MatDialogRef<CreateDrawingDialogComponent>,
+              private formBuilder: FormBuilder) {
   }
 
   ngOnInit() {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+    this.drawingForm = this.formBuilder.group({
+      height: [window.innerHeight, [
+        Validators.required,
+        Validators.pattern('^[0-9]*$'),
+        Validators.min(0),
+      ]],
+      width: [window.innerWidth, [
+        Validators.required,
+        Validators.pattern('^[0-9]*$'),
+        Validators.min(0),
+      ]],
+      color: [this.whiteColor, [
+        Validators.required,
+        Validators.pattern('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$'),
+      ]],
+    });
+  }
+
+  get height(): AbstractControl {
+    // we are sure that this is non null, (see drawingForm declaration)
+    // tslint:disable-next-line:no-non-null-assertion
+    return this.drawingForm.get('height')!;
+  }
+
+  get width(): AbstractControl {
+    // we are sure that this is non null, (see drawingForm declaration)
+    // tslint:disable-next-line:no-non-null-assertion
+    return this.drawingForm.get('width')!;
+  }
+
+  get color(): AbstractControl {
+    // we are sure that this is non null, (see drawingForm declaration)
+    // tslint:disable-next-line:no-non-null-assertion
+    return this.drawingForm.get('color')!;
+  }
+
+  set color(colorValue) {
+    this.color.setValue(colorValue);
+  }
+
+  getErrorMsg(errorType: string): string {
+    switch (errorType) {
+      case 'posNumber': {
+        return 'Nombre positif requis!';
+      }
+      case 'hexValue': {
+        return 'La couleur doit être une valeur hexadécimale !';
+      }
+      default: {
+        return '';
+      }
+    }
+  }
+
+  clear(formControlName: AbstractControl): void {
+    formControlName.setValue('');
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
-    debugger;
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+    if (event.target !== null) {
+      if (!this.height.dirty) {
+        // @ts-ignore
+        this.height.setValue(event.target.innerHeight);
+      }
+      if (!this.width.dirty) {
+        // @ts-ignore
+        this.width.setValue(event.target.innerWidth);
+      }
+    }
   }
 
   close() {
     this.dialogRef.close();
   }
 
-  save() {
+  onSubmit() {
     // TODO: send the attributes of the new drawing to a service which will create the drawing
-    this.dialogRef.close();
+    this.dialogRef.close(this.drawingForm.value);
+
   }
+
 }
