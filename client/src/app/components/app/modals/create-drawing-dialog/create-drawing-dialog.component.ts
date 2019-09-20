@@ -21,13 +21,13 @@ export class CreateDrawingDialogComponent implements OnInit {
     this.drawingForm = this.formBuilder.group({
       height: [window.innerHeight, [
         Validators.required,
-        Validators.pattern('^[0-9]*$'),
         Validators.min(0),
+        Validators.pattern('^[0-9]*$'),
       ]],
       width: [window.innerWidth, [
         Validators.required,
-        Validators.pattern('^[0-9]*$'),
         Validators.min(0),
+        Validators.pattern('^[0-9]*$'),
       ]],
       color: [this.whiteColor, [
         Validators.required,
@@ -80,10 +80,12 @@ export class CreateDrawingDialogComponent implements OnInit {
   onResize(event: Event) {
     if (event.target !== null) {
       if (!this.height.dirty) {
+        // innerHeight property exists for object window
         // @ts-ignore
         this.height.setValue(event.target.innerHeight);
       }
       if (!this.width.dirty) {
+        // innerWidth property exists for object window
         // @ts-ignore
         this.width.setValue(event.target.innerWidth);
       }
