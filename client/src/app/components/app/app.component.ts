@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import { ShapeGeneratorService } from './../shapeGenerator.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +6,7 @@ import { ShapeGeneratorService } from './../shapeGenerator.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  readonly title: string = 'dessin';
+
+  constructor(){}
 }

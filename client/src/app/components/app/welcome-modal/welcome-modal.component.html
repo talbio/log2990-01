@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<div *ngIf="show" class="overlay">
+    <dialog open>
+        <h3 class="modal-header">
+            Bienvenue à PolyDessin!
+        </h3>
+        <div class="modal-body">
+            <p>Vous trouverez le guide d'utilisation dans la barre de menu à gauche</p>
+
+        </div>
+        <footer class="modal-footer">
+            <input type="checkbox" (change)="onChange($event)">Ne plus afficher ce message
+            <button (click)="show = false">fermer</button>
+        </footer>
+    </dialog>
+</div>
+
+</html>
