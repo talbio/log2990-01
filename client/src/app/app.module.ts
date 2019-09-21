@@ -22,6 +22,7 @@ import { StorageService } from './services/storage.service';
     CreateDrawingDialogComponent,
     WorkZoneComponent,
     LateralBarComponent,
+    WelcomeModalComponent,
   ],
   imports: [
     BrowserModule,
