@@ -5,35 +5,35 @@ import { MatDialogModule } from '@angular/material';
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {MatSidenavModule} from '@angular/material/sidenav';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule, Routes } from '@angular/router';
 import { AppComponent } from './components/app/app.component';
 import { CreateDrawingDialogComponent } from './components/app/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { WelcomeModalComponent } from './components/app/welcome-modal/welcome-modal.component';
+import {LateralBarComponent} from './components/draw-view/lateral-bar/lateral-bar.component';
+import {WorkZoneComponent} from './components/draw-view/work-zone/work-zone.component';
 import { StorageService } from './services/storage.service';
-
-const routes: Routes = [
-   { path: 'welcome-modal', component: WelcomeModalComponent },
-];
 
 @NgModule({
   declarations: [
     AppComponent,
     WelcomeModalComponent,
     CreateDrawingDialogComponent,
+    WorkZoneComponent,
+    LateralBarComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     MatDialogModule,
     HttpClientModule,
-    RouterModule.forRoot(routes),
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     FormsModule,
+    MatSidenavModule,
   ],
   providers: [
     StorageService,

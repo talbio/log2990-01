@@ -7,10 +7,6 @@
     ],
     "arrow-parens": true,
     "deprecation": true,
-    "linebreak-style": [
-      true,
-      "LF"
-    ],
     "max-classes-per-file": [
       true,
       1
