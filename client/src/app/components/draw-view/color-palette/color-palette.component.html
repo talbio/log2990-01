@@ -6,15 +6,15 @@
 
     <body>
         <div>
-            <svg class="first" width="30" height="30">
-                <rect x="0" y="0" width="30" height="30" fill="lime"></rect>
+            <svg class="first" width="30" height="30" >
+                <rect x="0" y="0" width="30" height="30" [style.fill]="primaryColor"></rect>
             </svg>
 
-            <i class="material-icons">
+            <i class="material-icons" (click)="switchMainColors()">
                 swap_horiz
             </i>
             <svg class="second" width="30" height="30">
-                <rect x="0" y="0" width="25" height="25" fill="yellow"></rect>
+                <rect x="0" y="0" width="25" height="25" [style.fill]="secondaryColor"></rect>
             </svg>
         </div>
         <svg class="top-ten" width="125" height="50">
