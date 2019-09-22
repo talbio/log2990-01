@@ -1,6 +1,6 @@
 import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
-import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatDialogModule, MatIconModule, MatSidenavModule} from '@angular/material';
 import {BrowserModule} from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {AppComponent} from './components/app/app.component';
@@ -22,8 +22,11 @@ import { StorageService } from './services/storage.service';
     BrowserModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    MatDialogModule,
     MatSidenavModule,
+    MatIconModule,
   ],
+  entryComponents: [ColorPaletteComponent],
   providers: [StorageService],
   bootstrap: [AppComponent],
 })

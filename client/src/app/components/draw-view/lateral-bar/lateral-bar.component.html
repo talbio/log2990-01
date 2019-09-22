@@ -1,7 +1,9 @@
 <app-welcome-modal></app-welcome-modal>
 
 <mat-sidenav-container class="lateral-bar-container" >
-  <mat-sidenav mode="side" opened>Lateral bar</mat-sidenav>
+  <mat-sidenav mode="side" opened>Lateral bar
+  <div><button (click)="openColorTool()">Un outil de couleurs!</button></div>
+  </mat-sidenav>
   <mat-sidenav-content>
     <app-work-zone></app-work-zone>
   </mat-sidenav-content>

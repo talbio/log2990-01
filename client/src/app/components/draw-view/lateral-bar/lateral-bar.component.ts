@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ColorPaletteComponent } from '../color-palette/color-palette.component';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -7,9 +9,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LateralBarComponent implements OnInit {
 
-  constructor() { }
+  constructor(private dialog: MatDialog) { }
 
   ngOnInit() {
+  }
+
+  openColorTool(): void {
+    this.dialog.open(ColorPaletteComponent, {width: '1000px', height: '250px'});
   }
 
 }
