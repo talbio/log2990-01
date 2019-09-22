@@ -17,17 +17,8 @@
                 <rect x="0" y="0" width="25" height="25" [style.fill]="secondaryColor"></rect>
             </svg>
         </div>
-        <svg class="top-ten" width="125" height="50">
-            <rect x="0" y="0" width="25" height="25" fill="lime"></rect>
-            <rect x="25" y="0" width="25" height="25" fill="red"></rect>
-            <rect x="50" y="0" width="25" height="25" fill="blue"></rect>
-            <rect x="75" y="0" width="25" height="25" fill="yellow"></rect>
-            <rect x="100" y="0" width="25" height="25" fill="puple"></rect>
-            <rect x="0" y="25" width="25" height="25" fill="pink"></rect>
-            <rect x="25" y="25" width="25" height="25" fill="black"></rect>
-            <rect x="50" y="25" width="25" height="25" fill="lime"></rect>
-            <rect x="75" y="25" width="25" height="25" fill="orange"></rect>
-            <rect x="100" y="25" width="25" height="25" fill="brown"></rect>
+        <svg class="top-ten" width="25" height="25" *ngFor="let color of topTenColors; let i = index">
+            <rect  width="25" height="25" [style.fill]=color (click)=selectColor(color)></rect>
         </svg>
 
     </body>

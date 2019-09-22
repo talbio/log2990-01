@@ -10,6 +10,7 @@ import { StorageService } from 'src/app/services/storage.service';
 export class ColorPaletteComponent implements OnInit {
   primaryColor: string;
   secondaryColor: string;
+  topTenColors: string[];
 
   constructor(private dialogRef: MatDialogRef<ColorPaletteComponent>, private storage: StorageService) {
   }
@@ -17,6 +18,7 @@ export class ColorPaletteComponent implements OnInit {
   ngOnInit() {
     this.primaryColor = this.assignPrimaryColor();
     this.secondaryColor = this.assignSecondaryColor();
+    this.topTenColors = ['blue', 'white', 'red', 'black', 'orange', 'yellow', 'green', 'brown', 'lime', 'beige'];
   }
 
   close(): void {
@@ -48,4 +50,10 @@ export class ColorPaletteComponent implements OnInit {
     this.storage.setPrimaryColor(this.primaryColor);
     this.storage.setSecondaryColor(this.secondaryColor);
   }
+
+  selectColor(color: string): void {
+    this.primaryColor = color;
+    this.storage.setPrimaryColor(color);
+  }
+
 }
