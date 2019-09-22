@@ -15,7 +15,7 @@ export class LateralBarComponent implements OnInit {
   }
 
   openColorTool(): void {
-    this.dialog.open(ColorPaletteComponent, {width: '1000px', height: '250px'});
+    this.dialog.open(ColorPaletteComponent, {width: '500px', height: '250px'});
   }
 
 }

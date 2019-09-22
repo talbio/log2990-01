@@ -10,4 +10,7 @@ export class ColorPaletteComponent  {
 
   constructor(public dialogRef: MatDialogRef<ColorPaletteComponent>) { }
 
+  close(): void {
+    this.dialogRef.close();
+  }
 }
