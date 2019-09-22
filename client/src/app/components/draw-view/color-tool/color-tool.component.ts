@@ -3,16 +3,16 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
-  selector: 'app-color-palette',
-  templateUrl: './color-palette.component.html',
-  styleUrls: ['./color-palette.component.scss']
+  selector: 'app-color-tool',
+  templateUrl: './color-tool.component.html',
+  styleUrls: ['./color-tool.component.scss']
 })
-export class ColorPaletteComponent implements OnInit {
+export class ColorToolComponent implements OnInit {
   primaryColor: string;
   secondaryColor: string;
   topTenColors: string[];
 
-  constructor(private dialogRef: MatDialogRef<ColorPaletteComponent>, private storage: StorageService) {
+  constructor(private dialogRef: MatDialogRef<ColorToolComponent>, private storage: StorageService) {
   }
 
   ngOnInit() {
@@ -28,19 +28,19 @@ export class ColorPaletteComponent implements OnInit {
   assignPrimaryColor(): string {
     const color = this.storage.getPrimaryColor();
     if (typeof color !== 'undefined' && color !== null) {
-      this.storage.setPrimaryColor('white');
-      return 'white';
+      return this.storage.getPrimaryColor();
     }
-    return this.storage.getPrimaryColor();
+    this.storage.setPrimaryColor('white');
+    return 'white';
   }
 
   assignSecondaryColor(): string {
     const color = this.storage.getPrimaryColor();
     if (typeof color !== 'undefined' && color !== null) {
-      this.storage.setSecondaryColor('black');
-      return 'black';
+      return this.storage.getSecondaryColor();
     }
-    return this.storage.getSecondaryColor();
+    this.storage.setSecondaryColor('black');
+    return 'black';
   }
 
   switchMainColors(): void {
@@ -52,6 +52,7 @@ export class ColorPaletteComponent implements OnInit {
   }
 
   selectColor(color: string): void {
+    debugger
     this.primaryColor = color;
     this.storage.setPrimaryColor(color);
   }
