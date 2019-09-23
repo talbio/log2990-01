@@ -19,7 +19,7 @@ export class StorageService {
     }
 
     getPrimaryColor(): string {
-            return (sessionStorage.getItem('primaryColor') || '{}');
+            return (sessionStorage.getItem('primaryColor') || 'empty');
     }
 
     setSecondaryColor(color: string): void {
@@ -27,7 +27,7 @@ export class StorageService {
     }
 
     getSecondaryColor(): string {
-            return (sessionStorage.getItem('secondaryColor') || '{}');
+            return (sessionStorage.getItem('secondaryColor') || 'empty');
     }
 
 }
