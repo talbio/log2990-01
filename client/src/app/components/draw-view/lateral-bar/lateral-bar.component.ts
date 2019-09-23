@@ -12,4 +12,8 @@ export class LateralBarComponent implements OnInit {
   ngOnInit() {
   }
 
+  openCreateDrawingDialog() {
+
+  }
+
 }
