@@ -1,0 +1,64 @@
+<h2 mat-dialog-title>{{dialogTitle}}</h2>
+
+<mat-dialog-content [formGroup]="drawingForm">
+
+  <form [formGroup]="drawingForm">
+    <ul>
+
+      <li>
+        <mat-form-field>
+          <input matInput
+                 (focus)=clear(height)
+                 placeholder="Entrez la hauteur"
+                 formControlName="height">
+          <mat-error *ngIf="height.invalid && height.touched">{{getErrorMsg('posNumber')}}</mat-error>
+        </mat-form-field>
+      </li>
+
+      <li>
+        <mat-form-field>
+          <input matInput
+                 (focus)=clear(width)
+                 placeholder="Entrez la largeur"
+                 formControlName="width">
+          <mat-error *ngIf="width.invalid && width.touched">{{getErrorMsg('posNumber')}}</mat-error>
+        </mat-form-field>
+      </li>
+
+      <li>
+        <mat-form-field>
+          <input matInput
+                 type="color"
+                 [(ngModel)]="color"
+                 [ngModelOptions]="{standalone: true}"
+                 placeholder="Choisissez une couleur de fond">
+        </mat-form-field>
+      </li>
+
+      <li>
+        <mat-form-field>
+          <input matInput
+                 (focus)=clear(color)
+                 placeholder="Ou spécifiez une valeur hex"
+                 formControlName="color">
+          <mat-hint>Commencez par le symbole #</mat-hint>
+          <mat-error *ngIf="color.invalid && width.touched">{{getErrorMsg('hexValue')}}</mat-error>
+        </mat-form-field>
+      </li>
+
+    </ul>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="mat-raised-button mat-warn"
+          (click)="close()">
+    Annuler
+  </button>
+  <div class="divider"></div>
+  <button class="mat-raised-button mat-primary"
+          [disabled] ="drawingForm.invalid"
+          (click)="onSubmit()">
+    Confirmer
+  </button>
+</mat-dialog-actions>

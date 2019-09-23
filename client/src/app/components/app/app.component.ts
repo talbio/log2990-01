@@ -7,4 +7,8 @@ import {Component} from '@angular/core';
 })
 export class AppComponent {
   readonly title: string = 'dessin';
+
+  constructor() {}
+
+
 }
