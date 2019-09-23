@@ -1,3 +1,6 @@
+import { ButtonManagerService } from './services/buttonManager.service';
+import { PenModeService } from './components/app/pen-mode.service';
+import { ModeManagerService } from './services/mode-manager.service';
 import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
 import {MatSidenavModule} from '@angular/material/sidenav';
@@ -23,7 +26,11 @@ import { StorageService } from './services/storage.service';
     BrowserAnimationsModule,
     MatSidenavModule,
   ],
-  providers: [ShapeGeneratorService, StorageService],
+  providers: [ShapeGeneratorService,
+              ModeManagerService,
+              StorageService,
+              PenModeService,
+              ButtonManagerService],
   bootstrap: [AppComponent],
 })
 export class AppModule {

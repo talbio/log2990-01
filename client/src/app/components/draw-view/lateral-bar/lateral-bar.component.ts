@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ShapeGeneratorService } from '../../shapeGenerator.service';
+import { ButtonManagerService } from './../../../services/buttonManager.service';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -8,12 +8,19 @@ import { ShapeGeneratorService } from '../../shapeGenerator.service';
 })
 export class LateralBarComponent implements OnInit {
 
-  constructor(private service: ShapeGeneratorService) { }
+  constructor(private service: ButtonManagerService) {}
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  buttonPen(){
+    this.service.activatePen();
   }
 
-  no(){
-    this.service.printRectangle();
+  buttonRectangle(){
+    this.service.activateRectangle();
   }
+
+  // no(){
+  //   this.service.printRectangle();
+  // }
 }
