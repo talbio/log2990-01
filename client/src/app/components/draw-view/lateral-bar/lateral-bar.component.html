@@ -1,7 +1,16 @@
 <app-welcome-modal></app-welcome-modal>
 
 <mat-sidenav-container class="lateral-bar-container" >
-  <mat-sidenav mode="side" opened>Lateral bar</mat-sidenav>
+  <mat-sidenav mode="side" opened>
+  <mat-list>
+    <mat-list-item>
+      <button mat-button><mat-icon>add</mat-icon></button>
+    </mat-list-item>
+    <mat-list-item>
+      <button mat-button><mat-icon>settings_applications</mat-icon></button>
+    </mat-list-item>
+  </mat-list>
+  </mat-sidenav>
   <mat-sidenav-content>
     <app-work-zone></app-work-zone>
   </mat-sidenav-content>
