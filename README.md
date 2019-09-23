@@ -1,7 +1,3 @@
-# !!! A faire avant de push sur le repo bitbucket !!!
-lisez ceci : https://gist.github.com/rvl/c3f156e117e22a25f242
-le .git/config doit contenir comme push url le repo de l'école également.
-
 # Log2990
 Projet généré avec [Angular CLI](https://github.com/angular/angular-cli) version 8.1.2.
 
