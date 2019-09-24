@@ -17,7 +17,7 @@
             <svg class="second" width="30" height="30">
                 <rect x="0" y="0" width="25" height="25" [style.fill]="secondaryColor"></rect>
             </svg><br />
-            <mat-slider></mat-slider>
+            <mat-slider min="0" max="1" step="0.1" [(value)] = 'primaryTransparency'></mat-slider>
             <br />
             <mat-slider></mat-slider>
         </div>

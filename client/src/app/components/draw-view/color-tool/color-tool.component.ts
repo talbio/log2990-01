@@ -19,7 +19,7 @@ export class ColorToolComponent implements OnInit {
   ngOnInit() {
     this.primaryColor = this.assignPrimaryColor();
     this.secondaryColor = this.assignSecondaryColor();
-    this.primaryTransparency = 0.5;
+    this.primaryTransparency = 1;
     this.topTenColors = ['blue', 'white', 'red', 'black', 'orange', 'yellow', 'green', 'brown', 'lime', 'beige'];
   }
 
