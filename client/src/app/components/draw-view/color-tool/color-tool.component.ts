@@ -12,6 +12,7 @@ export class ColorToolComponent implements OnInit {
   secondaryColor: string;
   topTenColors: string[];
   primaryTransparency: number;
+  secondaryTransparency: number;
 
   constructor(private dialogRef: MatDialogRef<ColorToolComponent>, private storage: StorageService) {
   }
@@ -19,7 +20,7 @@ export class ColorToolComponent implements OnInit {
   ngOnInit() {
     this.primaryColor = this.assignPrimaryColor();
     this.secondaryColor = this.assignSecondaryColor();
-    this.primaryTransparency = 1;
+    this.primaryTransparency = this.secondaryTransparency = 1;
     this.topTenColors = ['blue', 'white', 'red', 'black', 'orange', 'yellow', 'green', 'brown', 'lime', 'beige'];
   }
 
@@ -32,8 +33,8 @@ export class ColorToolComponent implements OnInit {
     if (color !== 'empty') {
       return this.storage.getPrimaryColor();
     }
-    this.storage.setPrimaryColor('black');
-    return 'black';
+    this.storage.setPrimaryColor('#0000ff');
+    return '#0000ff';
   }
 
   assignSecondaryColor(): string {
@@ -41,8 +42,8 @@ export class ColorToolComponent implements OnInit {
     if (color !== 'empty') {
       return this.storage.getSecondaryColor();
     }
-    this.storage.setSecondaryColor('red');
-    return 'red';
+    this.storage.setSecondaryColor('#ffff00');
+    return '#ffff00';
   }
 
   switchMainColors(): void {

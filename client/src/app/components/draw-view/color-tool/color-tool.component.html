@@ -15,11 +15,11 @@
                 swap_horiz
             </i>
             <svg class="second" width="30" height="30">
-                <rect x="0" y="0" width="25" height="25" [style.fill]="secondaryColor"></rect>
+                <rect x="0" y="0" width="25" height="25" [style.fill]="secondaryColor" [style.fill-opacity]="secondaryTransparency"></rect>
             </svg><br />
             <mat-slider min="0" max="1" step="0.1" [(value)] = 'primaryTransparency'></mat-slider>
             <br />
-            <mat-slider></mat-slider>
+            <mat-slider min="0" max="1" step="0.1" [(value)] = 'secondaryTransparency'></mat-slider>
         </div>
         <svg class="top-ten" width="25" height="25" *ngFor="let color of topTenColors; let i = index">
             <rect  width="25" height="25" [style.fill]=color (click)=selectColor(color)></rect>
