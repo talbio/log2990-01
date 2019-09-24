@@ -1,6 +1,7 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import {Component, HostListener, Inject, OnInit} from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {ConfirmGiveUpChangesDialogComponent} from '../confirm-give-up-changes-dialog/confirm-give-up-changes-dialog.component';
 
 @Component({
   selector: 'app-create-drawing-dialog',
@@ -14,7 +15,9 @@ export class CreateDrawingDialogComponent implements OnInit {
   protected whiteColor = '#FFFFFF';
 
   constructor(private dialogRef: MatDialogRef<CreateDrawingDialogComponent>,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private dialog: MatDialog,
+              @Inject(MAT_DIALOG_DATA) public drawingNonEmpty: boolean) {
   }
 
   ngOnInit() {
@@ -96,10 +99,22 @@ export class CreateDrawingDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  onSubmit() {
+  async onSubmit() {
     // TODO: send the attributes of the new drawing to a service which will create the drawing
-    this.dialogRef.close(this.drawingForm.value);
+    if (this.drawingNonEmpty) {
+      await this.openConfirmGiveUpChangesDialog().then((confirm) => {
+        if (confirm) {
+          this.dialogRef.close(this.drawingForm.value);
+        }
+      });
+    }
+  }
 
+  private async openConfirmGiveUpChangesDialog(): Promise<boolean> {
+    let confirm = false;
+    const dialogRef = this.dialog.open(ConfirmGiveUpChangesDialogComponent);
+    await dialogRef.afterClosed().toPromise().then((confirmResult) => confirm = confirmResult);
+    return confirm;
   }
 
 }
