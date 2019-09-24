@@ -1,16 +1,16 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async, inject } from '@angular/core/testing';
-import { ShapeGeneratorService } from './shapeGenerator.service';
+import { RectangleGeneratorService } from './rectangle-generator.service';
 
 describe('Service: ShapeGenerator', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ShapeGeneratorService]
+      providers: [RectangleGeneratorService]
     });
   });
 
-  it('should ...', inject([ShapeGeneratorService], (service: ShapeGeneratorService) => {
+  it('should ...', inject([RectangleGeneratorService], (service: RectangleGeneratorService) => {
     expect(service).toBeTruthy();
   }));
 });

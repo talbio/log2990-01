@@ -1,6 +1,5 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
-import { ButtonManagerService } from '../../../services/buttonManager.service';
-import { ModeManagerService } from '../../../services/mode-manager.service';
+import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
   selector: 'app-work-zone',
@@ -9,29 +8,24 @@ import { ModeManagerService } from '../../../services/mode-manager.service';
 })
 export class WorkZoneComponent implements OnInit {
 
-  constructor(private buttonManager: ButtonManagerService,
-              private modeManager: ModeManagerService,
+  private canvasElement: any;
+
+  constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+  }
 
   onMouseDown(mouseEvent: any) {
-    this.modeManager.createElement(
-      this.buttonManager.activeMode,
-      mouseEvent,
-      this.renderer.selectRootElement('#canvas', true));
+    this.toolManager.createElement(mouseEvent, this.canvasElement);
   }
 
   onMouseMove(mouseEvent: any) {
-    this.modeManager.updateElement(
-      this.buttonManager.activeMode,
-      mouseEvent,
-      this.renderer.selectRootElement('#canvas', true));
+    this.toolManager.updateElement(mouseEvent, this.canvasElement);
   }
 
   onMouseUp(mouseEvent: any) {
-    this.modeManager.finishElement(
-      this.buttonManager.activeMode,
-      mouseEvent);
+    this.toolManager.finishElement(mouseEvent);
   }
 }

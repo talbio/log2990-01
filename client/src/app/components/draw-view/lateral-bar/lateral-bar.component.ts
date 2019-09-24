@@ -1,23 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { ButtonManagerService } from './../../../services/buttonManager.service';
+import { ToolSelectorService } from '../../../services/tools/tool-selector/tool-selector.service';
 
 @Component({
   selector: 'app-lateral-bar',
   templateUrl: './lateral-bar.component.html',
-  styleUrls: ['./lateral-bar.component.scss']
+  styleUrls: ['./lateral-bar.component.scss'],
 })
 export class LateralBarComponent implements OnInit {
 
-  constructor(private service: ButtonManagerService) {}
+  constructor(private toolSelector: ToolSelectorService) {}
 
   ngOnInit() {}
 
-  buttonPen(){
-    this.service.activatePen();
+  buttonPen() {
+    this.toolSelector.setPenTool();
   }
 
-  buttonRectangle(){
-    this.service.activateRectangle();
+  buttonRectangle() {
+    this.toolSelector.setRectangleTool();
   }
 
   // no(){

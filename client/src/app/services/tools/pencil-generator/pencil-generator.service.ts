@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 
-
 @Injectable()
-export class PenModeService {
+export class PencilGeneratorService {
 
   private currentPathNumber = 0;
   private OFFSET_CANVAS_X: any;
@@ -10,21 +9,20 @@ export class PenModeService {
   private mouseDown = false;
 
 constructor() { }
-
+  //TODO: checker les childs, rajouter lepaisseur en paremetress
   // Initializes the path
-  createPenPath(e: any, canvas:any) {
+  createPenPath(e: any, canvas: any) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
-    canvas.innerHTML += '<circle id=\'pathBegin' + this.currentPathNumber + '\' cx=\'' + (e.pageX - this.OFFSET_CANVAS_X) +
+    canvas.innerHTML += '<circle id=\'penPathBegin' + this.currentPathNumber + '\' cx=\'' + (e.pageX - this.OFFSET_CANVAS_X) +
     '\' cy=\'' + (e.pageY - this.OFFSET_CANVAS_Y) + '\' r=\'3\'  fill=\'black\'></circle><path id=\'path' + this.currentPathNumber +
     '\' d=\'M' + (e.pageX - this.OFFSET_CANVAS_X) + ' ' + (e.pageY - this.OFFSET_CANVAS_Y) +
     '\' stroke=\'black\' stroke-width=\'6\' stroke-linecap=\'round\' fill=\'none\'></path>';
 
     this.mouseDown = true;
   }
-
   // Updates the path when the mouse is moving (mousedown)
   updatePenPath(e: any, canvas:any, currentChildPosition:number) {
     if (this.mouseDown) {

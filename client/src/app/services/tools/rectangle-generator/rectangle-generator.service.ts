@@ -1,7 +1,7 @@
-import { Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 
 @Injectable()
-export class ShapeGeneratorService {
+export class RectangleGeneratorService {
 
   private OFFSET_CANVAS_Y: any;
   private OFFSET_CANVAS_X: any;
@@ -10,8 +10,7 @@ export class ShapeGeneratorService {
 
   constructor() {}
 
-  createRectangle(e: any, canvas:any) {
-
+  createRectangle(e: any, canvas: any) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
@@ -19,11 +18,11 @@ export class ShapeGeneratorService {
     canvas.innerHTML += '<rect id=\'rect' + this.currentRectNumber + '\' x=\'' + (e.pageX - this.OFFSET_CANVAS_X) +
     '\' data-start-x = \'' + (e.pageX - this.OFFSET_CANVAS_X) + '\' y=\'' + (e.pageY - this.OFFSET_CANVAS_Y) + '\' data-start-y = \''
     + (e.pageY - this.OFFSET_CANVAS_Y) + '\' width = \'0\' height = \'0\' stroke=\'black\' stroke-width=\'6\' fill=\'transparent\'></rect>';
-    
+
     this.mouseDown = true;
   }
 
-  updateRectangle(e: any, canvas:any, currentChildPosition:number) {
+  updateRectangle(e: any, canvas: any, currentChildPosition: number) {
     if (this.mouseDown) {
       // const currentRect = document.getElementById('rect' + this.currentRectNumber);
       const currentRect = canvas.children[currentChildPosition - 1];
