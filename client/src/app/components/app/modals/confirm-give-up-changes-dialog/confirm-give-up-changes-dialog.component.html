@@ -1,0 +1,10 @@
+<h3 mat-dialog-title>Attention!</h3>
+
+<mat-dialog-content>
+  <p mat-dialog-title>Votre travail n'a pas été enregistré, voulez vous abandonner vos changements?</p>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button color="warn" (click)="close()">Annuler</button>
+  <button mat-button color="primary" (click)="confirm=true; close()">Confirmer</button>
+</mat-dialog-actions>
