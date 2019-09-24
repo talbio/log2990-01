@@ -25,7 +25,6 @@ export class ShapeGeneratorService {
 
   updateRectangle(e: any, canvas:any, currentChildPosition:number) {
     if (this.mouseDown) {
-      //problématique, puisqu'il faut connaitre le mode pour aller chercher l'élément, mais que le renderer se produit avant le mode-manager
       // const currentRect = document.getElementById('rect' + this.currentRectNumber);
       const currentRect = canvas.children[currentChildPosition - 1];
       if (currentRect != null) {

@@ -15,7 +15,7 @@ constructor(private rectangle: ShapeGeneratorService, private pen: PenModeServic
         break;
       case 'pen':
         this.pen.createPenPath(e, canvas);
-        this.numberOfElements +=2;
+        this.numberOfElements +=2; //2 elements, since circle for path begin. Not a problem for update since only path is updated
         break;
     }
     

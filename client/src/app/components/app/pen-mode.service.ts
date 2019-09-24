@@ -1,4 +1,3 @@
-// import { Injectable, Renderer2 } from '@angular/core';
 import { Injectable } from '@angular/core';
 
 
@@ -10,7 +9,6 @@ export class PenModeService {
   private OFFSET_CANVAS_Y: any;
   private mouseDown = false;
 
-// constructor(private renderer: Renderer2) { }
 constructor() { }
 
   // Initializes the path
@@ -30,7 +28,6 @@ constructor() { }
   // Updates the path when the mouse is moving (mousedown)
   updatePenPath(e: any, canvas:any, currentChildPosition:number) {
     if (this.mouseDown) {
-      // const currentPath = this.renderer.selectRootElement('path' + this.currentPathNumber);
       // const currentPath = document.getElementById("path" + this.currentPathNumber);
       const currentPath = canvas.children[currentChildPosition - 1];
       if (currentPath != null) {
