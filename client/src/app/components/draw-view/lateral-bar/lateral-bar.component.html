@@ -20,8 +20,8 @@
   </mat-sidenav>
 
   <!-- the content is simply the work zone containing the drawing -->
-    <mat-sidenav-content>
-      <app-work-zone></app-work-zone>
+    <mat-sidenav-content [ngStyle]="setBackGroundColor()">
+      <app-work-zone #workZoneComponent></app-work-zone>
     </mat-sidenav-content>
 
 </mat-sidenav-container>
