@@ -3,12 +3,17 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ConfirmGiveUpChangesDialogComponent} from '../confirm-give-up-changes-dialog/confirm-give-up-changes-dialog.component';
 
+export interface DialogData {
+  drawingNonEmpty: boolean;
+  height: number;
+  width: number;
+}
+
 @Component({
   selector: 'app-create-drawing-dialog',
   templateUrl: './create-drawing-dialog.component.html',
   styleUrls: ['./create-drawing-dialog.component.scss'],
 })
-
 export class CreateDrawingDialogComponent implements OnInit {
   protected drawingForm: FormGroup;
   protected dialogTitle = 'Créer un nouveau dessin';
@@ -17,17 +22,17 @@ export class CreateDrawingDialogComponent implements OnInit {
   constructor(private dialogRef: MatDialogRef<CreateDrawingDialogComponent>,
               private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              @Inject(MAT_DIALOG_DATA) public drawingNonEmpty: boolean) {
+              @Inject(MAT_DIALOG_DATA) private data: DialogData) {
   }
 
   ngOnInit() {
     this.drawingForm = this.formBuilder.group({
-      height: [window.innerHeight, [
+      height: [this.data.height, [
         Validators.required,
         Validators.min(0),
         Validators.pattern('^[0-9]*$'),
       ]],
-      width: [window.innerWidth, [
+      width: [this.data.width, [
         Validators.required,
         Validators.min(0),
         Validators.pattern('^[0-9]*$'),
@@ -101,7 +106,7 @@ export class CreateDrawingDialogComponent implements OnInit {
 
   async onSubmit() {
     // TODO: send the attributes of the new drawing to a service which will create the drawing
-    if (this.drawingNonEmpty) {
+    if (this.data.drawingNonEmpty) {
       await this.openConfirmGiveUpChangesDialog().then((confirm) => {
         if (confirm) {
           this.dialogRef.close(this.drawingForm.value);
