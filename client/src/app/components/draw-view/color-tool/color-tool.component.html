@@ -3,30 +3,33 @@
 
 <div mat-dialog-content>
 
+    <app-color-palette [hue]="selectedColor" (color)="color = $event"></app-color-palette>
 
     <body>
+
         <div>
-                
-            <svg class="first" width="50" height="50" >
-                <rect x="0" y="0" width="50" height="50" [style.fill]="primaryColor" [style.fill-opacity]="primaryTransparency"></rect>
+            <svg class="first" width="50" height="50">
+                <rect x="0" y="0" width="50" height="50" [style.fill]="primaryColor"
+                    [style.fill-opacity]="primaryTransparency"></rect>
             </svg>
 
             <i class="material-icons" (click)="switchMainColors()">
                 swap_horiz
             </i>
             <svg class="second" width="30" height="30">
-                <rect x="0" y="0" width="25" height="25" [style.fill]="secondaryColor" [style.fill-opacity]="secondaryTransparency"></rect>
+                <rect x="0" y="0" width="25" height="25" [style.fill]="secondaryColor"
+                    [style.fill-opacity]="secondaryTransparency"></rect>
             </svg><br />
-            <mat-slider min="0" max="1" step="0.1" [(value)] = 'primaryTransparency'></mat-slider>
+            <mat-slider min="0" max="1" step="0.1" [(value)]='primaryTransparency'></mat-slider>
             <br />
-            <mat-slider min="0" max="1" step="0.1" [(value)] = 'secondaryTransparency'></mat-slider>
+            <mat-slider min="0" max="1" step="0.1" [(value)]='secondaryTransparency'></mat-slider>
         </div>
-        <svg class="top-ten" width="25" height="25" *ngFor="let color of topTenColors; let i = index">
-            <rect  width="25" height="25" [style.fill]=color (click)=selectColor(color)></rect>
+        <svg class="top-ten" width="25" height="25" *ngFor="let color of topTenColors">
+            <rect width="25" height="25" [style.fill]=color (click)=selectColor(color)></rect>
         </svg>
     </body>
 </div>
-<div mat-dialog-actions >
+<div mat-dialog-actions>
     <button mat-button (click)="close()">fermer</button>
 </div>
 

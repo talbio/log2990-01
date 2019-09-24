@@ -8,6 +8,7 @@ import { StorageService } from 'src/app/services/storage.service';
   styleUrls: ['./color-tool.component.scss']
 })
 export class ColorToolComponent implements OnInit {
+  selectedColor: string;
   primaryColor: string;
   secondaryColor: string;
   topTenColors: string[];
@@ -18,7 +19,7 @@ export class ColorToolComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.primaryColor = this.assignPrimaryColor();
+    this.selectedColor = this.primaryColor = this.assignPrimaryColor();
     this.secondaryColor = this.assignSecondaryColor();
     this.primaryTransparency = this.secondaryTransparency = 1;
     this.topTenColors = ['blue', 'white', 'red', 'black', 'orange', 'yellow', 'green', 'brown', 'lime', 'beige'];
@@ -55,6 +56,7 @@ export class ColorToolComponent implements OnInit {
   }
 
   selectColor(color: string): void {
+    this.selectedColor = color;
     this.primaryColor = color;
     this.storage.setPrimaryColor(color);
   }
