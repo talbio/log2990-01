@@ -1,6 +1,7 @@
 import { ButtonManagerService } from './../../../services/buttonManager.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { ModeManagerService } from './../../../services/mode-manager.service';
+
 
 @Component({
   selector: 'app-work-zone',
@@ -8,13 +9,12 @@ import { ModeManagerService } from './../../../services/mode-manager.service';
   styleUrls: ['./work-zone.component.scss']
 })
 export class WorkZoneComponent implements OnInit {
-
-  constructor(private modeManager: ModeManagerService, private mode: ButtonManagerService) { }
+  constructor(private modeManager: ModeManagerService, private mode: ButtonManagerService, private renderer: Renderer2) { }
 
   ngOnInit() {}
 
   fctMouseDown(e: any) {
-    this.modeManager.createElement(this.mode.activeMode, e);
+    this.modeManager.createElement(this.mode.activeMode, e, this.renderer.selectRootElement('#canvas',true));
   }
 
   fctMouseMove(e: any) {

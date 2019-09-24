@@ -7,10 +7,10 @@ export class ModeManagerService {
 
 constructor(private rectangle: ShapeGeneratorService, private pen: PenModeService) { }
 
-  createElement(mode: string, e: any) {
+  createElement(mode: string, e: any, canvas:any) {
     switch (mode) {
       case 'rectangle':
-        this.rectangle.createRectangle(e);
+        this.rectangle.createRectangle(e, canvas);
         break;
       case 'pen':
         this.pen.createPenPath(e);
