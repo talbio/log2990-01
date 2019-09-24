@@ -4,27 +4,30 @@ import { ShapeGeneratorService } from './../components/shapeGenerator.service';
 
 @Injectable()
 export class ModeManagerService {
-
+public numberOfElements:number = 0;
 constructor(private rectangle: ShapeGeneratorService, private pen: PenModeService) { }
 
   createElement(mode: string, e: any, canvas:any) {
     switch (mode) {
       case 'rectangle':
         this.rectangle.createRectangle(e, canvas);
+        this.numberOfElements +=1;
         break;
       case 'pen':
-        this.pen.createPenPath(e);
+        this.pen.createPenPath(e, canvas);
+        this.numberOfElements +=2;
         break;
     }
+    
   }
 
-  updateElement(mode: string, e: any) {
+  updateElement(mode: string, e: any, canvas:any) {
     switch (mode) {
       case 'rectangle':
-        this.rectangle.updateRectangle(e);
+        this.rectangle.updateRectangle(e, canvas, this.numberOfElements);
         break;
       case 'pen':
-        this.pen.updatePenPath(e);
+        this.pen.updatePenPath(e, canvas, this.numberOfElements);
         break;
     }
   }

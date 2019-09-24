@@ -18,7 +18,7 @@ export class WorkZoneComponent implements OnInit {
   }
 
   fctMouseMove(e: any) {
-    this.modeManager.updateElement(this.mode.activeMode, e);
+    this.modeManager.updateElement(this.mode.activeMode, e, this.renderer.selectRootElement('#canvas',true));
   }
   fctMouseUp(e: any) {
     this.modeManager.finishElement(this.mode.activeMode, e);

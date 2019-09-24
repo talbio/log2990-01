@@ -6,7 +6,6 @@ import { Injectable } from '@angular/core';
 export class PenModeService {
 
   private currentPathNumber = 0;
-  private canvas: any;
   private OFFSET_CANVAS_X: any;
   private OFFSET_CANVAS_Y: any;
   private mouseDown = false;
@@ -15,26 +14,25 @@ export class PenModeService {
 constructor() { }
 
   // Initializes the path
-  createPenPath(e: any) {
-    // this.canvas = this.renderer.selectRootElement('canvas');
-    this.canvas = document.getElementById("canvas");
-    this.OFFSET_CANVAS_Y = this.canvas.getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = this.canvas.getBoundingClientRect().left;
-    
+  createPenPath(e: any, canvas:any) {
 
-    this.canvas.innerHTML += '<circle id=\'pathBegin' + this.currentPathNumber + '\' cx=\'' + (e.pageX - this.OFFSET_CANVAS_X) +
+    this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
+    this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
+
+    canvas.innerHTML += '<circle id=\'pathBegin' + this.currentPathNumber + '\' cx=\'' + (e.pageX - this.OFFSET_CANVAS_X) +
     '\' cy=\'' + (e.pageY - this.OFFSET_CANVAS_Y) + '\' r=\'3\'  fill=\'black\'></circle><path id=\'path' + this.currentPathNumber +
     '\' d=\'M' + (e.pageX - this.OFFSET_CANVAS_X) + ' ' + (e.pageY - this.OFFSET_CANVAS_Y) +
     '\' stroke=\'black\' stroke-width=\'6\' stroke-linecap=\'round\' fill=\'none\'></path>';
-    // canvas.appendChild(rec)
+
     this.mouseDown = true;
   }
 
   // Updates the path when the mouse is moving (mousedown)
-  updatePenPath(e: any) {
+  updatePenPath(e: any, canvas:any, currentChildPosition:number) {
     if (this.mouseDown) {
       // const currentPath = this.renderer.selectRootElement('path' + this.currentPathNumber);
-      const currentPath = document.getElementById("path" + this.currentPathNumber);
+      // const currentPath = document.getElementById("path" + this.currentPathNumber);
+      const currentPath = canvas.children[currentChildPosition - 1];
       if (currentPath != null) {
         currentPath.setAttribute('d', currentPath.getAttribute('d') + ' L' + (e.pageX - this.OFFSET_CANVAS_X) +
         ' ' + (e.pageY - this.OFFSET_CANVAS_Y));
