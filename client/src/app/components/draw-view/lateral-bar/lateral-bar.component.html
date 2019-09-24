@@ -1,16 +1,27 @@
 <app-welcome-modal></app-welcome-modal>
-<mat-sidenav-container class="lateral-bar-container" >
+<mat-sidenav-container class="lateral-bar-container">
+
   <mat-sidenav mode="side" opened>
-  <mat-list>
-    <mat-list-item>
-      <button (click)="openCreateDrawingDialog()" mat-button><mat-icon>add</mat-icon></button>
-    </mat-list-item>
-    <mat-list-item>
-      <button mat-button><mat-icon>settings_applications</mat-icon></button>
-    </mat-list-item>
-  </mat-list>
+
+    <!-- the following list contains all the buttons for the side bar -->
+    <mat-list>
+
+      <!-- this button open the createDrawingDialog -->
+      <mat-list-item>
+        <button (click)="openCreateDrawingDialog()" mat-button><mat-icon>add</mat-icon></button>
+      </mat-list-item>
+
+      <!-- this button opens the settings -->
+      <mat-list-item>
+        <button mat-button><mat-icon>settings_applications</mat-icon></button>
+      </mat-list-item>
+    </mat-list>
+
   </mat-sidenav>
-  <mat-sidenav-content>
-    <app-work-zone></app-work-zone>
-  </mat-sidenav-content>
+
+  <!-- the content is simply the work zone containing the drawing -->
+    <mat-sidenav-content>
+      <app-work-zone></app-work-zone>
+    </mat-sidenav-content>
+
 </mat-sidenav-container>
