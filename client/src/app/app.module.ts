@@ -8,6 +8,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './components/app/app.component';
@@ -17,7 +18,6 @@ import { WelcomeModalComponent } from './components/app/welcome-modal/welcome-mo
 import {LateralBarComponent} from './components/draw-view/lateral-bar/lateral-bar.component';
 import {WorkZoneComponent} from './components/draw-view/work-zone/work-zone.component';
 import { StorageService } from './services/storage.service';
-
 
 @NgModule({
   declarations: [
@@ -43,6 +43,7 @@ import { StorageService } from './services/storage.service';
     MatIconModule,
     MatButtonModule,
     MatListModule,
+    MatTooltipModule,
   ],
   providers: [
     StorageService,
