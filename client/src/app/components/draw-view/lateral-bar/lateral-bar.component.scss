@@ -29,12 +29,16 @@
     align-content: center;
 }
 
-mat-slider {
-    width: 300px;
+.mat-slider {
+    width: 3em;
 }
 
-.mat-sidenav {
+#tools-side-nav {
   width: 4em;
   align-items: center;
   display: flex;
+}
+
+#attributes-side-nav {
+  width: 6em;
 }

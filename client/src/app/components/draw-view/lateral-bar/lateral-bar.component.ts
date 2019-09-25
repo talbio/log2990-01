@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {MatIconRegistry} from "@angular/material/icon";
+import {MatIconRegistry} from '@angular/material/icon';
+import {MatSidenav} from '@angular/material/sidenav';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CreateDrawingDialogComponent} from '../../app/modals/create-drawing-dialog/create-drawing-dialog.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
@@ -20,8 +21,9 @@ const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
 })
 export class LateralBarComponent implements OnInit, AfterViewInit {
   @ViewChild('workZoneComponent', {static: false}) workZoneComponent: WorkZoneComponent;
+  @ViewChild('attributesSideNav', {static: false}) attributeSideNav: MatSidenav;
 
-  appropriateClass = '';
+  protected appropriateClass = '';
   private backGroundColor = '#FFFFFF';
 
   // TODO: this boolean has to be moved to a service which will keep track of the drawings of the current drawing.
@@ -33,6 +35,8 @@ export class LateralBarComponent implements OnInit, AfterViewInit {
   constructor(private dialog: MatDialog,
               private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer) {
+              // toolManagerService
+              // toolAttributeManager
     this.matIconRegistry.addSvgIcon(
       'rectangle',
       this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH),
@@ -75,6 +79,10 @@ export class LateralBarComponent implements OnInit, AfterViewInit {
       this.workZoneComponent.height = formResult.height;
       this.workZoneComponent.width = formResult.width;
     });
+  }
+
+  protected displayToolAttributes() {
+
   }
 
   protected setBackGroundColor() {

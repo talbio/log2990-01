@@ -2,14 +2,13 @@
 
 <mat-sidenav-container class="lateral-bar-container">
 
-  <mat-sidenav mode="side" opened>
-
-    <!-- the following list contains all the buttons for the side bar -->
-    <mat-list id="top-list">
+  <!-- Tools Side Nav -->
+  <mat-sidenav mode="side" opened id="tools-side-nav">
+    <mat-list>
 
       <!-- Pencil button -->
       <mat-list-item>
-        <button mat-icon-button (click)="sidenav.toggle()"
+        <button mat-icon-button (click)="attributesSideNav.toggle()"
                 matTooltip="Crayon"
                 matTooltipPosition="left"
                 mat-button>
@@ -18,7 +17,7 @@
 
       <!-- Brush button -->
       <mat-list-item>
-        <button mat-icon-button (click)="sidenav.toggle()"
+        <button mat-icon-button (click)="attributesSideNav.toggle()"
                 matTooltip="Pinceau"
                 matTooltipPosition="left">
           <mat-icon>brush</mat-icon></button>
@@ -26,13 +25,11 @@
 
       <!-- Rectangle button -->
       <mat-list-item>
-        <button mat-icon-button (click)="sidenav.toggle()"
+        <button mat-icon-button (click)="attributesSideNav.toggle()"
                 matTooltip="Rectangle"
                 matTooltipPosition="left">
           <mat-icon svgIcon="rectangle"></mat-icon></button>
       </mat-list-item>
-
-    </mat-list>
 
     <!-- bottom elements -->
     <div [ngClass]="appropriateClass">
@@ -52,21 +49,23 @@
                 matTooltipPosition="left">
           <mat-icon>contact_support</mat-icon></button>
       </mat-list-item>
-
     </div>
 
+    </mat-list>
+  </mat-sidenav>
+
+  <!-- Attributes Side Nav -->
+  <mat-sidenav mode="side" position="end" #attributesSideNav id="attributes-side-nav">
+    <mat-card-content>
+      <h2>Epaisseur</h2>
+      <mat-slider></mat-slider>
+    </mat-card-content>
   </mat-sidenav>
 
 
   <!-- the content is simply the work zone containing the drawing -->
 
     <mat-sidenav-content [ngStyle]="setBackGroundColor()">
-      <mat-sidenav mode="side" #sidenav>
-      <mat-card-content>
-        <h2>Size</h2>
-        <mat-slider></mat-slider>
-      </mat-card-content>
-      </mat-sidenav>
       <app-work-zone #workZoneComponent></app-work-zone>
     </mat-sidenav-content>
 
