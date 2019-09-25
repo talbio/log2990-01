@@ -21,7 +21,7 @@ const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
 export class LateralBarComponent implements OnInit, AfterViewInit {
   @ViewChild('workZoneComponent', {static: false}) workZoneComponent: WorkZoneComponent;
 
-  private appropriateClass = '';
+  appropriateClass = '';
   private backGroundColor = '#FFFFFF';
 
   // TODO: this boolean has to be moved to a service which will keep track of the drawings of the current drawing.
