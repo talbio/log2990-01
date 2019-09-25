@@ -18,6 +18,7 @@ import { WelcomeModalComponent } from './components/app/welcome-modal/welcome-mo
 import {LateralBarComponent} from './components/draw-view/lateral-bar/lateral-bar.component';
 import {WorkZoneComponent} from './components/draw-view/work-zone/work-zone.component';
 import { StorageService } from './services/storage.service';
+import {MatToolbarModule} from "@angular/material/toolbar";
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { StorageService } from './services/storage.service';
     MatButtonModule,
     MatListModule,
     MatTooltipModule,
+    MatToolbarModule,
   ],
   providers: [
     StorageService,

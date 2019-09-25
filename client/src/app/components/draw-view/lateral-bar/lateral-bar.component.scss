@@ -20,3 +20,14 @@
     width: 50px;
     font-size: 30px
 }
+
+.bottomStick{
+  align-content: center;
+  position:absolute;
+  bottom:0
+}
+
+.bottomRelative{
+  position:relative;
+  align-content: center;
+}
