@@ -25,6 +25,8 @@ export class ToolsAttributeComponent implements OnInit {
     return PlotType;
   }
 
-
+  setBrushPattern(pattern: number){
+    this.brushGenerator.setCurrentBrushPattern(pattern);
+  }
 
 }

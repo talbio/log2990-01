@@ -9,7 +9,6 @@ import {ToolSelectorService} from '../../../services/tools/tool-selector/tool-se
 import {CreateDrawingDialogComponent} from '../../app/modals/create-drawing-dialog/create-drawing-dialog.component';
 import {ToolsAttributeComponent} from '../tools-attribute/tools-attribute.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
-import {BrushGeneratorService} from './../../../services/tools/brush-generator/brush-generator.service';
 
 export interface FormValues {
   color: string;
@@ -41,9 +40,7 @@ export class LateralBarComponent implements AfterViewInit, OnInit {
   constructor(private dialog: MatDialog,
               private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
-              private toolSelector: ToolSelectorService,
-              // TODO: verify if the service is the right one
-              private brush: BrushGeneratorService) {
+              private toolSelector: ToolSelectorService) {
     this.matIconRegistry.addSvgIcon(
       'rectangle',
       this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH),
@@ -121,10 +118,6 @@ export class LateralBarComponent implements AfterViewInit, OnInit {
     return {
       'background-color': this.backGroundColor,
     };
-  }
-
-  setbrushPattern(pattern: number){
-    this.brush.setCurrentBrushPattern(pattern);
   }
 
   private loadSVGIcons(): void {
