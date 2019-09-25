@@ -17,6 +17,10 @@ constructor() {
     this.activeTool = 'pen';
   }
 
+  setBrushTool(): void {
+    this.activeTool = 'brush';
+  }
+
   get _activeTool(): string {
     return this.activeTool;
   }

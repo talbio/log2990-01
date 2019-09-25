@@ -1,35 +1,35 @@
 import { Injectable } from '@angular/core';
 
 @Injectable()
-export class PencilGeneratorService {
+export class BrushGeneratorService {
 
-  private currentPenPathNumber = 0;
+  private currentBrushPathNumber = 0;
   private OFFSET_CANVAS_X: any;
   private OFFSET_CANVAS_Y: any;
   private mouseDown = false;
 
 constructor() { }
-  //TODO: checker les childs, rajouter lepaisseur en paremetress
+//TODO: checker les childs, rajouter lepaisseur en paremetress
   // Initializes the path
-  createPenPath(mouseEvent: any, canvas: any) {
+  createBrushPath(mouseEvent: any, canvas: any) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
     canvas.innerHTML +=
-      '<path id=\'penPath' + this.currentPenPathNumber +
+      '<path id=\'brushPath' + this.currentBrushPathNumber +
       '\' d=\'M' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
       ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' stroke=\'black\' stroke-width=\'6\' stroke-linecap=\'round\' fill=\'none\'></path>';
+      '\' stroke=\'url(#brushPattern1)\' stroke-width=\'12\' stroke-linecap=\'round\' fill=\'none\'></path>';
 
     this.mouseDown = true;
   }
   // Updates the path when the mouse is moving (mousedown)
-  updatePenPath(mouseEvent: any, canvas: any, currentChildPosition: number) {
+  updateBrushPath(mouseEvent: any, canvas: any, currentChildPosition: number) {
     if (this.mouseDown) {
-      // const currentPath = document.getElementById("penPath" + this.currentPenPathNumber);
+      // const currentPath = document.getElementById("brushPath" + this.currentBrushPathNumber);
       const currentPath = canvas.children[currentChildPosition - 1];
       if (currentPath != null) {
         currentPath.setAttribute('d',
@@ -40,8 +40,8 @@ constructor() { }
   }
 
   // Finalizes the path, sets up the next one
-  finishPenPath(e: any) {
-    this.currentPenPathNumber += 1;
+  finishBrushPath(e: any) {
+    this.currentBrushPathNumber += 1;
     this.mouseDown = false;
   }
 }
