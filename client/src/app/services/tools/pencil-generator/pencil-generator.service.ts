@@ -23,7 +23,7 @@ export class PencilGeneratorService {
   }
   // TODO: checker les childs, rajouter lepaisseur en paremetress
   // Initializes the path
-  createPenPath(mouseEvent: any, canvas: any) {
+  createPenPath(mouseEvent: any, canvas: any, secondaryColor:string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
@@ -34,7 +34,7 @@ export class PencilGeneratorService {
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
       ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' stroke=\'black\' stroke-width=' + this.strokeWidth + ' stroke-linecap=\'round\' fill=\'none\'></path>';
+      '\' stroke=\'' + secondaryColor + '\' stroke-width=' + this.strokeWidth + ' stroke-linecap=\'round\' fill=\'none\'></path>';
 
     this.mouseDown = true;
   }

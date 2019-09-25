@@ -34,19 +34,45 @@ export class RectangleGeneratorService {
     this.plotType = plotType;
   }
 
-  createRectangle(mouseEvent: any, canvas: any) {
+  createRectangle(mouseEvent: any, canvas: any, primaryColor:string, secondaryColor:string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
-    canvas.innerHTML +=
-      '<rect id=\'rect' + this.currentRectNumber +
-      '\' x=\'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
-      '\' data-start-x = \'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
-      '\' y=\'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' data-start-y = \'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' width = \'0\' height = \'0\' stroke=\'black\' stroke-width=' + this.strokeWidth +
-      ' fill=\'transparent\'></rect>';
+    switch(this.plotType)
+    {
+      case 0:
+        canvas.innerHTML +=
+        '<rect id=\'rect' + this.currentRectNumber +
+        '\' x=\'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' data-start-x = \'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' y=\'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' data-start-y = \'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' width = \'0\' height = \'0\' stroke=\'' + secondaryColor + '\' stroke-width=' + this.strokeWidth +
+        ' fill=\'transparent\'></rect>';
+        break;
+      case 1:
+        canvas.innerHTML +=
+        '<rect id=\'rect' + this.currentRectNumber +
+        '\' x=\'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' data-start-x = \'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' y=\'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' data-start-y = \'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' width = \'0\' height = \'0\' stroke=\'transparent\' stroke-width=' + this.strokeWidth +
+        ' fill=\'' + primaryColor + '\'></rect>';
+        break;
+      case 2:
+        canvas.innerHTML +=
+        '<rect id=\'rect' + this.currentRectNumber +
+        '\' x=\'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' data-start-x = \'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' y=\'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' data-start-y = \'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' width = \'0\' height = \'0\' stroke=\'' + secondaryColor + '\' stroke-width=' + this.strokeWidth +
+        ' fill=\'' + primaryColor + '\'></rect>';
+        break;
+    }
+
 
     this.mouseDown = true;
   }

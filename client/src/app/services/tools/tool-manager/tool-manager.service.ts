@@ -8,7 +8,7 @@ import {ToolSelectorService} from '../tool-selector/tool-selector.service';
 export class ToolManagerService {
 
 private numberOfElements = 1;
-primaryColor = 'transparent';
+primaryColor = 'white';
 secondaryColor = 'black';
 
 constructor(private rectangleGenerator: RectangleGeneratorService,
@@ -19,10 +19,10 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
   createElement(mouseEvent: any, canvas: any) {
     switch (this.toolSelector._activeTool) {
       case 'rectangle':
-        this.rectangleGenerator.createRectangle(mouseEvent, canvas);
+        this.rectangleGenerator.createRectangle(mouseEvent, canvas, this.primaryColor, this.secondaryColor);
         break;
       case 'pencil':
-        this.pencilGenerator.createPenPath(mouseEvent, canvas);
+        this.pencilGenerator.createPenPath(mouseEvent, canvas, this.secondaryColor);
         break;
       case 'brush':
         this.brushGenerator.createBrushPath(mouseEvent, canvas);
