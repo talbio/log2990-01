@@ -8,31 +8,31 @@ export class ToolManagerService {
 
 private numberOfElements = 0;
 
-constructor(private rectangle: RectangleGeneratorService,
-            private pen: PencilGeneratorService,
+constructor(private rectangleGenerator: RectangleGeneratorService,
+            private pencilGenerator: PencilGeneratorService,
             private toolSelector: ToolSelectorService) { }
 
   createElement(mouseEvent: any, canvas: any) {
     switch (this.toolSelector.activeTool) {
       case 'rectangle':
-        this.rectangle.createRectangle(mouseEvent, canvas);
+        this.rectangleGenerator.createRectangle(mouseEvent, canvas);
         this.numberOfElements += 1;
         break;
       case 'pen':
-        this.pen.createPenPath(mouseEvent, canvas);
-        this.numberOfElements += 2; //2 elements, since circle for path begin. Not a problem for update since only path is updated
+        this.pencilGenerator.createPenPath(mouseEvent, canvas);
+        // 2 elements, since circle for path begin. Not a problem for update since only path is updated
+        this.numberOfElements += 2;
         break;
     }
-
   }
 
   updateElement(mouseEvent: any, canvas: any) {
     switch (this.toolSelector.activeTool) {
       case 'rectangle':
-        this.rectangle.updateRectangle(mouseEvent, canvas, this.numberOfElements);
+        this.rectangleGenerator.updateRectangle(mouseEvent, canvas, this.numberOfElements);
         break;
       case 'pen':
-        this.pen.updatePenPath(mouseEvent, canvas, this.numberOfElements);
+        this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
         break;
     }
   }
@@ -40,10 +40,10 @@ constructor(private rectangle: RectangleGeneratorService,
   finishElement(mouseEvent: any) {
     switch (this.toolSelector.activeTool) {
       case 'rectangle':
-        this.rectangle.finishRectangle(mouseEvent);
+        this.rectangleGenerator.finishRectangle(mouseEvent);
         break;
       case 'pen':
-        this.pen.finishPenPath(mouseEvent);
+        this.pencilGenerator.finishPenPath(mouseEvent);
         break;
     }
   }
