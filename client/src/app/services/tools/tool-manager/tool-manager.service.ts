@@ -19,7 +19,7 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
       case 'rectangle':
         this.rectangleGenerator.createRectangle(mouseEvent, canvas);
         break;
-      case 'pen':
+      case 'pencil':
         this.pencilGenerator.createPenPath(mouseEvent, canvas);
         break;
       case 'brush':
@@ -34,7 +34,7 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
       case 'rectangle':
         this.rectangleGenerator.updateRectangle(mouseEvent, canvas, this.numberOfElements);
         break;
-      case 'pen':
+      case 'pencil':
         this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
         break;
       case 'brush':
@@ -48,7 +48,7 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
       case 'rectangle':
         this.rectangleGenerator.finishRectangle(mouseEvent);
         break;
-      case 'pen':
+      case 'pencil':
         this.pencilGenerator.finishPenPath(mouseEvent);
         break;
       case 'brush':

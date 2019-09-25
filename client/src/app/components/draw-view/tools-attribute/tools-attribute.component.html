@@ -1,5 +1,5 @@
 <!-- Pencil Attributes Tool -->
-<mat-card-content *ngIf="toolSelector._activeTool == 'pen'" >
+<mat-card-content *ngIf="toolSelector._activeTool == 'pencil'" >
   <p>Epaisseur du crayon en pixels : {{this.pencilGenerator._strokeWidth}}</p>
   <mat-slider [(ngModel)]="this.pencilGenerator._strokeWidth"
               min="1"
