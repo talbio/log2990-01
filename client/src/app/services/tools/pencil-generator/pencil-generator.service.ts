@@ -3,13 +3,26 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class PencilGeneratorService {
 
+  /**
+   * attributes of pencil tool :
+   */
+  private strokeWidth: number;
+
   private currentPathNumber = 0;
   private OFFSET_CANVAS_X: any;
   private OFFSET_CANVAS_Y: any;
   private mouseDown = false;
 
-constructor() { }
-  //TODO: checker les childs, rajouter lepaisseur en paremetress
+  constructor() {}
+
+  set _strokeWidth(width: number) {
+    this.strokeWidth = width;
+  }
+
+  get _strokeWidth(): number {
+    return this.strokeWidth;
+  }
+  // TODO: checker les childs, rajouter lepaisseur en paremetress
   // Initializes the path
   createPenPath(mouseEvent: any, canvas: any) {
 
@@ -28,7 +41,10 @@ constructor() { }
 
     this.mouseDown = true;
   }
-  // Updates the path when the mouse is moving (mousedown)
+
+  /**
+   * @desc // Updates the path when the mouse is moving (mousedown)
+   */
   updatePenPath(mouseEvent: any, canvas: any, currentChildPosition: number) {
     if (this.mouseDown) {
       // const currentPath = document.getElementById("path" + this.currentPathNumber);
@@ -41,7 +57,9 @@ constructor() { }
     }
   }
 
-  // Finalizes the path, sets up the next one
+  /**
+   * @desc Finalizes the path, sets up the next one
+   */
   finishPenPath(e: any) {
     this.currentPathNumber += 1;
     this.mouseDown = false;
