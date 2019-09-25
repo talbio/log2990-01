@@ -8,26 +8,27 @@
 }
 
 .mat-drawer {
-    background-color: blueviolet;
+    background-color: #567080;
     color: rgba(0, 0, 0, .87);
 }
 
 .mat-icon {
-    background-repeat: no-repeat;
     display: inline-block;
     fill: currentColor;
-    height: 50px;
-    width: 50px;
     font-size: 30px
 }
 
 .bottomStick{
-  align-content: center;
   position:absolute;
   bottom:0
 }
 
 .bottomRelative{
   position:relative;
-  align-content: center;
+}
+
+.mat-sidenav {
+  width: 4em;
+  align-items: center;
+  display: flex;
 }
