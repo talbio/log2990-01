@@ -35,7 +35,7 @@ export class PencilGeneratorService {
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
       ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' stroke=\'black\' stroke-width=\'6\' stroke-linecap=\'round\' fill=\'none\'></path>';
+      '\' stroke=\'black\' stroke-width=' + this.strokeWidth + ' stroke-linecap=\'round\' fill=\'none\'></path>';
 
     this.mouseDown = true;
   }

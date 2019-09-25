@@ -45,7 +45,7 @@ export class RectangleGeneratorService {
       '\' data-start-x = \'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       '\' y=\'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
       '\' data-start-y = \'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' width = \'0\' height = \'0\' stroke=\'black\' stroke-width=\'3px\'' +
+      '\' width = \'0\' height = \'0\' stroke=\'black\' stroke-width=' + this.strokeWidth +
       ' fill=\'transparent\'></rect>';
 
     this.mouseDown = true;
