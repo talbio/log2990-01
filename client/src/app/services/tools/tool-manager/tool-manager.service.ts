@@ -1,3 +1,4 @@
+import { BrushGeneratorService } from './../brush-generator/brush-generator.service';
 import { Injectable } from '@angular/core';
 import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
@@ -10,20 +11,22 @@ private numberOfElements = 0;
 
 constructor(private rectangleGenerator: RectangleGeneratorService,
             private pencilGenerator: PencilGeneratorService,
+            private brushGenerator: BrushGeneratorService,
             private toolSelector: ToolSelectorService) { }
 
   createElement(mouseEvent: any, canvas: any) {
     switch (this.toolSelector._activeTool) {
       case 'rectangle':
         this.rectangleGenerator.createRectangle(mouseEvent, canvas);
-        this.numberOfElements += 1;
         break;
       case 'pen':
         this.pencilGenerator.createPenPath(mouseEvent, canvas);
-        // 2 elements, since circle for path begin. Not a problem for update since only path is updated
-        this.numberOfElements += 2;
+        break;
+      case 'brush':
+        this.brushGenerator.createBrushPath(mouseEvent, canvas);
         break;
     }
+    this.numberOfElements += 1;
   }
 
   updateElement(mouseEvent: any, canvas: any) {
@@ -34,6 +37,9 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
       case 'pen':
         this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
         break;
+      case 'brush':
+          this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
+          break;
     }
   }
 
@@ -44,6 +50,9 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
         break;
       case 'pen':
         this.pencilGenerator.finishPenPath(mouseEvent);
+        break;
+      case 'brush':
+        this.brushGenerator.finishBrushPath(mouseEvent);
         break;
     }
   }

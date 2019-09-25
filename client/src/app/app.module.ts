@@ -1,3 +1,4 @@
+import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -63,6 +64,7 @@ import { ToolSelectorService } from './services/tools/tool-selector/tool-selecto
     StorageService,
     PencilGeneratorService,
     ToolSelectorService,
+    BrushGeneratorService,
   ],
   bootstrap: [AppComponent],
   entryComponents: [
