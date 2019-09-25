@@ -6,7 +6,7 @@ export class PencilGeneratorService {
   /**
    * attributes of pencil tool :
    */
-  private strokeWidth: number;
+  private strokeWidth: number = 1;
   private currentPencilPathNumber = 0;
   private OFFSET_CANVAS_X: any;
   private OFFSET_CANVAS_Y: any;
@@ -34,7 +34,7 @@ export class PencilGeneratorService {
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
       ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' stroke=\'' + secondaryColor + '\' stroke-width=' + this.strokeWidth + ' stroke-linecap=\'round\' fill=\'none\'></path>';
+      '\' stroke=\'' + secondaryColor + '\' stroke-width=\'' + this.strokeWidth + '\' stroke-linecap=\'round\' fill=\'none\'></path>';
 
     this.mouseDown = true;
   }

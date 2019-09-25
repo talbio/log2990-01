@@ -1,3 +1,4 @@
+import { BrushGeneratorService } from './../../../services/tools/brush-generator/brush-generator.service';
 import {Component, OnInit} from '@angular/core';
 import {PencilGeneratorService} from '../../../services/tools/pencil-generator/pencil-generator.service';
 import {PlotType} from '../../../services/tools/PlotType';
@@ -13,7 +14,8 @@ export class ToolsAttributeComponent implements OnInit {
 
   constructor(protected toolSelector: ToolSelectorService,
               protected pencilGenerator: PencilGeneratorService,
-              protected rectangleGenerator: RectangleGeneratorService) {
+              protected rectangleGenerator: RectangleGeneratorService,
+              protected brushGenerator: BrushGeneratorService) {
   }
 
   ngOnInit() {

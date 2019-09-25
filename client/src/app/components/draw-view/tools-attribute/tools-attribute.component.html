@@ -30,6 +30,18 @@
   </mat-form-field>
 </mat-card-content>
 
+<!-- Paintbrush Attributes Tool -->
+<mat-card-content *ngIf="toolSelector._activeTool == 'brush'" >
+  <mat-label>Epaisseur du trait de pinceau en pixels : {{this.brushGenerator._strokeWidth}}</mat-label>
+  <mat-slider [(ngModel)]="this.brushGenerator._strokeWidth"
+              min="5"
+              max="50"
+              step="0.5"
+              value="1.5"
+              thumbLabel
+              tickInterval="1"></mat-slider>
+</mat-card-content>
+
 
 
 

@@ -41,7 +41,7 @@ export class RectangleGeneratorService {
 
     switch(this.plotType)
     {
-      case 0:
+      case PlotType.Contour:
         canvas.innerHTML +=
         '<rect id=\'rect' + this.currentRectNumber +
         '\' x=\'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
@@ -51,7 +51,7 @@ export class RectangleGeneratorService {
         '\' width = \'0\' height = \'0\' stroke=\'' + secondaryColor + '\' stroke-width=' + this.strokeWidth +
         ' fill=\'transparent\'></rect>';
         break;
-      case 1:
+      case PlotType.Full:
         canvas.innerHTML +=
         '<rect id=\'rect' + this.currentRectNumber +
         '\' x=\'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
@@ -61,7 +61,7 @@ export class RectangleGeneratorService {
         '\' width = \'0\' height = \'0\' stroke=\'transparent\' stroke-width=' + this.strokeWidth +
         ' fill=\'' + primaryColor + '\'></rect>';
         break;
-      case 2:
+      case PlotType.FullWithContour:
         canvas.innerHTML +=
         '<rect id=\'rect' + this.currentRectNumber +
         '\' x=\'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
