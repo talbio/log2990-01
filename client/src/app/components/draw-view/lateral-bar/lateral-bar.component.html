@@ -62,7 +62,10 @@
 
     <mat-sidenav-content [ngStyle]="setBackGroundColor()">
       <mat-sidenav mode="side" #sidenav>
-        Attribute panel
+      <mat-card-content>
+        <h2>Size</h2>
+        <mat-slider></mat-slider>
+      </mat-card-content>
       </mat-sidenav>
       <app-work-zone #workZoneComponent></app-work-zone>
     </mat-sidenav-content>
