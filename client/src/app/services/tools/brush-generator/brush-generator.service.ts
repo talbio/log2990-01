@@ -7,10 +7,12 @@ export class BrushGeneratorService {
   private OFFSET_CANVAS_X: any;
   private OFFSET_CANVAS_Y: any;
   private mouseDown = false;
+  private currentBrushPattern:string = 'url(#brushPattern1)';
 
 constructor() { }
 //TODO: checker les childs, rajouter lepaisseur en paremetress
   // Initializes the path
+  
   createBrushPath(mouseEvent: any, canvas: any) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
@@ -22,7 +24,7 @@ constructor() { }
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
       ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' stroke=\'url(#brushPattern6)\' stroke-width=\'12\' stroke-linecap=\'round\' fill=\'none\'></path>';
+      '\' stroke=\'' + this.currentBrushPattern + '\' stroke-width=\'12\' stroke-linecap=\'round\' fill=\'none\'></path>';
 
     this.mouseDown = true;
   }
@@ -43,5 +45,9 @@ constructor() { }
   finishBrushPath(e: any) {
     this.currentBrushPathNumber += 1;
     this.mouseDown = false;
+  }
+
+  setCurrentBrushPattern(patternNumber:number){
+    this.currentBrushPattern = 'url(#brushPattern' + patternNumber + ')';
   }
 }
