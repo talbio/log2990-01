@@ -8,24 +8,29 @@
     <mat-list>
 
       <mat-list-item>
-        <button mat-icon-button matTooltip="Tools" matTooltipPosition="left" mat-button><mat-icon>create</mat-icon></button>
+        <button mat-icon-button (click)="sidenav.toggle()" matTooltip="Tools" matTooltipPosition="left"><mat-icon>create</mat-icon></button>
       </mat-list-item>
 
       <!-- this button open the createDrawingDialog -->
       <mat-list-item>
-        <button mat-icon-button matTooltip="New" matTooltipPosition="left" (click)="openCreateDrawingDialog()" mat-button><mat-icon>add</mat-icon></button>
+        <button mat-icon-button matTooltip="New" matTooltipPosition="left" (click)="openCreateDrawingDialog()"><mat-icon>add</mat-icon></button>
       </mat-list-item>
 
       <!-- this button opens the settings -->
       <mat-list-item>
-        <button mat-icon-button mat-button matTooltip="User Guide" matTooltipPosition="left" button mat-button><mat-icon>contact_support</mat-icon></button>
+        <button mat-icon-button mat-button matTooltip="User Guide" matTooltipPosition="left"><mat-icon>contact_support</mat-icon></button>
       </mat-list-item>
     </mat-list>
 
   </mat-sidenav>
 
+
   <!-- the content is simply the work zone containing the drawing -->
+
     <mat-sidenav-content [ngStyle]="setBackGroundColor()">
+      <mat-sidenav mode="side" #sidenav>
+        Attribute panel
+      </mat-sidenav>
       <app-work-zone #workZoneComponent></app-work-zone>
     </mat-sidenav-content>
 
