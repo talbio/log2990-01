@@ -7,7 +7,7 @@ import {ToolSelectorService} from '../tool-selector/tool-selector.service';
 @Injectable()
 export class ToolManagerService {
 
-private numberOfElements = 0;
+private numberOfElements = 1;
 
 constructor(private rectangleGenerator: RectangleGeneratorService,
             private pencilGenerator: PencilGeneratorService,
