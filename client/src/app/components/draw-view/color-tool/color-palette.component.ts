@@ -20,7 +20,9 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     canvas: ElementRef<HTMLCanvasElement>;
 
     selectedPosition: { x: number; y: number };
+
     private ctx: CanvasRenderingContext2D;
+
     private mousedown = false;
 
     ngAfterViewInit() {

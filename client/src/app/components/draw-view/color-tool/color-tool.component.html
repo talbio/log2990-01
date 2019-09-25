@@ -3,8 +3,9 @@
 
 <div mat-dialog-content>
 
-    <app-color-palette [hue]="selectedColor" (color)="color = $event"></app-color-palette>
-
+    <app-color-palette [hue]="hue" (color)="color = $event"></app-color-palette>
+    <app-color-slider (color)="hue=$event"></app-color-slider>
+    
     <body>
 
         <div>
