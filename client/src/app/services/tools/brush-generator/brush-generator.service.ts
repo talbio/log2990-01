@@ -18,6 +18,15 @@ export class BrushGeneratorService {
   get _strokeWidth(): number {
     return this.strokeWidth;
   }
+
+  set _currentBrushPattern(pattern:string)
+  {
+    this.currentBrushPattern = pattern;
+  }
+
+  get _currentBrushPattern():string {
+    return this.currentBrushPattern;
+  }
 //TODO: checker les childs, rajouter lepaisseur en paremetress
   // Initializes the path
 
@@ -53,9 +62,5 @@ export class BrushGeneratorService {
   finishBrushPath(e: any) {
     this.currentBrushPathNumber += 1;
     this.mouseDown = false;
-  }
-
-  setCurrentBrushPattern(patternNumber: number) {
-    this.currentBrushPattern = 'url(#brushPattern' + patternNumber + ')';
   }
 }

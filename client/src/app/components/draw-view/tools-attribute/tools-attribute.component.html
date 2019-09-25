@@ -41,12 +41,17 @@
               thumbLabel
               tickInterval="1">
   </mat-slider>
-  <button (click)="setBrushPattern(1)">Texture 1</button>
-  <button (click)="setBrushPattern(2)">Texture 2</button>
-  <button (click)="setBrushPattern(3)">Texture 3</button>
-  <button (click)="setBrushPattern(4)">Texture 4</button>
-  <button (click)="setBrushPattern(5)">Texture 5</button>
-  <button (click)="setBrushPattern(6)">Texture 6</button>
+  <mat-form-field>
+    <mat-label>Texture</mat-label>
+    <mat-select [(ngModel)]="this.brushGenerator._currentBrushPattern">
+      <mat-option [value]="'url(#brushPattern1)'">Texture 1</mat-option>
+      <mat-option [value]="'url(#brushPattern2)'">Texture 2</mat-option>
+      <mat-option [value]="'url(#brushPattern3)'">Texture 3</mat-option>
+      <mat-option [value]="'url(#brushPattern4)'">Texture 4</mat-option>
+      <mat-option [value]="'url(#brushPattern5)'">Texture 5</mat-option>
+      <mat-option [value]="'url(#brushPattern6)'">Texture 6</mat-option>
+    </mat-select>
+  </mat-form-field>
 </mat-card-content>
 
 
