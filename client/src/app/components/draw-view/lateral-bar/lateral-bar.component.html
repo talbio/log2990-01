@@ -19,7 +19,7 @@
       <!-- Brush button -->
       <mat-list-item>
         <button mat-icon-button
-                (click)="attributesSideNav.toggle()"
+                (click)="attributesSideNav.toggle();setBrushTool()"
                 matTooltip="Pinceau"
                 matTooltipPosition="left">
           <mat-icon>brush</mat-icon></button>

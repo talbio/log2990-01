@@ -55,6 +55,10 @@ export class LateralBarComponent implements AfterViewInit, OnInit {
     this.toolSelector.setRectangleTool();
   }
 
+  protected setBrushTool() {
+    this.toolSelector.setBrushTool();
+  }
+
   /**
    * @desc when the window gets to small,
    * this listener prevents the bottom buttons to mix with the top buttons
