@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { StorageService } from 'src/app/services/storage.service';
 
@@ -8,8 +8,9 @@ import { StorageService } from 'src/app/services/storage.service';
   styleUrls: ['./color-tool.component.scss'],
 })
 export class ColorToolComponent implements OnInit {
-  hue: string;
-  color: string;
+  @Input()
+    color: string;
+
   primaryColor: string;
   secondaryColor: string;
   topTenColors: string[];

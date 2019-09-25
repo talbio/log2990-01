@@ -1,6 +1,7 @@
 import {
     AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild
 } from '@angular/core';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
     selector: 'app-color-palette',
@@ -24,6 +25,8 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     private ctx: CanvasRenderingContext2D;
 
     private mousedown = false;
+
+    constructor( private storage: StorageService) {}
 
     ngAfterViewInit() {
         this.draw();
@@ -70,6 +73,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
             const pos = this.selectedPosition;
             if (pos) {
                 this.color.emit(this.getColorAtPosition(pos.x, pos.y));
+                this.storage.setPrimaryColor(this.getColorAtPosition(pos.x, pos.y));
             }
         }
     }
@@ -84,6 +88,8 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
         this.draw();
         this.color.emit(this.getColorAtPosition(evt.offsetX, evt.offsetY));
+        this.storage.setPrimaryColor(this.getColorAtPosition(evt.offsetX, evt.offsetY));
+
     }
 
     onMouseMove(evt: MouseEvent) {
