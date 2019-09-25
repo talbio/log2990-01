@@ -1,8 +1,9 @@
-import {AfterViewInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, HostListener, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {DomSanitizer} from '@angular/platform-browser';
+import { ToolSelectorService } from '../../../services/tools/tool-selector/tool-selector.service';
 import {CreateDrawingDialogComponent} from '../../app/modals/create-drawing-dialog/create-drawing-dialog.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
 
@@ -19,7 +20,7 @@ const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
   templateUrl: './lateral-bar.component.html',
   styleUrls: ['./lateral-bar.component.scss'],
 })
-export class LateralBarComponent implements OnInit, AfterViewInit {
+export class LateralBarComponent implements AfterViewInit {
   @ViewChild('workZoneComponent', {static: false}) workZoneComponent: WorkZoneComponent;
   @ViewChild('attributesSideNav', {static: false}) attributeSideNav: MatSidenav;
 
@@ -34,7 +35,9 @@ export class LateralBarComponent implements OnInit, AfterViewInit {
 
   constructor(private dialog: MatDialog,
               private matIconRegistry: MatIconRegistry,
-              private domSanitizer: DomSanitizer) {
+              private domSanitizer: DomSanitizer,
+              private toolSelector: ToolSelectorService) {
+              // TODO: manage the attributes of each tools
               // toolManagerService
               // toolAttributeManager
     this.matIconRegistry.addSvgIcon(
@@ -45,18 +48,27 @@ export class LateralBarComponent implements OnInit, AfterViewInit {
     this.getScreenHeight();
   }
 
+  protected setPencilTool() {
+    this.toolSelector.setPencilTool();
+  }
+
+  protected setRectangleTool() {
+    this.toolSelector.setRectangleTool();
+  }
+
+  /**
+   * @desc when the window gets to small,
+   * this listener prevents the bottom buttons to mix with the top buttons
+   * of the tools side nav.
+   */
   @HostListener('window:resize', ['$event'])
   getScreenHeight(event?: any) {
-
     if (window.innerHeight <= 412) {
       this.appropriateClass = 'bottomRelative';
     } else {
       this.appropriateClass = 'bottomStick';
     }
   }
-
-  // tslint:disable-next-line:no-empty
-  ngOnInit() {}
 
   ngAfterViewInit() {
     this.workZoneHeight =  400; // this.workZoneComponent.nativeElement.offsetHeight;
@@ -81,10 +93,13 @@ export class LateralBarComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // TODO: use renderer to display the right attributes depending on the selected tool
   protected displayToolAttributes() {
-
   }
 
+  /**
+   * @desc: Sets the background color of the work zone
+   */
   protected setBackGroundColor() {
     return {
       'background-color': this.backGroundColor,
