@@ -18,13 +18,19 @@
     font-size: 30px
 }
 
-.bottomStick{
-  position:absolute;
-  bottom:0
+.bottomStick {
+    align-content: center;
+    position: absolute;
+    bottom: 0
 }
 
-.bottomRelative{
-  position:relative;
+.bottomRelative {
+    position: relative;
+    align-content: center;
+}
+
+mat-slider {
+    width: 300px;
 }
 
 .mat-sidenav {

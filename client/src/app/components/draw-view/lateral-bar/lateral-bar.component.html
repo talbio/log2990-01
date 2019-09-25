@@ -9,7 +9,7 @@
 
       <!-- Pencil button -->
       <mat-list-item>
-        <button mat-icon-button
+        <button mat-icon-button (click)="sidenav.toggle()"
                 matTooltip="Crayon"
                 matTooltipPosition="left"
                 mat-button>
@@ -18,7 +18,7 @@
 
       <!-- Brush button -->
       <mat-list-item>
-        <button mat-icon-button
+        <button mat-icon-button (click)="sidenav.toggle()"
                 matTooltip="Pinceau"
                 matTooltipPosition="left">
           <mat-icon>brush</mat-icon></button>
@@ -26,7 +26,7 @@
 
       <!-- Rectangle button -->
       <mat-list-item>
-        <button mat-icon-button
+        <button mat-icon-button (click)="sidenav.toggle()"
                 matTooltip="Rectangle"
                 matTooltipPosition="left">
           <mat-icon svgIcon="rectangle"></mat-icon></button>
@@ -57,8 +57,16 @@
 
   </mat-sidenav>
 
+
   <!-- the content is simply the work zone containing the drawing -->
+
     <mat-sidenav-content [ngStyle]="setBackGroundColor()">
+      <mat-sidenav mode="side" #sidenav>
+      <mat-card-content>
+        <h2>Size</h2>
+        <mat-slider></mat-slider>
+      </mat-card-content>
+      </mat-sidenav>
       <app-work-zone #workZoneComponent></app-work-zone>
     </mat-sidenav-content>
 
