@@ -8,6 +8,8 @@ import {ToolSelectorService} from '../tool-selector/tool-selector.service';
 export class ToolManagerService {
 
 private numberOfElements = 1;
+primaryColor = 'transparent';
+secondaryColor = 'black';
 
 constructor(private rectangleGenerator: RectangleGeneratorService,
             private pencilGenerator: PencilGeneratorService,

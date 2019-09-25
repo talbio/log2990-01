@@ -1,9 +1,10 @@
+import { BrushGeneratorService } from './../../../services/tools/brush-generator/brush-generator.service';
 import {AfterViewInit, Component, HostListener, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {DomSanitizer} from '@angular/platform-browser';
-import { ToolSelectorService } from '../../../services/tools/tool-selector/tool-selector.service';
+import {ToolSelectorService} from '../../../services/tools/tool-selector/tool-selector.service';
 import {CreateDrawingDialogComponent} from '../../app/modals/create-drawing-dialog/create-drawing-dialog.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
 
@@ -36,7 +37,9 @@ export class LateralBarComponent implements AfterViewInit {
   constructor(private dialog: MatDialog,
               private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
-              private toolSelector: ToolSelectorService) {
+              private toolSelector: ToolSelectorService,
+              // TODO: verify if the service is the right one
+              private brush: BrushGeneratorService) {
               // TODO: manage the attributes of each tools
               // toolManagerService
               // toolAttributeManager
@@ -108,5 +111,9 @@ export class LateralBarComponent implements AfterViewInit {
     return {
       'background-color': this.backGroundColor,
     };
+  }
+
+  setbrushPattern(pattern: number){
+    this.brush.setCurrentBrushPattern(pattern);
   }
 }

@@ -12,7 +12,7 @@ export class BrushGeneratorService {
 constructor() { }
 //TODO: checker les childs, rajouter lepaisseur en paremetress
   // Initializes the path
-  
+
   createBrushPath(mouseEvent: any, canvas: any) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
@@ -47,7 +47,7 @@ constructor() { }
     this.mouseDown = false;
   }
 
-  setCurrentBrushPattern(patternNumber:number){
+  setCurrentBrushPattern(patternNumber: number) {
     this.currentBrushPattern = 'url(#brushPattern' + patternNumber + ')';
   }
 }
