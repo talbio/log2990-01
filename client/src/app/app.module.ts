@@ -1,4 +1,5 @@
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
+import {PortalModule} from "@angular/cdk/portal";
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -9,6 +10,7 @@ import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule} from '@angular/mater
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from '@angular/material/list';
+import {MatSelectModule} from '@angular/material/select';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatToolbarModule} from '@angular/material/toolbar';
@@ -20,6 +22,7 @@ import { ConfirmGiveUpChangesDialogComponent } from './components/app/modals/con
 import { CreateDrawingDialogComponent } from './components/app/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { WelcomeModalComponent } from './components/app/welcome-modal/welcome-modal.component';
 import {LateralBarComponent} from './components/draw-view/lateral-bar/lateral-bar.component';
+import { ToolsAttributeComponent } from './components/draw-view/tools-attribute/tools-attribute.component';
 import {WorkZoneComponent} from './components/draw-view/work-zone/work-zone.component';
 import { StorageService } from './services/storage.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
@@ -36,6 +39,7 @@ import { ToolSelectorService } from './services/tools/tool-selector/tool-selecto
     LateralBarComponent,
     WelcomeModalComponent,
     ConfirmGiveUpChangesDialogComponent,
+    ToolsAttributeComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,6 +59,8 @@ import { ToolSelectorService } from './services/tools/tool-selector/tool-selecto
     MatToolbarModule,
     MatSliderModule,
     MatCardModule,
+    PortalModule,
+    MatSelectModule,
   ],
   providers: [
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'legacy' } },
@@ -70,6 +76,7 @@ import { ToolSelectorService } from './services/tools/tool-selector/tool-selecto
   entryComponents: [
     CreateDrawingDialogComponent,
     ConfirmGiveUpChangesDialogComponent,
+    ToolsAttributeComponent,
   ],
 })
 export class AppModule {

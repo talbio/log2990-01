@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
+import {PlotType} from '../PlotType';
 
 @Injectable()
 export class RectangleGeneratorService {
@@ -8,7 +9,30 @@ export class RectangleGeneratorService {
   private currentRectNumber = 0;
   private mouseDown = false;
 
-  constructor() {}
+  // attributes of rectangle
+  private strokeWidth: number;
+  private plotType: PlotType;
+
+  constructor() {
+    this.strokeWidth = 1;
+    this.plotType = PlotType.Contour;
+  }
+
+  get _strokeWidth() {
+    return this.strokeWidth;
+  }
+
+  set _strokeWidth(width: number) {
+    this.strokeWidth = width;
+  }
+
+  get _plotType() {
+    return this.plotType;
+  }
+
+  set _plotType(plotType: PlotType) {
+    this.plotType = plotType;
+  }
 
   createRectangle(mouseEvent: any, canvas: any) {
 
@@ -21,7 +45,7 @@ export class RectangleGeneratorService {
       '\' data-start-x = \'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       '\' y=\'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
       '\' data-start-y = \'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' width = \'0\' height = \'0\' stroke=\'black\' stroke-width=\'6\'' +
+      '\' width = \'0\' height = \'0\' stroke=\'black\' stroke-width=' + this.strokeWidth +
       ' fill=\'transparent\'></rect>';
 
     this.mouseDown = true;

@@ -63,10 +63,7 @@
 
   <!-- Attributes Side Nav -->
   <mat-sidenav mode="side" position="end" #attributesSideNav id="attributes-side-nav">
-    <mat-card-content>
-      <h2>Epaisseur</h2>
-      <mat-slider></mat-slider>
-    </mat-card-content>
+    <ng-template [cdkPortalHost]="toolAttributesComponent"></ng-template>
   </mat-sidenav>
 
 

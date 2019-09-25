@@ -1,12 +1,15 @@
-import { BrushGeneratorService } from './../../../services/tools/brush-generator/brush-generator.service';
-import {AfterViewInit, Component, HostListener, ViewChild} from '@angular/core';
+import {ComponentPortal} from '@angular/cdk/portal';
+import {AfterViewInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {MatCardContent} from '@angular/material/card';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ToolSelectorService} from '../../../services/tools/tool-selector/tool-selector.service';
 import {CreateDrawingDialogComponent} from '../../app/modals/create-drawing-dialog/create-drawing-dialog.component';
+import {ToolsAttributeComponent} from '../tools-attribute/tools-attribute.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
+import {BrushGeneratorService} from './../../../services/tools/brush-generator/brush-generator.service';
 
 export interface FormValues {
   color: string;
@@ -21,18 +24,19 @@ const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
   templateUrl: './lateral-bar.component.html',
   styleUrls: ['./lateral-bar.component.scss'],
 })
-export class LateralBarComponent implements AfterViewInit {
+export class LateralBarComponent implements AfterViewInit, OnInit {
   @ViewChild('workZoneComponent', {static: false}) workZoneComponent: WorkZoneComponent;
   @ViewChild('attributesSideNav', {static: false}) attributeSideNav: MatSidenav;
+  @ViewChild('toolsAttributes', {static: false}) toolsAttributes: MatCardContent;
 
   protected appropriateClass = '';
-  private backGroundColor = '#FFFFFF';
-
+  protected toolAttributesComponent: ComponentPortal<any>;
   // TODO: this boolean has to be moved to a service which will keep track of the drawings of the current drawing.
   // set to true for testing purposes
   private drawingNonEmpty = true;
   private workZoneHeight: number;
   private workZoneWidth: number;
+  private backGroundColor = '#FFFFFF';
 
   constructor(private dialog: MatDialog,
               private matIconRegistry: MatIconRegistry,
@@ -40,15 +44,14 @@ export class LateralBarComponent implements AfterViewInit {
               private toolSelector: ToolSelectorService,
               // TODO: verify if the service is the right one
               private brush: BrushGeneratorService) {
-              // TODO: manage the attributes of each tools
-              // toolManagerService
-              // toolAttributeManager
     this.matIconRegistry.addSvgIcon(
       'rectangle',
       this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH),
     );
 
-    this.getScreenHeight();
+    this.loadSVGIcons();
+    this.setAppropriateIconsClass();
+    this.toolAttributesComponent = new ComponentPortal(ToolsAttributeComponent);
   }
 
   protected setPencilTool() {
@@ -69,12 +72,16 @@ export class LateralBarComponent implements AfterViewInit {
    * of the tools side nav.
    */
   @HostListener('window:resize', ['$event'])
-  getScreenHeight(event?: any) {
+  setAppropriateIconsClass(event?: any) {
     if (window.innerHeight <= 412) {
       this.appropriateClass = 'bottomRelative';
     } else {
       this.appropriateClass = 'bottomStick';
     }
+  }
+
+  ngOnInit(): void {
+    this.toolAttributesComponent = new ComponentPortal(ToolsAttributeComponent);
   }
 
   ngAfterViewInit() {
@@ -102,6 +109,9 @@ export class LateralBarComponent implements AfterViewInit {
 
   // TODO: use renderer to display the right attributes depending on the selected tool
   protected displayToolAttributes() {
+    // this.toolsAttributes.insertAdjacentHTML('beforeend', '<div class="two">two</div>');
+    // this.toolsAttributes.
+    // this.toolSelector._activeTool
   }
 
   /**
@@ -115,5 +125,10 @@ export class LateralBarComponent implements AfterViewInit {
 
   setbrushPattern(pattern: number){
     this.brush.setCurrentBrushPattern(pattern);
+  }
+
+  private loadSVGIcons(): void {
+  this.matIconRegistry.addSvgIcon('rectangle',
+    this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH), );
   }
 }

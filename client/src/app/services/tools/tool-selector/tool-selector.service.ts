@@ -6,7 +6,7 @@ export class ToolSelectorService {
   private activeTool: string;
 
 constructor() {
-  this.activeTool = 'pen';
+  this.activeTool = 'pencil';
 }
 
   setRectangleTool(): void {
@@ -14,7 +14,7 @@ constructor() {
   }
 
   setPencilTool(): void {
-    this.activeTool = 'pen';
+    this.activeTool = 'pencil';
   }
 
   setBrushTool(): void {

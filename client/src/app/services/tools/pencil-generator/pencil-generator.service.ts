@@ -3,13 +3,25 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class PencilGeneratorService {
 
-  private currentPenPathNumber = 0;
+  /**
+   * attributes of pencil tool :
+   */
+  private strokeWidth: number;
+  private currentPencilPathNumber = 0;
   private OFFSET_CANVAS_X: any;
   private OFFSET_CANVAS_Y: any;
   private mouseDown = false;
 
-constructor() { }
-  //TODO: checker les childs, rajouter lepaisseur en paremetress
+  constructor() {}
+
+  set _strokeWidth(width: number) {
+    this.strokeWidth = width;
+  }
+
+  get _strokeWidth(): number {
+    return this.strokeWidth;
+  }
+  // TODO: checker les childs, rajouter lepaisseur en paremetress
   // Initializes the path
   createPenPath(mouseEvent: any, canvas: any) {
 
@@ -17,16 +29,19 @@ constructor() { }
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
     canvas.innerHTML +=
-      '<path id=\'penPath' + this.currentPenPathNumber +
+      '<path id=\'penPath' + this.currentPencilPathNumber +
       '\' d=\'M' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
       ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' stroke=\'black\' stroke-width=\'6\' stroke-linecap=\'round\' fill=\'none\'></path>';
+      '\' stroke=\'black\' stroke-width=' + this.strokeWidth + ' stroke-linecap=\'round\' fill=\'none\'></path>';
 
     this.mouseDown = true;
   }
-  // Updates the path when the mouse is moving (mousedown)
+
+  /**
+   * @desc // Updates the path when the mouse is moving (mousedown)
+   */
   updatePenPath(mouseEvent: any, canvas: any, currentChildPosition: number) {
     if (this.mouseDown) {
       // const currentPath = document.getElementById("penPath" + this.currentPenPathNumber);
@@ -39,9 +54,11 @@ constructor() { }
     }
   }
 
-  // Finalizes the path, sets up the next one
+  /**
+   * @desc Finalizes the path, sets up the next one
+   */
   finishPenPath(e: any) {
-    this.currentPenPathNumber += 1;
+    this.currentPencilPathNumber += 1;
     this.mouseDown = false;
   }
 }
