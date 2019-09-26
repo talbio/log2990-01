@@ -1,6 +1,7 @@
 import { Component, Input, OnInit  } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { ColorPickerDialogComponent } from '../../modals/color-picker-dialog/color-picker-dialog.component';
 
 @Component({
   selector: 'app-color-tool',
@@ -13,21 +14,23 @@ export class ColorToolComponent implements OnInit {
 
   primaryColor: string;
   secondaryColor: string;
-  topTenColors: string[];
   primaryTransparency: number;
   secondaryTransparency: number;
 
-  constructor(private dialogRef: MatDialogRef<ColorToolComponent>, private storage: StorageService) {
+  constructor( private storage: StorageService, public dialog: MatDialog) {
   }
 
   ngOnInit() {
+    this.primaryColor = this.assignPrimaryColor();
     this.secondaryColor = this.assignSecondaryColor();
     this.primaryTransparency = this.secondaryTransparency = 1;
-    this.topTenColors = ['blue', 'white', 'red', 'black', 'orange', 'yellow', 'green', 'brown', 'lime', 'beige'];
   }
 
-  close(): void {
-    this.dialogRef.close();
+  openDialog(): void {
+    this.dialog.open( ColorPickerDialogComponent, {
+      height: '300px',
+      width: '500px',
+    });
   }
 
   assignPrimaryColor(): string {
@@ -35,8 +38,8 @@ export class ColorToolComponent implements OnInit {
     if (color !== 'empty') {
       return this.storage.getPrimaryColor();
     }
-    this.storage.setPrimaryColor('#0000ff');
-    return '#0000ff';
+    this.storage.setPrimaryColor('#ffffffff');
+    return '#ffffffff';
   }
 
   assignSecondaryColor(): string {
@@ -44,8 +47,8 @@ export class ColorToolComponent implements OnInit {
     if (color !== 'empty') {
       return this.storage.getSecondaryColor();
     }
-    this.storage.setSecondaryColor('#ffff00');
-    return '#ffff00';
+    this.storage.setSecondaryColor('#000000ff');
+    return '#000000ff';
   }
 
   switchMainColors(): void {
@@ -57,7 +60,6 @@ export class ColorToolComponent implements OnInit {
   }
 
   selectColor(color: string): void {
-    //this.color = color;
     this.primaryColor = color;
     this.storage.setPrimaryColor(color);
   }

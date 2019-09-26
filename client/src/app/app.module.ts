@@ -23,6 +23,7 @@ import { ColorToolComponent } from './components/draw-view/color-tool/color-tool
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
 import { ToolsAttributesComponent } from './components/main-view/tools-attributes/tools-attributes.component';
 import { WorkZoneComponent } from './components/main-view/work-zone/work-zone.component';
+import { ColorPickerDialogComponent } from './components/modals/color-picker-dialog/color-picker-dialog.component';
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
@@ -46,6 +47,7 @@ import { ToolSelectorService } from './services/tools/tool-selector/tool-selecto
     ColorSliderComponent,
     GiveUpChangesDialogComponent,
     ToolsAttributesComponent,
+    ColorPickerDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -86,6 +88,7 @@ import { ToolSelectorService } from './services/tools/tool-selector/tool-selecto
     CreateDrawingDialogComponent,
     GiveUpChangesDialogComponent,
     ToolsAttributesComponent,
+    ColorPickerDialogComponent,
   ],
 })
 export class AppModule {

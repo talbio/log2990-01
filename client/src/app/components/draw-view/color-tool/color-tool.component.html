@@ -1,7 +1,21 @@
 <!DOCTYPE html>
 <html>
 
-<div mat-dialog-content>
+ 
+    <svg class="first" width="30" height="30" (click)="openDialog()">
+        <rect x="0" y="0" width="30" height="30" [style.fill]="primaryColor" 
+            ></rect>
+    </svg>
+
+    <i class="material-icons" (click)="switchMainColors()">
+        swap_horiz
+    </i>
+    <svg class="second" width="30" height="30">
+        <rect x="0" y="0" width="25" height="25" [style.fill]="secondaryColor"
+            ></rect>
+    </svg><br />
+
+<!-- <div mat-dialog-content>
 
     <app-color-palette [hue]="hue" (color)="color = $event"></app-color-palette>
     <app-color-slider (color)="hue=$event"></app-color-slider>
@@ -9,18 +23,7 @@
     <body>
 
         <div>
-            <svg class="first" width="50" height="50">
-                <rect x="0" y="0" width="50" height="50" [style.fill]="color"
-                    [style.fill-opacity]="primaryTransparency"></rect>
-            </svg>
-
-            <i class="material-icons" (click)="switchMainColors()">
-                swap_horiz
-            </i>
-            <svg class="second" width="30" height="30">
-                <rect x="0" y="0" width="25" height="25" [style.fill]="secondaryColor"
-                    [style.fill-opacity]="secondaryTransparency"></rect>
-            </svg><br />
+           
             <mat-slider min="0" max="1" step="0.1" [(value)]='primaryTransparency'></mat-slider>
             <br />
             <mat-slider min="0" max="1" step="0.1" [(value)]='secondaryTransparency'></mat-slider>
@@ -32,6 +35,6 @@
 </div>
 <div mat-dialog-actions>
     <button mat-button (click)="close()">fermer</button>
-</div>
+</div> -->
 
 </html>

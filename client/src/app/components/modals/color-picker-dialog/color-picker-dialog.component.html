@@ -1,0 +1,16 @@
+<mat-dialog-content>
+    <app-color-palette [hue]="hue" (color)="color = $event"></app-color-palette>
+    <app-color-slider (color)="hue=$event"></app-color-slider>
+    <br />
+
+    <svg class="top-ten" width="25" height="25" *ngFor="let color of topTenColors">
+        <rect width="25" height="25" [style.fill]=color (click)=selectColor(color)></rect>
+    </svg>
+    <br />
+    <svg class="first" width="30" height="30" (click)="openDialog()">
+        <rect x="0" y="0" width="30" height="30" [style.fill]="color"></rect>
+    </svg>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button (click)="close()">Ok</button>
+</mat-dialog-actions>
