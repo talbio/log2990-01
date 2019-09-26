@@ -54,6 +54,10 @@
   </mat-form-field>
 </mat-card-content>
 
-
+<!-- Color Transparency -->
+<mat-card-content *ngIf="toolSelector._activeTool === Tools.Color" >
+    <mat-label> Niveau de transparence </mat-label>
+    <mat-slider min="0" max="1" step="0.1" [value]='primaryTransparency'></mat-slider>
+  </mat-card-content>
 
 
