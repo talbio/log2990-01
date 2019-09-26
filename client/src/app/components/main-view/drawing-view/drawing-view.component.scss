@@ -1,0 +1,44 @@
+.lateral-bar-container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #eee;
+}
+
+.mat-drawer {
+    background-color: #567080;
+    color: rgba(0, 0, 0, .87);
+}
+
+.mat-icon {
+    display: inline-block;
+    fill: currentColor;
+    font-size: 30px
+}
+
+.bottomStick {
+    align-content: center;
+    position: absolute;
+    bottom: 0
+}
+
+.bottomRelative {
+    position: relative;
+    align-content: center;
+}
+
+.mat-slider {
+    width: 3em;
+}
+
+#tools-side-nav {
+  width: 4em;
+  align-items: center;
+  display: flex;
+}
+
+#attributes-side-nav {
+  width: 6em;
+}
