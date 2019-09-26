@@ -34,6 +34,15 @@
           <mat-icon svgIcon="rectangle"></mat-icon></button>
       </mat-list-item>
 
+      <!-- Color Applicator button -->
+      <mat-list-item>
+        <button mat-icon-button
+                (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.ColorApplicator"
+                matTooltip="Applicateur de couleur"
+                matTooltipPosition="left">
+          <mat-icon>format_paint</mat-icon></button>
+      </mat-list-item>
+
     <!-- bottom elements -->
     <div [ngClass]="appropriateClass">
       <!-- New drawing button -->

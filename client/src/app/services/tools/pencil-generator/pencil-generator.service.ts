@@ -29,7 +29,7 @@ export class PencilGeneratorService {
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
     canvas.innerHTML +=
-      '<path id=\'penPath' + this.currentPencilPathNumber +
+      '<path id=\'pencilPath' + this.currentPencilPathNumber +
       '\' d=\'M' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
       ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
