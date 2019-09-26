@@ -1,40 +1,13 @@
-<!DOCTYPE html>
-<html>
 
- 
-    <svg class="button" width="30" height="30" (click)="openDialog()">
-        <rect x="0" y="0" width="30" height="30" [style.fill]="primaryColor" 
-            ></rect>
-    </svg>
+<svg class="button" width="30" height="30" (click)="openDialog('primary')" matTooltip="Couleur Primaire" matTooltipPosition="left">
+    <rect x="0" y="0" width="30" height="30" [style.fill]="primaryColor"></rect>
+</svg>
 
-    <i class="material-icons" (click)="switchMainColors()">
-        swap_horiz
-    </i>
-    <svg class="button" width="30" height="30" (click)="openDialog()">
-        <rect x="0" y="0" width="25" height="25" [style.fill]="secondaryColor"
-            ></rect>
-    </svg><br />
 
-<!-- <div mat-dialog-content>
+<i class="material-icons" (click)="switchMainColors()" matTooltip="Inverser les couleurs" matTooltipPosition="left">
+    invert_colors
+</i>
 
-    <app-color-palette [hue]="hue" (color)="color = $event"></app-color-palette>
-    <app-color-slider (color)="hue=$event"></app-color-slider>
-    
-    <body>
-
-        <div>
-           
-            <mat-slider min="0" max="1" step="0.1" [(value)]='primaryTransparency'></mat-slider>
-            <br />
-            <mat-slider min="0" max="1" step="0.1" [(value)]='secondaryTransparency'></mat-slider>
-        </div>
-        <svg class="top-ten" width="25" height="25" *ngFor="let color of topTenColors">
-            <rect width="25" height="25" [style.fill]=color (click)=selectColor(color)></rect>
-        </svg>
-    </body>
-</div>
-<div mat-dialog-actions>
-    <button mat-button (click)="close()">fermer</button>
-</div> -->
-
-</html>
+<svg class="button" width="30" height="30" (click)="openDialog('secondary')" matTooltip="Couleur Secondaire" matTooltipPosition="left">
+    <rect x="0" y="0" width="25" height="25" [style.fill]="secondaryColor"></rect>
+</svg>

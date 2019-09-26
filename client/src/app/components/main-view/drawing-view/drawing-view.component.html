@@ -8,57 +8,72 @@
 
       <!-- Pencil button -->
       <mat-list-item>
-        <button mat-icon-button
-                (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.Pencil"
-                matTooltip="Crayon"
-                matTooltipPosition="left"
-                mat-button>
-          <mat-icon>create</mat-icon></button>
+        <button mat-icon-button (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.Pencil"
+          matTooltip="Crayon" matTooltipPosition="left" mat-button>
+          <mat-icon>create</mat-icon>
+        </button>
       </mat-list-item>
 
       <!-- Brush button -->
       <mat-list-item>
-        <button mat-icon-button
-                (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.Brush"
-                matTooltip="Pinceau"
-                matTooltipPosition="left">
-          <mat-icon>brush</mat-icon></button>
+        <button mat-icon-button (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.Brush"
+          matTooltip="Pinceau" matTooltipPosition="left">
+          <mat-icon>brush</mat-icon>
+        </button>
       </mat-list-item>
 
       <!-- Rectangle button -->
       <mat-list-item>
-        <button mat-icon-button
-                (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.Rectangle"
-                matTooltip="Rectangle"
-                matTooltipPosition="left">
-          <mat-icon svgIcon="rectangle"></mat-icon></button>
+        <button mat-icon-button (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.Rectangle"
+          matTooltip="Rectangle" matTooltipPosition="left">
+          <mat-icon svgIcon="rectangle"></mat-icon>
+        </button>
+      </mat-list-item>
+
+      <!-- primary color opacity -->
+      <mat-list-item>
+        <button mat-icon-button (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.Color"
+          matTooltip="transparence de la couleur primaire" matTooltipPosition="left">
+          <mat-icon>opacity</mat-icon>
+        </button>
       </mat-list-item>
       <br />
-      <br />
+
       <!-- primary & secondary colors -->
+      
       <mat-list-item>
         <app-color-tool></app-color-tool>
-      </mat-list-item>
+     </mat-list-item>
+      
+      <br />
 
-    <!-- bottom elements -->
-    <div [ngClass]="appropriateClass">
-      <!-- New drawing button -->
+      <!-- secondary color opacity -->
       <mat-list-item>
-        <button mat-icon-button
-                matTooltip="Nouveau Dessin"
-                matTooltipPosition="left"
-                (click)="openCreateDrawingDialog()">
-          <mat-icon>add</mat-icon></button>
+        <button mat-icon-button (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.Color"
+          matTooltip="transparence de la couleur secondaire" matTooltipPosition="left" mat-button>
+          <mat-icon>opacity</mat-icon>
+        </button>
       </mat-list-item>
+      <br />
 
-      <!-- Help button -->
-      <mat-list-item>
-        <button mat-icon-button
-                matTooltip="Guide d'utilisation"
-                matTooltipPosition="left">
-          <mat-icon>contact_support</mat-icon></button>
-      </mat-list-item>
-    </div>
+      <!-- bottom elements -->
+      <div [ngClass]="appropriateClass">
+        <!-- New drawing button -->
+        <mat-list-item>
+          <button mat-icon-button matTooltip="Nouveau Dessin" matTooltipPosition="left"
+            (click)="openCreateDrawingDialog()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-list-item>
+        
+
+        <!-- Help button -->
+        <mat-list-item>
+          <button mat-icon-button matTooltip="Guide d'utilisation" matTooltipPosition="left">
+            <mat-icon>contact_support</mat-icon>
+          </button>
+        </mat-list-item>
+      </div>
 
     </mat-list>
   </mat-sidenav>
@@ -70,8 +85,8 @@
 
 
   <!-- the content is simply the work zone containing the drawing -->
-    <mat-sidenav-content [ngStyle]="setBackGroundColor()">
-      <app-work-zone #workZoneComponent></app-work-zone>
-    </mat-sidenav-content>
+  <mat-sidenav-content [ngStyle]="setBackGroundColor()">
+    <app-work-zone #workZoneComponent></app-work-zone>
+  </mat-sidenav-content>
 
 </mat-sidenav-container>
