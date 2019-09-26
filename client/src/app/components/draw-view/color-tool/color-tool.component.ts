@@ -1,3 +1,4 @@
+import { ToolManagerService } from './../../../services/tools/tool-manager/tool-manager.service';
 import { Component, Input, OnInit  } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { StorageService } from 'src/app/services/storage/storage.service';
@@ -17,7 +18,7 @@ export class ColorToolComponent implements OnInit {
   primaryTransparency: number;
   secondaryTransparency: number;
 
-  constructor( private storage: StorageService, public dialog: MatDialog) {
+  constructor( private storage: StorageService, public dialog: MatDialog, private toolManager: ToolManagerService) {
   }
 
   ngOnInit() {
@@ -35,10 +36,12 @@ export class ColorToolComponent implements OnInit {
       if (colorToModify === 'primary') {
       this.primaryColor = selectedColor;
       this.storage.setPrimaryColor(selectedColor);
+      this.toolManager.primaryColor = selectedColor;
       }
       if (colorToModify === 'secondary') {
         this.secondaryColor = selectedColor;
         this.storage.setSecondaryColor(selectedColor);
+        this.toolManager.secondaryColor = selectedColor;
         }
     });
   }
