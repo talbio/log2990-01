@@ -1,7 +1,7 @@
 import {Component, HostListener, Inject, OnInit} from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {ConfirmGiveUpChangesDialogComponent} from '../confirm-give-up-changes-dialog/confirm-give-up-changes-dialog.component';
+import {GiveUpChangesDialogComponent} from '../give-up-changes-dialog/give-up-changes-dialog.component';
 
 export interface DialogData {
   drawingNonEmpty: boolean;
@@ -117,7 +117,7 @@ export class CreateDrawingDialogComponent implements OnInit {
 
   private async openConfirmGiveUpChangesDialog(): Promise<boolean> {
     let confirm = false;
-    const dialogRef = this.dialog.open(ConfirmGiveUpChangesDialogComponent);
+    const dialogRef = this.dialog.open(GiveUpChangesDialogComponent);
     await dialogRef.afterClosed().toPromise().then((confirmResult) => confirm = confirmResult);
     return confirm;
   }

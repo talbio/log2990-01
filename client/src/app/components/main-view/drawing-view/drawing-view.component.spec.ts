@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ToolsAttributeComponent } from './tools-attribute.component';
+import { DrawingViewComponent } from './drawing-view.component';
 
-describe('ToolsAttributeComponent', () => {
-  let component: ToolsAttributeComponent;
-  let fixture: ComponentFixture<ToolsAttributeComponent>;
+describe('LateralBarComponent', () => {
+  let component: DrawingViewComponent;
+  let fixture: ComponentFixture<DrawingViewComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ToolsAttributeComponent ]
+      declarations: [ DrawingViewComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ToolsAttributeComponent);
+    fixture = TestBed.createComponent(DrawingViewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

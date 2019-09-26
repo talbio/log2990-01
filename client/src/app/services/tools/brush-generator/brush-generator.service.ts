@@ -3,14 +3,23 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class BrushGeneratorService {
 
-  private currentBrushPathNumber = 0;
+  private readonly DEFAULT_WIDTH = 5;
+  private readonly DEFAULT_BRUSH_PATTERN = 'url(#brushPattern1)';
+
+  private strokeWidth: number;
+  private currentBrushPathNumber: number;
   private OFFSET_CANVAS_X: any;
   private OFFSET_CANVAS_Y: any;
-  private mouseDown = false;
-  private currentBrushPattern:string = 'url(#brushPattern1)';
-  private strokeWidth: number = 5;
+  private mouseDown: boolean;
+  private currentBrushPattern: string;
 
-  constructor() { }
+  constructor() {
+    this.strokeWidth = this.DEFAULT_WIDTH;
+    this.currentBrushPattern = this.DEFAULT_BRUSH_PATTERN;
+    this.mouseDown = false;
+    this.currentBrushPathNumber = 0;
+  }
+
   set _strokeWidth(width: number) {
     this.strokeWidth = width;
   }
@@ -19,16 +28,13 @@ export class BrushGeneratorService {
     return this.strokeWidth;
   }
 
-  set _currentBrushPattern(pattern:string)
-  {
+  set _currentBrushPattern(pattern: string) {
     this.currentBrushPattern = pattern;
   }
 
-  get _currentBrushPattern():string {
+  get _currentBrushPattern(): string {
     return this.currentBrushPattern;
   }
-//TODO: checker les childs, rajouter lepaisseur en paremetress
-  // Initializes the path
 
   createBrushPath(mouseEvent: any, canvas: any) {
 
@@ -41,10 +47,12 @@ export class BrushGeneratorService {
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
       ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' stroke=\'' + this.currentBrushPattern + '\' stroke-width=\'' + this.strokeWidth + '\' stroke-linecap=\'round\' fill=\'none\'></path>';
+      '\' stroke=\'' + this.currentBrushPattern + '\' stroke-width=\'' + this.strokeWidth +
+      '\' stroke-linecap=\'round\' fill=\'none\'></path>';
 
     this.mouseDown = true;
   }
+
   // Updates the path when the mouse is moving (mousedown)
   updateBrushPath(mouseEvent: any, canvas: any, currentChildPosition: number) {
     if (this.mouseDown) {

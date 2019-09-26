@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {PlotType} from '../PlotType';
+import {PlotType} from '../../../data-structures/PlotType';
 
 @Injectable()
 export class RectangleGeneratorService {

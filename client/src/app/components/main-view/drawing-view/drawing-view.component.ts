@@ -5,9 +5,10 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {DomSanitizer} from '@angular/platform-browser';
+import {Tools} from '../../../data-structures/Tools';
 import {ToolSelectorService} from '../../../services/tools/tool-selector/tool-selector.service';
-import {CreateDrawingDialogComponent} from '../../app/modals/create-drawing-dialog/create-drawing-dialog.component';
-import {ToolsAttributeComponent} from '../tools-attribute/tools-attribute.component';
+import {CreateDrawingDialogComponent} from '../../modals/create-drawing-dialog/create-drawing-dialog.component';
+import {ToolsAttributesComponent} from '../tools-attributes/tools-attributes.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
 
 export interface FormValues {
@@ -19,11 +20,11 @@ export interface FormValues {
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
 
 @Component({
-  selector: 'app-lateral-bar',
-  templateUrl: './lateral-bar.component.html',
-  styleUrls: ['./lateral-bar.component.scss'],
+  selector: 'app-drawing-view',
+  templateUrl: './drawing-view.component.html',
+  styleUrls: ['./drawing-view.component.scss'],
 })
-export class LateralBarComponent implements AfterViewInit, OnInit {
+export class DrawingViewComponent implements AfterViewInit, OnInit {
   @ViewChild('workZoneComponent', {static: false}) workZoneComponent: WorkZoneComponent;
   @ViewChild('attributesSideNav', {static: false}) attributeSideNav: MatSidenav;
   @ViewChild('toolsAttributes', {static: false}) toolsAttributes: MatCardContent;
@@ -31,36 +32,23 @@ export class LateralBarComponent implements AfterViewInit, OnInit {
   protected appropriateClass = '';
   protected toolAttributesComponent: ComponentPortal<any>;
   // TODO: this boolean has to be moved to a service which will keep track of the drawings of the current drawing.
-  // set to true for testing purposes
   private drawingNonEmpty = true;
   private workZoneHeight: number;
   private workZoneWidth: number;
   private backGroundColor = '#FFFFFF';
 
-  constructor(private dialog: MatDialog,
+  constructor(protected toolSelector: ToolSelectorService,
+              private dialog: MatDialog,
               private matIconRegistry: MatIconRegistry,
-              private domSanitizer: DomSanitizer,
-              private toolSelector: ToolSelectorService) {
-    this.matIconRegistry.addSvgIcon(
-      'rectangle',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH),
-    );
+              private domSanitizer: DomSanitizer) {
 
     this.loadSVGIcons();
     this.setAppropriateIconsClass();
-    this.toolAttributesComponent = new ComponentPortal(ToolsAttributeComponent);
+    this.toolAttributesComponent = new ComponentPortal(ToolsAttributesComponent);
   }
 
-  protected setPencilTool() {
-    this.toolSelector.setPencilTool();
-  }
-
-  protected setRectangleTool() {
-    this.toolSelector.setRectangleTool();
-  }
-
-  protected setBrushTool() {
-    this.toolSelector.setBrushTool();
+  protected get Tools() {
+    return Tools;
   }
 
   /**
@@ -78,7 +66,7 @@ export class LateralBarComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
-    this.toolAttributesComponent = new ComponentPortal(ToolsAttributeComponent);
+    this.toolAttributesComponent = new ComponentPortal(ToolsAttributesComponent);
   }
 
   ngAfterViewInit() {
@@ -102,13 +90,6 @@ export class LateralBarComponent implements AfterViewInit, OnInit {
       this.workZoneComponent.height = formResult.height;
       this.workZoneComponent.width = formResult.width;
     });
-  }
-
-  // TODO: use renderer to display the right attributes depending on the selected tool
-  protected displayToolAttributes() {
-    // this.toolsAttributes.insertAdjacentHTML('beforeend', '<div class="two">two</div>');
-    // this.toolsAttributes.
-    // this.toolSelector._activeTool
   }
 
   /**

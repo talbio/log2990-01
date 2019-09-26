@@ -1,27 +1,20 @@
 import { Injectable } from '@angular/core';
+import { Tools } from '../../../data-structures/Tools';
 
 @Injectable()
 export class ToolSelectorService {
 
-  private activeTool: string;
+  private activeTool: Tools;
 
-constructor() {
-  this.activeTool = 'pencil';
-}
-
-  setRectangleTool(): void {
-    this.activeTool = 'rectangle';
+  constructor() {
+    this.activeTool = Tools.Pencil;
   }
 
-  setPencilTool(): void {
-    this.activeTool = 'pencil';
+  set _activeTool(tool: Tools) {
+    this.activeTool = tool;
   }
 
-  setBrushTool(): void {
-    this.activeTool = 'brush';
-  }
-
-  get _activeTool(): string {
+  get _activeTool(): Tools {
     return this.activeTool;
   }
 

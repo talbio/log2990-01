@@ -1,5 +1,5 @@
 <!-- Pencil Attributes Tool -->
-<mat-card-content *ngIf="toolSelector._activeTool == 'pencil'" >
+<mat-card-content *ngIf="toolSelector._activeTool === Tools.Pencil" >
   <mat-label>Epaisseur du crayon en pixels : {{this.pencilGenerator._strokeWidth}}</mat-label>
   <mat-slider [(ngModel)]="this.pencilGenerator._strokeWidth"
               min="1"
@@ -11,7 +11,7 @@
 </mat-card-content>
 
 <!-- Rectangle Attributes Tools -->
-<mat-card-content *ngIf="toolSelector._activeTool == 'rectangle'" >
+<mat-card-content *ngIf="toolSelector._activeTool === Tools.Rectangle" >
   <mat-label> Epaisseur du rectangle : {{this.rectangleGenerator._strokeWidth}}</mat-label>
   <mat-slider [(ngModel)]="this.rectangleGenerator._strokeWidth"
               min="1"
@@ -23,15 +23,15 @@
   <mat-form-field>
     <mat-label>Type de tracé</mat-label>
     <mat-select [(ngModel)]="this.rectangleGenerator._plotType">
-      <mat-option [value]="plotType.Contour">Contour</mat-option>
-      <mat-option [value]="plotType.Full">Plein</mat-option>
-      <mat-option [value]="plotType.FullWithContour">Plein avec contour</mat-option>
+      <mat-option [value]="PlotType.Contour">Contour</mat-option>
+      <mat-option [value]="PlotType.Full">Plein</mat-option>
+      <mat-option [value]="PlotType.FullWithContour">Plein avec contour</mat-option>
     </mat-select>
   </mat-form-field>
 </mat-card-content>
 
 <!-- Paintbrush Attributes Tool -->
-<mat-card-content *ngIf="toolSelector._activeTool == 'brush'" >
+<mat-card-content *ngIf="toolSelector._activeTool === Tools.Brush" >
   <mat-label>Epaisseur du trait de pinceau en pixels : {{this.brushGenerator._strokeWidth}}</mat-label>
   <mat-slider [(ngModel)]="this.brushGenerator._strokeWidth"
               min="5"

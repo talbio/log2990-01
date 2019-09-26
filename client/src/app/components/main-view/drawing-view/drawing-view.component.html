@@ -9,7 +9,7 @@
       <!-- Pencil button -->
       <mat-list-item>
         <button mat-icon-button
-                (click)="attributesSideNav.toggle();setPencilTool()"
+                (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.Pencil"
                 matTooltip="Crayon"
                 matTooltipPosition="left"
                 mat-button>
@@ -19,7 +19,7 @@
       <!-- Brush button -->
       <mat-list-item>
         <button mat-icon-button
-                (click)="attributesSideNav.toggle();setBrushTool()"
+                (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.Brush"
                 matTooltip="Pinceau"
                 matTooltipPosition="left">
           <mat-icon>brush</mat-icon></button>
@@ -28,7 +28,7 @@
       <!-- Rectangle button -->
       <mat-list-item>
         <button mat-icon-button
-                (click)="attributesSideNav.toggle();setRectangleTool()"
+                (click)="attributesSideNav.toggle(); toolSelector._activeTool = Tools.Rectangle"
                 matTooltip="Rectangle"
                 matTooltipPosition="left">
           <mat-icon svgIcon="rectangle"></mat-icon></button>
