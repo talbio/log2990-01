@@ -11,6 +11,8 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 
 export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
+    topTenColors = ['blue', 'white', 'red', 'black', 'orange', 'yellow', 'green', 'brown', 'lime', 'beige'];
+
     @Input()
     hue: string;
 
@@ -108,4 +110,8 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         const rgbaColor = this.getColorAtPosition(x, y);
         this.color.emit(rgbaColor);
     }
+
+    selectColor(color: string): void {
+        this.color.emit(color);
+      }
 }

@@ -72,8 +72,6 @@ export class DrawingViewComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     this.workZoneHeight =  400; // this.workZoneComponent.nativeElement.offsetHeight;
     this.workZoneWidth = 800; // this.workZoneComponent.nativeElement.offsetWidth;
-    console.log(this.workZoneHeight);
-    console.log(this.workZoneWidth);
   }
 
   protected openCreateDrawingDialog() {

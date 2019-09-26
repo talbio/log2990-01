@@ -27,9 +27,13 @@ export class ColorToolComponent implements OnInit {
   }
 
   openDialog(): void {
-    this.dialog.open( ColorPickerDialogComponent, {
+    const dialogRef = this.dialog.open( ColorPickerDialogComponent, {
       height: '300px',
       width: '500px',
+    });
+    dialogRef.afterClosed().subscribe( (selectedColor) => {
+      this.primaryColor = selectedColor;
+      this.storage.setPrimaryColor(selectedColor);
     });
   }
 
@@ -59,12 +63,7 @@ export class ColorToolComponent implements OnInit {
     this.storage.setSecondaryColor(this.secondaryColor);
   }
 
-  selectColor(color: string): void {
-    this.primaryColor = color;
-    this.storage.setPrimaryColor(color);
-  }
-
-  modifyPrimaryColorTransparency(transparency: number){
+  modifyPrimaryColorTransparency(transparency: number) {
     this.primaryTransparency = transparency;
   }
 

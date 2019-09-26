@@ -8,8 +8,6 @@ import { MatDialogRef } from '@angular/material';
 })
 export class ColorPickerDialogComponent  {
 
-    topTenColors = ['blue', 'white', 'red', 'black', 'orange', 'yellow', 'green', 'brown', 'lime', 'beige'];
-
     constructor(private dialogRef: MatDialogRef<ColorPickerDialogComponent>) {}
 
     close(): void {
