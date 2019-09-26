@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2, Input } from '@angular/core';
+import { Component, Input, OnInit, Renderer2 } from '@angular/core';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({

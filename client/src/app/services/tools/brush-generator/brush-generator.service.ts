@@ -3,14 +3,39 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class BrushGeneratorService {
 
-  private currentBrushPathNumber = 0;
+  private readonly DEFAULT_WIDTH = 5;
+  private readonly DEFAULT_BRUSH_PATTERN = 'url(#brushPattern1)';
+
+  private strokeWidth: number;
+  private currentBrushPathNumber: number;
   private OFFSET_CANVAS_X: any;
   private OFFSET_CANVAS_Y: any;
-  private mouseDown = false;
+  private mouseDown: boolean;
+  private currentBrushPattern: string;
 
-constructor() { }
-//TODO: checker les childs, rajouter lepaisseur en paremetress
-  // Initializes the path
+  constructor() {
+    this.strokeWidth = this.DEFAULT_WIDTH;
+    this.currentBrushPattern = this.DEFAULT_BRUSH_PATTERN;
+    this.mouseDown = false;
+    this.currentBrushPathNumber = 0;
+  }
+
+  set _strokeWidth(width: number) {
+    this.strokeWidth = width;
+  }
+
+  get _strokeWidth(): number {
+    return this.strokeWidth;
+  }
+
+  set _currentBrushPattern(pattern: string) {
+    this.currentBrushPattern = pattern;
+  }
+
+  get _currentBrushPattern(): string {
+    return this.currentBrushPattern;
+  }
+
   createBrushPath(mouseEvent: any, canvas: any) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
@@ -22,10 +47,12 @@ constructor() { }
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
       ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
       ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' stroke=\'url(#brushPattern1)\' stroke-width=\'12\' stroke-linecap=\'round\' fill=\'none\'></path>';
+      '\' stroke=\'' + this.currentBrushPattern + '\' stroke-width=\'' + this.strokeWidth +
+      '\' stroke-linecap=\'round\' fill=\'none\'></path>';
 
     this.mouseDown = true;
   }
+
   // Updates the path when the mouse is moving (mousedown)
   updateBrushPath(mouseEvent: any, canvas: any, currentChildPosition: number) {
     if (this.mouseDown) {

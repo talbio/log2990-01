@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
+import {PlotType} from '../../../data-structures/PlotType';
 
 @Injectable()
 export class RectangleGeneratorService {
@@ -8,21 +9,70 @@ export class RectangleGeneratorService {
   private currentRectNumber = 0;
   private mouseDown = false;
 
-  constructor() {}
+  // attributes of rectangle
+  private strokeWidth: number;
+  private plotType: PlotType;
 
-  createRectangle(mouseEvent: any, canvas: any) {
+  constructor() {
+    this.strokeWidth = 1;
+    this.plotType = PlotType.Contour;
+  }
+
+  get _strokeWidth() {
+    return this.strokeWidth;
+  }
+
+  set _strokeWidth(width: number) {
+    this.strokeWidth = width;
+  }
+
+  get _plotType() {
+    return this.plotType;
+  }
+
+  set _plotType(plotType: PlotType) {
+    this.plotType = plotType;
+  }
+
+  createRectangle(mouseEvent: any, canvas: any, primaryColor:string, secondaryColor:string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
-    canvas.innerHTML +=
-      '<rect id=\'rect' + this.currentRectNumber +
-      '\' x=\'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
-      '\' data-start-x = \'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
-      '\' y=\'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' data-start-y = \'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
-      '\' width = \'0\' height = \'0\' stroke=\'black\' stroke-width=\'6\'' +
-      ' fill=\'transparent\'></rect>';
+    switch(this.plotType)
+    {
+      case PlotType.Contour:
+        canvas.innerHTML +=
+        '<rect id=\'rect' + this.currentRectNumber +
+        '\' x=\'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' data-start-x = \'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' y=\'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' data-start-y = \'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' width = \'0\' height = \'0\' stroke=\'' + secondaryColor + '\' stroke-width=' + this.strokeWidth +
+        ' fill=\'transparent\'></rect>';
+        break;
+      case PlotType.Full:
+        canvas.innerHTML +=
+        '<rect id=\'rect' + this.currentRectNumber +
+        '\' x=\'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' data-start-x = \'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' y=\'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' data-start-y = \'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' width = \'0\' height = \'0\' stroke=\'transparent\' stroke-width=' + this.strokeWidth +
+        ' fill=\'' + primaryColor + '\'></rect>';
+        break;
+      case PlotType.FullWithContour:
+        canvas.innerHTML +=
+        '<rect id=\'rect' + this.currentRectNumber +
+        '\' x=\'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' data-start-x = \'' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+        '\' y=\'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' data-start-y = \'' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y) +
+        '\' width = \'0\' height = \'0\' stroke=\'' + secondaryColor + '\' stroke-width=' + this.strokeWidth +
+        ' fill=\'' + primaryColor + '\'></rect>';
+        break;
+    }
+
 
     this.mouseDown = true;
   }

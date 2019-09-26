@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConfirmGiveUpChangesDialogComponent } from './confirm-give-up-changes-dialog.component';
+import { GiveUpChangesDialogComponent } from './give-up-changes-dialog.component';
 
 describe('ConfirmGiveUpChangesDialogComponent', () => {
-  let component: ConfirmGiveUpChangesDialogComponent;
-  let fixture: ComponentFixture<ConfirmGiveUpChangesDialogComponent>;
+  let component: GiveUpChangesDialogComponent;
+  let fixture: ComponentFixture<GiveUpChangesDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConfirmGiveUpChangesDialogComponent ]
+      declarations: [ GiveUpChangesDialogComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConfirmGiveUpChangesDialogComponent);
+    fixture = TestBed.createComponent(GiveUpChangesDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
