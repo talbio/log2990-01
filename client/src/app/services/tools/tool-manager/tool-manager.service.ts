@@ -1,3 +1,4 @@
+import { ColorApplicatorService } from './../color-applicator/color-applicator.service';
 import {Injectable} from '@angular/core';
 import {BrushGeneratorService} from '../brush-generator/brush-generator.service';
 import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
@@ -15,6 +16,7 @@ secondaryColor = 'black';
 constructor(private rectangleGenerator: RectangleGeneratorService,
             private pencilGenerator: PencilGeneratorService,
             private brushGenerator: BrushGeneratorService,
+            private colorApplicator: ColorApplicatorService,
             private toolSelector: ToolSelectorService) { }
 
   createElement(mouseEvent: any, canvas: any) {
@@ -28,6 +30,8 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
       case Tools.Brush:
         this.brushGenerator.createBrushPath(mouseEvent, canvas);
         break;
+      default:
+        return;
     }
     this.numberOfElements += 1;
   }
@@ -43,6 +47,8 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
       case Tools.Brush:
           this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
           break;
+      default:
+          return;
     }
   }
 
@@ -57,6 +63,26 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
       case Tools.Brush:
         this.brushGenerator.finishBrushPath(mouseEvent);
         break;
+      default:
+        return;
+    }
+  }
+
+  changeElementLeftClick(mouseEvent: any) {
+    switch (this.toolSelector._activeTool) {
+      case Tools.ColorApplicator:
+        this.colorApplicator.changePrimaryColor(mouseEvent, this.primaryColor);
+      default:
+        return;
+    }
+  }
+
+  changeElementRightClick(mouseEvent: any) {
+    switch (this.toolSelector._activeTool) {
+      case Tools.ColorApplicator:
+        this.colorApplicator.changeSecondaryColor(mouseEvent, this.secondaryColor);
+      default:
+        return;
     }
   }
 }

@@ -1,3 +1,4 @@
+import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
 import {PortalModule} from '@angular/cdk/portal';
 import {HttpClientModule} from '@angular/common/http';
 import {NgModule } from '@angular/core';
@@ -81,6 +82,7 @@ import { ToolSelectorService } from './services/tools/tool-selector/tool-selecto
     PencilGeneratorService,
     ToolSelectorService,
     BrushGeneratorService,
+    ColorApplicatorService,
   ],
   bootstrap: [AppComponent],
   entryComponents: [
