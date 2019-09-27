@@ -19,7 +19,7 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
             private colorApplicator: ColorApplicatorService,
             private toolSelector: ToolSelectorService) { }
 
-  createElement(mouseEvent: MouseEvent, canvas: Element) {
+  createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
         this.rectangleGenerator.createRectangle(mouseEvent, canvas, this.primaryColor, this.secondaryColor);
@@ -36,7 +36,7 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
     this.numberOfElements += 1;
   }
 
-  updateElement(mouseEvent: MouseEvent, canvas: Element) {
+  updateElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
         if (mouseEvent.shiftKey) {
@@ -72,7 +72,7 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
     }
   }
 
-  changeElementLeftClick(clickedElement: Element) {
+  changeElementLeftClick(clickedElement: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.ColorApplicator:
         this.colorApplicator.changePrimaryColor(clickedElement, this.primaryColor);
@@ -81,7 +81,7 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
     }
   }
 
-  changeElementRightClick(clickedElement: Element) {
+  changeElementRightClick(clickedElement: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.ColorApplicator:
         this.colorApplicator.changeSecondaryColor(clickedElement, this.secondaryColor);

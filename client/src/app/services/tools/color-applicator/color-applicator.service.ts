@@ -6,7 +6,7 @@ export class ColorApplicatorService {
 
   constructor() { }
 
-  changePrimaryColor(targetObject: Element, newColor: string)
+  changePrimaryColor(targetObject: HTMLElement, newColor: string)
   {
     switch(targetObject.nodeName)
     {
@@ -54,7 +54,7 @@ export class ColorApplicatorService {
     
   }
 
-  changeSecondaryColor(targetObject: Element, newColor: string)
+  changeSecondaryColor(targetObject: HTMLElement, newColor: string)
   {
     switch(targetObject.nodeName)
     {

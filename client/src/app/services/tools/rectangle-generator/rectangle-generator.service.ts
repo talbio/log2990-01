@@ -35,7 +35,7 @@ export class RectangleGeneratorService {
     this.plotType = plotType;
   }
 
-  createRectangle(mouseEvent: MouseEvent, canvas: Element, primaryColor: string, secondaryColor: string) {
+  createRectangle(mouseEvent: MouseEvent, canvas: HTMLElement, primaryColor: string, secondaryColor: string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
@@ -75,7 +75,7 @@ export class RectangleGeneratorService {
     this.mouseDown = true;
   }
 
-  updateSquare(mouseEvent: MouseEvent, canvas: Element, currentChildPosition: number) {
+  updateSquare(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentRect = canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
@@ -133,7 +133,7 @@ export class RectangleGeneratorService {
     }
   }
 
-  updateRectangle(mouseEvent: MouseEvent, canvas: Element, currentChildPosition: number) {
+  updateRectangle(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentRect = canvas.children[currentChildPosition - 1];
       if (currentRect != null) {

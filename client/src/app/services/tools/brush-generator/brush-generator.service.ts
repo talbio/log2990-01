@@ -36,7 +36,7 @@ export class BrushGeneratorService {
     return this.currentBrushPattern;
   }
 
-  createBrushPath(mouseEvent: MouseEvent, canvas: Element) {
+  createBrushPath(mouseEvent: MouseEvent, canvas: HTMLElement) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
@@ -54,7 +54,7 @@ export class BrushGeneratorService {
   }
 
   // Updates the path when the mouse is moving (mousedown)
-  updateBrushPath(mouseEvent: MouseEvent, canvas: Element, currentChildPosition: number) {
+  updateBrushPath(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentPath = canvas.children[currentChildPosition - 1];
       if (currentPath != null) {

@@ -10,7 +10,7 @@ export class WorkZoneComponent implements OnInit {
 
   @Input() width: number;
   @Input() height: number;
-  private canvasElement: any;
+  private canvasElement: HTMLElement;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2) {
@@ -49,12 +49,12 @@ export class WorkZoneComponent implements OnInit {
     this.toolManager.finishElement();
   }
 
-  onLeftClick(mouseEvent: any) {
-    this.toolManager.changeElementLeftClick(mouseEvent.target);
+  onLeftClick(mouseEvent: Event) {
+    this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
   }
 
-  onRightClick(mouseEvent: any) {
-    this.toolManager.changeElementRightClick(mouseEvent.target);
+  onRightClick(mouseEvent: Event) {
+    this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
     //deactivate context menu on right click
     return false;
   }
