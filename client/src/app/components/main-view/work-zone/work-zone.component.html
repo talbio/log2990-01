@@ -1,7 +1,10 @@
-<svg [attr.height]="height"
+<svg id="canvas"
+     [attr.height]="height"
      [attr.width]="width"
-     id="canvas"
-     color='blue'
+     [attr.stroke]="color"
+     [style.stroke]="color"
+     [attr.fill]="color"
+     [style.fill]="color"
      (mousedown)='onMouseDown($event)'
      (mousemove)='onMouseMove($event)'
      (mouseup)='onMouseUp($event)'>

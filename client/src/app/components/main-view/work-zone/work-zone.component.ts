@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Renderer2 } from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, Renderer2} from '@angular/core';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
@@ -6,20 +6,30 @@ import { ToolManagerService } from '../../../services/tools/tool-manager/tool-ma
   templateUrl: './work-zone.component.html',
   styleUrls: ['./work-zone.component.scss'],
 })
-export class WorkZoneComponent implements OnInit {
+export class WorkZoneComponent implements OnInit, AfterViewInit {
+
+  private readonly DEFAULT_WIDTH = 400;
+  private readonly DEFAULT_HEIGHT = 800;
 
   @Input() width: number;
   @Input() height: number;
+  // TODO: remove initialization after debugging
+  @Input() color = '#000000';
+
   private canvasElement: any;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2) {
-    this.width = 800;
-    this.height = 400;
+    this.width = this.DEFAULT_WIDTH;
+    this.height = this.DEFAULT_HEIGHT;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+  }
+
+  ngAfterViewInit(): void {
+    this.toolManager.loadRenderer(this.renderer);
   }
 
   onMouseDown(mouseEvent: any) {
