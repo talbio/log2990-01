@@ -38,6 +38,13 @@ export class WorkZoneComponent implements OnInit {
     this.toolManager.changeElementLeftClick(mouseEvent.target);
   }
 
+  onShiftDown(keyboardEvent: KeyboardEvent) {
+     console.log('shift marche!');
+    //  if (keyboardEvent.key === 'Shift') {
+    //   // this.toolManager.shiftDown = true;
+
+    // }
+  }
   onRightClick(mouseEvent: any) {
     this.toolManager.changeElementRightClick(mouseEvent.target);
     //deactivate context menu on right click

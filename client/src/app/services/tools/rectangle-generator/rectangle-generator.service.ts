@@ -13,6 +13,7 @@ export class RectangleGeneratorService {
   private strokeWidth: number;
   private plotType: PlotType;
 
+
   constructor() {
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
@@ -34,13 +35,12 @@ export class RectangleGeneratorService {
     this.plotType = plotType;
   }
 
-  createRectangle(mouseEvent: any, canvas: any, primaryColor:string, secondaryColor:string) {
+  createRectangle(mouseEvent: any, canvas: any, primaryColor: string, secondaryColor: string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
-    switch(this.plotType)
-    {
+    switch(this.plotType) {
       case PlotType.Contour:
         canvas.innerHTML +=
         '<rect id=\'rect' + this.currentRectNumber +
@@ -72,36 +72,105 @@ export class RectangleGeneratorService {
         ' fill=\'' + primaryColor + '\'></rect>';
         break;
     }
-
-
     this.mouseDown = true;
   }
 
-  updateRectangle(mouseEvent: any, canvas: any, currentChildPosition: number) {
+  finishRectangle(mouseEvent: any) {
+    this.currentRectNumber += 1;
+    this.mouseDown = false;
+  }
+
+  updateSquare(mouseEvent: any, canvas: any, currentChildPosition: number) {
     if (this.mouseDown) {
-      // const currentRect = document.getElementById('rect' + this.currentRectNumber);
       const currentRect = canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
-        if ((mouseEvent.pageX - this.OFFSET_CANVAS_X) >= startRectX) {
-          currentRect.setAttribute('width', '' + ((mouseEvent.pageX - this.OFFSET_CANVAS_X) - startRectX));
+        const actualWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startRectX;
+        const actualHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startRectY;
+
+        if (actualWidth >= 0) {
+          if (actualHeight >= 0) {
+            if (actualWidth > actualHeight) {
+              currentRect.setAttribute('height', '' + actualWidth);
+            } else {
+              currentRect.setAttribute('width', '' + actualHeight);
+            }
+          } else {
+            if (actualWidth > -actualHeight) {
+              currentRect.setAttribute('height', '' + actualWidth);
+            } else {
+              currentRect.setAttribute('width', '' + -actualHeight);
+            }
+          }
         } else {
-          currentRect.setAttribute('width', '' + (startRectX - (mouseEvent.pageX - this.OFFSET_CANVAS_X)));
+          if (actualHeight >= 0) {
+            if (-actualWidth > actualHeight) {
+              currentRect.setAttribute('height', '' + -actualWidth);
+            } else {
+              currentRect.setAttribute('width', '' + actualHeight);
+            }
+          } else {
+            if (-actualWidth > -actualHeight) {
+              currentRect.setAttribute('height', '' + -actualWidth);
+            } else {
+              currentRect.setAttribute('width', '' + -actualHeight);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  updateRectangle(mouseEvent: any, canvas: any, currentChildPosition: number) {
+    if (this.mouseDown) {
+      const currentRect = canvas.children[currentChildPosition - 1];
+      if (currentRect != null) {
+        const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
+        const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
+        const actualWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startRectX;
+        const actualHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startRectY;
+        if (actualWidth >= 0) {
+          currentRect.setAttribute('width', '' + actualWidth);
+        } else {
+          currentRect.setAttribute('width', '' + -actualWidth);
           currentRect.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X));
         }
-        if ((mouseEvent.pageY - this.OFFSET_CANVAS_Y) >= startRectY) {
-          currentRect.setAttribute('height', '' + ((mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startRectY));
+        if (actualHeight >= 0) {
+          currentRect.setAttribute('height', '' + actualHeight);
         } else {
-          currentRect.setAttribute('height', '' + (startRectY - (mouseEvent.pageY - this.OFFSET_CANVAS_Y)));
+          currentRect.setAttribute('height', '' + -actualHeight);
           currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
         }
       }
     }
   }
 
-  finishRectangle(mouseEvent: any) {
-    this.currentRectNumber += 1;
-    this.mouseDown = false;
+  getBiggest(width: number, height: number) {
+
+    if (width > 0 && height > 0 && width > height) {
+      height = width;
+    }
+    if (width > 0 && height > 0 && width < height) {
+      width = height;
+    }
+    if (width < 0 && height > 0 && -width > height) {
+      height = -width;
+    }
+    if (width < 0 && height > 0 && -width < height) {
+      width = -height;
+    }
+    if (width > 0 && height < 0 && width > height) {
+      height = width;
+    }
+    if (width > 0 && height < 0 && width < height) {
+      width = height;
+    }
+    if (width < 0 && height > 0 && -width > height) {
+      height = -width;
+    }
+    if (width < 0 && height > 0 && -width < height) {
+      width = -height;
+    }
   }
 }

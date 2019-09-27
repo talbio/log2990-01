@@ -39,7 +39,11 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
   updateElement(mouseEvent: any, canvas: any) {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.updateRectangle(mouseEvent, canvas, this.numberOfElements);
+        if (mouseEvent.shiftKey) {
+          this.rectangleGenerator.updateSquare(mouseEvent, canvas, this.numberOfElements);
+        } else {
+          this.rectangleGenerator.updateRectangle(mouseEvent, canvas, this.numberOfElements);
+        }
         break;
       case Tools.Pencil:
         this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
