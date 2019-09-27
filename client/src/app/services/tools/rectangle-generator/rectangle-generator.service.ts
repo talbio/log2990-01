@@ -75,11 +75,6 @@ export class RectangleGeneratorService {
     this.mouseDown = true;
   }
 
-  finishRectangle(mouseEvent: any) {
-    this.currentRectNumber += 1;
-    this.mouseDown = false;
-  }
-
   updateSquare(mouseEvent: any, canvas: any, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentRect = canvas.children[currentChildPosition - 1];
@@ -88,34 +83,50 @@ export class RectangleGeneratorService {
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
         const actualWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startRectX;
         const actualHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startRectY;
-
         if (actualWidth >= 0) {
-          if (actualHeight >= 0) {
-            if (actualWidth > actualHeight) {
-              currentRect.setAttribute('height', '' + actualWidth);
-            } else {
-              currentRect.setAttribute('width', '' + actualHeight);
-            }
-          } else {
-            if (actualWidth > -actualHeight) {
-              currentRect.setAttribute('height', '' + actualWidth);
-            } else {
-              currentRect.setAttribute('width', '' + -actualHeight);
-            }
+          if(Math.abs(actualHeight) > Math.abs(actualWidth))
+          {
+            //height is bigger
+            currentRect.setAttribute('width', '' + Math.abs(actualHeight));
+          }
+          else{
+            //width is bigger, act normal
+            currentRect.setAttribute('width', '' + actualWidth);
           }
         } else {
-          if (actualHeight >= 0) {
-            if (-actualWidth > actualHeight) {
-              currentRect.setAttribute('height', '' + -actualWidth);
-            } else {
-              currentRect.setAttribute('width', '' + actualHeight);
-            }
-          } else {
-            if (-actualWidth > -actualHeight) {
-              currentRect.setAttribute('height', '' + -actualWidth);
-            } else {
-              currentRect.setAttribute('width', '' + -actualHeight);
-            }
+          if(Math.abs(actualHeight) > Math.abs(actualWidth))
+          {
+            //height is bigger
+            currentRect.setAttribute('width', '' + Math.abs(actualHeight));
+            currentRect.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X + Math.abs(actualWidth) - Math.abs(actualHeight)));
+          }
+          else{
+            //width is bigger, act normal
+            currentRect.setAttribute('width', '' + Math.abs(actualWidth));
+            currentRect.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X));
+          }
+        }
+        if (actualHeight >= 0) {
+          if(Math.abs(actualWidth) > Math.abs(actualHeight))
+          {
+            //width is bigger
+            currentRect.setAttribute('height', '' + Math.abs(actualWidth));
+          }
+          else{
+            //height is bigger, act normal
+            currentRect.setAttribute('height', '' + actualHeight);
+          }
+        } else {
+          if(Math.abs(actualWidth) > Math.abs(actualHeight))
+          {
+            //width is bigger
+            currentRect.setAttribute('height', '' + Math.abs(actualWidth));
+            currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y + Math.abs(actualHeight) - Math.abs(actualWidth)));
+          }
+          else{
+            //height is bigger, act normal
+            currentRect.setAttribute('height', '' + Math.abs(actualHeight));
+            currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
           }
         }
       }
@@ -133,18 +144,24 @@ export class RectangleGeneratorService {
         if (actualWidth >= 0) {
           currentRect.setAttribute('width', '' + actualWidth);
         } else {
-          currentRect.setAttribute('width', '' + -actualWidth);
+          currentRect.setAttribute('width', '' + Math.abs(actualWidth));
           currentRect.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X));
         }
         if (actualHeight >= 0) {
           currentRect.setAttribute('height', '' + actualHeight);
         } else {
-          currentRect.setAttribute('height', '' + -actualHeight);
+          currentRect.setAttribute('height', '' + Math.abs(actualHeight));
           currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
         }
       }
     }
   }
+
+  finishRectangle(mouseEvent: any) {
+    this.currentRectNumber += 1;
+    this.mouseDown = false;
+  }
+
 
   getBiggest(width: number, height: number) {
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Renderer2 } from '@angular/core';
+import { Component, Input, OnInit, Renderer2, HostListener } from '@angular/core';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
@@ -20,6 +20,21 @@ export class WorkZoneComponent implements OnInit {
 
   ngOnInit() {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  keyDownEvent(keyboardEvent: KeyboardEvent) { 
+    if(keyboardEvent.key === "Shift")
+    {
+      this.toolManager.changeElementShiftDown();
+    }
+  }
+  @HostListener('document:keyup', ['$event'])
+  keyUpEvent(keyboardEvent: KeyboardEvent) { 
+    if(keyboardEvent.key === "Shift")
+    {
+      this.toolManager.changeElementShiftUp();
+    }
   }
 
   onMouseDown(mouseEvent: any) {

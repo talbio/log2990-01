@@ -89,4 +89,26 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
         return;
     }
   }
+
+  changeElementShiftDown() {
+    switch(this.toolSelector._activeTool) {
+      case Tools.Rectangle:
+        //change into square
+        //this.rectangleGenerator.updateSquare(mouseEvent, this.numberOfElements);
+        break;
+      default:
+        return;
+    }
+  }
+  
+  changeElementShiftUp() {
+    switch(this.toolSelector._activeTool) {
+      case Tools.Rectangle:
+        //change into rectangle
+        //this.rectangleGenerator.updateRectangle(mouseEvent, this.numberOfElements);
+        break;
+      default:
+        return;
+    }
+  }
 }
