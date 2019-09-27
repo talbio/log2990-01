@@ -1,6 +1,7 @@
 import {Injectable, Renderer2} from '@angular/core';
 import {Tools} from '../../../data-structures/Tools';
 import {BrushGeneratorService} from '../brush-generator/brush-generator.service';
+import {ColorApplicatorService} from '../color-applicator/color-applicator.service';
 import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 import {ToolSelectorService} from '../tool-selector/tool-selector.service';
@@ -17,6 +18,7 @@ export class ToolManagerService {
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private pencilGenerator: PencilGeneratorService,
               private brushGenerator: BrushGeneratorService,
+              private colorApplicator: ColorApplicatorService,
               private toolSelector: ToolSelectorService) {
   }
 
@@ -24,7 +26,7 @@ export class ToolManagerService {
     this.renderer = renderer;
   }
 
-  createElement(mouseEvent: any, canvas: any) {
+  createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
         this.rectangleGenerator.createRectangle(mouseEvent, canvas, this.primaryColor, this.secondaryColor);
@@ -35,14 +37,20 @@ export class ToolManagerService {
       case Tools.Brush:
         this.brushGenerator.createBrushPath(mouseEvent, canvas);
         break;
+      default:
+        return;
     }
     this.numberOfElements += 1;
   }
 
-  updateElement(mouseEvent: any, canvas: any) {
+  updateElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.updateRectangle(mouseEvent, canvas, this.numberOfElements);
+        if (mouseEvent.shiftKey) {
+          this.rectangleGenerator.updateSquare(mouseEvent, canvas, this.numberOfElements);
+        } else {
+          this.rectangleGenerator.updateRectangle(mouseEvent, canvas, this.numberOfElements);
+        }
         break;
       case Tools.Pencil:
         this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
@@ -50,20 +58,66 @@ export class ToolManagerService {
       case Tools.Brush:
           this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
           break;
+      default:
+          return;
     }
   }
 
-  finishElement(mouseEvent: any) {
+  finishElement() {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.finishRectangle(mouseEvent);
+        this.rectangleGenerator.finishRectangle();
         break;
       case Tools.Pencil:
-        this.pencilGenerator.finishPenPath(mouseEvent);
+        this.pencilGenerator.finishPenPath();
         break;
       case Tools.Brush:
-        this.brushGenerator.finishBrushPath(mouseEvent);
+        this.brushGenerator.finishBrushPath();
         break;
+      default:
+        return;
+    }
+  }
+
+  changeElementLeftClick(clickedElement: HTMLElement) {
+    switch (this.toolSelector._activeTool) {
+      case Tools.ColorApplicator:
+        this.colorApplicator.changePrimaryColor(clickedElement, this.primaryColor);
+        break;
+      default:
+        return;
+    }
+  }
+
+  changeElementRightClick(clickedElement: HTMLElement) {
+    switch (this.toolSelector._activeTool) {
+      case Tools.ColorApplicator:
+        this.colorApplicator.changeSecondaryColor(clickedElement, this.secondaryColor);
+        break;
+      default:
+        return;
+    }
+  }
+
+  changeElementShiftDown() {
+    switch (this.toolSelector._activeTool) {
+      case Tools.Rectangle:
+        // change into square
+        // this.rectangleGenerator.updateSquare(mouseEvent, this.numberOfElements);
+        break;
+      default:
+        return;
+    }
+  }
+
+  changeElementShiftUp() {
+    switch (this.toolSelector._activeTool) {
+      case Tools.Rectangle:
+        // change into rectangle
+        // this.rectangleGenerator.updateRectangle(mouseEvent, this.numberOfElements);
+        break;
+      default:
+        return;
     }
   }
 
@@ -78,5 +132,4 @@ export class ToolManagerService {
     }
     this.numberOfElements = 1;
   }
-
 }

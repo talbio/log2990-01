@@ -1,3 +1,4 @@
+import { Component, Input, OnInit, Renderer2, HostListener } from '@angular/core';
 import {AfterViewInit, Component, Input, OnInit, Renderer2} from '@angular/core';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
@@ -32,15 +33,38 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.toolManager.loadRenderer(this.renderer);
   }
 
-  onMouseDown(mouseEvent: any) {
+  @HostListener('document:keydown', ['$event'])
+  keyDownEvent(keyboardEvent: KeyboardEvent) {
+    if (keyboardEvent.key === "Shift") {
+      this.toolManager.changeElementShiftDown();
+    }
+  }
+  @HostListener('document:keyup', ['$event'])
+  keyUpEvent(keyboardEvent: KeyboardEvent) {
+    if (keyboardEvent.key === "Shift") {
+      this.toolManager.changeElementShiftUp();
+    }
+  }
+
+  onMouseDown(mouseEvent: MouseEvent) {
     this.toolManager.createElement(mouseEvent, this.canvasElement);
   }
 
-  onMouseMove(mouseEvent: any) {
+  onMouseMove(mouseEvent: MouseEvent) {
     this.toolManager.updateElement(mouseEvent, this.canvasElement);
   }
 
-  onMouseUp(mouseEvent: any) {
-    this.toolManager.finishElement(mouseEvent);
+  onMouseUp() {
+    this.toolManager.finishElement();
+  }
+
+  onLeftClick(mouseEvent: Event) {
+    this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
+  }
+
+  onRightClick(mouseEvent: Event) {
+    this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
+    //deactivate context menu on right click
+    return false;
   }
 }

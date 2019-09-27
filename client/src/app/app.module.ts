@@ -1,3 +1,4 @@
+import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
 import {PortalModule} from '@angular/cdk/portal';
 import {HttpClientModule} from '@angular/common/http';
 import {NgModule } from '@angular/core';
@@ -17,9 +18,13 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AppComponent } from './components/app/app.component';
+import { ColorPaletteComponent } from './components/draw-view/color-tool/color-palette.component';
+import { ColorSliderComponent } from './components/draw-view/color-tool/color-slider.component';
+import { ColorToolComponent } from './components/draw-view/color-tool/color-tool.component';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
 import { ToolsAttributesComponent } from './components/main-view/tools-attributes/tools-attributes.component';
 import { WorkZoneComponent } from './components/main-view/work-zone/work-zone.component';
+import { ColorPickerDialogComponent } from './components/modals/color-picker-dialog/color-picker-dialog.component';
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
@@ -39,9 +44,13 @@ import { LateralBarComponent } from './components/main-view/lateral-bar/lateral-
     WorkZoneComponent,
     DrawingViewComponent,
     WelcomeModalComponent,
+    ColorToolComponent,
+    ColorPaletteComponent,
+    ColorSliderComponent,
     GiveUpChangesDialogComponent,
     ToolsAttributesComponent,
     LateralBarComponent,
+    ColorPickerDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,6 +72,8 @@ import { LateralBarComponent } from './components/main-view/lateral-bar/lateral-
     MatCardModule,
     PortalModule,
     MatSelectModule,
+    MatIconModule,
+
   ],
   providers: [
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'legacy' } },
@@ -73,12 +84,15 @@ import { LateralBarComponent } from './components/main-view/lateral-bar/lateral-
     PencilGeneratorService,
     ToolSelectorService,
     BrushGeneratorService,
+    ColorApplicatorService,
   ],
   bootstrap: [AppComponent],
   entryComponents: [
+    ColorToolComponent,
     CreateDrawingDialogComponent,
     GiveUpChangesDialogComponent,
     ToolsAttributesComponent,
+    ColorPickerDialogComponent,
   ],
 })
 export class AppModule {

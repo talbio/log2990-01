@@ -1,6 +1,6 @@
 /* tslint:disable:no-unused-variable */
 
-import { async, inject, TestBed } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { ToolManagerService } from './tool-manager.service';
 
 describe('Service: ToolManager', () => {

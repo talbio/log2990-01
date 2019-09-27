@@ -8,8 +8,8 @@ export class BrushGeneratorService {
 
   private strokeWidth: number;
   private currentBrushPathNumber: number;
-  private OFFSET_CANVAS_X: any;
-  private OFFSET_CANVAS_Y: any;
+  private OFFSET_CANVAS_X: number;
+  private OFFSET_CANVAS_Y: number;
   private mouseDown: boolean;
   private currentBrushPattern: string;
 
@@ -36,7 +36,7 @@ export class BrushGeneratorService {
     return this.currentBrushPattern;
   }
 
-  createBrushPath(mouseEvent: any, canvas: any) {
+  createBrushPath(mouseEvent: MouseEvent, canvas: HTMLElement) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
@@ -54,9 +54,8 @@ export class BrushGeneratorService {
   }
 
   // Updates the path when the mouse is moving (mousedown)
-  updateBrushPath(mouseEvent: any, canvas: any, currentChildPosition: number) {
+  updateBrushPath(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
-      // const currentPath = document.getElementById("brushPath" + this.currentBrushPathNumber);
       const currentPath = canvas.children[currentChildPosition - 1];
       if (currentPath != null) {
         currentPath.setAttribute('d',
@@ -67,7 +66,7 @@ export class BrushGeneratorService {
   }
 
   // Finalizes the path, sets up the next one
-  finishBrushPath(e: any) {
+  finishBrushPath() {
     this.currentBrushPathNumber += 1;
     this.mouseDown = false;
   }
