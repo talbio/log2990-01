@@ -34,6 +34,7 @@ import { PencilGeneratorService } from './services/tools/pencil-generator/pencil
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
 import { ToolSelectorService } from './services/tools/tool-selector/tool-selector.service';
+import { ColorService } from './services/tools/color/color.service';
 
 @NgModule({
   declarations: [
@@ -83,6 +84,7 @@ import { ToolSelectorService } from './services/tools/tool-selector/tool-selecto
     ToolSelectorService,
     BrushGeneratorService,
     ColorApplicatorService,
+    ColorService,
   ],
   bootstrap: [AppComponent],
   entryComponents: [
