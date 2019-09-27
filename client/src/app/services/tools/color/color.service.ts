@@ -13,6 +13,8 @@ export class ColorService {
     @Input()
     color: string;
 
+    // test commit
+    
     constructor(private storage: StorageService, public dialog: MatDialog, private toolManager: ToolManagerService) {
     }
 
