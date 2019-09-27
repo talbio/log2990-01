@@ -37,29 +37,22 @@ export class WorkZoneComponent implements OnInit {
     }
   }
 
-  onMouseDown(mouseEvent: any) {
+  onMouseDown(mouseEvent: MouseEvent) {
     this.toolManager.createElement(mouseEvent, this.canvasElement);
   }
 
-  onMouseMove(mouseEvent: any) {
+  onMouseMove(mouseEvent: MouseEvent) {
     this.toolManager.updateElement(mouseEvent, this.canvasElement);
   }
 
-  onMouseUp(mouseEvent: any) {
-    this.toolManager.finishElement(mouseEvent);
+  onMouseUp() {
+    this.toolManager.finishElement();
   }
 
   onLeftClick(mouseEvent: any) {
     this.toolManager.changeElementLeftClick(mouseEvent.target);
   }
 
-  onShiftDown(keyboardEvent: KeyboardEvent) {
-     console.log('shift marche!');
-    //  if (keyboardEvent.key === 'Shift') {
-    //   // this.toolManager.shiftDown = true;
-
-    // }
-  }
   onRightClick(mouseEvent: any) {
     this.toolManager.changeElementRightClick(mouseEvent.target);
     //deactivate context menu on right click

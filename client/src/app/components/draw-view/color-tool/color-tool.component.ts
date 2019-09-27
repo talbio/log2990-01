@@ -64,7 +64,7 @@ export class ColorToolComponent implements OnInit {
       return this.storage.getSecondaryColor();
     }
     this.storage.setSecondaryColor('#000000ff');
-    this.toolManager.primaryColor = '#000000ff';
+    this.toolManager.secondaryColor = '#000000ff';
     return '#000000ff';
   }
 

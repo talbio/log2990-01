@@ -21,9 +21,8 @@ export class PencilGeneratorService {
   get _strokeWidth(): number {
     return this.strokeWidth;
   }
-  // TODO: checker les childs, rajouter lepaisseur en paremetress
   // Initializes the path
-  createPenPath(mouseEvent: any, canvas: any, secondaryColor: string) {
+  createPenPath(mouseEvent: MouseEvent, canvas: Element, secondaryColor: string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
@@ -42,9 +41,8 @@ export class PencilGeneratorService {
   /**
    * @desc // Updates the path when the mouse is moving (mousedown)
    */
-  updatePenPath(mouseEvent: any, canvas: any, currentChildPosition: number) {
+  updatePenPath(mouseEvent: MouseEvent, canvas: Element, currentChildPosition: number) {
     if (this.mouseDown) {
-      // const currentPath = document.getElementById("penPath" + this.currentPenPathNumber);
       const currentPath = canvas.children[currentChildPosition - 1];
       if (currentPath != null) {
         currentPath.setAttribute('d',
@@ -57,7 +55,7 @@ export class PencilGeneratorService {
   /**
    * @desc Finalizes the path, sets up the next one
    */
-  finishPenPath(e: any) {
+  finishPenPath() {
     this.currentPencilPathNumber += 1;
     this.mouseDown = false;
   }

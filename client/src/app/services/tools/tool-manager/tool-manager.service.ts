@@ -19,7 +19,7 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
             private colorApplicator: ColorApplicatorService,
             private toolSelector: ToolSelectorService) { }
 
-  createElement(mouseEvent: any, canvas: any) {
+  createElement(mouseEvent: MouseEvent, canvas: Element) {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
         this.rectangleGenerator.createRectangle(mouseEvent, canvas, this.primaryColor, this.secondaryColor);
@@ -36,7 +36,7 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
     this.numberOfElements += 1;
   }
 
-  updateElement(mouseEvent: any, canvas: any) {
+  updateElement(mouseEvent: MouseEvent, canvas: Element) {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
         if (mouseEvent.shiftKey) {
@@ -56,35 +56,35 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
     }
   }
 
-  finishElement(mouseEvent: any) {
+  finishElement() {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.finishRectangle(mouseEvent);
+        this.rectangleGenerator.finishRectangle();
         break;
       case Tools.Pencil:
-        this.pencilGenerator.finishPenPath(mouseEvent);
+        this.pencilGenerator.finishPenPath();
         break;
       case Tools.Brush:
-        this.brushGenerator.finishBrushPath(mouseEvent);
+        this.brushGenerator.finishBrushPath();
         break;
       default:
         return;
     }
   }
 
-  changeElementLeftClick(mouseEvent: any) {
+  changeElementLeftClick(clickedElement: Element) {
     switch (this.toolSelector._activeTool) {
       case Tools.ColorApplicator:
-        this.colorApplicator.changePrimaryColor(mouseEvent, this.primaryColor);
+        this.colorApplicator.changePrimaryColor(clickedElement, this.primaryColor);
       default:
         return;
     }
   }
 
-  changeElementRightClick(mouseEvent: any) {
+  changeElementRightClick(clickedElement: Element) {
     switch (this.toolSelector._activeTool) {
       case Tools.ColorApplicator:
-        this.colorApplicator.changeSecondaryColor(mouseEvent, this.secondaryColor);
+        this.colorApplicator.changeSecondaryColor(clickedElement, this.secondaryColor);
       default:
         return;
     }

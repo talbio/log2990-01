@@ -6,8 +6,8 @@ export class RectangleGeneratorService {
 
   private OFFSET_CANVAS_Y: number;
   private OFFSET_CANVAS_X: number;
-  private currentRectNumber = 0;
-  private mouseDown = false;
+  private currentRectNumber:number = 0;
+  private mouseDown:boolean = false;
 
   // attributes of rectangle
   private strokeWidth: number;
@@ -35,7 +35,7 @@ export class RectangleGeneratorService {
     this.plotType = plotType;
   }
 
-  createRectangle(mouseEvent: any, canvas: any, primaryColor: string, secondaryColor: string) {
+  createRectangle(mouseEvent: MouseEvent, canvas: Element, primaryColor: string, secondaryColor: string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
@@ -75,7 +75,7 @@ export class RectangleGeneratorService {
     this.mouseDown = true;
   }
 
-  updateSquare(mouseEvent: any, canvas: any, currentChildPosition: number) {
+  updateSquare(mouseEvent: MouseEvent, canvas: Element, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentRect = canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
@@ -133,7 +133,7 @@ export class RectangleGeneratorService {
     }
   }
 
-  updateRectangle(mouseEvent: any, canvas: any, currentChildPosition: number) {
+  updateRectangle(mouseEvent: MouseEvent, canvas: Element, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentRect = canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
@@ -157,37 +157,8 @@ export class RectangleGeneratorService {
     }
   }
 
-  finishRectangle(mouseEvent: any) {
+  finishRectangle() {
     this.currentRectNumber += 1;
     this.mouseDown = false;
-  }
-
-
-  getBiggest(width: number, height: number) {
-
-    if (width > 0 && height > 0 && width > height) {
-      height = width;
-    }
-    if (width > 0 && height > 0 && width < height) {
-      width = height;
-    }
-    if (width < 0 && height > 0 && -width > height) {
-      height = -width;
-    }
-    if (width < 0 && height > 0 && -width < height) {
-      width = -height;
-    }
-    if (width > 0 && height < 0 && width > height) {
-      height = width;
-    }
-    if (width > 0 && height < 0 && width < height) {
-      width = height;
-    }
-    if (width < 0 && height > 0 && -width > height) {
-      height = -width;
-    }
-    if (width < 0 && height > 0 && -width < height) {
-      width = -height;
-    }
   }
 }
