@@ -1,21 +1,28 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Renderer2} from '@angular/core';
+import {Tools} from '../../../data-structures/Tools';
 import {BrushGeneratorService} from '../brush-generator/brush-generator.service';
 import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 import {ToolSelectorService} from '../tool-selector/tool-selector.service';
-import {Tools} from '../../../data-structures/Tools';
 
 @Injectable()
 export class ToolManagerService {
 
-private numberOfElements = 1;
-primaryColor = 'white';
-secondaryColor = 'black';
+  private numberOfElements = 1;
+  private renderer: Renderer2;
+  private canvasElement: any;
+  primaryColor = 'white';
+  secondaryColor = 'black';
 
-constructor(private rectangleGenerator: RectangleGeneratorService,
-            private pencilGenerator: PencilGeneratorService,
-            private brushGenerator: BrushGeneratorService,
-            private toolSelector: ToolSelectorService) { }
+  constructor(private rectangleGenerator: RectangleGeneratorService,
+              private pencilGenerator: PencilGeneratorService,
+              private brushGenerator: BrushGeneratorService,
+              private toolSelector: ToolSelectorService) {
+  }
+
+  loadRenderer(renderer: Renderer2) {
+    this.renderer = renderer;
+  }
 
   createElement(mouseEvent: any, canvas: any) {
     switch (this.toolSelector._activeTool) {
@@ -59,4 +66,17 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
         break;
     }
   }
+
+  drawingNonEmpty(): boolean {
+    return this.numberOfElements > 1;
+  }
+
+  deleteAllDrawings(): void {
+    this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+    for (let i = this.canvasElement.children.length - 1; i > 0 ; i--) {
+      this.canvasElement.children[i].remove();
+    }
+    this.numberOfElements = 1;
+  }
+
 }
