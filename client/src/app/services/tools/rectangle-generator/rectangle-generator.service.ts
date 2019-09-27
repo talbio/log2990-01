@@ -4,8 +4,8 @@ import {PlotType} from '../../../data-structures/PlotType';
 @Injectable()
 export class RectangleGeneratorService {
 
-  private OFFSET_CANVAS_Y: any;
-  private OFFSET_CANVAS_X: any;
+  private OFFSET_CANVAS_Y: number;
+  private OFFSET_CANVAS_X: number;
   private currentRectNumber = 0;
   private mouseDown = false;
 
