@@ -49,18 +49,22 @@ export class ColorToolComponent implements OnInit {
   assignPrimaryColor(): string {
     const color = this.storage.getPrimaryColor();
     if (color !== 'empty') {
+      this.toolManager.primaryColor = this.storage.getPrimaryColor();
       return this.storage.getPrimaryColor();
     }
     this.storage.setPrimaryColor('#ffffffff');
+    this.toolManager.primaryColor = '#ffffffff';
     return '#ffffffff';
   }
 
   assignSecondaryColor(): string {
     const color = this.storage.getSecondaryColor();
     if (color !== 'empty') {
+      this.toolManager.secondaryColor = this.storage.getSecondaryColor()
       return this.storage.getSecondaryColor();
     }
     this.storage.setSecondaryColor('#000000ff');
+    this.toolManager.secondaryColor = '#000000ff';
     return '#000000ff';
   }
 

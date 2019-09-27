@@ -19,7 +19,7 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
             private colorApplicator: ColorApplicatorService,
             private toolSelector: ToolSelectorService) { }
 
-  createElement(mouseEvent: any, canvas: any) {
+  createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
         this.rectangleGenerator.createRectangle(mouseEvent, canvas, this.primaryColor, this.secondaryColor);
@@ -36,10 +36,14 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
     this.numberOfElements += 1;
   }
 
-  updateElement(mouseEvent: any, canvas: any) {
+  updateElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.updateRectangle(mouseEvent, canvas, this.numberOfElements);
+        if (mouseEvent.shiftKey) {
+          this.rectangleGenerator.updateSquare(mouseEvent, canvas, this.numberOfElements);
+        } else {
+          this.rectangleGenerator.updateRectangle(mouseEvent, canvas, this.numberOfElements);
+        }
         break;
       case Tools.Pencil:
         this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
@@ -52,35 +56,57 @@ constructor(private rectangleGenerator: RectangleGeneratorService,
     }
   }
 
-  finishElement(mouseEvent: any) {
+  finishElement() {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.finishRectangle(mouseEvent);
+        this.rectangleGenerator.finishRectangle();
         break;
       case Tools.Pencil:
-        this.pencilGenerator.finishPenPath(mouseEvent);
+        this.pencilGenerator.finishPenPath();
         break;
       case Tools.Brush:
-        this.brushGenerator.finishBrushPath(mouseEvent);
+        this.brushGenerator.finishBrushPath();
         break;
       default:
         return;
     }
   }
 
-  changeElementLeftClick(mouseEvent: any) {
+  changeElementLeftClick(clickedElement: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.ColorApplicator:
-        this.colorApplicator.changePrimaryColor(mouseEvent, this.primaryColor);
+        this.colorApplicator.changePrimaryColor(clickedElement, this.primaryColor);
       default:
         return;
     }
   }
 
-  changeElementRightClick(mouseEvent: any) {
+  changeElementRightClick(clickedElement: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.ColorApplicator:
-        this.colorApplicator.changeSecondaryColor(mouseEvent, this.secondaryColor);
+        this.colorApplicator.changeSecondaryColor(clickedElement, this.secondaryColor);
+      default:
+        return;
+    }
+  }
+
+  changeElementShiftDown() {
+    switch(this.toolSelector._activeTool) {
+      case Tools.Rectangle:
+        //change into square
+        //this.rectangleGenerator.updateSquare(mouseEvent, this.numberOfElements);
+        break;
+      default:
+        return;
+    }
+  }
+  
+  changeElementShiftUp() {
+    switch(this.toolSelector._activeTool) {
+      case Tools.Rectangle:
+        //change into rectangle
+        //this.rectangleGenerator.updateRectangle(mouseEvent, this.numberOfElements);
+        break;
       default:
         return;
     }

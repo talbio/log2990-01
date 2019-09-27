@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Renderer2 } from '@angular/core';
+import { Component, Input, OnInit, Renderer2, HostListener } from '@angular/core';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
@@ -10,7 +10,7 @@ export class WorkZoneComponent implements OnInit {
 
   @Input() width: number;
   @Input() height: number;
-  private canvasElement: any;
+  private canvasElement: HTMLElement;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2) {
@@ -22,24 +22,39 @@ export class WorkZoneComponent implements OnInit {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
   }
 
-  onMouseDown(mouseEvent: any) {
+  @HostListener('document:keydown', ['$event'])
+  keyDownEvent(keyboardEvent: KeyboardEvent) { 
+    if(keyboardEvent.key === "Shift")
+    {
+      this.toolManager.changeElementShiftDown();
+    }
+  }
+  @HostListener('document:keyup', ['$event'])
+  keyUpEvent(keyboardEvent: KeyboardEvent) { 
+    if(keyboardEvent.key === "Shift")
+    {
+      this.toolManager.changeElementShiftUp();
+    }
+  }
+
+  onMouseDown(mouseEvent: MouseEvent) {
     this.toolManager.createElement(mouseEvent, this.canvasElement);
   }
 
-  onMouseMove(mouseEvent: any) {
+  onMouseMove(mouseEvent: MouseEvent) {
     this.toolManager.updateElement(mouseEvent, this.canvasElement);
   }
 
-  onMouseUp(mouseEvent: any) {
-    this.toolManager.finishElement(mouseEvent);
+  onMouseUp() {
+    this.toolManager.finishElement();
   }
 
-  onLeftClick(mouseEvent: any) {
-    this.toolManager.changeElementLeftClick(mouseEvent.target);
+  onLeftClick(mouseEvent: Event) {
+    this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
   }
 
-  onRightClick(mouseEvent: any) {
-    this.toolManager.changeElementRightClick(mouseEvent.target);
+  onRightClick(mouseEvent: Event) {
+    this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
     //deactivate context menu on right click
     return false;
   }
