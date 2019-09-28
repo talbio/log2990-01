@@ -32,14 +32,16 @@ export class ColorService {
 
     constructor(private storage: StorageService) {
         this.assignTopTenColors();
+        this.assignPrimaryColor();
+        this.assignSecondaryColor();
     }
 
     getPrimaryColor(): string {
-        return this.primaryColor;
+        return this.storage.getPrimaryColor();
     }
 
     getSecondaryColor(): string {
-        return this.secondaryColor;
+        return this.storage.getSecondaryColor();
     }
 
     setPrimaryColor(color:string):void{
@@ -59,22 +61,22 @@ export class ColorService {
     }
 
 
-    assignPrimaryColor(): string {
+    assignPrimaryColor(): void {
         const color = this.storage.getPrimaryColor();
         if (color !== 'empty') {
-            return this.storage.getPrimaryColor();
+            this.primaryColor = this.storage.getPrimaryColor();
         }
-        this.storage.setPrimaryColor('#FFFFFF');
-        return '#FFFFFF';
+        this.storage.setPrimaryColor('#000000');
+        this.primaryColor = '#000000';
     }
 
-    assignSecondaryColor(): string {
+    assignSecondaryColor(): void {
         const color = this.storage.getSecondaryColor();
         if (color !== 'empty') {
-            return this.storage.getSecondaryColor();
+            this.secondaryColor = this.storage.getSecondaryColor();
         }
-        this.storage.setSecondaryColor('#0000ff');
-        return '#000000';
+        this.storage.setSecondaryColor('#FFFFFF');
+        this.secondaryColor = '#FFFFFF';
     }
 
     addToTopTenColors(color:string):void{

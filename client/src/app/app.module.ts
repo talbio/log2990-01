@@ -36,6 +36,7 @@ import { ToolManagerService } from './services/tools/tool-manager/tool-manager.s
 import { ToolSelectorService } from './services/tools/tool-selector/tool-selector.service';
 import { ColorService } from './services/tools/color/color.service';
 import { LastTenColorsComponent } from './components/draw-view/color-tool/last-ten-colors.component';
+import { LateralBarComponent } from './components/main-view/lateral-bar/lateral-bar.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { LastTenColorsComponent } from './components/draw-view/color-tool/last-t
     ColorSliderComponent,
     GiveUpChangesDialogComponent,
     ToolsAttributesComponent,
+    LateralBarComponent,
     ColorPickerDialogComponent,
     LastTenColorsComponent,
   ],

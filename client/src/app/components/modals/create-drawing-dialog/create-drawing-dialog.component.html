@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>{{dialogTitle}}</h2>
+<h2 mat-dialog-title>{{DIALOG_TITLE}}</h2>
 <mat-dialog-content [formGroup]="drawingForm">
 
   <form [formGroup]="drawingForm">
@@ -10,7 +10,7 @@
                  (focus)=clear(height)
                  placeholder="Entrez la hauteur"
                  formControlName="height">
-          <mat-error *ngIf="height.invalid && height.touched">{{getErrorMsg('posNumber')}}</mat-error>
+          <mat-error *ngIf="height.invalid && height.touched">{{posNumberRequired}}</mat-error>
         </mat-form-field>
       </li>
 
@@ -20,7 +20,7 @@
                  (focus)=clear(width)
                  placeholder="Entrez la largeur"
                  formControlName="width">
-          <mat-error *ngIf="width.invalid && width.touched">{{getErrorMsg('posNumber')}}</mat-error>
+          <mat-error *ngIf="width.invalid && width.touched">{{posNumberRequired}}</mat-error>
         </mat-form-field>
       </li>
 
@@ -41,7 +41,7 @@
                  placeholder="Ou spécifiez une valeur hex"
                  formControlName="color">
           <mat-hint>Commencez par le symbole #</mat-hint>
-          <mat-error *ngIf="color.invalid && width.touched">{{getErrorMsg('hexValue')}}</mat-error>
+          <mat-error *ngIf="color.invalid && width.touched">{{colorHasToBeHexValue}}</mat-error>
         </mat-form-field>
       </li>
 
