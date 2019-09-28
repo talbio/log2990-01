@@ -28,6 +28,42 @@
       <mat-icon svgIcon="rectangle"></mat-icon></button>
   </mat-list-item>
 
+  <!-- Color Applicator button -->
+  <mat-list-item>
+    <button mat-icon-button
+            (click)="toggleAttributesAndSetTool(Tools.ColorApplicator)"
+            matTooltip="Applicateur de couleur"
+            matTooltipPosition="left">
+      <mat-icon>format_paint</mat-icon></button>
+  </mat-list-item>
+
+  <!-- primary color opacity -->
+  <mat-list-item>
+    <button mat-icon-button
+            (click)="toggleAttributesAndSetTool(Tools.ColorApplicator)"
+            matTooltip="Transparence de la couleur primaire"
+            matTooltipPosition="left">
+      <mat-icon>opacity</mat-icon>
+    </button>
+  </mat-list-item>
+  <br />
+
+  <!-- primary & secondary colors -->
+  <mat-list-item>
+        <app-color-tool></app-color-tool>
+  </mat-list-item>
+  <br />
+
+  <!-- secondary color opacity -->
+  <mat-list-item>
+    <button mat-icon-button
+            (click)="toggleAttributesAndSetTool(Tools.ColorApplicator)"
+            matTooltip="transparence de la couleur secondaire" matTooltipPosition="left" mat-button>
+          <mat-icon>opacity</mat-icon>
+    </button>
+  </mat-list-item>
+  <br />
+
   <!-- bottom elements -->
   <div [ngClass]="appropriateClass">
 

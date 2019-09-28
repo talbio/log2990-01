@@ -1,7 +1,7 @@
-import { ToolManagerService } from './../../../services/tools/tool-manager/tool-manager.service';
 import { Component, Input, OnInit  } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { ColorPickerDialogComponent } from '../../modals/color-picker-dialog/color-picker-dialog.component';
 
 @Component({

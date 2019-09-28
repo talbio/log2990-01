@@ -15,15 +15,15 @@ export interface DialogData {
 })
 export class CreateDrawingDialogComponent implements OnInit {
 
-  protected readonly dialogTitle = 'Créer un nouveau dessin';
+  protected readonly DIALOG_TITLE = 'Créer un nouveau dessin';
   protected readonly POS_NUMBER_REQUIRED = 'Nombre positif requis!';
   protected readonly COLOR_HAS_TO_BE_A_HEX_VALUE = 'La couleur doit être une valeur hexadécimale !';
   private readonly DEFAULT_WHITE_COLOR = '#FFFFFF';
 
+  protected drawingForm: FormGroup;
   private canvasHeight: number;
   private canvasWidth: number;
   private workZoneSize: DOMRect;
-  protected drawingForm: FormGroup;
 
   constructor(private dialogRef: MatDialogRef<CreateDrawingDialogComponent>,
               private formBuilder: FormBuilder,
