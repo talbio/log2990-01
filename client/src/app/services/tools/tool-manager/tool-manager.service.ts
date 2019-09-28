@@ -30,7 +30,7 @@ export class ToolManagerService {
   createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.createRectangle(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+        this.rectangleGenerator.createRectangle(mouseEvent, canvas, this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
         break;
       case Tools.Pencil:
         this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getPrimaryColor());
