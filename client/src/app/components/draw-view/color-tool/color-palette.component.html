@@ -1,7 +1,8 @@
-<svg class="top-ten" width="25" height="25" *ngFor="let color of topTenColors">
+<svg class="top-ten" width="25" height="25" *ngFor="let color of colorService.topTenColors">
     <rect width="25" height="25" [style.fill]=color (click)=selectColor(color)></rect>
 </svg>
 <br />
 <canvas #canvas class="color-palette" width="150" height="150" (mousedown)="onMouseDown($event)"
     (mousemove)="onMouseMove($event)">
 </canvas>
+

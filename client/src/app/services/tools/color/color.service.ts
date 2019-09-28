@@ -1,8 +1,20 @@
 import { Injectable, Input } from '@angular/core';
 import { StorageService } from '../../storage/storage.service';
-import { MatDialog } from '@angular/material';
-import { ToolManagerService } from '../tool-manager/tool-manager.service';
-import { ColorPickerDialogComponent } from 'src/app/components/modals/color-picker-dialog/color-picker-dialog.component';
+
+enum Colors {
+
+    BLUE = 'blue',
+    RED = 'red',
+    GREEN = 'green',
+    YELLOW = 'yellow',
+    PINK = 'pink',
+    BLACK = 'black',
+    GREY = 'grey',
+    BROWN = 'brown',
+    ORANGE = 'orange',
+    PURPLE = 'purple'
+
+}
 
 @Injectable({
     providedIn: 'root',
@@ -12,16 +24,15 @@ export class ColorService {
 
     @Input()
     color: string;
-
-    // test commit
-    
-    constructor(private storage: StorageService, public dialog: MatDialog, private toolManager: ToolManagerService) {
-    }
-
     primaryColor: string;
     secondaryColor: string;
+    topTenColors: string[];
     primaryTransparency: number;
     secondaryTransparency: number;
+
+    constructor(private storage: StorageService) {
+        this.assignTopTenColors();
+    }
 
     getPrimaryColor(): string {
         return this.primaryColor;
@@ -31,24 +42,22 @@ export class ColorService {
         return this.secondaryColor;
     }
 
-    openDialog(colorToModify: string): void {
-        const dialogRef = this.dialog.open(ColorPickerDialogComponent, {
-            height: '300px',
-            width: '500px',
-        });
-        dialogRef.afterClosed().subscribe((selectedColor) => {
-            if (colorToModify === 'primary') {
-                this.primaryColor = selectedColor;
-                this.storage.setPrimaryColor(selectedColor);
-                this.toolManager.primaryColor = selectedColor;
-            }
-            if (colorToModify === 'secondary') {
-                this.secondaryColor = selectedColor;
-                this.storage.setSecondaryColor(selectedColor);
-                this.toolManager.secondaryColor = selectedColor;
-            }
-        });
+    setPrimaryColor(color:string):void{
+        this.storage.setPrimaryColor(color);
     }
+
+    setSecondaryColor(color:string):void{
+        this.storage.setSecondaryColor(color);
+    }
+
+
+    assignTopTenColors(): void {
+        if (!this.topTenColors) {
+            this.topTenColors = [Colors.BLUE, Colors.RED, Colors.GREEN, Colors.YELLOW, Colors.PINK, Colors.BLACK, Colors.GREY, Colors.BROWN, Colors.ORANGE, Colors.PURPLE];
+        }
+
+    }
+
 
     assignPrimaryColor(): string {
         const color = this.storage.getPrimaryColor();
@@ -68,6 +77,16 @@ export class ColorService {
         return '#000000';
     }
 
+    addToTopTenColors(color:string):void{
+        if (color !== undefined){
+              for ( let i :number = 0; i< this.topTenColors.length; i++){
+              this.topTenColors[i] = this.topTenColors[i+1];
+              }
+              this.topTenColors.splice(-1,1);
+              this.topTenColors.push(color);
+        }
+    }
+
     switchMainColors(): void {
         const temp = this.primaryColor;
         this.primaryColor = this.secondaryColor;
@@ -79,4 +98,6 @@ export class ColorService {
     modifyPrimaryColorTransparency(transparency: number) {
         this.primaryTransparency = transparency;
     }
+    
 }
+

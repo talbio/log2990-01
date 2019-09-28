@@ -1,7 +1,7 @@
 import {
     AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild
 } from '@angular/core';
-import { StorageService } from 'src/app/services/storage/storage.service';
+import { ColorService } from 'src/app/services/tools/color/color.service';
 
 @Component({
     selector: 'app-color-palette',
@@ -10,8 +10,6 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 })
 
 export class ColorPaletteComponent implements AfterViewInit, OnChanges {
-
-    topTenColors = ['blue', 'white', 'red', 'black', 'orange', 'yellow', 'green', 'brown', 'lime', 'beige'];
 
     @Input()
     hue: string;
@@ -28,7 +26,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
     private mousedown = false;
 
-    constructor( private storage: StorageService) {}
+    constructor(protected colorService: ColorService) {}
 
     ngAfterViewInit() {
         this.draw();
@@ -75,7 +73,6 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
             const pos = this.selectedPosition;
             if (pos) {
                 this.color.emit(this.getColorAtPosition(pos.x, pos.y));
-                this.storage.setPrimaryColor(this.getColorAtPosition(pos.x, pos.y));
             }
         }
     }
@@ -90,7 +87,6 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
         this.draw();
         this.color.emit(this.getColorAtPosition(evt.offsetX, evt.offsetY));
-        this.storage.setPrimaryColor(this.getColorAtPosition(evt.offsetX, evt.offsetY));
 
     }
 
@@ -107,8 +103,8 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     }
 
     emitColor(x: number, y: number) {
-        const rgbaColor = this.getColorAtPosition(x, y);
-        this.color.emit(rgbaColor);
+        const color = this.getColorAtPosition(x, y);
+        this.color.emit(color);
     }
 
     selectColor(color: string): void {
