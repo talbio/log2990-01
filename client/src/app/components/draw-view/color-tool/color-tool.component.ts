@@ -13,7 +13,7 @@ import { ColorPickerDialogComponent } from '../../modals/color-picker-dialog/col
 export class ColorToolComponent {
 
 
-  constructor(protected colorModifier: ColorService, public dialog: MatDialog) { }
+  constructor(protected colorService: ColorService, public dialog: MatDialog) { }
 
   openDialog(colorToModify: string): void {
     const dialogRef = this.dialog.open(ColorPickerDialogComponent, {
@@ -21,16 +21,17 @@ export class ColorToolComponent {
       width: '500px',
     });
     dialogRef.afterClosed().subscribe((selectedColor) => {
+      if(selectedColor !== undefined){
+      this.colorService.addToTopTenColors(selectedColor);
       if (colorToModify === 'primary') {
-        this.colorModifier.primaryColor = selectedColor;
-        this.colorModifier.setPrimaryColor(selectedColor);
-        //this.toolManager.primaryColor = selectedColor;
+        this.colorService.primaryColor = selectedColor;
+        this.colorService.setPrimaryColor(selectedColor);
       }
       if (colorToModify === 'secondary') {
-        this.colorModifier.secondaryColor = selectedColor;
-        this.colorModifier.setSecondaryColor(selectedColor);
-        //     this.colorModifier.toolManager.secondaryColor = selectedColor;
+        this.colorService.secondaryColor = selectedColor;
+        this.colorService.setSecondaryColor(selectedColor);
       }
+    }
     });
   }
 

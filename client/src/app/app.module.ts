@@ -35,6 +35,7 @@ import { RectangleGeneratorService } from './services/tools/rectangle-generator/
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
 import { ToolSelectorService } from './services/tools/tool-selector/tool-selector.service';
 import { ColorService } from './services/tools/color/color.service';
+import { LastTenColorsComponent } from './components/draw-view/color-tool/last-ten-colors.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { ColorService } from './services/tools/color/color.service';
     GiveUpChangesDialogComponent,
     ToolsAttributesComponent,
     ColorPickerDialogComponent,
+    LastTenColorsComponent,
   ],
   imports: [
     BrowserModule,

@@ -12,6 +12,6 @@ export class ColorPickerDialogComponent  {
     constructor(private dialogRef: MatDialogRef<ColorPickerDialogComponent>, protected colorService: ColorService) {}
 
     close(): void {
-        this.dialogRef.close();
+      this.dialogRef.close();
       }
 }
