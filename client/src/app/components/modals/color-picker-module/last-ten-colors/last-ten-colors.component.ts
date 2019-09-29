@@ -8,14 +8,14 @@ import { ColorService } from 'src/app/services/tools/color/color.service';
   })
 
   export class LastTenColorsComponent {
-    
-    @Output()
-    color: EventEmitter<string> = new EventEmitter(true);
-    
-    constructor(protected colorService:ColorService){}
 
-    
+    @Output()
+    colorSelected: EventEmitter<string> = new EventEmitter(true);
+
+    constructor(protected colorService: ColorService){}
+
+
     selectColor(color: string): void {
-        this.color.emit(color);
+        this.colorSelected.emit(color);
       }
   }

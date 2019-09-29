@@ -15,7 +15,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     hue: string;
 
     @Output()
-    color: EventEmitter<string> = new EventEmitter(true);
+    colorSelected: EventEmitter<string> = new EventEmitter(true);
 
     @ViewChild('canvas', { static: false })
     canvas: ElementRef<HTMLCanvasElement>;
@@ -72,7 +72,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
             this.draw();
             const pos = this.selectedPosition;
             if (pos) {
-                this.color.emit(this.getColorAtPosition(pos.x, pos.y));
+                this.colorSelected.emit(this.getColorAtPosition(pos.x, pos.y));
             }
         }
     }
@@ -86,7 +86,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         this.mousedown = true;
         this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
         this.draw();
-        this.color.emit(this.getColorAtPosition(evt.offsetX, evt.offsetY));
+        this.colorSelected.emit(this.getColorAtPosition(evt.offsetX, evt.offsetY));
 
     }
 
@@ -104,10 +104,10 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
     emitColor(x: number, y: number) {
         const color = this.getColorAtPosition(x, y);
-        this.color.emit(color);
+        this.colorSelected.emit(color);
     }
 
     selectColor(color: string): void {
-        this.color.emit(color);
+        this.colorSelected.emit(color);
       }
 }

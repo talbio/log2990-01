@@ -18,13 +18,13 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AppComponent } from './components/app/app.component';
-import { ColorPaletteComponent } from './components/draw-view/color-tool/color-palette.component';
-import { ColorSliderComponent } from './components/draw-view/color-tool/color-slider.component';
-import { ColorToolComponent } from './components/draw-view/color-tool/color-tool.component';
+import { ColorPaletteComponent } from './components/modals/color-picker-module/color-palette/color-palette.component';
+import { ColorSliderComponent } from './components/modals/color-picker-module/color-slider/color-slider.component';
+import { ColorToolComponent } from './components/main-view/color-tool/color-tool.component';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
 import { ToolsAttributesComponent } from './components/main-view/tools-attributes/tools-attributes.component';
 import { WorkZoneComponent } from './components/main-view/work-zone/work-zone.component';
-import { ColorPickerDialogComponent } from './components/modals/color-picker-dialog/color-picker-dialog.component';
+import { ColorPickerDialogComponent } from './components/modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
@@ -35,7 +35,7 @@ import { RectangleGeneratorService } from './services/tools/rectangle-generator/
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
 import { ToolSelectorService } from './services/tools/tool-selector/tool-selector.service';
 import { ColorService } from './services/tools/color/color.service';
-import { LastTenColorsComponent } from './components/draw-view/color-tool/last-ten-colors.component';
+import { LastTenColorsComponent } from './components/modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { LateralBarComponent } from './components/main-view/lateral-bar/lateral-bar.component';
 
 @NgModule({

@@ -14,7 +14,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   @Input() width: number;
   @Input() height: number;
-  // TODO: remove initialization after debugging. WHY?: cannot set svg canvas color element
+  // TODO: remove initialization after debugging. WHY?: cannot set svg canvas colorSelected element
   @Input() color = '#000000';
 
   private canvasElement: any;

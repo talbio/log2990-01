@@ -2,7 +2,7 @@
 import { Component } from '@angular/core';
 import { ColorService } from 'src/app/services/tools/color/color.service';
 import { MatDialog } from '@angular/material';
-import { ColorPickerDialogComponent } from '../../modals/color-picker-dialog/color-picker-dialog.component';
+import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 
 
 
@@ -12,8 +12,8 @@ import { ColorPickerDialogComponent } from '../../modals/color-picker-dialog/col
   styleUrls: ['./color-tool.component.scss'],
 })
 export class ColorToolComponent {
- 
-  constructor(protected colorService: ColorService, public dialog: MatDialog) { 
+
+  constructor(protected colorService: ColorService, public dialog: MatDialog) {
   }
 
   openDialog(colorToModify: string): void {
@@ -21,7 +21,7 @@ export class ColorToolComponent {
 
      dialogRef.afterClosed().subscribe((color) => {
       if (color) {
-        //let color = this.modifyOpacity(this.colorService.color, data)
+        //let colorSelected = this.modifyOpacity(this.colorService.colorSelected, data)
         this.colorService.addToTopTenColors(color);
         if (colorToModify === 'primary') {
           this.colorService.primaryColor = color;
@@ -35,11 +35,11 @@ export class ColorToolComponent {
     });
   }
 
-  // modifyOpacity(color: string, opacity: number): string {
-  //   if (color !== undefined) {
-  //     color = color.slice(0, -2) + opacity + ')';
-  //     return color;
+  // modifyOpacity(colorSelected: string, opacity: number): string {
+  //   if (colorSelected !== undefined) {
+  //     colorSelected = colorSelected.slice(0, -2) + opacity + ')';
+  //     return colorSelected;
   //   }
-  //   return color;
+  //   return colorSelected;
   // }
 }
