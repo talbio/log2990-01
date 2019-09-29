@@ -1,4 +1,6 @@
-
+{{RED}} <input [(ngModel)]="_red"><br />
+{{GREEN}} <input [(ngModel)]="_green"><br />
+{{BLUE}} <input [(ngModel)]="_blue"> <button (click) = "enterColorManually()">Ok</button><br />
 <canvas #canvas class="color-palette" width="150" height="150" (mousedown)="onMouseDown($event)"
     (mousemove)="onMouseMove($event)">
 </canvas>

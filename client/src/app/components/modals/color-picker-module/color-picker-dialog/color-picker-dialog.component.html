@@ -5,9 +5,10 @@
     <svg class="first" width="30" height="30">
         <rect x="0" y="0" width="30" height="30" [style.fill]="_selectedColor" [style.fill-opacity]="_opacity"></rect>
     </svg>
-    <mat-slider [max]="1" [min]="0" [step]="0.1" [(ngModel)]="_opacity"></mat-slider>
+    <mat-slider [max]="1" [min]="0" [step]="0.1" [(ngModel)]="_opacity"></mat-slider><br />
 </mat-dialog-content>
 <mat-dialog-actions>
     <button  (click)="submit(selectedColor, opacity)">Modifier la couleur</button>
     <button  (click)="close()"> Annuler</button>
 </mat-dialog-actions>
+

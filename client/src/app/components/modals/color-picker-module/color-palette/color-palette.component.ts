@@ -10,6 +10,9 @@ import { ColorService } from 'src/app/services/tools/color/color.service';
 })
 
 export class ColorPaletteComponent implements AfterViewInit, OnChanges {
+private red: number;
+private green: number;
+private blue: number;
 
     @Input()
     hue: string;
@@ -27,6 +30,40 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     private mousedown = false;
 
     constructor(protected colorService: ColorService) {}
+
+    protected readonly RED = 'R:';
+    protected readonly GREEN = 'G:';
+    protected readonly BLUE = 'B:';
+
+    set _red(red: number) {
+        if (0 <= red && red<= 255) {
+          this.red = red;
+        }
+      }
+    
+    get _red(): number {
+        return this.red;
+      }
+    
+    set _green(green: number) {
+        if (0 <= green && green<= 255) {
+          this.green = green;
+        }
+      }
+    
+    get _green(): number {
+        return this.green;
+      }
+
+    set _blue(blue: number) {
+        if (0 <= blue && blue<= 255) {
+          this.blue = blue;
+        }
+      }
+    
+    get _blue(): number {
+        return this.blue;
+      }
 
     ngAfterViewInit() {
         this.draw();
@@ -97,6 +134,11 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
             this.emitColor(evt.offsetX, evt.offsetY);
         }
     }
+    enterColorManually():void{
+        const color = 'rgba(' + this.red + ',' + this.green + ',' + this.blue + ',1)';
+        this.selectColor(color);
+    }
+
     getColorAtPosition(x: number, y: number) {
         const imageData = this.ctx.getImageData(x, y, 1, 1).data;
         return 'rgba(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
