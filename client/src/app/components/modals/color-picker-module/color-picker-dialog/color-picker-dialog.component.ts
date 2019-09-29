@@ -55,11 +55,11 @@ export class ColorPickerDialogComponent {
   }
 
 
-  modifyOpacity(colorSelected: string, opacity: number): string {
-    if (colorSelected) {
-      colorSelected = colorSelected.slice(0, -2) + opacity + ')';
-      return colorSelected;
+  modifyOpacity(selectedColor: string, opacity: number): string {
+    if (opacity) {
+      selectedColor = selectedColor.slice(0, -2) + opacity + ')';
+      return selectedColor;
     }
-    return colorSelected;
+    return selectedColor;
   }
 }
