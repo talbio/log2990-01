@@ -46,20 +46,17 @@ export class ColorPickerDialogComponent {
     this.hue = hue;
   }
 
-  submit(color: string, opacity: number) {
-
-    const modifiedColor = this.modifyOpacity(color, opacity)
-
+  submit(): void {
+    const modifiedColor = this.modifyColorOpacity();
     this.dialogRef.close(modifiedColor);
-
   }
 
-
-  modifyOpacity(selectedColor: string, opacity: number): string {
-    if (opacity) {
-      selectedColor = selectedColor.slice(0, -2) + opacity + ')';
-      return selectedColor;
+  modifyColorOpacity(): string {
+    if (this.opacity) {
+      this.selectedColor = this.selectedColor.slice(0, -2) + this.opacity + ')';
+      return this.selectedColor;
     }
-    return selectedColor;
+    // TODO: are we sure this is non null if we dont modify opacity??
+    return this.selectedColor;
   }
 }

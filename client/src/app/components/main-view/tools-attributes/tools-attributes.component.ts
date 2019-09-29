@@ -29,5 +29,4 @@ export class ToolsAttributesComponent  {
     return Tools;
   }
 
-  
 }
