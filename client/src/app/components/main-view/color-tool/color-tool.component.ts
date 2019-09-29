@@ -16,30 +16,28 @@ export class ColorToolComponent {
   constructor(protected colorService: ColorService, public dialog: MatDialog) {
   }
 
-  openDialog(colorToModify: string): void {
+  openDialogForPrimaryColor(): void {
     const dialogRef = this.dialog.open(ColorPickerDialogComponent)
 
      dialogRef.afterClosed().subscribe((color) => {
       if (color) {
-        //let colorSelected = this.modifyOpacity(this.colorService.colorSelected, data)
         this.colorService.addToTopTenColors(color);
-        if (colorToModify === 'primary') {
           this.colorService.primaryColor = color;
           this.colorService.setPrimaryColor(color);
-        }
-        if (colorToModify === 'secondary') {
-          this.colorService.secondaryColor = color;
-          this.colorService.setSecondaryColor(color);
-        }
       }
     });
   }
 
-  // modifyOpacity(colorSelected: string, opacity: number): string {
-  //   if (colorSelected !== undefined) {
-  //     colorSelected = colorSelected.slice(0, -2) + opacity + ')';
-  //     return colorSelected;
-  //   }
-  //   return colorSelected;
-  // }
+  openDialogForSecondaryColor(): void {
+    const dialogRef = this.dialog.open(ColorPickerDialogComponent)
+
+     dialogRef.afterClosed().subscribe((color) => {
+      if (color) {
+        this.colorService.addToTopTenColors(color);
+          this.colorService.secondaryColor = color;
+          this.colorService.setSecondaryColor(color);
+      }
+    });
+  }
+
 }

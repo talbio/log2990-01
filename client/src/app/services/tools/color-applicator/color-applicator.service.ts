@@ -41,7 +41,6 @@ export class ColorApplicatorService {
         }
         else{
           alert('Object id is \'' + targetObject.getAttribute('id') + '\' and this case is not treated!');
-          console.log(targetObject.getAttribute('id'))
         }
         break;
       case 'svg':

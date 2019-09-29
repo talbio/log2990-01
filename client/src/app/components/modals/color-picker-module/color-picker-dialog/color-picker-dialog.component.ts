@@ -8,20 +8,20 @@ import { ColorService } from 'src/app/services/tools/color/color.service';
   styleUrls: ['./color-picker-dialog.component.scss'],
 })
 
-export class ColorPickerDialogComponent  {
+export class ColorPickerDialogComponent {
 
   private opacity: number;
   private selectedColor: string;
   private hue: string;
 
-  constructor(private dialogRef: MatDialogRef<ColorPickerDialogComponent>, protected colorService: ColorService) {}
+  constructor(private dialogRef: MatDialogRef<ColorPickerDialogComponent>, protected colorService: ColorService) { }
 
   close(): void {
     this.dialogRef.close();
   }
 
   set _opacity(opacity: number) {
-    if ( 0 <= opacity && opacity <= 1 ) {
+    if (0 <= opacity && opacity <= 1) {
       this.opacity = opacity;
     }
   }
@@ -46,7 +46,20 @@ export class ColorPickerDialogComponent  {
     this.hue = hue;
   }
 
-  submit() {
-    this.dialogRef.close({opacity: this.opacity, color: this._selectedColor, hue: this._hue});
+  submit(color: string, opacity: number) {
+
+    const modifiedColor = this.modifyOpacity(color, opacity)
+
+    this.dialogRef.close(modifiedColor);
+
+  }
+
+
+  modifyOpacity(colorSelected: string, opacity: number): string {
+    if (colorSelected !== undefined) {
+      colorSelected = colorSelected.slice(0, -2) + opacity + ')';
+      return colorSelected;
+    }
+    return colorSelected;
   }
 }

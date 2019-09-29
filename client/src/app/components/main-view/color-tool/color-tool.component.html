@@ -1,5 +1,5 @@
 
-<svg class="button" width="30" height="30" (click)="openDialog('primary')" matTooltip="Couleur Primaire" matTooltipPosition="left">
+<svg class="button" width="30" height="30" (click)="openDialogForPrimaryColor()" matTooltip="Couleur Primaire" matTooltipPosition="left">
     <rect x="0" y="0" width="30" height="30" [style.fill]="colorService.getPrimaryColor()"></rect>
 </svg>
 
@@ -8,7 +8,7 @@
     invert_colors
 </i>
 
-<svg class="button" width="30" height="30" (click)="openDialog('secondary')" matTooltip="Couleur Secondaire" matTooltipPosition="left">
+<svg class="button" width="30" height="30" (click)="openDialogForSecondaryColor()" matTooltip="Couleur Secondaire" matTooltipPosition="left">
     <rect x="0" y="0" width="25" height="25" [style.fill]="colorService.getSecondaryColor()"></rect>
 </svg>
 
