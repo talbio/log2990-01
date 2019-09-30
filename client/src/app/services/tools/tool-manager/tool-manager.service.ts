@@ -13,14 +13,14 @@ export class ToolManagerService {
   private numberOfElements = 1;
   private renderer: Renderer2;
   private canvasElement: any;
-  
+
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private pencilGenerator: PencilGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
               private toolSelector: ToolSelectorService,
-              private colorService: ColorService) {
+              protected colorService: ColorService) {
   }
 
   loadRenderer(renderer: Renderer2) {

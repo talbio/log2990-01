@@ -33,12 +33,10 @@ export class PencilGeneratorService {
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
     canvas.innerHTML +=
-      `<path id=\'pencilPath' ${this.currentPencilPathNumber} 
-      \' d=\'M ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} 
-       ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)} 
-      L ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} 
-       ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)} 
-      \' stroke=\' ${primaryColor} \' stroke-width=\' ${this.strokeWidth} \' stroke-linecap=\'round\' fill=\'none\'></path>`;
+      `<path id=\'pencilPath${this.currentPencilPathNumber}\'
+      d=\'M ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
+      L ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
+      stroke=\'${primaryColor}\' stroke-width=\'${this.strokeWidth}\' stroke-linecap=\'round\' fill=\'none\'></path>`;
 
     this.mouseDown = true;
   }

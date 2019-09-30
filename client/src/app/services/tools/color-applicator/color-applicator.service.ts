@@ -27,7 +27,7 @@ export class ColorApplicatorService {
           //PaintBrush
           // targetObject.setAttribute('stroke', newColor);
           //attribute stroke for brush paths are structed as follows: url(#brushPatternX), therefore the id is in substring 5 to 18
-          let pattern = document.getElementById(('' + targetObject.getAttribute("stroke")).substring(5,18));
+          let pattern = document.getElementById((targetObject.getAttribute('stroke') as string).substring(5, 18));
           if (pattern != null)
           {
             for(let i = 0; i < pattern.children.length; i++)
@@ -65,14 +65,12 @@ export class ColorApplicatorService {
         //Paths should only be able to change the primary colorSelected, unless they are a paintbrush texture
         if(('' + targetObject.getAttribute('id')).startsWith('brush'))
         {
-          let pattern = document.getElementById(('' + targetObject.getAttribute("stroke")).substring(5,18));
+          let pattern = document.getElementById((targetObject.getAttribute('stroke') as string).substring(5, 18));
           if (pattern != null)
           {
-            for(let i = 0; i < pattern.children.length; i++)
-            {
-              if(pattern.children[i].hasAttribute("stroke"))
-              {
-                pattern.children[i].setAttribute("stroke",newColor);
+            for (let i = 0; i < pattern.children.length; i++) {
+              if (pattern.children[i].hasAttribute('stroke')) {
+                pattern.children[i].setAttribute('stroke', newColor);
               }
             }
           }
