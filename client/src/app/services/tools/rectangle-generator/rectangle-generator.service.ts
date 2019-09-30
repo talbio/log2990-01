@@ -158,7 +158,9 @@ export class RectangleGeneratorService {
   }
 
   finishRectangle() {
-    this.currentRectNumber += 1;
-    this.mouseDown = false;
+    if (this.mouseDown) {
+      this.currentRectNumber += 1;
+      this.mouseDown = false;
+    }
   }
 }

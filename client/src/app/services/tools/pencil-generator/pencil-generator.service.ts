@@ -21,6 +21,11 @@ export class PencilGeneratorService {
   get _strokeWidth(): number {
     return this.strokeWidth;
   }
+  // Uniquely useful for tests, commente for further usage
+  set _mouseDown(state: boolean) {
+    this.mouseDown = state;
+  }
+
   // Initializes the path
   createPenPath(mouseEvent: MouseEvent, canvas: HTMLElement, secondaryColor: string) {
 
@@ -56,7 +61,9 @@ export class PencilGeneratorService {
    * @desc Finalizes the path, sets up the next one
    */
   finishPenPath() {
-    this.currentPencilPathNumber += 1;
-    this.mouseDown = false;
+    if (this.mouseDown) {
+      this.currentPencilPathNumber += 1;
+      this.mouseDown = false;
+    }
   }
 }

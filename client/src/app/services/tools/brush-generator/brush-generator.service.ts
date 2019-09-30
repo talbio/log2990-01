@@ -67,7 +67,9 @@ export class BrushGeneratorService {
 
   // Finalizes the path, sets up the next one
   finishBrushPath() {
-    this.currentBrushPathNumber += 1;
-    this.mouseDown = false;
+    if (this.mouseDown) {
+      this.currentBrushPathNumber += 1;
+      this.mouseDown = false;
+    }
   }
 }
