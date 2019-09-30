@@ -8,9 +8,13 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 })
 
 export class WelcomeModalComponent {
+  protected readonly title: string = 'Bienvenue à PolyDessin!';
+  protected readonly welcomeMessage: string = "Vous trouverez le guide d'utilisation dans la barre de menu à gauche";
+  protected readonly doNotShowAgain: string = 'Ne plus afficher ce message';
+  protected readonly close: string = 'fermer';
   show: boolean;
 
-  constructor( private storage: StorageService) {
+  constructor(private storage: StorageService) {
     this.show = !this.storage.getWelcomeModalStatus();
   }
 
