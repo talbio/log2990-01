@@ -1,10 +1,7 @@
 <svg id="canvas"
      [attr.height]="height"
      [attr.width]="width"
-     [attr.stroke]="color"
-     [style.stroke]="color"
-     [attr.fill]="color"
-     [style.fill]="color"
+     [ngStyle]="setBackGroundColor()"
      (mousedown)='onMouseDown($event)'
      (mousemove)='onMouseMove($event)'
      (mouseup)='onMouseUp()'
