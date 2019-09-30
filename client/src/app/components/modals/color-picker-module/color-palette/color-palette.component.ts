@@ -1,6 +1,7 @@
 import {
     AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild
 } from '@angular/core';
+import { Colors } from 'src/app/data-structures/Colors';
 import { ColorService } from 'src/app/services/tools/color/color.service';
 
 @Component({
@@ -34,33 +35,33 @@ private blue: number;
     protected readonly RED = 'R:';
     protected readonly GREEN = 'G:';
     protected readonly BLUE = 'B:';
-
+    protected readonly ok: string = 'Ok';
     set _red(red: number) {
-        if (0 <= red && red<= 255) {
+        if (0 <= red && red <= 255) {
           this.red = red;
         }
       }
-    
+
     get _red(): number {
         return this.red;
       }
-    
+
     set _green(green: number) {
-        if (0 <= green && green<= 255) {
+        if (0 <= green && green <= 255) {
           this.green = green;
         }
       }
-    
+
     get _green(): number {
         return this.green;
       }
 
     set _blue(blue: number) {
-        if (0 <= blue && blue<= 255) {
+        if (0 <= blue && blue <= 255) {
           this.blue = blue;
         }
       }
-    
+
     get _blue(): number {
         return this.blue;
       }
@@ -76,26 +77,26 @@ private blue: number;
         const width = this.canvas.nativeElement.width;
         const height = this.canvas.nativeElement.height;
 
-        this.ctx.fillStyle = this.hue || 'rgba(255,255,255,1)';
+        this.ctx.fillStyle = this.hue || Colors.WHITE;
         this.ctx.fillRect(0, 0, width, height);
 
         const whiteGrad = this.ctx.createLinearGradient(0, 0, width, 0);
-        whiteGrad.addColorStop(0, 'rgba(255,255,255,1)');
-        whiteGrad.addColorStop(1, 'rgba(255,255,255,0)');
+        whiteGrad.addColorStop(0, Colors.WHITE);
+        whiteGrad.addColorStop(1, Colors.TRANSPARENT_WHITE);
 
         this.ctx.fillStyle = whiteGrad;
         this.ctx.fillRect(0, 0, width, height);
 
         const blackGrad = this.ctx.createLinearGradient(0, 0, 0, height);
-        blackGrad.addColorStop(0, 'rgba(0,0,0,0)');
-        blackGrad.addColorStop(1, 'rgba(0,0,0,1)');
+        blackGrad.addColorStop(0, Colors.TRANSPARENT_BLACK);
+        blackGrad.addColorStop(1, Colors.BLACK);
 
         this.ctx.fillStyle = blackGrad;
         this.ctx.fillRect(0, 0, width, height);
 
         if (this.selectedPosition) {
-            this.ctx.strokeStyle = 'white';
-            this.ctx.fillStyle = 'white';
+            this.ctx.strokeStyle = Colors.WHITE;
+            this.ctx.fillStyle = Colors.WHITE;
             this.ctx.beginPath();
             this.ctx.arc(this.selectedPosition.x, this.selectedPosition.y, 10, 0, 2 * Math.PI);
             this.ctx.lineWidth = 5;
@@ -134,7 +135,7 @@ private blue: number;
             this.emitColor(evt.offsetX, evt.offsetY);
         }
     }
-    enterColorManually():void{
+    enterColorManually(): void {
         const color = 'rgba(' + this.red + ',' + this.green + ',' + this.blue + ',1)';
         this.selectColor(color);
     }
