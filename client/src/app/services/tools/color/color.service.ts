@@ -67,7 +67,7 @@ export class ColorService {
         this.secondaryColor = Colors.WHITE;
     }
 
-    addToTopTenColors(color: string): void{
+    addToTopTenColors(color: string): void {
         if (color !== undefined) {
               for ( let i = 0; i < this.topTenColors.length; i++) {
               this.topTenColors[i] = this.topTenColors[i + 1];

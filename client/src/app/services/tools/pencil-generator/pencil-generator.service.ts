@@ -6,13 +6,17 @@ export class PencilGeneratorService {
   /**
    * attributes of pencil tool :
    */
-  private strokeWidth: number = 1;
-  private currentPencilPathNumber = 0;
+  private readonly DEFAULT_WIDTH = 5;
+  private strokeWidth: number;
+  private currentPencilPathNumber: number;
   private OFFSET_CANVAS_X: number;
   private OFFSET_CANVAS_Y: number;
   private mouseDown = false;
 
-  constructor() {}
+  constructor() {
+    this.strokeWidth = this.DEFAULT_WIDTH;
+    this.currentPencilPathNumber = 0;
+  }
 
   set _strokeWidth(width: number) {
     this.strokeWidth = width;
@@ -21,6 +25,11 @@ export class PencilGeneratorService {
   get _strokeWidth(): number {
     return this.strokeWidth;
   }
+  // Uniquely useful for tests, commente for further usage
+  set _mouseDown(state: boolean) {
+    this.mouseDown = state;
+  }
+
   // Initializes the path
   createPenPath(mouseEvent: MouseEvent, canvas: HTMLElement, primaryColor: string) {
 
@@ -28,12 +37,10 @@ export class PencilGeneratorService {
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
     canvas.innerHTML +=
-      `<path id=\'pencilPath' ${this.currentPencilPathNumber} 
-      \' d=\'M ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} 
-       ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)} 
-      L ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} 
-       ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)} 
-      \' stroke=\' ${primaryColor} \' stroke-width=\' ${this.strokeWidth} \' stroke-linecap=\'round\' fill=\'none\'></path>`;
+      `<path id=\'pencilPath${this.currentPencilPathNumber}\'
+      d=\'M ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
+      L ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
+      stroke=\'${primaryColor}\' stroke-width=\'${this.strokeWidth}\' stroke-linecap=\'round\' fill=\'none\'></path>`;
 
     this.mouseDown = true;
   }
@@ -56,7 +63,9 @@ export class PencilGeneratorService {
    * @desc Finalizes the path, sets up the next one
    */
   finishPenPath() {
-    this.currentPencilPathNumber += 1;
-    this.mouseDown = false;
+    if (this.mouseDown) {
+      this.currentPencilPathNumber += 1;
+      this.mouseDown = false;
+    }
   }
 }

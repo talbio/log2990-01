@@ -6,7 +6,7 @@ import { ToolSelectorService } from './tool-selector.service';
 describe('Service: ButtonManager', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ToolSelectorService]
+      providers: [ToolSelectorService],
     });
   });
 

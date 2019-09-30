@@ -8,7 +8,7 @@ describe('WorkZoneComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WorkZoneComponent ]
+      declarations: [ WorkZoneComponent ],
     })
     .compileComponents();
   }));

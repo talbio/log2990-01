@@ -8,7 +8,7 @@ describe('LateralBarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LateralBarComponent ]
+      declarations: [ LateralBarComponent ],
     })
     .compileComponents();
   }));

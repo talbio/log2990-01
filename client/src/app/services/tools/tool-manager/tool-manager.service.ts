@@ -2,10 +2,10 @@ import {Injectable, Renderer2} from '@angular/core';
 import {Tools} from '../../../data-structures/Tools';
 import {BrushGeneratorService} from '../brush-generator/brush-generator.service';
 import {ColorApplicatorService} from '../color-applicator/color-applicator.service';
+import { ColorService } from '../color/color.service';
 import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 import {ToolSelectorService} from '../tool-selector/tool-selector.service';
-import { ColorService } from '../color/color.service';
 
 @Injectable()
 export class ToolManagerService {
@@ -13,14 +13,13 @@ export class ToolManagerService {
   private numberOfElements = 1;
   private renderer: Renderer2;
   private canvasElement: any;
-  
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private pencilGenerator: PencilGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
               private toolSelector: ToolSelectorService,
-              private colorService: ColorService) {
+              protected colorService: ColorService) {
   }
 
   loadRenderer(renderer: Renderer2) {
@@ -30,7 +29,8 @@ export class ToolManagerService {
   createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.createRectangle(mouseEvent, canvas, this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
+        this.rectangleGenerator.createRectangle(mouseEvent, canvas,
+           this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
         break;
       case Tools.Pencil:
         this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getPrimaryColor());
