@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { ColorService } from 'src/app/services/tools/color/color.service';
+
+export interface DialogData {
+  color: string;
+}
 
 @Component({
   selector: 'app-color-picker-dialog',
@@ -14,7 +18,8 @@ export class ColorPickerDialogComponent {
   private selectedColor: string;
   private hue: string;
 
-  constructor(private dialogRef: MatDialogRef<ColorPickerDialogComponent>, protected colorService: ColorService) { }
+  constructor(private dialogRef: MatDialogRef<ColorPickerDialogComponent>, protected colorService: ColorService,
+              @Inject(MAT_DIALOG_DATA) private data: DialogData) { }
 
   close(): void {
     this.dialogRef.close();
@@ -38,6 +43,14 @@ export class ColorPickerDialogComponent {
     return this.hue;
   }
 
+  isColorModified(): boolean {
+    return (this._selectedColor !== undefined );
+  }
+
+  isOpacityModified(): boolean {
+    return (this._opacity !== undefined );
+  }
+
   onColorSelected(selectedColor: string) {
     this.selectedColor = selectedColor;
   }
@@ -47,6 +60,9 @@ export class ColorPickerDialogComponent {
   }
 
   submit(): void {
+    if (!this.isColorModified()) {
+      this.selectedColor = this.data.color;
+    }
     const modifiedColor = this.modifyColorOpacity();
     this.dialogRef.close(modifiedColor);
   }
@@ -56,7 +72,6 @@ export class ColorPickerDialogComponent {
       this.selectedColor = this.selectedColor.slice(0, -2) + this.opacity + ')';
       return this.selectedColor;
     }
-    // TODO: are we sure this is non null if we dont modify opacity??
     return this.selectedColor;
   }
 }
