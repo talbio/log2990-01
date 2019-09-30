@@ -118,8 +118,8 @@ export class CreateDrawingDialogComponent implements OnInit {
 
   private updateWidthAndHeight(): void {
     this.workZoneSize = this.renderer.selectRootElement('#workZone', true).getBoundingClientRect();
-    this.canvasHeight = this.workZoneSize.height;
-    this.canvasWidth = this.workZoneSize.width;
+    this.canvasHeight = Math.round(this.workZoneSize.height);
+    this.canvasWidth = Math.round(this.workZoneSize.width);
     this.height.setValue(this.canvasHeight);
     this.width.setValue(this.canvasWidth);
   }
