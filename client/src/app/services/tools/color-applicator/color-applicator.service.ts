@@ -10,7 +10,7 @@ export class ColorApplicatorService {
   {
     switch(targetObject.nodeName)
     {
-      
+
       case 'rect':
         //Rectangle
         targetObject.setAttribute('fill', newColor);
@@ -41,7 +41,6 @@ export class ColorApplicatorService {
         }
         else{
           alert('Object id is \'' + targetObject.getAttribute('id') + '\' and this case is not treated!');
-          console.log(targetObject.getAttribute('id'))
         }
         break;
       case 'svg':
@@ -51,7 +50,7 @@ export class ColorApplicatorService {
         alert('Object is of type ' + targetObject.nodeName + ' and this case is not treated!')
         break;
     }
-    
+
   }
 
   changeSecondaryColor(targetObject: HTMLElement, newColor: string)
@@ -63,7 +62,7 @@ export class ColorApplicatorService {
         targetObject.setAttribute('stroke', newColor);
         break;
       case 'path':
-        //Paths should only be able to change the primary color, unless they are a paintbrush texture
+        //Paths should only be able to change the primary colorSelected, unless they are a paintbrush texture
         if(('' + targetObject.getAttribute('id')).startsWith('brush'))
         {
           let pattern = document.getElementById(('' + targetObject.getAttribute("stroke")).substring(5,18));

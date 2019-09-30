@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Renderer2, HostListener } from '@angular/core';
+import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
@@ -6,33 +6,42 @@ import { ToolManagerService } from '../../../services/tools/tool-manager/tool-ma
   templateUrl: './work-zone.component.html',
   styleUrls: ['./work-zone.component.scss'],
 })
-export class WorkZoneComponent implements OnInit {
+export class WorkZoneComponent implements OnInit, AfterViewInit {
+
+  private readonly DEFAULT_WIDTH = 400;
+  private readonly DEFAULT_HEIGHT = 800;
+  private readonly SHIFT_KEY = 'SHIFT';
 
   @Input() width: number;
   @Input() height: number;
-  private canvasElement: HTMLElement;
+  // TODO: remove initialization after debugging. WHY?: cannot set svg canvas colorSelected element
+  @Input() color = '#000000';
+
+  private canvasElement: any;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2) {
-    this.width = 800;
-    this.height = 400;
+    this.width = this.DEFAULT_WIDTH;
+    this.height = this.DEFAULT_HEIGHT;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
   }
 
+  ngAfterViewInit(): void {
+    this.toolManager.loadRenderer(this.renderer);
+  }
+
   @HostListener('document:keydown', ['$event'])
-  keyDownEvent(keyboardEvent: KeyboardEvent) { 
-    if(keyboardEvent.key === "Shift")
-    {
+  keyDownEvent(keyboardEvent: KeyboardEvent) {
+    if (keyboardEvent.key === this.SHIFT_KEY) {
       this.toolManager.changeElementShiftDown();
     }
   }
   @HostListener('document:keyup', ['$event'])
-  keyUpEvent(keyboardEvent: KeyboardEvent) { 
-    if(keyboardEvent.key === "Shift")
-    {
+  keyUpEvent(keyboardEvent: KeyboardEvent) {
+    if (keyboardEvent.key === this.SHIFT_KEY) {
       this.toolManager.changeElementShiftUp();
     }
   }
@@ -55,7 +64,7 @@ export class WorkZoneComponent implements OnInit {
 
   onRightClick(mouseEvent: Event) {
     this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
-    //deactivate context menu on right click
+    // deactivate context menu on right click
     return false;
   }
 }

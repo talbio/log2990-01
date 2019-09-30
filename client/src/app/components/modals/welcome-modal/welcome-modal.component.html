@@ -3,15 +3,15 @@
 <div *ngIf="show" class="overlay">
     <dialog open>
         <h3 class="modal-header">
-            Bienvenue à PolyDessin!
+            {{title}}
         </h3>
         <div class="modal-body">
-            <p>Vous trouverez le guide d'utilisation dans la barre de menu à gauche</p>
+            <p>{{welcomeMessage}}</p>
 
         </div>
         <footer class="modal-footer">
-            <input type="checkbox" (change)="onChange($event)">Ne plus afficher ce message
-            <button (click)="show = false">fermer</button>
+            <input type="checkbox" (change)="onChange($event)">{{doNotShowAgain}}
+            <button (click)="show = false">{{close}}</button>
         </footer>
     </dialog>
 </div>

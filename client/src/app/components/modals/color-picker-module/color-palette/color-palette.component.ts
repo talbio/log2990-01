@@ -1,7 +1,8 @@
 import {
     AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild
 } from '@angular/core';
-import { StorageService } from 'src/app/services/storage/storage.service';
+import { Colors } from 'src/app/data-structures/Colors';
+import { ColorService } from 'src/app/services/tools/color/color.service';
 
 @Component({
     selector: 'app-color-palette',
@@ -10,14 +11,15 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 })
 
 export class ColorPaletteComponent implements AfterViewInit, OnChanges {
-
-    topTenColors = ['blue', 'white', 'red', 'black', 'orange', 'yellow', 'green', 'brown', 'lime', 'beige'];
+private red: number;
+private green: number;
+private blue: number;
 
     @Input()
     hue: string;
 
     @Output()
-    color: EventEmitter<string> = new EventEmitter(true);
+    colorSelected: EventEmitter<string> = new EventEmitter(true);
 
     @ViewChild('canvas', { static: false })
     canvas: ElementRef<HTMLCanvasElement>;
@@ -28,7 +30,41 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
     private mousedown = false;
 
-    constructor( private storage: StorageService) {}
+    constructor(protected colorService: ColorService) {}
+
+    protected readonly RED = 'R:';
+    protected readonly GREEN = 'G:';
+    protected readonly BLUE = 'B:';
+    protected readonly ok: string = 'Ok';
+    set _red(red: number) {
+        if (0 <= red && red <= 255) {
+          this.red = red;
+        }
+      }
+
+    get _red(): number {
+        return this.red;
+      }
+
+    set _green(green: number) {
+        if (0 <= green && green <= 255) {
+          this.green = green;
+        }
+      }
+
+    get _green(): number {
+        return this.green;
+      }
+
+    set _blue(blue: number) {
+        if (0 <= blue && blue <= 255) {
+          this.blue = blue;
+        }
+      }
+
+    get _blue(): number {
+        return this.blue;
+      }
 
     ngAfterViewInit() {
         this.draw();
@@ -41,26 +77,26 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         const width = this.canvas.nativeElement.width;
         const height = this.canvas.nativeElement.height;
 
-        this.ctx.fillStyle = this.hue || 'rgba(255,255,255,1)';
+        this.ctx.fillStyle = this.hue || Colors.WHITE;
         this.ctx.fillRect(0, 0, width, height);
 
         const whiteGrad = this.ctx.createLinearGradient(0, 0, width, 0);
-        whiteGrad.addColorStop(0, 'rgba(255,255,255,1)');
-        whiteGrad.addColorStop(1, 'rgba(255,255,255,0)');
+        whiteGrad.addColorStop(0, Colors.WHITE);
+        whiteGrad.addColorStop(1, Colors.TRANSPARENT_WHITE);
 
         this.ctx.fillStyle = whiteGrad;
         this.ctx.fillRect(0, 0, width, height);
 
         const blackGrad = this.ctx.createLinearGradient(0, 0, 0, height);
-        blackGrad.addColorStop(0, 'rgba(0,0,0,0)');
-        blackGrad.addColorStop(1, 'rgba(0,0,0,1)');
+        blackGrad.addColorStop(0, Colors.TRANSPARENT_BLACK);
+        blackGrad.addColorStop(1, Colors.BLACK);
 
         this.ctx.fillStyle = blackGrad;
         this.ctx.fillRect(0, 0, width, height);
 
         if (this.selectedPosition) {
-            this.ctx.strokeStyle = 'white';
-            this.ctx.fillStyle = 'white';
+            this.ctx.strokeStyle = Colors.WHITE;
+            this.ctx.fillStyle = Colors.WHITE;
             this.ctx.beginPath();
             this.ctx.arc(this.selectedPosition.x, this.selectedPosition.y, 10, 0, 2 * Math.PI);
             this.ctx.lineWidth = 5;
@@ -74,14 +110,13 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
             this.draw();
             const pos = this.selectedPosition;
             if (pos) {
-                this.color.emit(this.getColorAtPosition(pos.x, pos.y));
-                this.storage.setPrimaryColor(this.getColorAtPosition(pos.x, pos.y));
+                this.colorSelected.emit(this.getColorAtPosition(pos.x, pos.y));
             }
         }
     }
 
     @HostListener('window:mouseup', ['$event'])
-    onMouseUp(evt: MouseEvent) {
+    onMouseUp() {
         this.mousedown = false;
     }
 
@@ -89,8 +124,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         this.mousedown = true;
         this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
         this.draw();
-        this.color.emit(this.getColorAtPosition(evt.offsetX, evt.offsetY));
-        this.storage.setPrimaryColor(this.getColorAtPosition(evt.offsetX, evt.offsetY));
+        this.colorSelected.emit(this.getColorAtPosition(evt.offsetX, evt.offsetY));
 
     }
 
@@ -101,17 +135,22 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
             this.emitColor(evt.offsetX, evt.offsetY);
         }
     }
+    enterColorManually(): void {
+        const color = 'rgba(' + this.red + ',' + this.green + ',' + this.blue + ',1)';
+        this.selectColor(color);
+    }
+
     getColorAtPosition(x: number, y: number) {
         const imageData = this.ctx.getImageData(x, y, 1, 1).data;
         return 'rgba(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
     }
 
     emitColor(x: number, y: number) {
-        const rgbaColor = this.getColorAtPosition(x, y);
-        this.color.emit(rgbaColor);
+        const color = this.getColorAtPosition(x, y);
+        this.colorSelected.emit(color);
     }
 
     selectColor(color: string): void {
-        this.color.emit(color);
+        this.colorSelected.emit(color);
       }
 }

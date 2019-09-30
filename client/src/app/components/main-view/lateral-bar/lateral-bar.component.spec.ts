@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ToolsAttributesComponent } from './tools-attributes.component';
+import { LateralBarComponent } from './lateral-bar.component';
 
-describe('ToolsAttributeComponent', () => {
-  let component: ToolsAttributesComponent;
-  let fixture: ComponentFixture<ToolsAttributesComponent>;
+describe('LateralBarComponent', () => {
+  let component: LateralBarComponent;
+  let fixture: ComponentFixture<LateralBarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ToolsAttributesComponent ],
+      declarations: [ LateralBarComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ToolsAttributesComponent);
+    fixture = TestBed.createComponent(LateralBarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

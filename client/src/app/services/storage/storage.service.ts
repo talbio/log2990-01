@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable({
     providedIn: 'root',
-  })
+})
 
 export class StorageService {
 
@@ -19,7 +19,7 @@ export class StorageService {
     }
 
     getPrimaryColor(): string {
-            return (sessionStorage.getItem('primaryColor') || 'empty');
+        return (sessionStorage.getItem('primaryColor') || 'empty');
     }
 
     setSecondaryColor(color: string): void {
@@ -27,7 +27,7 @@ export class StorageService {
     }
 
     getSecondaryColor(): string {
-            return (sessionStorage.getItem('secondaryColor') || 'empty');
+        return (sessionStorage.getItem('secondaryColor') || 'empty');
     }
 
 }

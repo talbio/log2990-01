@@ -1,0 +1,3 @@
+<svg class="last-ten" width="25" height="25" *ngFor="let color of colorService.topTenColors">
+    <rect width="25" height="25" [style.fill]=color (click)=selectColor(color)></rect>
+</svg>

@@ -7,11 +7,11 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Outpu
   })
 
   export class ColorSliderComponent implements AfterViewInit {
-    @ViewChild('canvas', {static: false})
+    @ViewChild('colorSliderCanvas', {static: false})
     canvas: ElementRef<HTMLCanvasElement>;
 
     @Output()
-    color: EventEmitter<string> = new EventEmitter();
+    huePropertySelected: EventEmitter<string> = new EventEmitter();
 
     private ctx: CanvasRenderingContext2D;
     private mousedown = false;
@@ -78,7 +78,7 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Outpu
 
     emitColor(x: number, y: number) {
       const rgbaColor = this.getColorAtPosition(x, y);
-      this.color.emit(rgbaColor);
+      this.huePropertySelected.emit(rgbaColor);
     }
 
     getColorAtPosition(x: number, y: number) {
