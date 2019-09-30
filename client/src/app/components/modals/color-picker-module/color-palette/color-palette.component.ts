@@ -21,7 +21,7 @@ private blue: number;
     @Output()
     colorSelected: EventEmitter<string> = new EventEmitter(true);
 
-    @ViewChild('canvas', { static: false })
+    @ViewChild('colorPaletteCanvas', { static: false })
     canvas: ElementRef<HTMLCanvasElement>;
 
     selectedPosition: { x: number; y: number };
@@ -36,6 +36,7 @@ private blue: number;
     protected readonly GREEN = 'G:';
     protected readonly BLUE = 'B:';
     protected readonly ok: string = 'Ok';
+
     set _red(red: number) {
         if (0 <= red && red <= 255) {
           this.red = red;
