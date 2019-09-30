@@ -11,9 +11,9 @@ import { ColorService } from 'src/app/services/tools/color/color.service';
 })
 
 export class ColorPaletteComponent implements AfterViewInit, OnChanges {
-private red: number;
-private green: number;
-private blue: number;
+    private red: string;
+    private green: string;
+    private blue: string;
 
     @Input()
     hue: string;
@@ -30,41 +30,47 @@ private blue: number;
 
     private mousedown = false;
 
-    constructor(protected colorService: ColorService) {}
+    constructor(protected colorService: ColorService) { }
 
     protected readonly RED = 'R:';
     protected readonly GREEN = 'G:';
     protected readonly BLUE = 'B:';
     protected readonly ok: string = 'Ok';
-    set _red(red: number) {
-        if (0 <= red && red <= 255) {
-          this.red = red;
-        }
-      }
+    set _red(red: string) {
+            this.red = red;
+    }
 
-    get _red(): number {
+    get _red(): string {
         return this.red;
-      }
+    }
 
-    set _green(green: number) {
-        if (0 <= green && green <= 255) {
-          this.green = green;
-        }
-      }
+    set _green(green: string) {
+            this.green = green;
+    }
 
-    get _green(): number {
+    get _green(): string {
         return this.green;
-      }
+    }
 
-    set _blue(blue: number) {
-        if (0 <= blue && blue <= 255) {
-          this.blue = blue;
-        }
-      }
+    set _blue(blue: string) {
+            this.blue = blue;
+    }
 
-    get _blue(): number {
+    get _blue(): string {
         return this.blue;
-      }
+    }
+
+    isInvalidNumber(hexColor: string): boolean {
+        const decimalColor = parseInt(hexColor, 16);
+        return (decimalColor < 0 || decimalColor > 255);
+     }
+
+    enterColorManually(): void {
+        if (!this.isInvalidNumber(this.red) && !this.isInvalidNumber(this.green)  && !this.isInvalidNumber(this.blue) ) {
+            const color = 'rgba(' + parseInt(this.red, 16) + ',' + parseInt(this.green, 16) + ',' + parseInt(this.blue, 16) + ',1)';
+            this.selectColor(color);
+        }
+    }
 
     ngAfterViewInit() {
         this.draw();
@@ -135,10 +141,6 @@ private blue: number;
             this.emitColor(evt.offsetX, evt.offsetY);
         }
     }
-    enterColorManually(): void {
-        const color = 'rgba(' + this.red + ',' + this.green + ',' + this.blue + ',1)';
-        this.selectColor(color);
-    }
 
     getColorAtPosition(x: number, y: number) {
         const imageData = this.ctx.getImageData(x, y, 1, 1).data;
@@ -152,5 +154,5 @@ private blue: number;
 
     selectColor(color: string): void {
         this.colorSelected.emit(color);
-      }
+    }
 }
