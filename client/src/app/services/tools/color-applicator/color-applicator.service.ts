@@ -1,89 +1,72 @@
 import { Injectable } from '@angular/core';
 
-
 @Injectable()
 export class ColorApplicatorService {
 
-  constructor() { }
-
-  changePrimaryColor(targetObject: HTMLElement, newColor: string)
-  {
-    switch(targetObject.nodeName)
-    {
+  changePrimaryColor(targetObject: HTMLElement, newColor: string) {
+    switch (targetObject.nodeName) {
 
       case 'rect':
-        //Rectangle
+        // Rectangle
         targetObject.setAttribute('fill', newColor);
         break;
       case 'path':
-        //Check specific type of path
-        if(('' + targetObject.getAttribute('id')).startsWith('pencil'))
-        {
-          //Pencil
+        // Check specific type of path
+        if (('' + targetObject.getAttribute('id')).startsWith('pencil')) {
+          // Pencil
           targetObject.setAttribute('stroke', newColor);
-        }
-        else if(('' + targetObject.getAttribute('id')).startsWith('brush'))
-        {
-          //PaintBrush
+        } else if (('' + targetObject.getAttribute('id')).startsWith('brush')) {
+          // PaintBrush
           // targetObject.setAttribute('stroke', newColor);
-          //attribute stroke for brush paths are structed as follows: url(#brushPatternX), therefore the id is in substring 5 to 18
-          let pattern = document.getElementById((targetObject.getAttribute('stroke') as string).substring(5, 18));
-          if (pattern != null)
-          {
-            for(let i = 0; i < pattern.children.length; i++)
-            {
-              if(pattern.children[i].hasAttribute("fill"))
-              {
-                pattern.children[i].setAttribute("fill",newColor);
+          // attribute stroke for brush paths are structed as follows: url(#brushPatternX), therefore the id is in substring 5 to 18
+          const pattern = document.getElementById((targetObject.getAttribute('stroke') as string).substring(5, 18));
+          if (pattern != null) {
+            for (const child of [].slice.call(pattern.children)) {
+              if (child.hasAttribute('fill')) {
+                child.setAttribute('fill', newColor);
               }
             }
           }
-        }
-        else{
+        } else {
           alert('Object id is \'' + targetObject.getAttribute('id') + '\' and this case is not treated!');
         }
         break;
       case 'svg':
-        //Canvas
+        // Canvas
         break;
       default:
-        alert('Object is of type ' + targetObject.nodeName + ' and this case is not treated!')
+        alert('Object is of type ' + targetObject.nodeName + ' and this case is not treated!');
         break;
     }
 
   }
 
-  changeSecondaryColor(targetObject: HTMLElement, newColor: string)
-  {
-    switch(targetObject.nodeName)
-    {
+  changeSecondaryColor(targetObject: HTMLElement, newColor: string) {
+    switch (targetObject.nodeName) {
       case 'rect':
-        //Rectangle
+        // Rectangle
         targetObject.setAttribute('stroke', newColor);
         break;
       case 'path':
-        //Paths should only be able to change the primary colorSelected, unless they are a paintbrush texture
-        if(('' + targetObject.getAttribute('id')).startsWith('brush'))
-        {
-          let pattern = document.getElementById((targetObject.getAttribute('stroke') as string).substring(5, 18));
-          if (pattern != null)
-          {
-            for (let i = 0; i < pattern.children.length; i++) {
-              if (pattern.children[i].hasAttribute('stroke')) {
-                pattern.children[i].setAttribute('stroke', newColor);
+        // Paths should only be able to change the primary colorSelected, unless they are a paintbrush texture
+        if ((targetObject.getAttribute('id') as string).startsWith('brush')) {
+          const pattern = document.getElementById((targetObject.getAttribute('stroke') as string).substring(5, 18));
+          if (pattern != null) {
+            for (const child of [].slice.call(pattern.children)) {
+              if (child.hasAttribute('stroke')) {
+                child.setAttribute('stroke', newColor);
               }
             }
           }
         }
         break;
       case 'svg':
-        //Canvas
+        // Canvas
         break;
       default:
-        alert('Object is of type ' + targetObject.nodeName + ' and this case is not treated!')
+        alert('Object is of type ' + targetObject.nodeName + ' and this case is not treated!');
         break;
     }
   }
 
 }
-

@@ -15,7 +15,7 @@ describe('Service: PenMode', () => {
   }));
 
   it('updatePenPath should return 0 if !mouseDown', () => {
-    let pencil: PencilGeneratorService;
+    const pencil: PencilGeneratorService;
     pencil.createPenPath();
     pencil._mouseDown(false);
     // Testability needs attributes

@@ -6,13 +6,17 @@ export class PencilGeneratorService {
   /**
    * attributes of pencil tool :
    */
-  private strokeWidth: number = 1;
-  private currentPencilPathNumber = 0;
+  private readonly DEFAULT_WIDTH = 5;
+  private strokeWidth: number;
+  private currentPencilPathNumber: number;
   private OFFSET_CANVAS_X: number;
   private OFFSET_CANVAS_Y: number;
   private mouseDown = false;
 
-  constructor() {}
+  constructor() {
+    this.strokeWidth = this.DEFAULT_WIDTH;
+    this.currentPencilPathNumber = 0;
+  }
 
   set _strokeWidth(width: number) {
     this.strokeWidth = width;
