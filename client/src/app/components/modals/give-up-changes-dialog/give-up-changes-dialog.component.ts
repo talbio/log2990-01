@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 
 @Component({
@@ -6,18 +6,17 @@ import {MatDialogRef} from '@angular/material/dialog';
   templateUrl: './give-up-changes-dialog.component.html',
   styleUrls: ['./give-up-changes-dialog.component.scss'],
 })
-export class GiveUpChangesDialogComponent implements OnInit {
-  protected confirm: boolean;
+export class GiveUpChangesDialogComponent {
 
   constructor(private dialogRef: MatDialogRef<GiveUpChangesDialogComponent>) {
-    this.confirm = false;
   }
 
-  // tslint:disable-next-line:no-empty
-  ngOnInit(): void {}
+  protected cancel(): void {
+    this.dialogRef.close(false);
+  }
 
-  close() {
-    this.dialogRef.close(this.confirm);
+  protected submit(): void {
+    this.dialogRef.close(true);
   }
 
 }
