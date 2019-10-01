@@ -3,7 +3,7 @@ import {MatDialogRef} from '@angular/material/dialog';
 import {DemoMaterialModule} from '../../../material.module';
 import { GiveUpChangesDialogComponent } from './give-up-changes-dialog.component';
 
-fdescribe('ConfirmGiveUpChangesDialogComponent', () => {
+describe('ConfirmGiveUpChangesDialogComponent', () => {
   let component: GiveUpChangesDialogComponent;
   let fixture: ComponentFixture<GiveUpChangesDialogComponent>;
 
