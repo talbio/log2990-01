@@ -6,10 +6,10 @@
 
       <li>
         <mat-form-field>
-          <input matInput
-                 (focus)=clear(height)
-                 placeholder="Entrez la hauteur"
-                 formControlName="height">
+            <input matInput
+                   (focus)=clear(height)
+                   placeholder="Entrez la hauteur"
+                   formControlName="height">
           <mat-error *ngIf="height.invalid && height.touched">{{posNumberRequired}}</mat-error>
         </mat-form-field>
       </li>

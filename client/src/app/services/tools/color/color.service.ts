@@ -85,8 +85,4 @@ export class ColorService {
         this.storage.setSecondaryColor(this.secondaryColor);
     }
 
-    modifyPrimaryColorTransparency(transparency: number) {
-        this.primaryTransparency = transparency;
-    }
-
 }

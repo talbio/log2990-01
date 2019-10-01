@@ -1,18 +1,13 @@
 import {HttpClientModule} from '@angular/common/http';
+import { Component } from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {RouterTestingModule} from '@angular/router/testing';
-import {of} from 'rxjs';
-import {IndexService} from '../../services/index/index.service';
 import {AppComponent} from './app.component';
-import SpyObj = jasmine.SpyObj;
+
+@Component({selector: 'app-drawing-view', template: ''})
+class DrawingViewStubComponent {}
 
 describe('AppComponent', () => {
-  let indexServiceSpy: SpyObj<IndexService>;
-
-  beforeEach(() => {
-    indexServiceSpy = jasmine.createSpyObj('IndexService', ['basicGet']);
-    indexServiceSpy.basicGet.and.returnValue(of({title: '', body: ''}));
-  });
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -22,9 +17,7 @@ describe('AppComponent', () => {
       ],
       declarations: [
         AppComponent,
-      ],
-      providers: [
-        {provide: IndexService, useValue: indexServiceSpy},
+        DrawingViewStubComponent,
       ],
     });
   }));

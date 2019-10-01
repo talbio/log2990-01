@@ -1,7 +1,7 @@
 import {ComponentPortal} from '@angular/cdk/portal';
 import {AfterViewInit, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {MatCardContent} from '@angular/material/card';
-import {MatSidenav} from '@angular/material/sidenav';
+import {MatSidenavModule} from '@angular/material/sidenav';
 import {CreateDrawingFormValues} from '../../../data-structures/CreateDrawingFormValues';
 import {ToolsAttributesComponent} from '../tools-attributes/tools-attributes.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
@@ -13,7 +13,7 @@ import {WorkZoneComponent} from '../work-zone/work-zone.component';
 })
 export class DrawingViewComponent implements AfterViewInit {
   @ViewChild('workZoneComponent', {static: false}) workZoneComponent: WorkZoneComponent;
-  @ViewChild('attributesSideNav', {static: false}) attributesSideNav: MatSidenav;
+  @ViewChild('attributesSideNav', {static: false}) attributesSideNav: MatSidenavModule;
   @ViewChild('toolsAttributes', {static: false}) toolsAttributes: MatCardContent;
 
   protected toolAttributesComponent: ComponentPortal<ToolsAttributesComponent>;
