@@ -13,13 +13,4 @@ describe('Service: PenMode', () => {
   it('should ...', inject([PencilGeneratorService], (service: PencilGeneratorService) => {
     expect(service).toBeTruthy();
   }));
-
-  it('updatePenPath should return 0 if !mouseDown', () => {
-    const pencil: PencilGeneratorService;
-    pencil.createPenPath();
-    pencil._mouseDown(false);
-    // Testability needs attributes
-    pencil.updatePenPath();
-    expect(currentPath).toBe(undefined);
-  });
 });
