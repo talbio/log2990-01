@@ -36,7 +36,14 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button  (click)="submit()">Modifier la couleur</button>
-    <button  (click)="close()"> Annuler</button>
-</mat-dialog-actions>
 
+    <button [disabled]="!isColorModified()&&!isOpacityModified() "
+            (click)="submit()">
+      Modifier la couleur
+    </button>
+
+    <button (click)="close()">
+      Annuler
+    </button>
+
+</mat-dialog-actions>

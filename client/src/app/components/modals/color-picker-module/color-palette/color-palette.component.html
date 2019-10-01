@@ -1,18 +1,34 @@
 
 <!-- rgb components entered manually (hex values input) -->
+<div class="input-container">
 <label> {{RED}}
-  <input [(ngModel)]="_red">
+  <input [(ngModel)]="red">
 </label>
-<br />
-<label> {{GREEN}}
-  <input [(ngModel)]="_green">
-</label>
-<br />
- <label> {{BLUE}}
-  <input [(ngModel)]="_blue">
-</label>
+</div>
 
-<button (click)="enterColorManually()">{{ok}}</button><br />
+<div class="input-container">
+<label> {{GREEN}}
+  <input [(ngModel)]="green">
+</label>
+</div>
+
+<div class="input-container">
+  <label> {{BLUE}}
+    <input [(ngModel)]="blue">
+  </label>
+</div>
+
+
+<button [disabled] ="rgbComponentsForm.invalid"
+        (click)="enterColorManually()">
+  {{OK}}
+</button>
+<br />
+
+<div class="warning"
+     *ngIf="rgbComponentsForm.invalid && rgbComponentsForm.touched">
+  <p>Nombres hexadécimaux de 0 à FF seulement!</p>
+</div>
 
 <canvas #colorPaletteCanvas
         class="color-palette"

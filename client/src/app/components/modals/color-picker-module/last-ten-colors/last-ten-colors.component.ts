@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { ColorService } from 'src/app/services/tools/color/color.service';
 
 @Component({
@@ -12,8 +12,7 @@ import { ColorService } from 'src/app/services/tools/color/color.service';
     @Output()
     colorSelected: EventEmitter<string> = new EventEmitter(true);
 
-    constructor(protected colorService: ColorService){}
-
+    constructor(protected colorService: ColorService) {}
 
     selectColor(color: string): void {
         this.colorSelected.emit(color);

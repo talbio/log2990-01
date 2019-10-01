@@ -8,7 +8,7 @@ describe('ConfirmGiveUpChangesDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GiveUpChangesDialogComponent ]
+      declarations: [ GiveUpChangesDialogComponent ],
     })
     .compileComponents();
   }));

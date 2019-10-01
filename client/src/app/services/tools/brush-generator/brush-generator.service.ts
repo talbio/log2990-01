@@ -42,13 +42,11 @@ export class BrushGeneratorService {
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
     canvas.innerHTML +=
-      `<path id=\'brushPath ${this.currentBrushPathNumber}
-      \' d=\'M ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}
-       ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
-       L ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}
-       ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
-      \' stroke=\' ${this.currentBrushPattern} \' stroke-width=\' ${this.strokeWidth}
-      \' stroke-linecap=\'round\' fill=\'none\'></path>`;
+      `<path id=\'brushPath${this.currentBrushPathNumber}\'
+      d=\'M ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
+      L ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
+      stroke=\'${this.currentBrushPattern}\' stroke-width=\'${this.strokeWidth}\'
+      stroke-linecap=\'round\' fill=\'none\'></path>`;
 
     this.mouseDown = true;
   }
@@ -67,7 +65,9 @@ export class BrushGeneratorService {
 
   // Finalizes the path, sets up the next one
   finishBrushPath() {
-    this.currentBrushPathNumber += 1;
-    this.mouseDown = false;
+    if (this.mouseDown) {
+      this.currentBrushPathNumber += 1;
+      this.mouseDown = false;
+    }
   }
 }
