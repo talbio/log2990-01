@@ -18,5 +18,4 @@ export class GiveUpChangesDialogComponent {
   protected submit(): void {
     this.dialogRef.close(true);
   }
-
 }
