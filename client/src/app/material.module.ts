@@ -30,7 +30,6 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MatSelectModule,
     MatIconModule,
     MatFormFieldModule,
-
   ],
 })
 export class DemoMaterialModule { }
