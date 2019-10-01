@@ -1,14 +1,49 @@
 <mat-dialog-content>
-    <app-color-palette [hue]="_hue" (colorSelected)="onColorSelected($event)"></app-color-palette>
-    <app-color-slider (huePropertySelected)="onHuePropertySelected($event)"></app-color-slider><br />
-    <app-last-ten-colors (colorSelected)="onColorSelected($event)"></app-last-ten-colors><br />
-    <svg class="first" width="30" height="30">
-        <rect x="0" y="0" width="30" height="30" [style.fill]="_selectedColor" [style.fill-opacity]="_opacity"></rect>
-    </svg>
-    <mat-slider [max]="1" [min]="0" [step]="0.1" [(ngModel)]="_opacity"></mat-slider><br />
-</mat-dialog-content>
-<mat-dialog-actions>
-    <button  (click)="submit()">Modifier la couleur</button>
-    <button  (click)="close()"> Annuler</button>
-</mat-dialog-actions>
 
+  <app-color-palette [hue]="_hue"
+                     (colorSelected)="onColorSelected($event)">
+  </app-color-palette>
+
+  <app-color-slider (huePropertySelected)="onHuePropertySelected($event)">
+  </app-color-slider>
+  <br />
+
+  <app-last-ten-colors (colorSelected)="onColorSelected($event)">
+  </app-last-ten-colors>
+  <br />
+
+  <!-- svg rect for the selected color -->
+  <svg class="first"
+       width="30"
+       height="30">
+    <rect x="0"
+          y="0"
+          width="30"
+          height="30"
+          [style.fill]="_selectedColor"
+          [style.fill-opacity]="_opacity">
+    </rect>
+  </svg>
+
+  <!-- slider for the opacity -->
+  <mat-slider [max]="1"
+              [min]="0"
+              [step]="0.1"
+              [(ngModel)]="_opacity">
+  </mat-slider>
+  <br />
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+
+    <button [disabled]="!isColorModified()&&!isOpacityModified() "
+            (click)="submit()">
+      Modifier la couleur
+    </button>
+
+    <button (click)="close()">
+      Annuler
+    </button>
+
+</mat-dialog-actions>

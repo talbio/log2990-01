@@ -8,14 +8,14 @@ import { ToolManagerService } from '../../../services/tools/tool-manager/tool-ma
 })
 export class WorkZoneComponent implements OnInit, AfterViewInit {
 
-  private readonly DEFAULT_WIDTH = 400;
-  private readonly DEFAULT_HEIGHT = 800;
+  private readonly DEFAULT_WIDTH = 1080;
+  private readonly DEFAULT_HEIGHT = 720;
   private readonly SHIFT_KEY = 'SHIFT';
+  private readonly DEFAULT_WHITE_COLOR = '#FFFFFF'
 
   @Input() width: number;
   @Input() height: number;
-  // TODO: remove initialization after debugging. WHY?: cannot set svg canvas colorSelected element
-  @Input() color = '#000000';
+  @Input() color: string;
 
   private canvasElement: any;
 
@@ -23,6 +23,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
               private renderer: Renderer2) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
+    this.color = this.DEFAULT_WHITE_COLOR;
   }
 
   ngOnInit(): void {
@@ -66,5 +67,11 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
     // deactivate context menu on right click
     return false;
+  }
+
+  protected setBackGroundColor(): {'background-color': string} {
+    return {
+      'background-color': this.color,
+    };
   }
 }

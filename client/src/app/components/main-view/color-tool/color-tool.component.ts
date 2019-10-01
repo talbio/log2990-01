@@ -15,7 +15,8 @@ export class ColorToolComponent {
   }
 
   openDialogForPrimaryColor(): void {
-    const dialogRef = this.dialog.open(ColorPickerDialogComponent);
+    const dialogRef = this.dialog.open(ColorPickerDialogComponent,
+      { data: { color: this.colorService.getPrimaryColor() } });
     dialogRef.afterClosed().subscribe((color) => {
       if (color) {
         this.colorService.addToTopTenColors(color);
@@ -26,7 +27,8 @@ export class ColorToolComponent {
   }
 
   openDialogForSecondaryColor(): void {
-    const dialogRef = this.dialog.open(ColorPickerDialogComponent);
+    const dialogRef = this.dialog.open(ColorPickerDialogComponent,
+      { data: { color: this.colorService.getSecondaryColor() } });
     dialogRef.afterClosed().subscribe((color) => {
       if (color) {
         this.colorService.addToTopTenColors(color);

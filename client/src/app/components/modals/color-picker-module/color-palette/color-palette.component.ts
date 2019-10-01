@@ -1,156 +1,179 @@
 import {
-    AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  ViewChild
 } from '@angular/core';
-import { Colors } from 'src/app/data-structures/Colors';
-import { ColorService } from 'src/app/services/tools/color/color.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Colors} from 'src/app/data-structures/Colors';
 
 @Component({
-    selector: 'app-color-palette',
-    templateUrl: './color-palette.component.html',
-    styleUrls: ['./color-palette.component.scss'],
+  selector: 'app-color-palette',
+  templateUrl: './color-palette.component.html',
+  styleUrls: ['./color-palette.component.scss'],
 })
 
 export class ColorPaletteComponent implements AfterViewInit, OnChanges {
-private red: number;
-private green: number;
-private blue: number;
 
-    @Input()
-    hue: string;
+  @Input()
+  hue: string;
+  @Output()
+  colorSelected: EventEmitter<string> = new EventEmitter(true);
+  @ViewChild('colorPaletteCanvas', {static: false})
+  canvas: ElementRef<HTMLCanvasElement>;
 
-    @Output()
-    colorSelected: EventEmitter<string> = new EventEmitter(true);
+  protected readonly RED = 'R:';
+  protected readonly GREEN = 'G:';
+  protected readonly BLUE = 'B:';
+  protected readonly OK: string = 'Ok';
+  private readonly HEX_VALUES_REGEX = '^([A-Fa-f0-9]{2}|[A-Fa-f0-9]{1})$';
 
-    @ViewChild('canvas', { static: false })
-    canvas: ElementRef<HTMLCanvasElement>;
+  protected rgbComponentsForm: FormGroup;
 
-    selectedPosition: { x: number; y: number };
+  private mousedown: boolean;
+  private selectedPosition: { x: number; y: number };
+  private ctx: CanvasRenderingContext2D;
 
-    private ctx: CanvasRenderingContext2D;
+  constructor(private formBuilder: FormBuilder) {
+    this.mousedown = false;
+    this.rgbComponentsForm = this.formBuilder.group({
+      red: [0, [
+        Validators.required,
+        Validators.pattern(this.HEX_VALUES_REGEX),
+      ]],
+      green: [0, [
+        Validators.required,
+        Validators.pattern(this.HEX_VALUES_REGEX),
+      ]],
+      blue: [0, [
+        Validators.required,
+        Validators.pattern(this.HEX_VALUES_REGEX),
+      ]],
+    });
+  }
 
-    private mousedown = false;
+  ngAfterViewInit() {
+    this.draw();
+  }
 
-    constructor(protected colorService: ColorService) {}
-
-    protected readonly RED = 'R:';
-    protected readonly GREEN = 'G:';
-    protected readonly BLUE = 'B:';
-    protected readonly ok: string = 'Ok';
-    set _red(red: number) {
-        if (0 <= red && red <= 255) {
-          this.red = red;
-        }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes[this.hue]) {
+      this.draw();
+      const pos = this.selectedPosition;
+      if (pos) {
+        this.colorSelected.emit(this.getColorAtPosition(pos.x, pos.y));
       }
+    }
+  }
 
-    get _red(): number {
-        return this.red;
-      }
+  get red(): string {
+    // we are sure that this is non null, (see rgbComponentsForm declaration)
+    // tslint:disable-next-line:no-non-null-assertion
+    return this.rgbComponentsForm.get('red')!.value;
+  }
 
-    set _green(green: number) {
-        if (0 <= green && green <= 255) {
-          this.green = green;
-        }
-      }
+  set red(rgbComponent: string) {
+    this.rgbComponentsForm.patchValue({red: rgbComponent});
+  }
 
-    get _green(): number {
-        return this.green;
-      }
+  get green(): string {
+    // we are sure that this is non null, (see rgbComponentsForm declaration)
+    // tslint:disable-next-line:no-non-null-assertion
+    return this.rgbComponentsForm.get('green')!.value;
+  }
 
-    set _blue(blue: number) {
-        if (0 <= blue && blue <= 255) {
-          this.blue = blue;
-        }
-      }
+  set green(rgbComponent: string) {
+    this.rgbComponentsForm.patchValue({green: rgbComponent});
+  }
 
-    get _blue(): number {
-        return this.blue;
-      }
+  get blue(): string {
+    // we are sure that this is non null, (see rgbComponentsForm declaration)
+    // tslint:disable-next-line:no-non-null-assertion
+    return this.rgbComponentsForm.get('blue')!.value;
+  }
 
-    ngAfterViewInit() {
-        this.draw();
+  set blue(rgbComponent: string) {
+    this.rgbComponentsForm.patchValue({blue: rgbComponent});
+  }
+
+  enterColorManually(): void {
+    this.colorSelected.emit(this.convertFormValuesToRgbaString());
+  }
+
+  draw() {
+    if (!this.ctx) {
+      this.ctx = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+    }
+    const width = this.canvas.nativeElement.width;
+    const height = this.canvas.nativeElement.height;
+
+    this.ctx.fillStyle = this.hue || Colors.WHITE;
+    this.ctx.fillRect(0, 0, width, height);
+
+    const whiteGrad = this.ctx.createLinearGradient(0, 0, width, 0);
+    whiteGrad.addColorStop(0, Colors.WHITE);
+    whiteGrad.addColorStop(1, Colors.TRANSPARENT_WHITE);
+
+    this.ctx.fillStyle = whiteGrad;
+    this.ctx.fillRect(0, 0, width, height);
+
+    const blackGrad = this.ctx.createLinearGradient(0, 0, 0, height);
+    blackGrad.addColorStop(0, Colors.TRANSPARENT_BLACK);
+    blackGrad.addColorStop(1, Colors.BLACK);
+
+    this.ctx.fillStyle = blackGrad;
+    this.ctx.fillRect(0, 0, width, height);
+
+    if (this.selectedPosition) {
+      this.ctx.strokeStyle = Colors.WHITE;
+      this.ctx.fillStyle = Colors.WHITE;
+      this.ctx.beginPath();
+      this.ctx.arc(this.selectedPosition.x, this.selectedPosition.y, 10, 0, 2 * Math.PI);
+      this.ctx.lineWidth = 5;
+      this.ctx.stroke();
     }
 
-    draw() {
-        if (!this.ctx) {
-            this.ctx = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        }
-        const width = this.canvas.nativeElement.width;
-        const height = this.canvas.nativeElement.height;
+  }
 
-        this.ctx.fillStyle = this.hue || Colors.WHITE;
-        this.ctx.fillRect(0, 0, width, height);
+  @HostListener('window:mouseup', ['$event'])
+  onMouseUp() {
+    this.mousedown = false;
+  }
 
-        const whiteGrad = this.ctx.createLinearGradient(0, 0, width, 0);
-        whiteGrad.addColorStop(0, Colors.WHITE);
-        whiteGrad.addColorStop(1, Colors.TRANSPARENT_WHITE);
+  onMouseDown(evt: MouseEvent) {
+    this.mousedown = true;
+    this.selectedPosition = {x: evt.offsetX, y: evt.offsetY};
+    this.draw();
+    this.colorSelected.emit(this.getColorAtPosition(evt.offsetX, evt.offsetY));
+  }
 
-        this.ctx.fillStyle = whiteGrad;
-        this.ctx.fillRect(0, 0, width, height);
-
-        const blackGrad = this.ctx.createLinearGradient(0, 0, 0, height);
-        blackGrad.addColorStop(0, Colors.TRANSPARENT_BLACK);
-        blackGrad.addColorStop(1, Colors.BLACK);
-
-        this.ctx.fillStyle = blackGrad;
-        this.ctx.fillRect(0, 0, width, height);
-
-        if (this.selectedPosition) {
-            this.ctx.strokeStyle = Colors.WHITE;
-            this.ctx.fillStyle = Colors.WHITE;
-            this.ctx.beginPath();
-            this.ctx.arc(this.selectedPosition.x, this.selectedPosition.y, 10, 0, 2 * Math.PI);
-            this.ctx.lineWidth = 5;
-            this.ctx.stroke();
-        }
-
+  onMouseMove(evt: MouseEvent) {
+    if (this.mousedown) {
+      this.selectedPosition = {x: evt.offsetX, y: evt.offsetY};
+      this.draw();
+      this.emitColor(evt.offsetX, evt.offsetY);
     }
+  }
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes[this.hue]) {
-            this.draw();
-            const pos = this.selectedPosition;
-            if (pos) {
-                this.colorSelected.emit(this.getColorAtPosition(pos.x, pos.y));
-            }
-        }
-    }
+  getColorAtPosition(x: number, y: number) {
+    const imageData = this.ctx.getImageData(x, y, 1, 1).data;
+    return 'rgba(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
+  }
 
-    @HostListener('window:mouseup', ['$event'])
-    onMouseUp() {
-        this.mousedown = false;
-    }
+  emitColor(x: number, y: number) {
+    const color = this.getColorAtPosition(x, y);
+    this.colorSelected.emit(color);
+  }
 
-    onMouseDown(evt: MouseEvent) {
-        this.mousedown = true;
-        this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
-        this.draw();
-        this.colorSelected.emit(this.getColorAtPosition(evt.offsetX, evt.offsetY));
-
-    }
-
-    onMouseMove(evt: MouseEvent) {
-        if (this.mousedown) {
-            this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
-            this.draw();
-            this.emitColor(evt.offsetX, evt.offsetY);
-        }
-    }
-    enterColorManually(): void {
-        const color = 'rgba(' + this.red + ',' + this.green + ',' + this.blue + ',1)';
-        this.selectColor(color);
-    }
-
-    getColorAtPosition(x: number, y: number) {
-        const imageData = this.ctx.getImageData(x, y, 1, 1).data;
-        return 'rgba(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
-    }
-
-    emitColor(x: number, y: number) {
-        const color = this.getColorAtPosition(x, y);
-        this.colorSelected.emit(color);
-    }
-
-    selectColor(color: string): void {
-        this.colorSelected.emit(color);
-      }
+  private convertFormValuesToRgbaString(): string {
+    return 'rgba(' + parseInt(this.red, 16) + ',' +
+                     parseInt(this.green, 16) + ',' +
+                     parseInt(this.blue, 16) + ',1)';
+  }
 }
