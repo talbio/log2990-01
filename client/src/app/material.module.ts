@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialogModule } from '@angular/material';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
@@ -12,10 +13,12 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   exports: [
     CommonModule,
+    BrowserAnimationsModule,
     MatDialogModule,
     MatInputModule,
     MatButtonModule,
@@ -30,6 +33,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MatSelectModule,
     MatIconModule,
     MatFormFieldModule,
+    ReactiveFormsModule,
+    FormsModule,
   ],
 })
 export class DemoMaterialModule { }
