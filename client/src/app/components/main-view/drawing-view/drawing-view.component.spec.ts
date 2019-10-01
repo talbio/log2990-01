@@ -3,11 +3,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {PortalModule} from '@angular/cdk/portal';
 import {HttpClientModule} from '@angular/common/http';
 import { Component } from '@angular/core';
-// import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { DemoMaterialModule } from 'src/app/material.module';
 import { ToolSelectorService } from 'src/app/services/tools/tool-selector/tool-selector.service';
-// import { ToolsAttributesComponent } from '../tools-attributes/tools-attributes.component';
 import { DrawingViewComponent } from './drawing-view.component';
 
 @Component({selector: 'app-lateral-bar', template: ''})
@@ -46,13 +44,6 @@ describe('DrawingViewComponent', () => {
       providers:    [ {provide: ToolSelectorService, useValue: toolSelectorServiceStub } ],
     })
     .compileComponents();
-
-    // TestBed.configureTestingModule({
-    // }).overrideModule(BrowserDynamicTestingModule, {
-    //   set: {
-    //     entryComponents: [ ToolsAttributesComponent ],
-    //   },
-    // });
   }));
 
   beforeEach(() => {
