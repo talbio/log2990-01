@@ -68,7 +68,7 @@ const modules: (typeof MatDialogModule)[] = [
   DemoMaterialModule,
 ];
 
-fdescribe('CreateDrawingDialogComponent', () => {
+describe('CreateDrawingDialogComponent', () => {
   let component: CreateDrawingDialogComponent;
   let fixture: ComponentFixture<CreateDrawingDialogComponent>;
   const mockRenderer2 = new MockRenderer();
