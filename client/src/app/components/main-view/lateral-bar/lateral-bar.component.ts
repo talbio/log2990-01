@@ -31,11 +31,11 @@ export class LateralBarComponent {
   protected appropriateClass: string;
 
   private readonly HEIGHT_THRESHOLD = 412;
-  private readonly C_KEY = 'c';
-  private readonly W_KEY = 'w';
-  private readonly ONE_KEY = '1';
-  private readonly R_KEY = 'r';
-  private readonly O_KEY = 'o';
+  private readonly PENCIL_KEY = 'c';
+  private readonly PAINTBRUSH_KEY = 'w';
+  private readonly RECTANGLE_KEY = '1';
+  private readonly COLOR_APPLICATOR_KEY = 'r';
+  private readonly NEW_DRAWING_KEY = 'o';
 
   constructor(private toolSelector: ToolSelectorService,
               private dialog: MatDialog,
@@ -49,15 +49,15 @@ export class LateralBarComponent {
   @HostListener('document:keydown', ['$event'])
   keyDownEvent(keyboardEvent: KeyboardEvent) {
     keyboardEvent.preventDefault();
-    if (keyboardEvent.key === this.C_KEY) {
+    if (keyboardEvent.key === this.PENCIL_KEY) {
       this.toolSelector._activeTool = Tools.Pencil;
-    } else if (keyboardEvent.key === this.R_KEY) {
+    } else if (keyboardEvent.key === this.COLOR_APPLICATOR_KEY) {
       this.toolSelector._activeTool = Tools.ColorApplicator;
-    } else if (keyboardEvent.key === this.W_KEY) {
+    } else if (keyboardEvent.key === this.PAINTBRUSH_KEY) {
       this.toolSelector._activeTool = Tools.Brush;
-    } else if (keyboardEvent.key === this.ONE_KEY) {
+    } else if (keyboardEvent.key === this.RECTANGLE_KEY) {
       this.toolSelector._activeTool = Tools.Rectangle;
-    } else if (keyboardEvent.key === this.O_KEY && keyboardEvent.ctrlKey) {
+    } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
       this.openCreateDrawingDialog();
     }
   }
