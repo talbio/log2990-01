@@ -1,20 +1,21 @@
+import {Component, Renderer2, Type} from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import {Renderer2, Type} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-// import {BrowserDynamicTestingModule, platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
+import {Observable} from 'rxjs';
 import {DemoMaterialModule} from '../../../material.module';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import { CreateDrawingDialogComponent } from './create-drawing-dialog.component';
+
+/* tslint:disable:max-classes-per-file for mocking classes*/
 
 const mockDialogRef: {close: jasmine.Spy} = {
   close: jasmine.createSpy('close'),
 };
 
-const mockMatDialog: {open: jasmine.Spy} = {
+/* const mockMatDialog: {open: jasmine.Spy} = {
   open: jasmine.createSpy('open'),
-};
+}; */
 
 const mockToolManager: {deleteAllDrawings: jasmine.Spy} = {
   deleteAllDrawings: jasmine.createSpy('deleteAllDrawings'),
@@ -23,6 +24,19 @@ const mockToolManager: {deleteAllDrawings: jasmine.Spy} = {
 interface WidthAndHeight {
   width: number;
   height: number;
+}
+
+class MockMatDialog {
+
+  open(component: Component): MockMatDialog {
+    return this;
+  }
+
+  afterClosed(): Observable<boolean> {
+    return new Observable<boolean>( () => {
+      return {unsubscribe() {return true; }, next() { return true; }};
+    });
+  }
 }
 
 class MockRenderer {
@@ -39,9 +53,16 @@ class MockRenderer {
   }
 }
 
-const matDialogDataSpy: jasmine.Spy = jasmine.createSpy('MAT_DIALOG_DATA');
+// const matDialogDataSpy: jasmine.Spy = jasmine.createSpy('MAT_DIALOG_DATA').;
+
+const matDialogDataSpy: { readonly data: boolean} = {
+  get data() {
+    return true;
+  },
+};
 
 const formBuilder: FormBuilder = new FormBuilder();
+const mockMatDialog = new MockMatDialog();
 
 const modules: (typeof MatDialogModule)[] = [
   DemoMaterialModule,
@@ -71,6 +92,9 @@ fdescribe('CreateDrawingDialogComponent', () => {
       fixture = TestBed.createComponent(CreateDrawingDialogComponent);
       renderer2 = fixture.componentRef.injector.get<Renderer2>(Renderer2 as Type<Renderer2>);
       spyOn(renderer2, 'selectRootElement').and.returnValue(mockRenderer2.selectRootElement(''));
+      // @ts-ignore data exists
+      // spyOnProperty(matDialogDataSpy, 'data', 'get');
+      // spyOn(matDialogDataSpy, 'data').and.returnValue(true);
       fixture.detectChanges();
       component = fixture.componentInstance;
     });
@@ -94,6 +118,21 @@ fdescribe('CreateDrawingDialogComponent', () => {
     expect(component.width.value === 100).toBe(true);
     expect(component.height.value === 100).toBe(true);
     expect(spyOnResize).toHaveBeenCalled();
+  });
+
+  describe('confirm button', () => {
+
+    it('should call ToolManager.deleteAllDrawings if drawing is non empty and user confirmed deletion', async () => {
+      // @ts-ignore method exists in component
+      // spyOn(component, 'onSubmit');
+      spyOnProperty(matDialogDataSpy, 'data', 'get').and.returnValue(true);
+      const matDialogActions = fixture.debugElement.nativeElement.querySelector('mat-dialog-actions');
+      const button = matDialogActions.querySelector('.mat-raised-button.mat-primary');
+      button.click();
+      fixture.whenStable().then(() => {
+        expect(mockToolManager.deleteAllDrawings).toHaveBeenCalled();
+      });
+    });
   });
 
 });
