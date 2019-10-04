@@ -118,7 +118,6 @@ export class ToolManagerService {
 
   finishElementDoubleClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
     if (this.toolSelector._activeTool === Tools.Line) {
-      console.log("fires");
       if (mouseEvent.shiftKey) {
         this.lineGenerator.finishAndLinkLineBlock(mouseEvent, canvas, this.numberOfElements);
       } else {
@@ -166,6 +165,7 @@ export class ToolManagerService {
       case Tools.Line:
         this.canvasElement = this.renderer.selectRootElement('#canvas', true);
         this.lineGenerator.deleteLineBlock(this.canvasElement, this.numberOfElements);
+        this.numberOfElements = this.canvasElement.children.length;
         break;
       default:
         return;
@@ -175,6 +175,7 @@ export class ToolManagerService {
   backSpacePress() {
     switch (this.toolSelector._activeTool) {
       case Tools.Line:
+        this.canvasElement = this.renderer.selectRootElement('#canvas', true);
         this.lineGenerator.deleteLine(this.canvasElement, this.numberOfElements);
         break;
       default:

@@ -87,9 +87,9 @@ export class LineGeneratorService {
     }
   }
   finishLineBlock() {
-    console.log("fires");
     if (this.isMakingLine) {
       this.currentLineBlockNumber += 1;
+      this.currentLineNumber = 0;
       this.isMakingLine = false;
     }
   }
@@ -104,16 +104,24 @@ export class LineGeneratorService {
       y2=\'${this.currentLineBlockStartY}\'>
       </line>`;
       this.currentLineBlockNumber += 1;
+      this.currentLineNumber = 0;
       this.isMakingLine = false;
     }
   }
   deleteLineBlock(canvas: HTMLElement, currentChildPosition: number) {
     const currentLineBlock = canvas.children[currentChildPosition - 1];
+    currentLineBlock.remove();
     this.isMakingLine = false;
+    this.currentLineNumber = 0;
+    this.currentLineBlockNumber -= 1;
   }
   deleteLine(canvas: HTMLElement, currentChildPosition: number) {
-      const currentLineBlock = canvas.children[currentChildPosition - 1];
-      const currentLine = currentLineBlock.children[this.currentLineNumber];
-      this.isMakingLine = false;
+    const currentLineBlock = canvas.children[currentChildPosition - 1];
+    const previousLine = currentLineBlock.children[this.currentLineNumber];
+    previousLine.remove();
+    this.currentLineNumber -= 1;
+    if (this.currentLineNumber === 0) {
+      this.deleteLineBlock(canvas, currentChildPosition);
+    }
   }
 }
