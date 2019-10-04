@@ -1,5 +1,5 @@
 <!-- Pencil Attributes -->
-<mat-card-content *ngIf="toolSelector._activeTool === Tools.Pencil" >
+<mat-card-content *ngIf="toolManager._activeTool === Tools.Pencil" >
   <mat-label>Epaisseur du crayon en pixels : {{this.pencilGenerator._strokeWidth}}</mat-label>
   <mat-slider [(ngModel)]="this.pencilGenerator._strokeWidth"
               min="1"
@@ -11,7 +11,7 @@
 </mat-card-content>
 
 <!-- Rectangle Attributes -->
-<mat-card-content *ngIf="toolSelector._activeTool === Tools.Rectangle" >
+<mat-card-content *ngIf="toolManager._activeTool === Tools.Rectangle" >
   <mat-label> Epaisseur du rectangle : {{this.rectangleGenerator._strokeWidth}}</mat-label>
   <mat-slider [(ngModel)]="this.rectangleGenerator._strokeWidth"
               min="1"
@@ -31,7 +31,7 @@
 </mat-card-content>
 
 <!-- Paintbrush Attributes -->
-<mat-card-content *ngIf="toolSelector._activeTool === Tools.Brush" >
+<mat-card-content *ngIf="toolManager._activeTool === Tools.Brush" >
   <mat-label>Epaisseur du trait de pinceau en pixels : {{this.brushGenerator._strokeWidth}}</mat-label>
   <mat-slider [(ngModel)]="this.brushGenerator._strokeWidth"
               min="5"
@@ -55,7 +55,7 @@
 </mat-card-content>
 
 <!-- Color Transparency -->
-<mat-card-content *ngIf="toolSelector._activeTool === Tools.ColorApplicator" >
+<mat-card-content *ngIf="toolManager._activeTool === Tools.ColorApplicator" >
   <mat-label> Niveau de transparence </mat-label>
   <mat-slider min="0" max="1" step="0.1" [value]='primaryTransparency'></mat-slider>
 </mat-card-content>
