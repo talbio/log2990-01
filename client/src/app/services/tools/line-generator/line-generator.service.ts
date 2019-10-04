@@ -44,6 +44,7 @@ export class LineGeneratorService {
         stroke-linecap=\'round\'
         stroke=\'${primaryColor}\'>
           <line id=\'line${this.currentLineNumber}OfBlock${this.currentLineBlockNumber}\'
+          pointer-events="none"
           x1=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
           y1=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
           x2=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
@@ -70,6 +71,7 @@ export class LineGeneratorService {
     this.currentLineNumber += 1;
     currentLineBlock.innerHTML +=
     `<line id=\'line${this.currentLineNumber}OfBlock${this.currentLineBlockNumber}\'
+    pointer-events="none"
     x1=\'${previousX}\'
     y1=\'${previousY}\'
     x2=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
@@ -104,5 +106,14 @@ export class LineGeneratorService {
       this.currentLineBlockNumber += 1;
       this.isMakingLine = false;
     }
+  }
+  deleteLineBlock(canvas: HTMLElement, currentChildPosition: number) {
+    const currentLineBlock = canvas.children[currentChildPosition - 1];
+    this.isMakingLine = false;
+  }
+  deleteLine(canvas: HTMLElement, currentChildPosition: number) {
+      const currentLineBlock = canvas.children[currentChildPosition - 1];
+      const currentLine = currentLineBlock.children[this.currentLineNumber];
+      this.isMakingLine = false;
   }
 }

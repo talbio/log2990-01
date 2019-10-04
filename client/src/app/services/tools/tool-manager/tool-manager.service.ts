@@ -13,7 +13,7 @@ export class ToolManagerService {
 
   private numberOfElements = 1;
   private renderer: Renderer2;
-  private canvasElement: any;
+  private canvasElement: HTMLElement;
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private pencilGenerator: PencilGeneratorService,
@@ -43,7 +43,7 @@ export class ToolManagerService {
       default:
         return;
     }
-    this.numberOfElements += 1;
+    this.numberOfElements = canvas.children.length;
   }
 
   updateElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
@@ -98,14 +98,12 @@ export class ToolManagerService {
   createElementOnClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.Line:
-        if (!this.lineGenerator._isMakingLine) {
-          this.numberOfElements += 1;
-        }
         this.lineGenerator.makeLine(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.numberOfElements);
         break;
       default:
         return;
     }
+    this.numberOfElements = canvas.children.length;
   }
 
   changeElementRightClick(clickedElement: HTMLElement) {
@@ -161,5 +159,26 @@ export class ToolManagerService {
       this.canvasElement.children[i].remove();
     }
     this.numberOfElements = 1;
+  }
+
+  escapePress() {
+    switch (this.toolSelector._activeTool) {
+      case Tools.Line:
+        this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+        this.lineGenerator.deleteLineBlock(this.canvasElement, this.numberOfElements);
+        break;
+      default:
+        return;
+    }
+  }
+
+  backSpacePress() {
+    switch (this.toolSelector._activeTool) {
+      case Tools.Line:
+        this.lineGenerator.deleteLine(this.canvasElement, this.numberOfElements);
+        break;
+      default:
+        return;
+    }
   }
 }

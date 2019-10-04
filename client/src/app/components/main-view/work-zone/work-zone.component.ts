@@ -68,6 +68,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     } else if (this.toolSelector._activeTool === Tools.Line) {
       this.toolManager.createElementOnClick(mouseEvent, this.canvasElement);
     }
+    return true;
   }
 
   onRightClick(mouseEvent: Event) {

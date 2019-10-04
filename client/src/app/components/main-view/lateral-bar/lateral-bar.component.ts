@@ -37,6 +37,8 @@ export class LateralBarComponent {
   private readonly COLOR_APPLICATOR_KEY = 'r';
   private readonly NEW_DRAWING_KEY = 'o';
   private readonly LINE_KEY = 'l';
+  private readonly DELETE_FULL_ELEMENT_KEY = 'Escape';
+  private readonly DELETE_LAST_ELEMENT_KEY = 'Backspace';
 
   constructor(private toolSelector: ToolSelectorService,
               private dialog: MatDialog,
@@ -62,6 +64,10 @@ export class LateralBarComponent {
       this.toolSelector._activeTool = Tools.Line;
     } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
       this.openCreateDrawingDialog();
+    } else if (keyboardEvent.key === this.DELETE_FULL_ELEMENT_KEY) {
+      this.toolManager.escapePress();
+    } else if (keyboardEvent.key === this.DELETE_LAST_ELEMENT_KEY) {
+      this.toolManager.backSpacePress();
     }
   }
 
