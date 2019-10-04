@@ -1,25 +1,26 @@
 import {Component, Renderer2, Type} from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {FormBuilder} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-import {Observable} from 'rxjs';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {of} from 'rxjs';
+import {CreateDrawingFormValues} from '../../../data-structures/CreateDrawingFormValues';
 import {DemoMaterialModule} from '../../../material.module';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
-import { CreateDrawingDialogComponent } from './create-drawing-dialog.component';
+import {CreateDrawingDialogComponent, DialogData} from './create-drawing-dialog.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 
-const mockDialogRef: {close: jasmine.Spy} = {
-  close: jasmine.createSpy('close'),
-};
+/* -------------------------------- MOCK ENVIRONMENT ----------------------------------------- */
 
-/* const mockMatDialog: {open: jasmine.Spy} = {
-  open: jasmine.createSpy('open'),
-}; */
+const spyDialog: jasmine.SpyObj<MatDialogRef<CreateDrawingDialogComponent>> =
+  jasmine.createSpyObj('MatDialogRef', ['close']);
+spyDialog.close.and.callThrough();
 
-const mockToolManager: {deleteAllDrawings: jasmine.Spy} = {
-  deleteAllDrawings: jasmine.createSpy('deleteAllDrawings'),
-};
+const spyToolManager: jasmine.SpyObj<ToolManagerService> =
+  jasmine.createSpyObj('ToolManagerService', ['deleteAllDrawings']);
+spyToolManager.deleteAllDrawings.and.callThrough();
+
+const mockDialogData: DialogData = {drawingNonEmpty: true};
 
 interface WidthAndHeight {
   width: number;
@@ -27,24 +28,17 @@ interface WidthAndHeight {
 }
 
 class MockMatDialog {
-
-  open(component: Component): MockMatDialog {
-    return this;
-  }
-
-  afterClosed(): Observable<boolean> {
-    return new Observable<boolean>( () => {
-      return {unsubscribe() {return true; }, next() { return true; }};
-    });
+  open(component: Component) {
+    return {
+      afterClosed: () => of(false),
+    };
   }
 }
 
 class MockRenderer {
-  // @ts-ignore
   selectRootElement(selectOrNode: any, preserveContent?: boolean): any {
     return this;
   }
-
   getBoundingClientRect(): WidthAndHeight {
     return {
       width: 100,
@@ -52,23 +46,12 @@ class MockRenderer {
     };
   }
 }
-
-// const matDialogDataSpy: jasmine.Spy = jasmine.createSpy('MAT_DIALOG_DATA').;
-
-const matDialogDataSpy: { readonly data: boolean} = {
-  get data() {
-    return true;
-  },
-};
-
 const formBuilder: FormBuilder = new FormBuilder();
 const mockMatDialog = new MockMatDialog();
 
-const modules: (typeof MatDialogModule)[] = [
-  DemoMaterialModule,
-];
+/* ------------------------------------------------------------------------------------------ */
 
-describe('CreateDrawingDialogComponent', () => {
+fdescribe('CreateDrawingDialogComponent', () => {
   let component: CreateDrawingDialogComponent;
   let fixture: ComponentFixture<CreateDrawingDialogComponent>;
   const mockRenderer2 = new MockRenderer();
@@ -79,59 +62,85 @@ describe('CreateDrawingDialogComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         Renderer2,
-        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: MatDialogRef, useValue: spyDialog },
         { provide: FormBuilder, useValue: formBuilder },
         { provide: MatDialog, useValue: mockMatDialog },
-        { provide: ToolManagerService, useValue: mockToolManager},
-        { provide: MAT_DIALOG_DATA, useValue: matDialogDataSpy },
+        { provide: ToolManagerService, useValue: spyToolManager},
+        { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
       ],
-      imports: [modules],
+      imports: [DemoMaterialModule],
       declarations: [CreateDrawingDialogComponent],
     })
     .compileComponents().then( () => {
       fixture = TestBed.createComponent(CreateDrawingDialogComponent);
       renderer2 = fixture.componentRef.injector.get<Renderer2>(Renderer2 as Type<Renderer2>);
       spyOn(renderer2, 'selectRootElement').and.returnValue(mockRenderer2.selectRootElement(''));
-      // @ts-ignore data exists
-      // spyOnProperty(matDialogDataSpy, 'data', 'get');
-      // spyOn(matDialogDataSpy, 'data').and.returnValue(true);
       fixture.detectChanges();
       component = fixture.componentInstance;
     });
   }));
 
-  /* beforeEach(() => {
-    // fixture = TestBed.createComponent(CreateDrawingDialogComponent);
-    // component = fixture.componentInstance;
-    // renderer2 =  fixture.debugElement.injector.get(Renderer2);
-    fixture.detectChanges();
-  }); */
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-  it('should call renderer', () => {
+  it('should call renderer2', () => {
     expect(renderer2.selectRootElement).toHaveBeenCalled();
   });
 
-  it('updateWidthAndHeight should update width and height', () => {
-    // @ts-ignore
-    const spyOnResize = spyOn(component, 'onResize');
-    window.dispatchEvent(new Event('resize'));
-    expect(component.width.value === 100).toBe(true);
-    expect(component.height.value === 100).toBe(true);
-    expect(spyOnResize).toHaveBeenCalled();
+  describe('clear', () => {
+    it('should clear form value when called', () => {
+      component.clear(component.height);
+      expect(component.height.value).toBe('');
+    });
   });
 
-  describe('confirm button', () => {
+  describe('onResize', () => {
+    it(' should be called on a window:resize Event and call updateWidthAndHeight', () => {
+      const spyOnResize = spyOn(component, 'onResize');
+      window.dispatchEvent(new Event('resize'));
+      expect(component.width.value === 100).toBe(true);
+      expect(component.height.value === 100).toBe(true);
+      expect(spyOnResize).toHaveBeenCalled();
+    });
+  });
+
+  describe('submit', () => {
+    it('should not call ToolManager.deleteAllDrawings if user refused deletion', async () => {
+      const mockMatDialogToFalse = fixture.componentRef.injector.get<MatDialog>(MatDialog);
+      spyOn(mockMatDialogToFalse as MockMatDialog, 'open').and.returnValue({
+        afterClosed: () => of(false),
+      });
+      await component.submit();
+      expect(spyToolManager.deleteAllDrawings).not.toHaveBeenCalled();
+    });
 
     it('should call ToolManager.deleteAllDrawings if drawing is non empty and user confirmed deletion', async () => {
-      // @ts-ignore method exists in component
-      // spyOn(component, 'onSubmit');
-      spyOnProperty(matDialogDataSpy, 'data', 'get').and.returnValue(true);
-      const matDialogActions = fixture.debugElement.nativeElement.querySelector('mat-dialog-actions');
-      const button = matDialogActions.querySelector('.mat-raised-button.mat-primary');
-      button.click();
-      fixture.whenStable().then(() => {
-        expect(mockToolManager.deleteAllDrawings).toHaveBeenCalled();
+      const mockMatDialogToTrue = fixture.componentRef.injector.get<MatDialog>(MatDialog);
+      spyOn(mockMatDialogToTrue as MockMatDialog, 'open').and.returnValue({
+        afterClosed: () => of(true),
       });
+      await component.submit().then( () => {
+        expect(spyToolManager.deleteAllDrawings).toHaveBeenCalled();
+        expect(spyDialog.close).toHaveBeenCalled();
+      });
+    });
+
+    it('should just close dialog if drawing is empty', async () => {
+      const mockDialogDataToFalse = fixture.componentRef.injector.get<DialogData>(MAT_DIALOG_DATA);
+      mockDialogDataToFalse.drawingNonEmpty = false;
+      await component.submit().then( () => expect(spyDialog.close).toHaveBeenCalled());
+    });
+
+    it('should send form values when dialog is closed', async () => {
+      const mockDialogDataToFalse = fixture.componentRef.injector.get<DialogData>(MAT_DIALOG_DATA);
+      mockDialogDataToFalse.drawingNonEmpty = false;
+      const expectedFormValues: CreateDrawingFormValues = {
+        height: component.height.value,
+        width: component.width.value,
+        color: component.color.value,
+      };
+      await component.submit().then( () => expect(spyDialog.close).toHaveBeenCalledWith(expectedFormValues));
     });
   });
 
