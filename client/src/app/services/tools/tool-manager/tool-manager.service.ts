@@ -5,7 +5,6 @@ import {ColorApplicatorService} from '../color-applicator/color-applicator.servi
 import { ColorService } from '../color/color.service';
 import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
-import {ToolSelectorService} from '../tool-selector/tool-selector.service';
 import { LineGeneratorService } from './../line-generator/line-generator.service';
 
 @Injectable()
@@ -14,14 +13,23 @@ export class ToolManagerService {
   private numberOfElements = 1;
   private renderer: Renderer2;
   private canvasElement: HTMLElement;
+  private activeTool: Tools;
+
+  set _activeTool(tool: Tools) {
+    this.activeTool = tool;
+  }
+
+  get _activeTool(): Tools {
+    return this.activeTool;
+  }
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private pencilGenerator: PencilGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
-              private toolSelector: ToolSelectorService,
               private lineGenerator: LineGeneratorService,
               protected colorService: ColorService) {
+    this.activeTool = Tools.Pencil;
   }
 
   loadRenderer(renderer: Renderer2) {
@@ -29,7 +37,7 @@ export class ToolManagerService {
   }
 
   createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
-    switch (this.toolSelector._activeTool) {
+    switch (this._activeTool) {
       case Tools.Rectangle:
         this.rectangleGenerator.createRectangle(mouseEvent, canvas,
            this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
@@ -47,7 +55,7 @@ export class ToolManagerService {
   }
 
   updateElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
-    switch (this.toolSelector._activeTool) {
+    switch (this._activeTool) {
       case Tools.Rectangle:
         if (mouseEvent.shiftKey) {
           this.rectangleGenerator.updateSquare(mouseEvent, canvas, this.numberOfElements);
@@ -70,7 +78,7 @@ export class ToolManagerService {
   }
 
   finishElement() {
-    switch (this.toolSelector._activeTool) {
+    switch (this._activeTool) {
       case Tools.Rectangle:
         this.rectangleGenerator.finishRectangle();
         break;
@@ -86,7 +94,7 @@ export class ToolManagerService {
   }
 
   changeElementLeftClick(clickedElement: HTMLElement) {
-    switch (this.toolSelector._activeTool) {
+    switch (this._activeTool) {
       case Tools.ColorApplicator:
         this.colorApplicator.changePrimaryColor(clickedElement, this.colorService.getPrimaryColor());
         break;
@@ -96,7 +104,7 @@ export class ToolManagerService {
   }
 
   createElementOnClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
-    switch (this.toolSelector._activeTool) {
+    switch (this._activeTool) {
       case Tools.Line:
         this.lineGenerator.makeLine(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.numberOfElements);
         break;
@@ -107,7 +115,7 @@ export class ToolManagerService {
   }
 
   changeElementRightClick(clickedElement: HTMLElement) {
-    switch (this.toolSelector._activeTool) {
+    switch (this._activeTool) {
       case Tools.ColorApplicator:
         this.colorApplicator.changeSecondaryColor(clickedElement, this.colorService.getSecondaryColor());
         break;
@@ -117,7 +125,7 @@ export class ToolManagerService {
   }
 
   finishElementDoubleClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
-    if (this.toolSelector._activeTool === Tools.Line) {
+    if (this._activeTool === Tools.Line) {
       if (mouseEvent.shiftKey) {
         this.lineGenerator.finishAndLinkLineBlock(mouseEvent, canvas, this.numberOfElements);
       } else {
@@ -127,7 +135,7 @@ export class ToolManagerService {
   }
 
   changeElementShiftDown() {
-    switch (this.toolSelector._activeTool) {
+    switch (this._activeTool) {
       case Tools.Rectangle:
         // change into square
         // this.rectangleGenerator.updateSquare(mouseEvent, this.numberOfElements);
@@ -138,7 +146,7 @@ export class ToolManagerService {
   }
 
   changeElementShiftUp() {
-    switch (this.toolSelector._activeTool) {
+    switch (this._activeTool) {
       case Tools.Rectangle:
         // change into rectangle
         // this.rectangleGenerator.updateRectangle(mouseEvent, this.numberOfElements);
@@ -161,7 +169,7 @@ export class ToolManagerService {
   }
 
   escapePress() {
-    switch (this.toolSelector._activeTool) {
+    switch (this._activeTool) {
       case Tools.Line:
         this.canvasElement = this.renderer.selectRootElement('#canvas', true);
         this.lineGenerator.deleteLineBlock(this.canvasElement, this.numberOfElements);
@@ -173,7 +181,7 @@ export class ToolManagerService {
   }
 
   backSpacePress() {
-    switch (this.toolSelector._activeTool) {
+    switch (this._activeTool) {
       case Tools.Line:
         this.canvasElement = this.renderer.selectRootElement('#canvas', true);
         this.lineGenerator.deleteLine(this.canvasElement, this.numberOfElements);

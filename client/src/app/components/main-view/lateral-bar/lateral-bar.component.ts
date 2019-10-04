@@ -12,7 +12,6 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {CreateDrawingFormValues} from '../../../data-structures/CreateDrawingFormValues';
 import {Tools} from '../../../data-structures/Tools';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
-import {ToolSelectorService} from '../../../services/tools/tool-selector/tool-selector.service';
 import {CreateDrawingDialogComponent} from '../../modals/create-drawing-dialog/create-drawing-dialog.component';
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
@@ -40,8 +39,7 @@ export class LateralBarComponent {
   private readonly DELETE_FULL_ELEMENT_KEY = 'Escape';
   private readonly DELETE_LAST_ELEMENT_KEY = 'Backspace';
 
-  constructor(private toolSelector: ToolSelectorService,
-              private dialog: MatDialog,
+  constructor(private dialog: MatDialog,
               private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
               private toolManager: ToolManagerService) {
@@ -53,15 +51,15 @@ export class LateralBarComponent {
   keyDownEvent(keyboardEvent: KeyboardEvent) {
     keyboardEvent.preventDefault();
     if (keyboardEvent.key === this.PENCIL_KEY) {
-      this.toolSelector._activeTool = Tools.Pencil;
+      this.toolManager._activeTool = Tools.Pencil;
     } else if (keyboardEvent.key === this.COLOR_APPLICATOR_KEY) {
-      this.toolSelector._activeTool = Tools.ColorApplicator;
+      this.toolManager._activeTool = Tools.ColorApplicator;
     } else if (keyboardEvent.key === this.PAINTBRUSH_KEY) {
-      this.toolSelector._activeTool = Tools.Brush;
+      this.toolManager._activeTool = Tools.Brush;
     } else if (keyboardEvent.key === this.RECTANGLE_KEY) {
-      this.toolSelector._activeTool = Tools.Rectangle;
+      this.toolManager._activeTool = Tools.Rectangle;
     }  else if (keyboardEvent.key === this.LINE_KEY) {
-      this.toolSelector._activeTool = Tools.Line;
+      this.toolManager._activeTool = Tools.Line;
     } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
       this.openCreateDrawingDialog();
     } else if (keyboardEvent.key === this.DELETE_FULL_ELEMENT_KEY) {
@@ -76,7 +74,7 @@ export class LateralBarComponent {
   }
 
   protected toggleAttributesAndSetTool(tool: Tools) {
-    this.toolSelector._activeTool = tool;
+    this.toolManager._activeTool = tool;
     void this.attributesSideNav.toggle();
   }
 
