@@ -3,6 +3,7 @@ import {Tools} from '../../../data-structures/Tools';
 import {BrushGeneratorService} from '../brush-generator/brush-generator.service';
 import {ColorApplicatorService} from '../color-applicator/color-applicator.service';
 import { ColorService } from '../color/color.service';
+import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 import {ToolSelectorService} from '../tool-selector/tool-selector.service';
@@ -19,6 +20,7 @@ export class ToolManagerService {
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
               private toolSelector: ToolSelectorService,
+              private objectSelector: ObjectSelectorService,
               protected colorService: ColorService) {
   }
 
@@ -37,6 +39,9 @@ export class ToolManagerService {
         break;
       case Tools.Brush:
         this.brushGenerator.createBrushPath(mouseEvent, canvas);
+        break;
+      case Tools.Selector:
+        this.objectSelector.createSelectorRectangle(mouseEvent, canvas);
         break;
       default:
         return;
@@ -59,6 +64,9 @@ export class ToolManagerService {
       case Tools.Brush:
           this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
           break;
+      case Tools.Selector:
+        this.objectSelector.updateSelectorRectangle(mouseEvent, canvas, this.numberOfElements);
+        break;
       default:
           return;
     }

@@ -31,4 +31,5 @@ export class DrawingViewComponent implements AfterViewInit {
     this.workZoneComponent.height = formValues.height;
     this.workZoneComponent.width = formValues.width;
   }
+
 }

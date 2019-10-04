@@ -8,7 +8,7 @@ export class ObjectSelectorService {
     private OFFSET_CANVAS_Y: number;
     private OFFSET_CANVAS_X: number;
     private currentRectNumber: number;
-   // private mouseDown: boolean;
+    private mouseDown: boolean;
 
     createSelectorRectangle(mouseEvent: MouseEvent, canvas: HTMLElement) {
 
@@ -24,6 +24,37 @@ export class ObjectSelectorService {
             width = \'0\' height = \'0\' stroke-dasharray = \'${DASHED_LINE_VALUE}\'
             fill=\'transparent\'></rect>`;
 
-      //  this.mouseDown = true;
+        this.mouseDown = true;
+      }
+
+      updateSelectorRectangle(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+        if (this.mouseDown) {
+          const currentRect = canvas.children[currentChildPosition - 1];
+          if (currentRect != null) {
+            const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
+            const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
+            const actualWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startRectX;
+            const actualHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startRectY;
+            if (actualWidth >= 0) {
+              currentRect.setAttribute('width', '' + actualWidth);
+            } else {
+              currentRect.setAttribute('width', '' + Math.abs(actualWidth));
+              currentRect.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X));
+            }
+            if (actualHeight >= 0) {
+              currentRect.setAttribute('height', '' + actualHeight);
+            } else {
+              currentRect.setAttribute('height', '' + Math.abs(actualHeight));
+              currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
+            }
+          }
+        }
+      }
+
+      finishRectangle() {
+        if (this.mouseDown) {
+          this.currentRectNumber += 1;
+          this.mouseDown = false;
+        }
       }
 }

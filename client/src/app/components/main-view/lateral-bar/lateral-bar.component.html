@@ -28,6 +28,15 @@
       <mat-icon svgIcon="rectangle"></mat-icon></button>
   </mat-list-item>
 
+  <!-- Selector button -->
+  <mat-list-item>
+    <button mat-icon-button
+            (click)="toggleAttributesAndSetTool(Tools.Selector)"
+            matTooltip="Outil de sélection"
+            matTooltipPosition="left">
+            <mat-icon>select_all</mat-icon></button>
+  </mat-list-item>
+
   <!-- Color Applicator button -->
   <mat-list-item>
     <button mat-icon-button
