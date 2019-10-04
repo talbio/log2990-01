@@ -24,6 +24,7 @@ import { StorageService } from './services/storage/storage.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
 import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
 import { ColorService } from './services/tools/color/color.service';
+import { ObjectSelectorService } from './services/tools/object-selector/object-selector.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
@@ -67,6 +68,7 @@ import { ToolSelectorService } from './services/tools/tool-selector/tool-selecto
     BrushGeneratorService,
     ColorApplicatorService,
     ColorService,
+    ObjectSelectorService,
   ],
   bootstrap: [AppComponent],
   entryComponents: [
