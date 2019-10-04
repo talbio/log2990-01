@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
+import { Colors } from 'src/app/data-structures/Colors';
 
 const DASHED_LINE_VALUE = 5;
+const STROKE_COLOR = Colors.BLACK;
 
 @Injectable()
 export class ObjectSelectorService {
@@ -9,6 +11,11 @@ export class ObjectSelectorService {
     private OFFSET_CANVAS_X: number;
     private currentRectNumber: number;
     private mouseDown: boolean;
+
+    constructor() {
+      this.currentRectNumber = 0;
+      this.mouseDown = false;
+    }
 
     createSelectorRectangle(mouseEvent: MouseEvent, canvas: HTMLElement) {
 
@@ -21,7 +28,7 @@ export class ObjectSelectorService {
             data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
             y=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
             data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-            width = \'0\' height = \'0\' stroke-dasharray = \'${DASHED_LINE_VALUE}\'
+            width = \'0\' height = \'0\' stroke=\'${STROKE_COLOR}\' stroke-dasharray = \'${DASHED_LINE_VALUE}\'
             fill=\'transparent\'></rect>`;
 
         this.mouseDown = true;

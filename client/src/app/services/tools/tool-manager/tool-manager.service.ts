@@ -29,7 +29,7 @@ export class ToolManagerService {
               private colorApplicator: ColorApplicatorService,
               private objectSelector: ObjectSelectorService,
               protected colorService: ColorService) {
-    this.activeTool = Tools.Pencil;
+    this.activeTool = Tools.Selector;
   }
 
   loadRenderer(renderer: Renderer2) {
@@ -90,6 +90,9 @@ export class ToolManagerService {
         break;
       case Tools.Brush:
         this.brushGenerator.finishBrushPath();
+        break;
+      case Tools.Selector:
+        this.objectSelector.finishRectangle();
         break;
       default:
         return;
