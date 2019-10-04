@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { PlotType } from '../../data-structures/PlotType';
 
 @Injectable()
 export class EllipseGeneratorService {
@@ -35,7 +36,7 @@ export class EllipseGeneratorService {
     this.plotType = plotType;
   }
 
-  createRectangle(mouseEvent: MouseEvent, canvas: HTMLElement, primaryColor: string, secondaryColor: string) {
+  createEllipse(mouseEvent: MouseEvent, canvas: HTMLElement, primaryColor: string, secondaryColor: string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
@@ -43,31 +44,34 @@ export class EllipseGeneratorService {
     switch (this.plotType) {
       case PlotType.Contour:
         canvas.innerHTML +=
-        `<ellipse id=\'ellipse${this.currentRectNumber}\'
-        x=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
+        `<ellipse id=\'ellipse${this.currentEllipseNumber}\'
         data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        y=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
         data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        width = \'0\' height = \'0\' stroke=\'${secondaryColor}\' stroke-width=\'${this.strokeWidth}\'
+        cx=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
+        cy=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
+        rx=0 ry=0\'
+        stroke=\'${secondaryColor}\' stroke-width=\'${this.strokeWidth}\'
         fill=\'transparent\'></ellipse>`;
         break;
       case PlotType.Full:
         canvas.innerHTML +=
-        `<ellipse id=\'ellipse${this.currentRectNumber}\'
+        `<ellipse id=\'ellipse${this.currentEllipseNumber}\'
+        data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
+        data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
         cx=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        data-start-rx = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
         cy=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        data-start-ry = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
+        rx=0 ry=0\'
         stroke=\'transparent\' stroke-width= \'${this.strokeWidth}\'
         fill=\'${primaryColor}\'></ellipse>`;
         break;
       case PlotType.FullWithContour:
         canvas.innerHTML +=
-        `<ellipse id=\'ellipse${this.currentRectNumber}\'
+        `<ellipse id=\'ellipse${this.currentEllipseNumber}\'
+        data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
+        data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
         cx=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        data-start-rx = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
         cy=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        data-start-ry = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
+        rx=0 ry=0\'
         stroke=\'${secondaryColor}\' stroke-width=\'${this.strokeWidth}\'
         fill=\'${primaryColor}\'></ellipse>`;
         break;
@@ -75,81 +79,87 @@ export class EllipseGeneratorService {
     this.mouseDown = true;
   }
 
-  updateSquare(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updateCircle(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
-      const currentRect = canvas.children[currentChildPosition - 1];
-      if (currentRect != null) {
-        const startEllipseX: number = Number(currentRect.getAttribute('data-start-rx'));
-        const startEllipseY: number = Number(currentRect.getAttribute('data-start-ry'));
-        const actualWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startEllipseX;
-        const actualHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startEllipseY;
-        if (actualWidth >= 0) {
-          if (Math.abs(actualHeight) > Math.abs(actualWidth)) {
+      const currentEllipse = canvas.children[currentChildPosition - 1];
+      if (currentEllipse != null) {
+        const startEllipseX: number = Number(currentEllipse.getAttribute('data-start-x'));
+        const startEllipseY: number = Number(currentEllipse.getAttribute('data-start-y'));
+        const radiusWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startEllipseX;
+        const radiusHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startEllipseY;
+        if (radiusWidth >= 0) {
+          if (Math.abs(radiusHeight) > Math.abs(radiusWidth)) {
             // height is bigger
-            currentRect.setAttribute('width', '' + Math.abs(actualHeight));
+            currentEllipse.setAttribute('rx', '' + Math.abs(radiusHeight));
+            currentEllipse.setAttribute('cx', '' + (startEllipseX + Math.abs(radiusHeight)));
           } else {
             // width is bigger, act normal
-            currentRect.setAttribute('width', '' + actualWidth);
+            currentEllipse.setAttribute('rx', '' + radiusWidth);
+            currentEllipse.setAttribute('cx', '' + (startEllipseX + radiusWidth));
           }
         } else {
-          if (Math.abs(actualHeight) > Math.abs(actualWidth)) {
+          if (Math.abs(radiusHeight) > Math.abs(radiusWidth)) {
             // height is bigger
-            currentRect.setAttribute('width', '' + Math.abs(actualHeight));
-            currentRect.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X + Math.abs(actualWidth) - Math.abs(actualHeight)));
+            currentEllipse.setAttribute('rx', '' + Math.abs(radiusHeight));
+            currentEllipse.setAttribute('cx', '' + (startEllipseX - Math.abs(radiusHeight)));
           } else {
             // width is bigger, act normal
-            currentRect.setAttribute('width', '' + Math.abs(actualWidth));
-            currentRect.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X));
+            currentEllipse.setAttribute('rx', '' + Math.abs(radiusWidth));
+            currentEllipse.setAttribute('cx', '' + (startEllipseX + radiusWidth));
           }
         }
-        if (actualHeight >= 0) {
-          if (Math.abs(actualWidth) > Math.abs(actualHeight)) {
+        if (radiusHeight >= 0) {
+          if (Math.abs(radiusWidth) > Math.abs(radiusHeight)) {
             // width is bigger
-            currentRect.setAttribute('height', '' + Math.abs(actualWidth));
+            currentEllipse.setAttribute('ry', '' + Math.abs(radiusWidth));
+            currentEllipse.setAttribute('cy', '' + (startEllipseY + Math.abs(radiusWidth)));
           } else {
             // height is bigger, act normal
-            currentRect.setAttribute('height', '' + actualHeight);
+            currentEllipse.setAttribute('ry', '' + radiusHeight);
+            currentEllipse.setAttribute('cy', '' + (startEllipseY + radiusHeight));
           }
         } else {
-          if (Math.abs(actualWidth) > Math.abs(actualHeight)) {
+          if (Math.abs(radiusWidth) > Math.abs(radiusHeight)) {
             // width is bigger
-            currentRect.setAttribute('height', '' + Math.abs(actualWidth));
-            currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y + Math.abs(actualHeight) - Math.abs(actualWidth)));
+            currentEllipse.setAttribute('ry', '' + Math.abs(radiusWidth));
+            currentEllipse.setAttribute('cy', '' + (startEllipseY - Math.abs(radiusWidth)));
           } else {
             // height is bigger, act normal
-            currentRect.setAttribute('height', '' + Math.abs(actualHeight));
-            currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
+            currentEllipse.setAttribute('ry', '' + radiusHeight);
+            currentEllipse.setAttribute('cy', '' + (startEllipseY + radiusHeight));
           }
         }
       }
     }
   }
 
-  updateRectangle(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updateEllipse(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
-      const currentRect = canvas.children[currentChildPosition - 1];
-      if (currentRect != null) {
-        const startEllipseX: number = Number(currentRect.getAttribute('data-start-rx'));
-        const startEllipseY: number = Number(currentRect.getAttribute('data-start-ry'));
-        const actualWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startEllipseX;
-        const actualHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startEllipseY;
-        if (actualWidth >= 0) {
-          currentRect.setAttribute('width', '' + actualWidth);
+      const currentEllipse = canvas.children[currentChildPosition - 1];
+      if (currentEllipse != null) {
+        const startEllipseX: number = Number(currentEllipse.getAttribute('data-start-x'));
+        const startEllipseY: number = Number(currentEllipse.getAttribute('data-start-y'));
+        const radiusWidth: number = ((mouseEvent.pageX - this.OFFSET_CANVAS_X) - startEllipseX) / 2;
+        const radiusHeight: number = ((mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startEllipseY) / 2;
+        if (radiusWidth >= 0) {
+          currentEllipse.setAttribute('rx', '' + radiusWidth);
+          currentEllipse.setAttribute('cx', '' + (startEllipseX + radiusWidth));
         } else {
-          currentRect.setAttribute('width', '' + Math.abs(actualWidth));
-          currentRect.setAttribute('cx', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X));
+          currentEllipse.setAttribute('rx', '' + Math.abs(radiusWidth));
+          currentEllipse.setAttribute('cx', '' + (startEllipseX + radiusWidth));
         }
-        if (actualHeight >= 0) {
-          currentRect.setAttribute('height', '' + actualHeight);
+        if (radiusHeight >= 0) {
+          currentEllipse.setAttribute('ry', '' + radiusHeight);
+          currentEllipse.setAttribute('cy', '' + (startEllipseY + radiusHeight));
         } else {
-          currentRect.setAttribute('height', '' + Math.abs(actualHeight));
-          currentRect.setAttribute('cy', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
+          currentEllipse.setAttribute('ry', '' + Math.abs(radiusHeight));
+          currentEllipse.setAttribute('cy', '' + (startEllipseY + radiusHeight));
         }
       }
     }
   }
 
-  finishRectangle() {
+  finishEllipse() {
     if (this.mouseDown) {
       this.currentEllipseNumber += 1;
       this.mouseDown = false;

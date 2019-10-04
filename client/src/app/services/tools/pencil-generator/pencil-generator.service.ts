@@ -35,7 +35,7 @@ export class PencilGeneratorService {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
-    let string addToHTML = generateHTML();
+    // let string addToHTML = generateHTML();
 
     canvas.innerHTML +=
       `<path id=\'pencilPath${this.currentPencilPathNumber}\'
@@ -70,10 +70,10 @@ export class PencilGeneratorService {
     }
   }
 
-  string GenerateHTML(mouseEvent: MouseEvent, canvas: HTMLElement) {
-    return `<path id=\'pencilPath${this.currentPencilPathNumber}\'
-    d=\'M ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
-    L ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-    stroke=\'${primaryColor}\' stroke-width=\'${this.strokeWidth}\' stroke-linecap=\'round\' fill=\'none\'></path>`;
-  }
+  // string GenerateHTML(mouseEvent: MouseEvent, canvas: HTMLElement) {
+  //   return `<path id=\'pencilPath${this.currentPencilPathNumber}\'
+  //   d=\'M ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
+  //   L ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
+  //   stroke=\'${primaryColor}\' stroke-width=\'${this.strokeWidth}\' stroke-linecap=\'round\' fill=\'none\'></path>`;
+  // }
 }
