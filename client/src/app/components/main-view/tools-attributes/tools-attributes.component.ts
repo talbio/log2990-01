@@ -1,3 +1,4 @@
+import { LineGeneratorService } from './../../../services/tools/line-generator/line-generator.service';
 import { Component } from '@angular/core';
 import { PlotType } from '../../../data-structures/PlotType';
 import { Tools } from '../../../data-structures/Tools';
@@ -19,6 +20,7 @@ export class ToolsAttributesComponent {
               protected pencilGenerator: PencilGeneratorService,
               protected rectangleGenerator: RectangleGeneratorService,
               protected brushGenerator: BrushGeneratorService,
+              protected lineGenerator: LineGeneratorService,
               protected colorService: ColorService) {
   }
 

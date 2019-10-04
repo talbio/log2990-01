@@ -5,7 +5,6 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-
 import { AppComponent } from './components/app/app.component';
 import { ColorToolComponent } from './components/main-view/color-tool/color-tool.component';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
@@ -24,6 +23,7 @@ import { StorageService } from './services/storage/storage.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
 import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
 import { ColorService } from './services/tools/color/color.service';
+import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
@@ -67,6 +67,7 @@ import { ToolSelectorService } from './services/tools/tool-selector/tool-selecto
     BrushGeneratorService,
     ColorApplicatorService,
     ColorService,
+    LineGeneratorService,
   ],
   bootstrap: [AppComponent],
   entryComponents: [

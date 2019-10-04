@@ -6,6 +6,7 @@ import { ColorService } from '../color/color.service';
 import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 import {ToolSelectorService} from '../tool-selector/tool-selector.service';
+import { LineGeneratorService } from './../line-generator/line-generator.service';
 
 @Injectable()
 export class ToolManagerService {
@@ -19,6 +20,7 @@ export class ToolManagerService {
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
               private toolSelector: ToolSelectorService,
+              private lineGenerator: LineGeneratorService,
               protected colorService: ColorService) {
   }
 
@@ -59,6 +61,9 @@ export class ToolManagerService {
       case Tools.Brush:
           this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
           break;
+      case Tools.Line:
+        this.lineGenerator.updateLine(mouseEvent, canvas, this.numberOfElements);
+        break;
       default:
           return;
     }
@@ -90,6 +95,19 @@ export class ToolManagerService {
     }
   }
 
+  createElementOnClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
+    switch (this.toolSelector._activeTool) {
+      case Tools.Line:
+        if (!this.lineGenerator._isMakingLine) {
+          this.numberOfElements += 1;
+        }
+        this.lineGenerator.makeLine(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.numberOfElements);
+        break;
+      default:
+        return;
+    }
+  }
+
   changeElementRightClick(clickedElement: HTMLElement) {
     switch (this.toolSelector._activeTool) {
       case Tools.ColorApplicator:
@@ -97,6 +115,17 @@ export class ToolManagerService {
         break;
       default:
         return;
+    }
+  }
+
+  finishElementDoubleClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
+    if (this.toolSelector._activeTool === Tools.Line) {
+      console.log("fires");
+      if (mouseEvent.shiftKey) {
+        this.lineGenerator.finishAndLinkLineBlock(mouseEvent, canvas, this.numberOfElements);
+      } else {
+        this.lineGenerator.finishLineBlock();
+      }
     }
   }
 
