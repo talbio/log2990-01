@@ -51,7 +51,7 @@ const mockMatDialog = new MockMatDialog();
 
 /* ------------------------------------------------------------------------------------------ */
 
-fdescribe('CreateDrawingDialogComponent', () => {
+describe('CreateDrawingDialogComponent', () => {
   let component: CreateDrawingDialogComponent;
   let fixture: ComponentFixture<CreateDrawingDialogComponent>;
   const mockRenderer2 = new MockRenderer();
@@ -120,7 +120,7 @@ fdescribe('CreateDrawingDialogComponent', () => {
       spyOn(mockMatDialogToTrue as MockMatDialog, 'open').and.returnValue({
         afterClosed: () => of(true),
       });
-      await component.submit().then( () => {
+      component.submit().then( () => {
         expect(spyToolManager.deleteAllDrawings).toHaveBeenCalled();
         expect(spyDialog.close).toHaveBeenCalled();
       });
@@ -129,7 +129,7 @@ fdescribe('CreateDrawingDialogComponent', () => {
     it('should just close dialog if drawing is empty', async () => {
       const mockDialogDataToFalse = fixture.componentRef.injector.get<DialogData>(MAT_DIALOG_DATA);
       mockDialogDataToFalse.drawingNonEmpty = false;
-      await component.submit().then( () => expect(spyDialog.close).toHaveBeenCalled());
+      component.submit().then( () => expect(spyDialog.close).toHaveBeenCalled());
     });
 
     it('should send form values when dialog is closed', async () => {
@@ -140,7 +140,7 @@ fdescribe('CreateDrawingDialogComponent', () => {
         width: component.width.value,
         color: component.color.value,
       };
-      await component.submit().then( () => expect(spyDialog.close).toHaveBeenCalledWith(expectedFormValues));
+      component.submit().then( () => expect(spyDialog.close).toHaveBeenCalledWith(expectedFormValues));
     });
   });
 

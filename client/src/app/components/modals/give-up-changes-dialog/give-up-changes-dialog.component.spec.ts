@@ -3,7 +3,7 @@ import {MatDialogRef} from '@angular/material/dialog';
 import {DemoMaterialModule} from '../../../material.module';
 import {GiveUpChangesDialogComponent} from './give-up-changes-dialog.component';
 
-fdescribe('GiveUpChangesDialogComponent', () => {
+describe('GiveUpChangesDialogComponent', () => {
   let component: GiveUpChangesDialogComponent;
   let fixture: ComponentFixture<GiveUpChangesDialogComponent>;
   const spyDialog: jasmine.SpyObj<MatDialogRef<GiveUpChangesDialogComponent>> =
