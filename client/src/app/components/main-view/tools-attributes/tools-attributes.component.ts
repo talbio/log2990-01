@@ -1,7 +1,7 @@
-import { ToolManagerService } from './../../../services/tools/tool-manager/tool-manager.service';
 import { Component } from '@angular/core';
 import { PlotType } from '../../../data-structures/PlotType';
 import { Tools } from '../../../data-structures/Tools';
+import { ToolManagerService } from './../../../services/tools/tool-manager/tool-manager.service';
 
 import { ColorService } from 'src/app/services/tools/color/color.service';
 import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
