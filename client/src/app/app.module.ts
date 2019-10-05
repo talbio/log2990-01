@@ -17,8 +17,10 @@ import { ColorSliderComponent } from './components/modals/color-picker-module/co
 import { LastTenColorsComponent } from './components/modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
+import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
 import {DemoMaterialModule} from './material.module';
+import {SaveDrawingService} from './services/back-end/save-drawing/save-drawing.service';
 import { StorageService } from './services/storage/storage.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
 import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
@@ -27,7 +29,6 @@ import { EllipseGeneratorService } from './services/tools/ellipse-generator.serv
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
-import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dia
     BrushGeneratorService,
     ColorApplicatorService,
     ColorService,
+    SaveDrawingService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [
@@ -75,6 +77,7 @@ import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dia
     GiveUpChangesDialogComponent,
     ToolsAttributesComponent,
     ColorPickerDialogComponent,
+    SaveDrawingDialogComponent,
   ],
 })
 export class AppModule {
