@@ -27,6 +27,7 @@ import { EllipseGeneratorService } from './services/tools/ellipse-generator.serv
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
+import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { ToolManagerService } from './services/tools/tool-manager/tool-manager.s
     LateralBarComponent,
     ColorPickerDialogComponent,
     LastTenColorsComponent,
+    SaveDrawingDialogComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,40 @@
+<p mat-dialog-title>{{DIALOG_TITLE}}</p>
+<mat-dialog-content [formGroup]="formGroup">
+
+  <form [formGroup]="formGroup">
+    <ul>
+
+      <li>
+        <mat-form-field>
+          <input matInput
+                 placeholder="Entrez un nom pour le dessin"
+                 formControlName="name">
+          <mat-error *ngIf="empty(name) && name.touched">{{NON_EMPTY_NAME_ERR_MSG}}</mat-error>
+        </mat-form-field>
+      </li>
+
+      <li>
+        <mat-form-field>
+          <input matInput
+                 placeholder="Entrez des étiquettes"
+                 formControlName="width">
+          <mat-error *ngIf="tags.invalid && tags.touched">{{TAGS_INVALID_ERR_MSG}}</mat-error>
+        </mat-form-field>
+      </li>
+
+    </ul>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="mat-raised-button mat-warn"
+          (click)="close()">
+    Annuler
+  </button>
+  <div class="divider"></div>
+  <button class="mat-raised-button mat-primary"
+          [disabled] ="formGroup.invalid"
+          (click)="submit()">
+    Confirmer
+  </button>
+</mat-dialog-actions>
