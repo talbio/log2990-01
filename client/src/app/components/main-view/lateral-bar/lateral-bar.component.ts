@@ -13,6 +13,7 @@ import {CreateDrawingFormValues} from '../../../data-structures/CreateDrawingFor
 import {Tools} from '../../../data-structures/Tools';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {CreateDrawingDialogComponent} from '../../modals/create-drawing-dialog/create-drawing-dialog.component';
+import {SaveDrawingDialogComponent} from "../../modals/save-drawing-dialog/save-drawing-dialog.component";
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
 
@@ -64,12 +65,22 @@ export class LateralBarComponent {
     return Tools;
   }
 
-  protected toggleAttributesAndSetTool(tool: Tools) {
+  protected toggleAttributesAndSetTool(tool: Tools): void {
     this.toolManager._activeTool = tool;
     void this.attributesSideNav.toggle();
   }
 
-  protected openCreateDrawingDialog() {
+  protected openSaveDrawingDialog(): void {
+    const dialogRef = this.dialog.open(SaveDrawingDialogComponent, {
+      autoFocus: false,
+      data: { },
+    });
+    dialogRef.afterClosed().subscribe(() => {
+
+    });
+  }
+
+  protected openCreateDrawingDialog(): void {
     const dialogRef = this.dialog.open(CreateDrawingDialogComponent, {
       autoFocus: false,
       data: { drawingNonEmpty: this.toolManager.drawingNonEmpty() },
