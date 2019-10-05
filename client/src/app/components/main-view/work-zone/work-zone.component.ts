@@ -1,5 +1,6 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
+import {SaveDrawingService} from "../../../services/back-end/save-drawing/save-drawing.service";
 
 @Component({
   selector: 'app-work-zone',
@@ -20,7 +21,9 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   private canvasElement: any;
 
   constructor(private toolManager: ToolManagerService,
-              private renderer: Renderer2) {
+              private renderer: Renderer2,
+              private saveDrawing: SaveDrawingService) {
+
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
     this.color = this.DEFAULT_WHITE_COLOR;
@@ -28,6 +31,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+    this.saveDrawing._svgCanvas = this.canvasElement;
   }
 
   ngAfterViewInit(): void {
