@@ -77,6 +77,7 @@ export class EllipseGeneratorService {
         break;
     }
     this.mouseDown = true;
+    return true;
   }
 
   updateCircle(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
