@@ -13,9 +13,10 @@ import {CreateDrawingFormValues} from '../../../data-structures/CreateDrawingFor
 import {Tools} from '../../../data-structures/Tools';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {CreateDrawingDialogComponent} from '../../modals/create-drawing-dialog/create-drawing-dialog.component';
-import {SaveDrawingDialogComponent} from "../../modals/save-drawing-dialog/save-drawing-dialog.component";
+import {SaveDrawingDialogComponent} from '../../modals/save-drawing-dialog/save-drawing-dialog.component';
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
+const ELLIPSE_ICON_PATH = '../../../../assets/svg-icons/ellipse.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -112,7 +113,9 @@ export class LateralBarComponent {
 
   private loadSVGIcons(): void {
     this.matIconRegistry.addSvgIcon('rectangle',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH), );
+      this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('ellipse',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(ELLIPSE_ICON_PATH));
   }
 
 }
