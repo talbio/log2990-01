@@ -1,4 +1,5 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
+import { Colors } from 'src/app/data-structures/Colors';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
@@ -11,19 +12,18 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   private readonly DEFAULT_WIDTH = 1080;
   private readonly DEFAULT_HEIGHT = 720;
   private readonly SHIFT_KEY = 'SHIFT';
-  private readonly DEFAULT_WHITE_COLOR = '#FFFFFF'
 
   @Input() width: number;
   @Input() height: number;
   @Input() color: string;
 
-  private canvasElement: any;
+  private canvasElement: HTMLElement;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
-    this.color = this.DEFAULT_WHITE_COLOR;
+    this.color = Colors.WHITE;
   }
 
   ngOnInit(): void {

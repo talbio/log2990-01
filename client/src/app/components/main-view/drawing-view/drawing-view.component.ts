@@ -1,10 +1,10 @@
-import {ComponentPortal} from '@angular/cdk/portal';
-import {AfterViewInit, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
-import {MatCardContent} from '@angular/material/card';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import {CreateDrawingFormValues} from '../../../data-structures/CreateDrawingFormValues';
-import {ToolsAttributesComponent} from '../tools-attributes/tools-attributes.component';
-import {WorkZoneComponent} from '../work-zone/work-zone.component';
+import { ComponentPortal } from '@angular/cdk/portal';
+import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { MatCardContent } from '@angular/material/card';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { CreateDrawingFormValues } from '../../../data-structures/CreateDrawingFormValues';
+import { ToolsAttributesComponent } from '../tools-attributes/tools-attributes.component';
+import { WorkZoneComponent } from '../work-zone/work-zone.component';
 
 @Component({
   selector: 'app-drawing-view',
@@ -12,12 +12,11 @@ import {WorkZoneComponent} from '../work-zone/work-zone.component';
   styleUrls: ['./drawing-view.component.scss'],
 })
 export class DrawingViewComponent implements AfterViewInit {
-  @ViewChild('workZoneComponent', {static: false}) workZoneComponent: WorkZoneComponent;
-  @ViewChild('attributesSideNav', {static: false}) attributesSideNav: MatSidenavModule;
-  @ViewChild('toolsAttributes', {static: false}) toolsAttributes: MatCardContent;
+  @ViewChild('workZoneComponent', { static: false }) workZoneComponent: WorkZoneComponent;
+  @ViewChild('attributesSideNav', { static: false }) attributesSideNav: MatSidenavModule;
+  @ViewChild('toolsAttributes', { static: false }) toolsAttributes: MatCardContent;
 
   protected toolAttributesComponent: ComponentPortal<ToolsAttributesComponent>;
-
   constructor(private cd: ChangeDetectorRef) {
     this.toolAttributesComponent = new ComponentPortal(ToolsAttributesComponent);
   }
