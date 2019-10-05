@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef} from '@angular/material/dialog';
+import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 
 @Component({
   selector: 'app-save-drawing-dialog',
@@ -16,7 +17,8 @@ export class SaveDrawingDialogComponent implements OnInit {
   protected formGroup: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
-              private dialogRef: MatDialogRef<SaveDrawingDialogComponent>) {
+              private dialogRef: MatDialogRef<SaveDrawingDialogComponent>,
+              private saveDrawing: SaveDrawingService) {
 
     this.formGroup = this.formBuilder.group({
       name: ['', [
@@ -45,7 +47,8 @@ export class SaveDrawingDialogComponent implements OnInit {
   }
 
   close() {
-    this.dialogRef.close();
+    this.saveDrawing.svgToJson();
+    // this.dialogRef.close();
   }
 
   submit() {
