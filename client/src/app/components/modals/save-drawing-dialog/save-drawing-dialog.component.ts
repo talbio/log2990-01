@@ -6,7 +6,7 @@ import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-d
 @Component({
   selector: 'app-save-drawing-dialog',
   templateUrl: './save-drawing-dialog.component.html',
-  styleUrls: ['./save-drawing-dialog.component.scss']
+  styleUrls: ['./save-drawing-dialog.component.scss'],
 })
 export class SaveDrawingDialogComponent implements OnInit {
 
@@ -48,10 +48,11 @@ export class SaveDrawingDialogComponent implements OnInit {
 
   close() {
     this.saveDrawing.svgToJson();
-    // this.dialogRef.close();
+    this.dialogRef.close();
   }
 
   submit() {
+    void this.saveDrawing.postSvgElements();
   }
 
 }
