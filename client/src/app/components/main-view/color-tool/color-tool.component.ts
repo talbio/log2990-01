@@ -1,4 +1,3 @@
-
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ColorService } from 'src/app/services/tools/color/color.service';
@@ -11,17 +10,18 @@ import { ColorPickerDialogComponent } from '../../modals/color-picker-module/col
 })
 export class ColorToolComponent {
 
-  constructor(protected colorService: ColorService, public dialog: MatDialog) {
+  constructor(protected colorService: ColorService,
+              private dialog: MatDialog) {
   }
 
   openDialogForPrimaryColor(): void {
     const dialogRef = this.dialog.open(ColorPickerDialogComponent,
       { data: { color: this.colorService.getPrimaryColor() } });
-    dialogRef.afterClosed().subscribe((color) => {
-      if (color) {
-        this.colorService.addToTopTenColors(color);
-        this.colorService.primaryColor = color;
-        this.colorService.setPrimaryColor(color);
+    dialogRef.afterClosed().subscribe((colorSelectedByUser) => {
+      if (colorSelectedByUser) {
+        this.colorService.addToTopTenColors(colorSelectedByUser);
+        this.colorService.primaryColor = colorSelectedByUser;
+        this.colorService.setPrimaryColor(colorSelectedByUser);
       }
     });
   }
@@ -29,11 +29,11 @@ export class ColorToolComponent {
   openDialogForSecondaryColor(): void {
     const dialogRef = this.dialog.open(ColorPickerDialogComponent,
       { data: { color: this.colorService.getSecondaryColor() } });
-    dialogRef.afterClosed().subscribe((color) => {
-      if (color) {
-        this.colorService.addToTopTenColors(color);
-        this.colorService.secondaryColor = color;
-        this.colorService.setSecondaryColor(color);
+    dialogRef.afterClosed().subscribe((colorSelectedByUser) => {
+      if (colorSelectedByUser) {
+        this.colorService.addToTopTenColors(colorSelectedByUser);
+        this.colorService.secondaryColor = colorSelectedByUser;
+        this.colorService.setSecondaryColor(colorSelectedByUser);
       }
     });
   }

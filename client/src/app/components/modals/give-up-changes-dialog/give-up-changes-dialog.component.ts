@@ -8,14 +8,14 @@ import {MatDialogRef} from '@angular/material/dialog';
 })
 export class GiveUpChangesDialogComponent {
 
-  constructor(private dialogRef: MatDialogRef<GiveUpChangesDialogComponent>) {
+        constructor(private dialogRef: MatDialogRef<GiveUpChangesDialogComponent>) {
   }
 
-  protected cancel(): void {
+    cancel(): void {
     this.dialogRef.close(false);
   }
 
-  protected submit(): void {
+   submit(): void {
     this.dialogRef.close(true);
   }
 }

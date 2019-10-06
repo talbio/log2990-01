@@ -83,20 +83,20 @@ export class CreateDrawingDialogComponent implements OnInit {
     return this.COLOR_HAS_TO_BE_A_HEX_VALUE;
   }
 
-  protected clear(formControlName: AbstractControl): void {
+  clear(formControlName: AbstractControl): void {
     formControlName.setValue('');
   }
 
   @HostListener('window:resize', ['$event'])
-  protected onResize(): void {
+  onResize(): void {
     this.updateWidthAndHeight();
   }
 
-  protected close(): void {
+  close(): void {
     this.dialogRef.close();
   }
 
-  protected async onSubmit(): Promise<void> {
+  async submit(): Promise<void> {
     if (this.data.drawingNonEmpty) {
       await this.openConfirmGiveUpChangesDialog().then((confirm) => {
         if (confirm) {
