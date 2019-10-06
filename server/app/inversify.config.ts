@@ -6,6 +6,7 @@ import {Server} from './server';
 import {DateService} from './services/date.service';
 import {IndexService} from './services/index.service';
 import Types from './types';
+import {DrawingsController} from "./controllers/drawings.controller";
 
 const container: Container = new Container();
 
@@ -16,5 +17,7 @@ container.bind(Types.IndexService).to(IndexService);
 
 container.bind(Types.DateController).to(DateController);
 container.bind(Types.DateService).to(DateService);
+
+container.bind(Types.DrawingsController).to(DrawingsController);
 
 export {container};

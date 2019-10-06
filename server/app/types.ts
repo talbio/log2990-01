@@ -3,6 +3,7 @@ export default {
     Application: Symbol('Application'),
     IndexController: Symbol('IndexController'),
     DateController: Symbol('DateController'),
+    DrawingsController: Symbol('DrawingsController'),
     IndexService: Symbol('IndexService'),
     DateService: Symbol('DateService'),
 };
