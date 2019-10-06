@@ -18,12 +18,13 @@ import { LastTenColorsComponent } from './components/modals/color-picker-module/
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
-import {DemoMaterialModule} from './material.module';
+import { DemoMaterialModule } from './material.module';
 import { StorageService } from './services/storage/storage.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
 import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
 import { ColorService } from './services/tools/color/color.service';
-import { EllipseGeneratorService } from './services/tools/ellipse-generator.service';
+import { EllipseGeneratorService } from './services/tools/ellipse-generator/ellipse-generator.service';
+import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
@@ -65,6 +66,7 @@ import { ToolManagerService } from './services/tools/tool-manager/tool-manager.s
     BrushGeneratorService,
     ColorApplicatorService,
     ColorService,
+    GridTogglerService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [

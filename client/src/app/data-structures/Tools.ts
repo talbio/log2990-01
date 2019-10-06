@@ -15,5 +15,6 @@ export enum Tools {
   Stamp,
   Pipette,
   Selector,
+  Grid,
   // non exhaustive list
 }

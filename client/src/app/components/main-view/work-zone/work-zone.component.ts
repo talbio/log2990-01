@@ -1,5 +1,6 @@
-import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
+import { AfterViewInit, Component, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
+import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 
 @Component({
   selector: 'app-work-zone',
@@ -20,7 +21,8 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   private canvasElement: any;
 
   constructor(private toolManager: ToolManagerService,
-              private renderer: Renderer2) {
+              private renderer: Renderer2,
+              protected grid: GridTogglerService) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
     this.color = this.DEFAULT_WHITE_COLOR;

@@ -2,10 +2,10 @@ import {Injectable, Renderer2} from '@angular/core';
 import {Tools} from '../../../data-structures/Tools';
 import {BrushGeneratorService} from '../brush-generator/brush-generator.service';
 import {ColorApplicatorService} from '../color-applicator/color-applicator.service';
-import { ColorService } from '../color/color.service';
+import {ColorService} from '../color/color.service';
 import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
-import { EllipseGeneratorService } from './../ellipse-generator.service';
+import {EllipseGeneratorService} from './../ellipse-generator/ellipse-generator.service';
 
 @Injectable()
 export class ToolManagerService {

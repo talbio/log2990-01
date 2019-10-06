@@ -1,3 +1,4 @@
+import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 import { ToolManagerService } from './../../../services/tools/tool-manager/tool-manager.service';
 import { Component } from '@angular/core';
 import { PlotType } from '../../../data-structures/PlotType';
@@ -19,7 +20,8 @@ export class ToolsAttributesComponent {
               protected pencilGenerator: PencilGeneratorService,
               protected rectangleGenerator: RectangleGeneratorService,
               protected brushGenerator: BrushGeneratorService,
-              protected colorService: ColorService) {
+              protected colorService: ColorService,
+              protected gridService: GridTogglerService) {
   }
 
   protected get PlotType() {
