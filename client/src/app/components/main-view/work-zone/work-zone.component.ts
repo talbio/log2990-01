@@ -1,5 +1,6 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import { Colors } from 'src/app/data-structures/Colors';
+import { Tools } from 'src/app/data-structures/Tools';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
@@ -59,14 +60,23 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.toolManager.finishElement();
   }
 
-  onLeftClick(mouseEvent: Event) {
-    this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
+  onLeftClick(mouseEvent: MouseEvent) {
+    if (this.toolManager._activeTool === Tools.ColorApplicator) {
+      this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
+    } else if (this.toolManager._activeTool === Tools.Line) {
+      this.toolManager.createElementOnClick(mouseEvent, this.canvasElement);
+    }
+    return true;
   }
 
   onRightClick(mouseEvent: Event) {
     this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
     // deactivate context menu on right click
     return false;
+  }
+
+  onDoubleClick(mouseEvent: MouseEvent) {
+    this.toolManager.finishElementDoubleClick(mouseEvent, this.canvasElement);
   }
 
   protected setBackGroundColor(): {'background-color': string} {

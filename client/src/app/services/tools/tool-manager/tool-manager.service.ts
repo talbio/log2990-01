@@ -6,13 +6,15 @@ import { ColorService } from '../color/color.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
+import { EllipseGeneratorService } from './../ellipse-generator.service';
+import { LineGeneratorService } from './../line-generator/line-generator.service';
 
 @Injectable()
 export class ToolManagerService {
 
   private numberOfElements = 1;
   private renderer: Renderer2;
-  private canvasElement: SVGGElement;
+  private canvasElement: HTMLElement;
   private activeTool: Tools;
 
   set _activeTool(tool: Tools) {
@@ -24,10 +26,12 @@ export class ToolManagerService {
   }
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
+              private ellipseGenerator: EllipseGeneratorService,
               private pencilGenerator: PencilGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
               private objectSelector: ObjectSelectorService,
+              private lineGenerator: LineGeneratorService,
               protected colorService: ColorService) {
     this.activeTool = Tools.Selector;
   }
@@ -51,10 +55,14 @@ export class ToolManagerService {
       case Tools.Selector:
         this.objectSelector.createSelectorRectangle(mouseEvent, canvas);
         break;
+      case Tools.Ellipse:
+        this.ellipseGenerator.createEllipse(mouseEvent, canvas,
+          this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
+        break;
       default:
         return;
     }
-    this.numberOfElements += 1;
+    this.numberOfElements = canvas.children.length;
   }
 
   updateElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
@@ -76,6 +84,16 @@ export class ToolManagerService {
         this.objectSelector.updateSelectorRectangle(mouseEvent, canvas, this.numberOfElements);
         this.updateNumberOfElements();
         break;
+      case Tools.Line:
+        this.lineGenerator.updateLine(mouseEvent, canvas, this.numberOfElements);
+        break;
+      case Tools.Ellipse:
+        if (mouseEvent.shiftKey) {
+          this.ellipseGenerator.updateCircle(mouseEvent, canvas, this.numberOfElements);
+        } else {
+          this.ellipseGenerator.updateEllipse(mouseEvent, canvas, this.numberOfElements);
+        }
+        break;
       default:
         return;
     }
@@ -96,6 +114,9 @@ export class ToolManagerService {
         this.objectSelector.finishSelector(this.renderer.selectRootElement('#canvas', true));
         this.updateNumberOfElements();
         break;
+      case Tools.Ellipse:
+        this.ellipseGenerator.finishEllipse();
+        break;
       default:
         return;
     }
@@ -111,6 +132,17 @@ export class ToolManagerService {
     }
   }
 
+  createElementOnClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
+    switch (this._activeTool) {
+      case Tools.Line:
+        this.lineGenerator.makeLine(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.numberOfElements);
+        break;
+      default:
+        return;
+    }
+    this.numberOfElements = canvas.children.length;
+  }
+
   changeElementRightClick(clickedElement: HTMLElement) {
     switch (this._activeTool) {
       case Tools.ColorApplicator:
@@ -118,6 +150,16 @@ export class ToolManagerService {
         break;
       default:
         return;
+    }
+  }
+
+  finishElementDoubleClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
+    if (this._activeTool === Tools.Line) {
+      if (mouseEvent.shiftKey) {
+        this.lineGenerator.finishAndLinkLineBlock(mouseEvent, canvas, this.numberOfElements);
+      } else {
+        this.lineGenerator.finishLineBlock();
+      }
     }
   }
 
@@ -137,6 +179,8 @@ export class ToolManagerService {
       case Tools.Rectangle:
         // change into rectangle
         // this.rectangleGenerator.updateRectangle(mouseEvent, this.numberOfElements);
+        break;
+      case Tools.Ellipse:
         break;
       default:
         return;
@@ -158,5 +202,28 @@ export class ToolManagerService {
   updateNumberOfElements(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
     this.numberOfElements = this.canvasElement.childNodes.length;
+  }
+
+  escapePress() {
+    switch (this._activeTool) {
+      case Tools.Line:
+        this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+        this.lineGenerator.deleteLineBlock(this.canvasElement, this.numberOfElements);
+        this.numberOfElements = this.canvasElement.children.length;
+        break;
+      default:
+        return;
+    }
+  }
+
+  backSpacePress() {
+    switch (this._activeTool) {
+      case Tools.Line:
+        this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+        this.lineGenerator.deleteLine(this.canvasElement, this.numberOfElements);
+        break;
+      default:
+        return;
+    }
   }
 }

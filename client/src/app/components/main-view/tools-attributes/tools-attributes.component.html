@@ -30,6 +30,37 @@
   </mat-form-field>
 </mat-card-content>
 
+<!-- Line Attributes -->
+<mat-card-content *ngIf="toolManager._activeTool === Tools.Line" >
+  <mat-label> Epaisseur de la ligne : {{this.lineGenerator._strokeWidth}}</mat-label>
+  <mat-slider [(ngModel)]="this.lineGenerator._strokeWidth"
+              min="1"
+              max="30"
+              step="0.5"
+              value="1.5"
+              thumbLabel
+              tickInterval="1"></mat-slider>
+  </mat-card-content>
+<!-- Ellipse Attributes -->
+<mat-card-content *ngIf="toolManager._activeTool === Tools.Ellipse" >
+  <mat-label> Epaisseur de l'ellipse : {{this.ellipseGenerator._strokeWidth}}</mat-label>
+  <mat-slider [(ngModel)]="this.ellipseGenerator._strokeWidth"
+              min="1"
+              max="10"
+              step="0.5"
+              value="1.5"
+              thumbLabel
+              tickInterval="1"></mat-slider>
+  <mat-form-field>
+    <mat-label>Type de tracé</mat-label>
+    <mat-select [(ngModel)]="this.ellipseGenerator._plotType">
+      <mat-option [value]="PlotType.Contour">Contour</mat-option>
+      <mat-option [value]="PlotType.Full">Plein</mat-option>
+      <mat-option [value]="PlotType.FullWithContour">Plein avec contour</mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-card-content>
+
 <!-- Paintbrush Attributes -->
 <mat-card-content *ngIf="toolManager._activeTool === Tools.Brush" >
   <mat-label>Epaisseur du trait de pinceau en pixels : {{this.brushGenerator._strokeWidth}}</mat-label>
