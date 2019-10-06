@@ -5,7 +5,6 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-
 import { ColorToolComponent } from './components/main-view/color-tool/color-tool.component';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
 import { LateralBarComponent } from './components/main-view/lateral-bar/lateral-bar.component';
@@ -24,6 +23,7 @@ import { BrushGeneratorService } from './services/tools/brush-generator/brush-ge
 import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
 import { ColorService } from './services/tools/color/color.service';
 import { EllipseGeneratorService } from './services/tools/ellipse-generator.service';
+import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
@@ -65,6 +65,7 @@ import { ToolManagerService } from './services/tools/tool-manager/tool-manager.s
     BrushGeneratorService,
     ColorApplicatorService,
     ColorService,
+    LineGeneratorService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [

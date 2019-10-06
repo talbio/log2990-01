@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {GiveUpChangesDialogComponent} from '../give-up-changes-dialog/give-up-changes-dialog.component';
+import { ModalManagerSingleton } from '../modal-manager-singleton';
 
 export interface DialogData {
   drawingNonEmpty: boolean;
@@ -24,6 +25,7 @@ export class CreateDrawingDialogComponent implements OnInit {
   private canvasHeight: number;
   private canvasWidth: number;
   private workZoneSize: DOMRect;
+  private modalManager = ModalManagerSingleton.getInstance();
 
   constructor(private dialogRef: MatDialogRef<CreateDrawingDialogComponent>,
               private formBuilder: FormBuilder,
@@ -31,6 +33,7 @@ export class CreateDrawingDialogComponent implements OnInit {
               private renderer: Renderer2,
               private toolManager: ToolManagerService,
               @Inject(MAT_DIALOG_DATA) private data: DialogData) {
+                this.modalManager._isModalActive = true;
   }
 
   ngOnInit(): void {
@@ -94,6 +97,7 @@ export class CreateDrawingDialogComponent implements OnInit {
 
   protected close(): void {
     this.dialogRef.close();
+    this.modalManager._isModalActive = false;
   }
 
   protected async onSubmit(): Promise<void> {
@@ -106,6 +110,7 @@ export class CreateDrawingDialogComponent implements OnInit {
       });
     } else {
       this.dialogRef.close(this.drawingForm.value);
+      this.modalManager._isModalActive = true;
     }
   }
 
