@@ -9,12 +9,11 @@ export class ObjectSelectorService {
 
   private OFFSET_CANVAS_Y: number;
   private OFFSET_CANVAS_X: number;
-  private currentRectNumber: number;
   private mouseDown: boolean;
   private currentRect: Element;
+  private SVGArray: SVGElement[] = new Array();
 
   constructor() {
-    this.currentRectNumber = 0;
     this.mouseDown = false;
   }
 
@@ -24,14 +23,13 @@ export class ObjectSelectorService {
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
     canvas.innerHTML +=
-      `<rect id=\'rect${this.currentRectNumber}\'
+      `<rect
             x=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
             data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
             y=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
             data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
             width = \'0\' height = \'0\' stroke=\'${STROKE_COLOR}\' stroke-dasharray = \'${DASHED_LINE_VALUE}\'
             fill=\'transparent\'></rect>`;
-
     this.mouseDown = true;
   }
 
@@ -62,15 +60,20 @@ export class ObjectSelectorService {
   }
 
   selectItems(canvas: HTMLElement): void {
-    const drawings = canvas.querySelectorAll('path');
+    const drawings: NodeListOf<SVGElement> = canvas.querySelectorAll('rect, path');
+    const tempArray: SVGElement[] = new Array();
     drawings.forEach((drawing) => {
-      if (this.intersect(drawing.getBoundingClientRect() as DOMRect)) {
+      if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== '')) {
+        tempArray.push(drawing);
         drawing.style.stroke = 'red';
-      } else { drawing.style.stroke = 'black'; }
+      } else {
+        drawing.style.stroke = 'black';
+      }
     });
+    this.SVGArray = tempArray;
   }
 
-  intersect(a: DOMRect): boolean {
+  intersects(a: DOMRect): boolean {
     const b = this.currentRect.getBoundingClientRect();
     return !((a.left > b.right ||
       b.left > a.right) ||
@@ -78,10 +81,34 @@ export class ObjectSelectorService {
         b.top > a.bottom));
   }
 
-  finishRectangle(): void {
+  finishSelector(canvas: HTMLElement): void {
     if (this.mouseDown) {
-      this.currentRectNumber += 1;
+      if (this.currentRect) {
+        this.addToGroup(canvas);
+      }
       this.mouseDown = false;
     }
+  }
+
+  addToGroup(canvas: HTMLElement): void {
+    canvas.removeChild(this.currentRect);
+    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    this.SVGArray.forEach((drawing) => {
+      group.prepend(drawing);
+    });
+    canvas.prepend(group);
+    const groupElement: SVGGElement = canvas.querySelector('g') as SVGGElement;
+    // tslint:disable-next-line: no-non-null-assertion
+    const boxGroup = groupElement!.getBBox();
+    canvas.innerHTML +=
+      `<rect
+            x=\'${boxGroup.x}\'
+            data-start-x = \'${boxGroup.x}\'
+            y=\'${boxGroup.y}\'
+            data-start-y = \'${boxGroup.y}\'
+            width = \'${boxGroup.width}\' height = \'${boxGroup.height}\'
+            stroke=\'${STROKE_COLOR}\''
+            fill=\'transparent\'></rect>`;
+
   }
 }

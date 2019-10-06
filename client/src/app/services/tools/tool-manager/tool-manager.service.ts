@@ -1,18 +1,18 @@
-import {Injectable, Renderer2} from '@angular/core';
-import {Tools} from '../../../data-structures/Tools';
-import {BrushGeneratorService} from '../brush-generator/brush-generator.service';
-import {ColorApplicatorService} from '../color-applicator/color-applicator.service';
+import { Injectable, Renderer2 } from '@angular/core';
+import { Tools } from '../../../data-structures/Tools';
+import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
+import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
 import { ColorService } from '../color/color.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
-import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
-import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
+import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
+import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 
 @Injectable()
 export class ToolManagerService {
 
   private numberOfElements = 1;
   private renderer: Renderer2;
-  private canvasElement: any;
+  private canvasElement: SVGGElement;
   private activeTool: Tools;
 
   set _activeTool(tool: Tools) {
@@ -40,7 +40,7 @@ export class ToolManagerService {
     switch (this._activeTool) {
       case Tools.Rectangle:
         this.rectangleGenerator.createRectangle(mouseEvent, canvas,
-           this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
+          this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
         break;
       case Tools.Pencil:
         this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getPrimaryColor());
@@ -70,13 +70,14 @@ export class ToolManagerService {
         this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
         break;
       case Tools.Brush:
-          this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
-          break;
+        this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
+        break;
       case Tools.Selector:
         this.objectSelector.updateSelectorRectangle(mouseEvent, canvas, this.numberOfElements);
+        this.updateNumberOfDrawings();
         break;
       default:
-          return;
+        return;
     }
   }
 
@@ -92,7 +93,8 @@ export class ToolManagerService {
         this.brushGenerator.finishBrushPath();
         break;
       case Tools.Selector:
-        this.objectSelector.finishRectangle();
+        this.objectSelector.finishSelector(this.renderer.selectRootElement('#canvas', true));
+        this.updateNumberOfDrawings();
         break;
       default:
         return;
@@ -147,9 +149,14 @@ export class ToolManagerService {
 
   deleteAllDrawings(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
-    for (let i = this.canvasElement.children.length - 1; i > 0 ; i--) {
+    for (let i = this.canvasElement.children.length - 1; i > 0; i--) {
       this.canvasElement.children[i].remove();
     }
     this.numberOfElements = 1;
+  }
+
+  updateNumberOfDrawings(): void {
+    this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+    this.numberOfElements = this.canvasElement.childNodes.length;
   }
 }
