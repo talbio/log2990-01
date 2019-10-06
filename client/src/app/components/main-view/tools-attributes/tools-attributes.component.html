@@ -31,7 +31,7 @@
 </mat-card-content>
 
 <!-- Line Attributes -->
-<mat-card-content *ngIf="toolSelector._activeTool === Tools.Line" >
+<mat-card-content *ngIf="toolManager._activeTool === Tools.Line" >
   <mat-label> Epaisseur de la ligne : {{this.lineGenerator._strokeWidth}}</mat-label>
   <mat-slider [(ngModel)]="this.lineGenerator._strokeWidth"
               min="1"

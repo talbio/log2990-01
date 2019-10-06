@@ -116,12 +116,12 @@ export class LineGeneratorService {
     this.currentLineBlockNumber -= 1;
   }
   deleteLine(canvas: HTMLElement, currentChildPosition: number) {
+    if (this.currentLineNumber <= 0) {
+      return;
+    }
     const currentLineBlock = canvas.children[currentChildPosition - 1];
     const previousLine = currentLineBlock.children[this.currentLineNumber];
     previousLine.remove();
     this.currentLineNumber -= 1;
-    if (this.currentLineNumber === 0) {
-      this.deleteLineBlock(canvas, currentChildPosition);
-    }
   }
 }

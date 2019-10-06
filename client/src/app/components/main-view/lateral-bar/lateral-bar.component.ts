@@ -13,6 +13,7 @@ import {CreateDrawingFormValues} from '../../../data-structures/CreateDrawingFor
 import {Tools} from '../../../data-structures/Tools';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {CreateDrawingDialogComponent} from '../../modals/create-drawing-dialog/create-drawing-dialog.component';
+import { ModalManagerSingleton } from './../../modals/modal-manager-singleton';
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
 
@@ -49,23 +50,30 @@ export class LateralBarComponent {
 
   @HostListener('document:keydown', ['$event'])
   keyDownEvent(keyboardEvent: KeyboardEvent) {
-    keyboardEvent.preventDefault();
-    if (keyboardEvent.key === this.PENCIL_KEY) {
-      this.toolManager._activeTool = Tools.Pencil;
-    } else if (keyboardEvent.key === this.COLOR_APPLICATOR_KEY) {
-      this.toolManager._activeTool = Tools.ColorApplicator;
-    } else if (keyboardEvent.key === this.PAINTBRUSH_KEY) {
-      this.toolManager._activeTool = Tools.Brush;
-    } else if (keyboardEvent.key === this.RECTANGLE_KEY) {
-      this.toolManager._activeTool = Tools.Rectangle;
-    }  else if (keyboardEvent.key === this.LINE_KEY) {
-      this.toolManager._activeTool = Tools.Line;
-    } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
-      this.openCreateDrawingDialog();
-    } else if (keyboardEvent.key === this.DELETE_FULL_ELEMENT_KEY) {
-      this.toolManager.escapePress();
-    } else if (keyboardEvent.key === this.DELETE_LAST_ELEMENT_KEY) {
-      this.toolManager.backSpacePress();
+    // Verify that no dialog is open before checking for hotkeys
+    const modalManager = ModalManagerSingleton.getInstance();
+    if (!modalManager._isModalActive) {
+      if (keyboardEvent.key === this.PENCIL_KEY) {
+        this.toolManager._activeTool = Tools.Pencil;
+      } else if (keyboardEvent.key === this.COLOR_APPLICATOR_KEY) {
+        this.toolManager._activeTool = Tools.ColorApplicator;
+      } else if (keyboardEvent.key === this.PAINTBRUSH_KEY) {
+        this.toolManager._activeTool = Tools.Brush;
+      } else if (keyboardEvent.key === this.RECTANGLE_KEY) {
+        this.toolManager._activeTool = Tools.Rectangle;
+      }  else if (keyboardEvent.key === this.LINE_KEY) {
+        this.toolManager._activeTool = Tools.Line;
+      } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
+        keyboardEvent.preventDefault();
+        this.openCreateDrawingDialog();
+      } else if (keyboardEvent.key === this.DELETE_FULL_ELEMENT_KEY) {
+        this.toolManager.escapePress();
+      } else if (keyboardEvent.key === this.DELETE_LAST_ELEMENT_KEY) {
+        this.toolManager.backSpacePress();
+      }
+    } else {
+      // Don't allow for keyboard shortcuts while in a dialog
+      keyboardEvent.preventDefault();
     }
   }
 

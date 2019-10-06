@@ -1,6 +1,5 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import { Tools } from 'src/app/data-structures/Tools';
-import { ToolSelectorService } from 'src/app/services/tools/tool-selector/tool-selector.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
@@ -22,8 +21,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   private canvasElement: any;
 
   constructor(private toolManager: ToolManagerService,
-              private renderer: Renderer2,
-              private toolSelector: ToolSelectorService) {
+              private renderer: Renderer2) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
     this.color = this.DEFAULT_WHITE_COLOR;
@@ -63,9 +61,9 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   }
 
   onLeftClick(mouseEvent: MouseEvent) {
-    if (this.toolSelector._activeTool === Tools.ColorApplicator) {
+    if (this.toolManager._activeTool === Tools.ColorApplicator) {
       this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
-    } else if (this.toolSelector._activeTool === Tools.Line) {
+    } else if (this.toolManager._activeTool === Tools.Line) {
       this.toolManager.createElementOnClick(mouseEvent, this.canvasElement);
     }
     return true;
