@@ -5,6 +5,7 @@ import {ColorApplicatorService} from '../color-applicator/color-applicator.servi
 import { ColorService } from '../color/color.service';
 import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
+import { EllipseGeneratorService } from './../ellipse-generator.service';
 import { LineGeneratorService } from './../line-generator/line-generator.service';
 
 @Injectable()
@@ -24,6 +25,7 @@ export class ToolManagerService {
   }
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
+              private ellipseGenerator: EllipseGeneratorService,
               private pencilGenerator: PencilGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
@@ -47,6 +49,10 @@ export class ToolManagerService {
         break;
       case Tools.Brush:
         this.brushGenerator.createBrushPath(mouseEvent, canvas);
+        break;
+      case Tools.Ellipse:
+        this.ellipseGenerator.createEllipse(mouseEvent, canvas,
+          this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
         break;
       default:
         return;
@@ -72,6 +78,13 @@ export class ToolManagerService {
       case Tools.Line:
         this.lineGenerator.updateLine(mouseEvent, canvas, this.numberOfElements);
         break;
+      case Tools.Ellipse:
+        if (mouseEvent.shiftKey) {
+          this.ellipseGenerator.updateCircle(mouseEvent, canvas, this.numberOfElements);
+        } else {
+          this.ellipseGenerator.updateEllipse(mouseEvent, canvas, this.numberOfElements);
+        }
+        break;
       default:
           return;
     }
@@ -87,6 +100,9 @@ export class ToolManagerService {
         break;
       case Tools.Brush:
         this.brushGenerator.finishBrushPath();
+        break;
+      case Tools.Ellipse:
+        this.ellipseGenerator.finishEllipse();
         break;
       default:
         return;
@@ -150,6 +166,8 @@ export class ToolManagerService {
       case Tools.Rectangle:
         // change into rectangle
         // this.rectangleGenerator.updateRectangle(mouseEvent, this.numberOfElements);
+        break;
+      case Tools.Ellipse:
         break;
       default:
         return;
