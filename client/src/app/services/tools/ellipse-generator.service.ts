@@ -86,8 +86,8 @@ export class EllipseGeneratorService {
       if (currentEllipse != null) {
         const startEllipseX: number = Number(currentEllipse.getAttribute('data-start-x'));
         const startEllipseY: number = Number(currentEllipse.getAttribute('data-start-y'));
-        const radiusWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startEllipseX;
-        const radiusHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startEllipseY;
+        const radiusWidth: number = ((mouseEvent.pageX - this.OFFSET_CANVAS_X) - startEllipseX) / 2;
+        const radiusHeight: number = ((mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startEllipseY) / 2;
         if (radiusWidth >= 0) {
           if (Math.abs(radiusHeight) > Math.abs(radiusWidth)) {
             // height is bigger
