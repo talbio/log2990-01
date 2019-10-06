@@ -54,8 +54,8 @@ export class ObjectSelectorService {
           this.currentRect.setAttribute('height', '' + Math.abs(actualHeight));
           this.currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
         }
-        this.selectItems(canvas);
       }
+      this.selectItems(canvas);
     }
   }
 
@@ -83,15 +83,15 @@ export class ObjectSelectorService {
 
   finishSelector(canvas: HTMLElement): void {
     if (this.mouseDown) {
-      if (this.currentRect) {
-        this.addToGroup(canvas);
-      }
+      canvas.removeChild(this.currentRect);
+      if (this.SVGArray.length !== 0) {
+      this.addToGroup(canvas);
+    }
       this.mouseDown = false;
     }
   }
 
   addToGroup(canvas: HTMLElement): void {
-    canvas.removeChild(this.currentRect);
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     this.SVGArray.forEach((drawing) => {
       group.prepend(drawing);
@@ -107,8 +107,9 @@ export class ObjectSelectorService {
             y=\'${boxGroup.y}\'
             data-start-y = \'${boxGroup.y}\'
             width = \'${boxGroup.width}\' height = \'${boxGroup.height}\'
-            stroke=\'${STROKE_COLOR}\''
-            fill=\'transparent\'></rect>`;
+            stroke=\'${STROKE_COLOR}\'
+            fill=\'transparent\'
+            </rect>`;
 
   }
 }

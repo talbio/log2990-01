@@ -74,7 +74,7 @@ export class ToolManagerService {
         break;
       case Tools.Selector:
         this.objectSelector.updateSelectorRectangle(mouseEvent, canvas, this.numberOfElements);
-        this.updateNumberOfDrawings();
+        this.updateNumberOfElements();
         break;
       default:
         return;
@@ -94,7 +94,7 @@ export class ToolManagerService {
         break;
       case Tools.Selector:
         this.objectSelector.finishSelector(this.renderer.selectRootElement('#canvas', true));
-        this.updateNumberOfDrawings();
+        this.updateNumberOfElements();
         break;
       default:
         return;
@@ -155,7 +155,7 @@ export class ToolManagerService {
     this.numberOfElements = 1;
   }
 
-  updateNumberOfDrawings(): void {
+  updateNumberOfElements(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
     this.numberOfElements = this.canvasElement.childNodes.length;
   }
