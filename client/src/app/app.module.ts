@@ -18,11 +18,12 @@ import { CreateDrawingDialogComponent } from './components/modals/create-drawing
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
 import {DemoMaterialModule} from './material.module';
+import { MousePositionService } from './services/mouse-position/mouse-position.service';
 import { StorageService } from './services/storage/storage.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
 import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
 import { ColorService } from './services/tools/color/color.service';
-import { EllipseGeneratorService } from './services/tools/ellipse-generator.service';
+import { EllipseGeneratorService } from './services/tools/ellipse-generator/ellipse-generator.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
 import { ObjectSelectorService } from './services/tools/object-selector/object-selector.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
@@ -68,6 +69,7 @@ import { ToolManagerService } from './services/tools/tool-manager/tool-manager.s
     ColorService,
     ObjectSelectorService,
     LineGeneratorService,
+    MousePositionService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [

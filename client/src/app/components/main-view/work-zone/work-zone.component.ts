@@ -12,7 +12,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   private readonly DEFAULT_WIDTH = 1080;
   private readonly DEFAULT_HEIGHT = 720;
-  private readonly SHIFT_KEY = 'SHIFT';
+  private readonly SHIFT_KEY = 'Shift';
 
   @Input() width: number;
   @Input() height: number;
