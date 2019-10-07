@@ -23,7 +23,7 @@ import { StorageService } from './services/storage/storage.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
 import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
 import { ColorService } from './services/tools/color/color.service';
-import { EllipseGeneratorService } from './services/tools/ellipse-generator.service';
+import { EllipseGeneratorService } from './services/tools/ellipse-generator/ellipse-generator.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
