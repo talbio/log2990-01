@@ -1,28 +1,27 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatDialogRef} from '@angular/material/dialog';
 import {DemoMaterialModule} from '../../../material.module';
-import { GiveUpChangesDialogComponent } from './give-up-changes-dialog.component';
+import {GiveUpChangesDialogComponent} from './give-up-changes-dialog.component';
 
-describe('ConfirmGiveUpChangesDialogComponent', () => {
+describe('GiveUpChangesDialogComponent', () => {
   let component: GiveUpChangesDialogComponent;
   let fixture: ComponentFixture<GiveUpChangesDialogComponent>;
-
-  const mockDialogRef: {close: jasmine.Spy} = {
-    close: jasmine.createSpy('close', (bool: boolean) => bool),
-  };
+  const spyDialog: jasmine.SpyObj<MatDialogRef<GiveUpChangesDialogComponent>> =
+    jasmine.createSpyObj('MatDialogRef', ['close']);
+  spyDialog.close.and.callThrough();
 
   beforeAll(async(() => {
     TestBed.configureTestingModule({
       imports: [DemoMaterialModule],
-      declarations: [ GiveUpChangesDialogComponent ],
+      declarations: [GiveUpChangesDialogComponent],
       providers: [
-        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: MatDialogRef, useValue: spyDialog },
       ],
     })
     .compileComponents().then( () => {
       fixture = TestBed.createComponent(GiveUpChangesDialogComponent);
-      fixture.detectChanges();
       component = fixture.componentInstance;
+      fixture.detectChanges();
     });
   }));
 
@@ -31,9 +30,12 @@ describe('ConfirmGiveUpChangesDialogComponent', () => {
   });
 
   it('should close dialog and return false when clicking cancel button', () => {
-    const matDialogActions = fixture.debugElement.nativeElement.querySelector('mat-dialog-actions');
-    const cancelButton = matDialogActions.querySelector('button[color=\'warn\']');
-    cancelButton.click();
-    expect(mockDialogRef.close).toHaveBeenCalled();
+    component.cancel();
+    expect(spyDialog.close).toHaveBeenCalledWith(false);
+  });
+
+  it('should close dialog and return true when clicking submit button', () => {
+    component.submit();
+    expect(spyDialog.close).toHaveBeenCalledWith(true);
   });
 });

@@ -3,16 +3,17 @@ import {Tools} from '../../../data-structures/Tools';
 import {BrushGeneratorService} from '../brush-generator/brush-generator.service';
 import {ColorApplicatorService} from '../color-applicator/color-applicator.service';
 import {ColorService} from '../color/color.service';
+import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.service';
 import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
-import {EllipseGeneratorService} from './../ellipse-generator/ellipse-generator.service';
+import { LineGeneratorService } from './../line-generator/line-generator.service';
 
 @Injectable()
 export class ToolManagerService {
 
   private numberOfElements = 1;
   private renderer: Renderer2;
-  private canvasElement: any;
+  private canvasElement: HTMLElement;
   private activeTool: Tools;
 
   set _activeTool(tool: Tools) {
@@ -28,6 +29,7 @@ export class ToolManagerService {
               private pencilGenerator: PencilGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
+              private lineGenerator: LineGeneratorService,
               protected colorService: ColorService) {
     this.activeTool = Tools.Pencil;
   }
@@ -55,7 +57,7 @@ export class ToolManagerService {
       default:
         return;
     }
-    this.numberOfElements += 1;
+    this.numberOfElements = canvas.children.length;
   }
 
   updateElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
@@ -71,7 +73,10 @@ export class ToolManagerService {
         this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
         break;
       case Tools.Brush:
-        this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
+          this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
+          break;
+      case Tools.Line:
+        this.lineGenerator.updateLine(mouseEvent, canvas, this.numberOfElements);
         break;
       case Tools.Ellipse:
         if (mouseEvent.shiftKey) {
@@ -98,7 +103,8 @@ export class ToolManagerService {
         break;
       case Tools.Ellipse:
         this.ellipseGenerator.finishEllipse();
-        default:
+        break;
+      default:
         return;
     }
   }
@@ -113,6 +119,17 @@ export class ToolManagerService {
     }
   }
 
+  createElementOnClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
+    switch (this._activeTool) {
+      case Tools.Line:
+        this.lineGenerator.makeLine(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.numberOfElements);
+        break;
+      default:
+        return;
+    }
+    this.numberOfElements = canvas.children.length;
+  }
+
   changeElementRightClick(clickedElement: HTMLElement) {
     switch (this._activeTool) {
       case Tools.ColorApplicator:
@@ -120,6 +137,16 @@ export class ToolManagerService {
         break;
       default:
         return;
+    }
+  }
+
+  finishElementDoubleClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
+    if (this._activeTool === Tools.Line) {
+      if (mouseEvent.shiftKey) {
+        this.lineGenerator.finishAndLinkLineBlock(mouseEvent, canvas, this.numberOfElements);
+      } else {
+        this.lineGenerator.finishLineBlock();
+      }
     }
   }
 
@@ -157,5 +184,28 @@ export class ToolManagerService {
       this.canvasElement.children[i].remove();
     }
     this.numberOfElements = 1;
+  }
+
+  escapePress() {
+    switch (this._activeTool) {
+      case Tools.Line:
+        this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+        this.lineGenerator.deleteLineBlock(this.canvasElement, this.numberOfElements);
+        this.numberOfElements = this.canvasElement.children.length;
+        break;
+      default:
+        return;
+    }
+  }
+
+  backSpacePress() {
+    switch (this._activeTool) {
+      case Tools.Line:
+        this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+        this.lineGenerator.deleteLine(this.canvasElement, this.numberOfElements);
+        break;
+      default:
+        return;
+    }
   }
 }
