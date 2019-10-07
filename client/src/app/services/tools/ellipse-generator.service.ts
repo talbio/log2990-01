@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PlotType } from '../../data-structures/PlotType';
+import { PlotType, Axis } from '../../data-structures/PlotType';
 
 @Injectable()
 export class EllipseGeneratorService {
@@ -91,22 +91,18 @@ export class EllipseGeneratorService {
         if (radiusWidth >= 0) {
           if (Math.abs(radiusHeight) > Math.abs(radiusWidth)) {
             // height is bigger
-            currentEllipse.setAttribute('rx', '' + Math.abs(radiusHeight));
-            currentEllipse.setAttribute('cx', '' + (startEllipseX + Math.abs(radiusHeight)));
+            this.setAttributesEllipse(Axis.xAxis, currentEllipse, Math.abs(radiusHeight), (startEllipseX + Math.abs(radiusHeight)));
           } else {
             // width is bigger, act normal
-            currentEllipse.setAttribute('rx', '' + radiusWidth);
-            currentEllipse.setAttribute('cx', '' + (startEllipseX + radiusWidth));
+            this.setAttributesEllipse(Axis.xAxis, currentEllipse, radiusWidth, (startEllipseX + radiusWidth));
           }
         } else {
           if (Math.abs(radiusHeight) > Math.abs(radiusWidth)) {
             // height is bigger
-            currentEllipse.setAttribute('rx', '' + Math.abs(radiusHeight));
-            currentEllipse.setAttribute('cx', '' + (startEllipseX - Math.abs(radiusHeight)));
+            this.setAttributesEllipse(Axis.xAxis, currentEllipse, Math.abs(radiusHeight), (startEllipseX - Math.abs(radiusHeight)));
           } else {
             // width is bigger, act normal
-            currentEllipse.setAttribute('rx', '' + Math.abs(radiusWidth));
-            currentEllipse.setAttribute('cx', '' + (startEllipseX + radiusWidth));
+            this.setAttributesEllipse(Axis.xAxis, currentEllipse, Math.abs(radiusWidth), (startEllipseX + radiusWidth));
           }
         }
         if (radiusHeight >= 0) {
@@ -164,6 +160,16 @@ export class EllipseGeneratorService {
     if (this.mouseDown) {
       this.currentEllipseNumber += 1;
       this.mouseDown = false;
+    }
+  }
+
+  setAttributesEllipse(axis: Axis, currentEllipse: Element, radius: number, center: number) {
+    if (axis === Axis.xAxis) {
+      currentEllipse.setAttribute('rx', '' + radius.toString());
+      currentEllipse.setAttribute('cx', '' + center.toString());
+    } else {
+      currentEllipse.setAttribute('ry', '' + radius.toString());
+      currentEllipse.setAttribute('cy', '' + center.toString());
     }
   }
 }
