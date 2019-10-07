@@ -71,9 +71,6 @@ export class LateralBarComponent {
       } else if (keyboardEvent.key === this.DELETE_LAST_ELEMENT_KEY) {
         this.toolManager.backSpacePress();
       }
-    } else {
-      // Don't allow for keyboard shortcuts while in a dialog
-      keyboardEvent.preventDefault();
     }
   }
 
