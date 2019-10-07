@@ -78,12 +78,12 @@ export class LineGeneratorService {
     y2=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'>
     </line>`;
   }
-  updateLine(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updateLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       const currentLineBlock = canvas.children[currentChildPosition - 1];
       const currentLine = currentLineBlock.children[this.currentLineNumber];
-      currentLine.setAttribute('x2', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X));
-      currentLine.setAttribute('y2', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
+      currentLine.setAttribute('x2', '' + canvasPosX);
+      currentLine.setAttribute('y2', '' + canvasPosY);
     }
   }
   finishLineBlock() {
