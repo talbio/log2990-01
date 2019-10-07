@@ -7,16 +7,16 @@
      (mouseup)='onMouseUp()'
      (click)='onLeftClick($event)'
      (contextmenu)='onRightClick($event)'>
-    <!-- <defs>
-      <g fill="transparent" stroke="grid.rgbaValue" stroke-width="1">
+    <defs>
+      <!-- <g fill="transparent" stroke="grid.rgbaValue" stroke-width="1">
         <line x1="0" y1=""
-      </g>
-        <pattern id="gridID" patternUnits="userSpaceOnUse" [attr.width]="grid.gridSize" [attr.height]="grid.gridSize">
+      </g> -->
+        <pattern id="backgroundGrid" patternUnits="userSpaceOnUse" [attr.width]="grid.gridSize" [attr.height]="grid.gridSize">
           <line [attr.x1]="0" [attr.y1]="grid.gridSize/2" [attr.x2]="grid.gridSize" [attr.y2]="grid.gridSize/2" [attr.stroke]="grid.rgbaValue" stroke-width="1" />
           <line [attr.x1]="grid.gridSize/2" [attr.y1]="0" [attr.x2]="grid.gridSize/2" [attr.y2]="grid.gridSize" [attr.stroke]="grid.rgbaValue" stroke-width="1" />
         </pattern>
     </defs>
-    <rect x="0" y="0" width="100%" height="100%" fill="gridID"></rect> -->
+    <rect x="0" y="0" width="100%" height="100%" fill="backgroundGrid"></rect>
     <defs>
         <pattern id="brushPattern1" patternUnits="userSpaceOnUse" width="3" height="3">
             <rect x="0" y="0" width="100%" height="100%" [attr.fill]="toolManager.colorService.primaryColor"></rect>
