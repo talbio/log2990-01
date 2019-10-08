@@ -1,4 +1,4 @@
-import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
+import { AfterViewInit, Component, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
 import { Colors } from 'src/app/data-structures/Colors';
 import { Tools } from 'src/app/data-structures/Tools';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
@@ -49,7 +49,19 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   }
 
   onMouseDown(mouseEvent: MouseEvent) {
-    this.toolManager.createElement(mouseEvent, this.canvasElement);
+    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
+      this.toolManager.selectorLeftClick();
+    } else { this.toolManager.createElement(mouseEvent, this.canvasElement); }
+  }
+
+  hasActiveSelector(): boolean {
+    let hasSelector = false;
+    this.canvasElement.childNodes.forEach((element) => {
+      if (element.nodeName === 'g') {
+        hasSelector = true;
+      }
+    });
+    return hasSelector;
   }
 
   onMouseMove(mouseEvent: MouseEvent) {
@@ -61,12 +73,16 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   }
 
   onLeftClick(mouseEvent: MouseEvent) {
-    if (this.toolManager._activeTool === Tools.ColorApplicator) {
-      this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
-    } else if (this.toolManager._activeTool === Tools.Line) {
-      this.toolManager.createElementOnClick(mouseEvent, this.canvasElement);
+    switch (this.toolManager._activeTool) {
+      case Tools.ColorApplicator:
+        this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
+        break;
+      case Tools.Line:
+        this.toolManager.createElementOnClick(mouseEvent, this.canvasElement);
+        break;
+      default:
+        return;
     }
-    return true;
   }
 
   onRightClick(mouseEvent: Event) {
@@ -79,7 +95,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.toolManager.finishElementDoubleClick(mouseEvent, this.canvasElement);
   }
 
-  protected setBackGroundColor(): {'background-color': string} {
+  protected setBackGroundColor(): { 'background-color': string } {
     return {
       'background-color': this.color,
     };

@@ -60,14 +60,11 @@ export class ObjectSelectorService {
   }
 
   selectItems(canvas: HTMLElement): void {
-    const drawings: NodeListOf<SVGElement> = canvas.querySelectorAll('rect, path');
-    const tempArray: SVGElement[] = new Array();
+    const drawings = canvas.querySelectorAll('rect, path, ellipse, line');
+    const tempArray = new Array();
     drawings.forEach((drawing) => {
       if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== '')) {
         tempArray.push(drawing);
-        drawing.style.stroke = 'red';
-      } else {
-        drawing.style.stroke = 'black';
       }
     });
     this.SVGArray = tempArray;
@@ -85,8 +82,8 @@ export class ObjectSelectorService {
     if (this.mouseDown) {
       canvas.removeChild(this.currentRect);
       if (this.SVGArray.length !== 0) {
-      this.addToGroup(canvas);
-    }
+        this.addToGroup(canvas);
+      }
       this.mouseDown = false;
     }
   }
@@ -94,14 +91,14 @@ export class ObjectSelectorService {
   addToGroup(canvas: HTMLElement): void {
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     this.SVGArray.forEach((drawing) => {
-      group.prepend(drawing);
+      group.append(drawing);
     });
-    canvas.prepend(group);
-    const groupElement: SVGGElement = canvas.querySelector('g') as SVGGElement;
+    canvas.append(group);
+    const groupElement = canvas.querySelector('g');
     // tslint:disable-next-line: no-non-null-assertion
     const boxGroup = groupElement!.getBBox();
     canvas.innerHTML +=
-      `<rect
+      `<rect id=\'box\'
             x=\'${boxGroup.x}\'
             data-start-x = \'${boxGroup.x}\'
             y=\'${boxGroup.y}\'

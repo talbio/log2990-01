@@ -4,8 +4,8 @@ import { BrushGeneratorService } from '../brush-generator/brush-generator.servic
 import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
 import { ColorService } from '../color/color.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
-import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
-import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
+import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
+import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import { EllipseGeneratorService } from './../ellipse-generator/ellipse-generator.service';
 import { LineGeneratorService } from './../line-generator/line-generator.service';
@@ -90,7 +90,7 @@ export class ToolManagerService {
         break;
       case Tools.Line:
         this.lineGenerator.updateLine(this.mousePosition._canvasMousePositionX,
-           this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+          this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         break;
       case Tools.Ellipse:
         if (mouseEvent.shiftKey) {
@@ -178,7 +178,7 @@ export class ToolManagerService {
         this.rectangleGenerator.updateSquare(this.mousePosition._canvasMousePositionX,
           this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
         break;
-        case Tools.Ellipse:
+      case Tools.Ellipse:
         // change into circle
         this.ellipseGenerator.updateCircle(this.mousePosition._canvasMousePositionX,
           this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
@@ -233,6 +233,27 @@ export class ToolManagerService {
       default:
         return;
     }
+  }
+  selectorLeftClick(): void {
+    const selectorBox = this.canvasElement.lastChild as SVGGElement;
+    const box = selectorBox.getBBox();
+    if (this.mousePosition._canvasMousePositionX < box.x || this.mousePosition._canvasMousePositionX > (box.x + box.width)
+      || this.mousePosition._canvasMousePositionY < box.y || this.mousePosition._canvasMousePositionY > (box.y + box.height)) {
+      this.removeSelector();
+    } // else translation
+  }
+
+  removeSelector(): void {
+    const group = this.canvasElement.querySelector('g') as Node;
+    // tslint:disable-next-line: no-non-null-assertion
+    const childArray = Array.from(group!.childNodes);
+    // tslint:disable-next-line: no-non-null-assertion
+    childArray.forEach((child) => {
+      this.canvasElement.appendChild(child);
+    });
+    this.canvasElement.removeChild(group);
+    const box = document.getElementById('box') as Node;
+    this.canvasElement.removeChild(box);
   }
 
   backSpacePress() {
