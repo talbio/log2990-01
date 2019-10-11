@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PlotType } from '../../../data-structures/PlotType';
-import { Axis } from './../../../data-structures/PlotType';
+import { Axis, PlotType } from '../../../data-structures/PlotType';
 
 @Injectable()
 export class EllipseGeneratorService {
