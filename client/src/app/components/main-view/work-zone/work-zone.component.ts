@@ -11,7 +11,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   private readonly DEFAULT_WIDTH = 1080;
   private readonly DEFAULT_HEIGHT = 720;
-  private readonly SHIFT_KEY = 'SHIFT';
+  private readonly SHIFT_KEY = 'Shift';
   private readonly DEFAULT_WHITE_COLOR = '#FFFFFF';
 
   @Input() width: number;
