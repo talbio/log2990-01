@@ -18,8 +18,9 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   @Input() width: number;
   @Input() height: number;
   @Input() color: string;
+  @Input() gridSize: number;
 
-  private canvasElement: any;
+  private canvasElement: HTMLElement;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
@@ -31,6 +32,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+    this.grid = this.renderer.selectRootElement('#backgroundGrid', true);
   }
 
   ngAfterViewInit(): void {

@@ -3,36 +3,41 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class GridTogglerService {
 
+  // private readonly URL_GRID_PATTERN = `url(#backgroundGridPattern)`;
   protected hidden: boolean;
   protected gridSize: number;
-  protected gridTransparency: number;
+  protected gridOpacity: number;
   protected rgbaValue: string;
 
   constructor() {
-    this.hidden = true;
-    this.gridSize = 10;
-    this.gridTransparency = 1;
-    this.rgbaValue = 'rgba(45, 45, 45, 1)';
+    this.hidden = false;
+    this.gridSize = 50;
+    this.gridOpacity = 0.4;
   }
 
   toggleGrid() {
     this.hidden = !this.hidden;
   }
 
-  _gridSize(size: number) {
+  _gridSize(canvas: HTMLElement, size: number) {
     this.gridSize = size;
+    // const grid = canvas.children[1];
+    // grid.setAttribute('width', size.toString());
+    // grid.setAttribute('height', size.toString());
   }
 
-  changeGridTransparency(transparency: number) {
-    this.gridTransparency = transparency;
-    this.changeRgbaValue();
+  getGridSize() {
+    return this.gridSize;
   }
 
-  changeRgbaValue() {
-    if (this.hidden) {
-      this.rgbaValue = 'rgba(45, 45, 45, 0)';
+  _gridOpacity(opacity: number) { this.gridOpacity = opacity; }
+
+  changeGridTransparency(canvas: HTMLElement, opacity: number) {
+    this.gridOpacity = opacity;
+    if (!this.hidden) {
+      canvas.children[1].setAttribute('fill-opacity', this.gridOpacity.toString());
     } else {
-      this.rgbaValue = 'rgba(45, 45, 45, ' + this.gridTransparency + ')';
+      canvas.children[1].setAttribute('fill-opacity', '0');
     }
   }
 }

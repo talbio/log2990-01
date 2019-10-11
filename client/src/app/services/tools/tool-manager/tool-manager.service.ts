@@ -11,7 +11,8 @@ import { LineGeneratorService } from './../line-generator/line-generator.service
 @Injectable()
 export class ToolManagerService {
 
-  private numberOfElements = 1;
+  private readonly DEFAULT_NUMBER_OF_ELEMENTS: number;
+  private numberOfElements: number;
   private renderer: Renderer2;
   private canvasElement: HTMLElement;
   private activeTool: Tools;
@@ -32,6 +33,7 @@ export class ToolManagerService {
               private lineGenerator: LineGeneratorService,
               protected colorService: ColorService) {
     this.activeTool = Tools.Pencil;
+    this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
   }
 
   loadRenderer(renderer: Renderer2) {
@@ -180,10 +182,10 @@ export class ToolManagerService {
 
   deleteAllDrawings(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
-    for (let i = this.canvasElement.children.length - 1; i > 0 ; i--) {
+    for (let i = this.canvasElement.children.length - 1; i >= this.DEFAULT_NUMBER_OF_ELEMENTS ; i--) {
       this.canvasElement.children[i].remove();
     }
-    this.numberOfElements = 1;
+    this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
   }
 
   escapePress() {

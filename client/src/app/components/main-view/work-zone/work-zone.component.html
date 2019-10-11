@@ -8,17 +8,14 @@
      (click)='onLeftClick($event)'
      (contextmenu)='onRightClick($event)'
      (dblclick)='onDoubleClick($event)'>
+
     <defs>
-      <!-- <g fill="transparent" stroke="grid.rgbaValue" stroke-width="1">
-        <line x1="0" y1=""
-      </g> -->
-        <pattern id="backgroundGrid" patternUnits="userSpaceOnUse" [attr.width]="grid.gridSize" [attr.height]="grid.gridSize">
-          <line [attr.x1]="0" [attr.y1]="grid.gridSize/2" [attr.x2]="grid.gridSize" [attr.y2]="grid.gridSize/2" [attr.stroke]="grid.rgbaValue" stroke-width="1" />
-          <line [attr.x1]="grid.gridSize/2" [attr.y1]="0" [attr.x2]="grid.gridSize/2" [attr.y2]="grid.gridSize" [attr.stroke]="grid.rgbaValue" stroke-width="1" />
+        <!-- Pattern for grid -->
+        <pattern id="backgroundGridPattern" patternUnits="userSpaceOnUse" [attr.width]='grid._gridSize()' [attr.height]='grid._gridSize()'>
+            <line [attr.x1]="0" [attr.y1]="grid.gridSize/2" [attr.x2]="grid.gridSize" [attr.y2]="grid.gridSize/2" stroke="black" stroke-width="1"/>
+            <line [attr.x1]="grid.gridSize/2" [attr.y1]="0" [attr.x2]="grid.gridSize/2" [attr.y2]="grid.gridSize" stroke="black" stroke-width="1"/>
         </pattern>
-    </defs>
-    <rect x="0" y="0" width="100%" height="100%" fill="backgroundGrid"></rect>
-    <defs>
+        <!-- Patterns for brush -->
         <pattern id="brushPattern1" patternUnits="userSpaceOnUse" width="3" height="3">
             <rect x="0" y="0" width="100%" height="100%" [attr.fill]="toolManager.colorService.primaryColor"></rect>
             <rect x="0" y="0" width="1" height="1" [attr.stroke]="toolManager.colorService.secondaryColor"></rect>
@@ -58,5 +55,6 @@
             <polygon points="8 10 7 7 10 8" [attr.stroke]="toolManager.colorService.secondaryColor" [attr.fill]="toolManager.colorService.primaryColor" stroke-width="1" />
         </pattern>
     </defs>
+    <rect id="backgroundGrid" x="0" y="0" width="100%" height="100%" fill="url(#backgroundGridPattern)" fill-opacity="grid.gridOpacity"></rect>
 </svg>
 
