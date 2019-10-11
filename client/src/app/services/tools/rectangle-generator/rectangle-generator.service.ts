@@ -76,14 +76,14 @@ export class RectangleGeneratorService {
     this.mouseDown = true;
   }
 
-  updateSquare(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updateSquare(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentRect = canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
-        const actualWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startRectX;
-        const actualHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startRectY;
+        const actualWidth: number = canvasPosX - startRectX;
+        const actualHeight: number = canvasPosY - startRectY;
         if (actualWidth >= 0) {
           if (Math.abs(actualHeight) > Math.abs(actualWidth)) {
             // height is bigger
@@ -96,11 +96,11 @@ export class RectangleGeneratorService {
           if (Math.abs(actualHeight) > Math.abs(actualWidth)) {
             // height is bigger
             currentRect.setAttribute('width', '' + Math.abs(actualHeight));
-            currentRect.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X + Math.abs(actualWidth) - Math.abs(actualHeight)));
+            currentRect.setAttribute('x', '' + (canvasPosX + Math.abs(actualWidth) - Math.abs(actualHeight)));
           } else {
             // width is bigger, act normal
             currentRect.setAttribute('width', '' + Math.abs(actualWidth));
-            currentRect.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X));
+            currentRect.setAttribute('x', '' + canvasPosX);
           }
         }
         if (actualHeight >= 0) {
@@ -115,36 +115,36 @@ export class RectangleGeneratorService {
           if (Math.abs(actualWidth) > Math.abs(actualHeight)) {
             // width is bigger
             currentRect.setAttribute('height', '' + Math.abs(actualWidth));
-            currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y + Math.abs(actualHeight) - Math.abs(actualWidth)));
+            currentRect.setAttribute('y', '' + (canvasPosY + Math.abs(actualHeight) - Math.abs(actualWidth)));
           } else {
             // height is bigger, act normal
             currentRect.setAttribute('height', '' + Math.abs(actualHeight));
-            currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
+            currentRect.setAttribute('y', '' + canvasPosY);
           }
         }
       }
     }
   }
 
-  updateRectangle(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updateRectangle(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentRect = canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
-        const actualWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startRectX;
-        const actualHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startRectY;
+        const actualWidth: number = canvasPosX - startRectX;
+        const actualHeight: number = canvasPosY - startRectY;
         if (actualWidth >= 0) {
           currentRect.setAttribute('width', '' + actualWidth);
         } else {
           currentRect.setAttribute('width', '' + Math.abs(actualWidth));
-          currentRect.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X));
+          currentRect.setAttribute('x', '' + canvasPosX);
         }
         if (actualHeight >= 0) {
           currentRect.setAttribute('height', '' + actualHeight);
         } else {
           currentRect.setAttribute('height', '' + Math.abs(actualHeight));
-          currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
+          currentRect.setAttribute('y', '' + canvasPosY);
         }
       }
     }

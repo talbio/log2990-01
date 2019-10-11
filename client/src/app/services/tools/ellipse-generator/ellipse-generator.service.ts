@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { PlotType, Axis } from '../../data-structures/PlotType';
+import { PlotType } from '../../../data-structures/PlotType';
+import { Axis } from './../../../data-structures/PlotType';
 
 @Injectable()
 export class EllipseGeneratorService {
@@ -49,7 +50,7 @@ export class EllipseGeneratorService {
         data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
         cx=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
         cy=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        rx=0 ry=0\'
+        rx=\'0\' ry=\'0\'
         stroke=\'${secondaryColor}\' stroke-width=\'${this.strokeWidth}\'
         fill=\'transparent\'></ellipse>`;
         break;
@@ -60,7 +61,7 @@ export class EllipseGeneratorService {
         data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
         cx=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
         cy=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        rx=0 ry=0\'
+        rx=\'0\' ry=\'0\'
         stroke=\'transparent\' stroke-width= \'${this.strokeWidth}\'
         fill=\'${primaryColor}\'></ellipse>`;
         break;
@@ -71,7 +72,7 @@ export class EllipseGeneratorService {
         data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
         cx=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
         cy=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        rx=0 ry=0\'
+        rx=\'0\' ry=\'0\'
         stroke=\'${secondaryColor}\' stroke-width=\'${this.strokeWidth}\'
         fill=\'${primaryColor}\'></ellipse>`;
         break;
@@ -80,14 +81,14 @@ export class EllipseGeneratorService {
     return true;
   }
 
-  updateCircle(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updateCircle(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentEllipse = canvas.children[currentChildPosition - 1];
       if (currentEllipse != null) {
         const startEllipseX: number = Number(currentEllipse.getAttribute('data-start-x'));
         const startEllipseY: number = Number(currentEllipse.getAttribute('data-start-y'));
-        const radiusWidth: number = ((mouseEvent.pageX - this.OFFSET_CANVAS_X) - startEllipseX) / 2;
-        const radiusHeight: number = ((mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startEllipseY) / 2;
+        const radiusWidth: number = (canvasPosX - startEllipseX) / 2;
+        const radiusHeight: number = (canvasPosY - startEllipseY) / 2;
         if (radiusWidth >= 0) {
           if (Math.abs(radiusHeight) > Math.abs(radiusWidth)) {
             // height is bigger
@@ -122,7 +123,7 @@ export class EllipseGeneratorService {
             currentEllipse.setAttribute('cy', '' + (startEllipseY - Math.abs(radiusWidth)));
           } else {
             // height is bigger, act normal
-            currentEllipse.setAttribute('ry', '' + radiusHeight);
+            currentEllipse.setAttribute('ry', '' + Math.abs(radiusHeight));
             currentEllipse.setAttribute('cy', '' + (startEllipseY + radiusHeight));
           }
         }
@@ -130,14 +131,14 @@ export class EllipseGeneratorService {
     }
   }
 
-  updateEllipse(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updateEllipse(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentEllipse = canvas.children[currentChildPosition - 1];
       if (currentEllipse != null) {
         const startEllipseX: number = Number(currentEllipse.getAttribute('data-start-x'));
         const startEllipseY: number = Number(currentEllipse.getAttribute('data-start-y'));
-        const radiusWidth: number = ((mouseEvent.pageX - this.OFFSET_CANVAS_X) - startEllipseX) / 2;
-        const radiusHeight: number = ((mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startEllipseY) / 2;
+        const radiusWidth: number = (canvasPosX - startEllipseX) / 2;
+        const radiusHeight: number = (canvasPosY - startEllipseY) / 2;
         if (radiusWidth >= 0) {
           currentEllipse.setAttribute('rx', '' + radiusWidth);
           currentEllipse.setAttribute('cx', '' + (startEllipseX + radiusWidth));

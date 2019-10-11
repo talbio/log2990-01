@@ -1,60 +1,62 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+// import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {PortalModule} from '@angular/cdk/portal';
-import {HttpClientModule} from '@angular/common/http';
-import { Component } from '@angular/core';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { DemoMaterialModule } from 'src/app/material.module';
-import { ToolSelectorService } from 'src/app/services/tools/tool-selector/tool-selector.service';
+import {CommonModule} from '@angular/common';
+import {ChangeDetectorRef, Component, NO_ERRORS_SCHEMA} from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
+import {DemoMaterialModule} from '../../../material.module';
+// import {MatSidenavModule} from '@angular/material/sidenav';
+// import {ToolsAttributesComponent} from '../tools-attributes/tools-attributes.component';
 import { DrawingViewComponent } from './drawing-view.component';
+// import {NgTemplateOutlet} from "@angular/common";
+
+/* tslint:disable:max-classes-per-file for mocking classes*/
 
 @Component({selector: 'app-lateral-bar', template: ''})
 class LateralBarStubComponent {}
 
-// tslint:disable-next-line:max-classes-per-file
 @Component({selector: 'app-welcome-modal', template: ''})
 class WelcomeModalStubComponent {}
 
-// tslint:disable-next-line:max-classes-per-file
 @Component({selector: '<app-work-zone', template: ''})
 class WorkZoneStubComponent {}
 
-describe('DrawingViewComponent', () => {
+@Component({selector: '<app-tools-attributes', template: ''})
+class ToolsAttributesStubComponent {}
+
+@Component({selector: '<app-tools-attributes-one', template: ''})
+class ToolsAttributesComponent {}
+
+fdescribe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
-  // tslint:disable-next-line:prefer-const
-  let toolSelectorServiceStub: Partial<ToolSelectorService>;
+  // let toolSelectorServiceStub: Partial<ToolSelectorService>;
+  // const cp = new ComponentPortal <ToolsAttributesComponent>(ToolsAttributesComponent);
 
-  beforeEach(async(() => {
+  beforeAll(async(() => {
     TestBed.configureTestingModule({
-      declarations:
-      [ DrawingViewComponent,
+      declarations: [
+        DrawingViewComponent,
         WelcomeModalStubComponent,
-        WorkZoneStubComponent,
         LateralBarStubComponent,
-        // ToolsAttributesComponent,
+        ToolsAttributesStubComponent,
+        WorkZoneStubComponent,
+        ToolsAttributesComponent,
       ],
-      imports:
-      [
-      DemoMaterialModule,
-      PortalModule,
-      BrowserAnimationsModule,
-      HttpClientModule,
-    ],
-      providers:    [ {provide: ToolSelectorService, useValue: toolSelectorServiceStub } ],
-    })
-    .compileComponents();
+      imports: [
+        DemoMaterialModule,
+        CommonModule,
+        PortalModule,
+      ],
+      providers: [ChangeDetectorRef],
+      schemas: [ NO_ERRORS_SCHEMA ],
+    }).overrideModule(BrowserDynamicTestingModule, { set: {entryComponents: [ToolsAttributesComponent]} },
+    ).compileComponents().then( () => {
+      fixture = TestBed.createComponent(DrawingViewComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    });
   }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DrawingViewComponent);
-    component = fixture.componentInstance;
-    // UserService actually injected into the component
-    toolSelectorServiceStub = fixture.debugElement.injector.get(ToolSelectorService);
-    // UserService from the root injector
-    toolSelectorServiceStub = TestBed.get(ToolSelectorService);
-    fixture.detectChanges();
-  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
