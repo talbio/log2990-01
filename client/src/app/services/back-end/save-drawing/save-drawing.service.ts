@@ -1,6 +1,7 @@
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {ToolManagerService} from '../../tools/tool-manager/tool-manager.service';
+import {Drawing} from "../../../../../../common/communication/Drawing";
 
 @Injectable({
   providedIn: 'root',
@@ -24,18 +25,24 @@ export class SaveDrawingService {
     this.svgCanvas = svgCanvas;
   }
 
-  postSvgElements(): Promise<void> {
-    const svgElementsInJsonFormat = this.svgToJson();
-    return this.httpClient.post<string>(this.BASE_URL, {data: svgElementsInJsonFormat}, this.HTTP_OPTIONS).toPromise().then(() => {
+  httpPostDrawing(name: string, tags: string[]): Promise<void> {
+    const svgElements: string = this.getSvgElements();
+    const miniature: string = this.getMiniature();
+    const drawing: Drawing = {name, svgElements, tags, miniature};
+    return this.httpClient.post<Drawing>(this.BASE_URL, {data: drawing}, this.HTTP_OPTIONS).toPromise().then(() => {
       this.toolManager.deleteAllDrawings();
     }).catch((err: HttpErrorResponse) => {
       console.error('An error occurred:', err.error);
     });
   }
 
-  svgToJson(): string {
+  getSvgElements(): string {
     const patternsEndDef = '</defs>';
     const startIndex = this.svgCanvas.innerHTML.search(patternsEndDef) + patternsEndDef.length;
     return this.svgCanvas.innerHTML.substring(startIndex);
+  }
+
+  getMiniature(): string {
+    return '';
   }
 }
