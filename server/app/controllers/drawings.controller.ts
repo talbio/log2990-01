@@ -1,39 +1,26 @@
 import {NextFunction, Request, Response, Router} from 'express';
-import * as fs from 'fs';
-import {injectable} from 'inversify';
+import {inject, injectable} from 'inversify';
+import {Drawing} from '../../../common/communication/Drawing';
+import {DrawingsStockerService} from '../services/drawings-stocker.service';
+import Types from '../types';
 
 @injectable()
 export class DrawingsController {
 
+    readonly HTTP_CODE_200 = 200;
+
     router: Router;
 
-    storeData = (data: string, path: string) => {
-        try {
-            fs.writeFileSync(path, JSON.stringify(data, null, 2));
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    loadData = (path: string) => {
-        try {
-            return fs.readFileSync(path, 'utf8');
-        } catch (err) {
-            console.error(err)
-            return false;
-        }
-    }
-
-    constructor() {
+    constructor(@inject(Types.DrawingsStockerService) private drawingsStockerService: DrawingsStockerService) {
         this.configureRouter();
     }
 
     private configureRouter() {
         this.router = Router();
         this.router.post('/', (req: Request, res: Response, next: NextFunction) => {
-            const id = '1';
-            this.storeData(req.body.data, './drawing_' + id + '.json');
-            console.log(JSON.parse(this.loadData('./drawing_1.json') as string));
+            const drawing: Drawing = req.body.data as Drawing;
+            this.drawingsStockerService.storeDrawing(drawing);
+            res.send(this.HTTP_CODE_200);
         });
     }
 }

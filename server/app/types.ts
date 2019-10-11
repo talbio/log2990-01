@@ -6,4 +6,5 @@ export default {
     DrawingsController: Symbol('DrawingsController'),
     IndexService: Symbol('IndexService'),
     DateService: Symbol('DateService'),
+    DrawingsStockerService: Symbol('DrawingsStockerService'),
 };
