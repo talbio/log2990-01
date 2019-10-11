@@ -151,10 +151,9 @@ export class ToolManagerService {
   finishElementDoubleClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
     if (this._activeTool === Tools.Line) {
       if (mouseEvent.shiftKey) {
-        this.lineGenerator.finishAndLinkLineBlock(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+        this.lineGenerator.finishAndLinkLineBlock(canvas, this.numberOfElements);
       } else {
-        this.lineGenerator.finishLineBlock();
+        this.lineGenerator.finishLineBlock(canvas, this.numberOfElements);
       }
     }
   }
