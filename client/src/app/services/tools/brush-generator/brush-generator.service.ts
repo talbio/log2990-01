@@ -36,17 +36,22 @@ export class BrushGeneratorService {
     return this.currentBrushPattern;
   }
 
+  generateBrushPath(id: number, xPos: number, yPos: number, stroke: string, strokeWidth: number): string {
+    return `<path
+      id=\'brushPath${id}\'
+      d=\'M ${xPos} ${(yPos)} L ${(xPos)} ${(yPos)}\'
+      stroke=\'${stroke}\' stroke-width=\'${strokeWidth}\' stroke-linecap=\'round\' fill=\'none\'></path>`;
+  }
+
   createBrushPath(mouseEvent: MouseEvent, canvas: HTMLElement) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
+    const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
+    const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
 
     canvas.innerHTML +=
-      `<path id=\'brushPath${this.currentBrushPathNumber}\'
-      d=\'M ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
-      L ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-      stroke=\'${this.currentBrushPattern}\' stroke-width=\'${this.strokeWidth}\'
-      stroke-linecap=\'round\' fill=\'none\'></path>`;
+      this.generateBrushPath(this.currentBrushPathNumber, xPos, yPos, this.currentBrushPattern, this.strokeWidth);
 
     this.mouseDown = true;
   }

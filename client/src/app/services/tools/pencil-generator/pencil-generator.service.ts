@@ -25,7 +25,7 @@ export class PencilGeneratorService {
   get _strokeWidth(): number {
     return this.strokeWidth;
   }
-  // Uniquely useful for tests, commente for further usage
+  // Uniquely useful for tests, comment for further usage
   set _mouseDown(state: boolean) {
     this.mouseDown = state;
   }
