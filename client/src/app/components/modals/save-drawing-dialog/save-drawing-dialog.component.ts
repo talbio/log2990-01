@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Component} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef} from '@angular/material/dialog';
 import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 
@@ -8,38 +8,52 @@ import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-d
   templateUrl: './save-drawing-dialog.component.html',
   styleUrls: ['./save-drawing-dialog.component.scss'],
 })
-export class SaveDrawingDialogComponent implements OnInit {
+export class SaveDrawingDialogComponent {
 
+  private static httpPosting: boolean;
+
+  protected readonly NO_SPACES_REGEX = /^\S*$/;
   protected readonly DIALOG_TITLE = 'Sauvegarder votre dessin';
   protected readonly NON_EMPTY_NAME_ERR_MSG = 'nom obligatoire';
-  protected readonly TAGS_INVALID_ERR_MSG = 'tags invalides';
+  protected readonly TAGS_INVALID_ERR_MSG = `champ requis (sans espace)`;
 
   protected formGroup: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
               private dialogRef: MatDialogRef<SaveDrawingDialogComponent>,
-              private saveDrawing: SaveDrawingService) {
-
+              protected saveDrawing: SaveDrawingService) {
     this.formGroup = this.formBuilder.group({
       name: ['', [
         Validators.required,
       ]],
-      tags: ['', [
-        // TODO: qu'est ce qu'un tag valide?
-        Validators.pattern('^[0-9]*$'),
-      ]],
+      tags: this.formBuilder.array([]),
     });
   }
 
-  ngOnInit() {
+  get isPostingToServer() {
+    return SaveDrawingDialogComponent.httpPosting;
   }
 
   get name(): AbstractControl {
     return this.formGroup.get('name') as AbstractControl;
   }
 
-  get tags(): AbstractControl {
-    return this.formGroup.get('tags') as AbstractControl;
+  get tags(): FormArray {
+    return this.formGroup.get('tags') as FormArray;
+  }
+
+  addTag(): void  {
+    const tagFormControl = this.formBuilder.group({
+      tag: ['', [
+        Validators.pattern(this.NO_SPACES_REGEX),
+        Validators.required,
+      ]],
+    });
+    this.tags.push(tagFormControl);
+  }
+
+  deleteTag(index: number): void {
+    this.tags.removeAt(index);
   }
 
   empty(abstractControl: AbstractControl): boolean {
@@ -47,12 +61,18 @@ export class SaveDrawingDialogComponent implements OnInit {
   }
 
   close() {
-    this.saveDrawing.svgToJson();
     this.dialogRef.close();
   }
 
-  submit() {
-    void this.saveDrawing.postSvgElements();
+  async submit() {
+    const tags: string[] = [];
+    for (const tagFormControl of this.tags.value) {
+      tags.push(tagFormControl.tag);
+    }
+    SaveDrawingDialogComponent.httpPosting = true;
+    await this.saveDrawing.httpPostDrawing(this.name.value, tags);
+    SaveDrawingDialogComponent.httpPosting = false;
+    this.dialogRef.close();
   }
 
 }
