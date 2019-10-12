@@ -1,4 +1,9 @@
 <p mat-dialog-title>{{DIALOG_TITLE}}</p>
+
+<svg id = "min" width="100px" height="100px" viewBox="0 0 100 100" style="border-style: solid;border-width: 1px;">
+  <use preserveAspectRatio="none" transform="scale(0.1)" viewBox="0 0 100 100" xlink:href="#canvas"/>
+</svg>
+
 <mat-dialog-content [formGroup]="formGroup">
 
   <form [formGroup]="formGroup">
@@ -7,23 +12,39 @@
       <li>
         <mat-form-field>
           <input matInput
-                 placeholder="Entrez un nom pour le dessin"
+                 placeholder="Nom du dessin"
                  formControlName="name">
-          <mat-error *ngIf="empty(name) && name.touched">{{NON_EMPTY_NAME_ERR_MSG}}</mat-error>
+          <mat-error *ngIf="empty(name) && name.dirty">{{NON_EMPTY_NAME_ERR_MSG}}</mat-error>
         </mat-form-field>
       </li>
 
       <li>
-        <mat-form-field>
-          <input matInput
-                 placeholder="Entrez des étiquettes"
-                 formControlName="tags">
-          <mat-error *ngIf="tags.invalid && tags.touched">{{TAGS_INVALID_ERR_MSG}}</mat-error>
-        </mat-form-field>
+        <div formArrayName="tags">
+          <div *ngFor="let tag of tags.controls; let i = index" [formGroupName]="i">
+            <mat-form-field>
+              <input matInput
+                     placeholder="Tag #{{i}} (optionnel)"
+                     formControlName="tag">
+              <mat-error *ngIf="tag.invalid">{{TAGS_INVALID_ERR_MSG}}</mat-error>
+              <button mat-icon-button
+                      matSuffix
+                      matTooltip="supprimer le tag"
+                      (click)="deleteTag(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+        </div>
+        <button mat-icon-button
+                matTooltip="ajouter un tag"
+                (click)="addTag()">
+          <mat-icon svgIcon="add-tag"></mat-icon>
+        </button>
       </li>
 
     </ul>
   </form>
+
 </mat-dialog-content>
 
 <mat-dialog-actions>
@@ -33,7 +54,7 @@
   </button>
   <div class="divider"></div>
   <button class="mat-raised-button mat-primary"
-          [disabled] ="formGroup.invalid"
+          [disabled] ="formGroup.invalid || isPostingToServer"
           (click)="submit()">
     Confirmer
   </button>
