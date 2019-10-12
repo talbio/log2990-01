@@ -3,7 +3,7 @@ import {injectable} from 'inversify';
 import 'reflect-metadata';
 import {Drawing} from '../../../common/communication/Drawing';
 
-interface DrawingWithId {
+export interface DrawingWithId {
     id: number;
     drawing: Drawing;
 }
@@ -15,7 +15,6 @@ export class DrawingsStockerService {
 
     private storeData = (data: DrawingWithId, path: string) => {
         try {
-            console.log('reussi');
             fs.writeFileSync(path, JSON.stringify(data, null, 2));
         } catch (err) {
             console.error(err);
@@ -29,6 +28,21 @@ export class DrawingsStockerService {
             console.error(err);
             return false;
         }
+    }
+
+    async getDrawings(): Promise<DrawingWithId[]> {
+        const drawingsWithIds: DrawingWithId[] = [];
+        const dirname  = './app/storage';
+        return new Promise((resolve, reject) => {
+            fs.readdir(dirname, (err, filenames) => {
+                if (err) {
+                    console.error(err);
+                    reject(err);
+                }
+                filenames.forEach((fileName) => drawingsWithIds.push(this.loadData(fileName)));
+                resolve(drawingsWithIds);
+            });
+        });
     }
 
     constructor() {
@@ -49,10 +63,15 @@ export class DrawingsStockerService {
         });
     }
 
-    storeDrawing(drawing: Drawing) {
+    storeDrawing(drawing: Drawing): boolean {
+        if (!drawing.name) {
+            return false;
+        }
+        console.log(drawing.miniature);
         const id: number = this.generateNextId();
-        const drawingWithId: DrawingWithId = { id, drawing};
+        const drawingWithId: DrawingWithId = {id, drawing};
         this.storeData(drawingWithId, './app/storage/drawing' + id + '.json');
+        return true;
     }
 
     getDrawing(id: string) {
