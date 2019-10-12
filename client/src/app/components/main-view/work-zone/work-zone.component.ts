@@ -31,7 +31,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
-    this.saveDrawing._svgCanvas = this.canvasElement;
+    this.saveDrawing._renderer = this.renderer;
   }
 
   ngAfterViewInit(): void {
