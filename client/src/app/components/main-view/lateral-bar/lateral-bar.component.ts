@@ -17,6 +17,8 @@ import {SaveDrawingDialogComponent} from '../../modals/save-drawing-dialog/save-
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
 const ELLIPSE_ICON_PATH = '../../../../assets/svg-icons/ellipse.svg';
+const ADD_TAG_ICON_PATH = '../../../../assets/svg-icons/add-tag.svg';
+const DELETE_TAG_ICON_PATH = '../../../../assets/svg-icons/delete-tag.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -48,17 +50,19 @@ export class LateralBarComponent {
 
   @HostListener('document:keydown', ['$event'])
   keyDownEvent(keyboardEvent: KeyboardEvent) {
-    keyboardEvent.preventDefault();
-    if (keyboardEvent.key === this.PENCIL_KEY) {
-      this.toolManager._activeTool = Tools.Pencil;
-    } else if (keyboardEvent.key === this.COLOR_APPLICATOR_KEY) {
-      this.toolManager._activeTool = Tools.ColorApplicator;
-    } else if (keyboardEvent.key === this.PAINTBRUSH_KEY) {
-      this.toolManager._activeTool = Tools.Brush;
-    } else if (keyboardEvent.key === this.RECTANGLE_KEY) {
-      this.toolManager._activeTool = Tools.Rectangle;
-    } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
-      this.openCreateDrawingDialog();
+    if (false) {
+      keyboardEvent.preventDefault();
+      if (keyboardEvent.key === this.PENCIL_KEY) {
+        this.toolManager._activeTool = Tools.Pencil;
+      } else if (keyboardEvent.key === this.COLOR_APPLICATOR_KEY) {
+        this.toolManager._activeTool = Tools.ColorApplicator;
+      } else if (keyboardEvent.key === this.PAINTBRUSH_KEY) {
+        this.toolManager._activeTool = Tools.Brush;
+      } else if (keyboardEvent.key === this.RECTANGLE_KEY) {
+        this.toolManager._activeTool = Tools.Rectangle;
+      } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
+        this.openCreateDrawingDialog();
+      }
     }
   }
 
@@ -116,6 +120,10 @@ export class LateralBarComponent {
       this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH));
     this.matIconRegistry.addSvgIcon('ellipse',
       this.domSanitizer.bypassSecurityTrustResourceUrl(ELLIPSE_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('add-tag',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(ADD_TAG_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('delete-tag',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(DELETE_TAG_ICON_PATH));
   }
 
 }
