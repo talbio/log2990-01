@@ -32,7 +32,7 @@ export class LateralBarComponent implements OnInit {
   @Output() createDrawing = new EventEmitter<CreateDrawingFormValues>();
 
   protected appropriateClass: string;
-  private canvas:HTMLElement;
+  private canvas: HTMLElement;
 
   private readonly HEIGHT_THRESHOLD = 412;
   private readonly PENCIL_KEY = 'c';

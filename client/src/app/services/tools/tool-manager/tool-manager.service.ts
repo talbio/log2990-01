@@ -27,14 +27,14 @@ export class ToolManagerService {
   }
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
-              private ellipseGenerator: EllipseGeneratorService,
-              private pencilGenerator: PencilGeneratorService,
-              private brushGenerator: BrushGeneratorService,
-              private colorApplicator: ColorApplicatorService,
-              private objectSelector: ObjectSelectorService,
-              private lineGenerator: LineGeneratorService,
-              protected colorService: ColorService,
-              protected mousePosition: MousePositionService) {
+    private ellipseGenerator: EllipseGeneratorService,
+    private pencilGenerator: PencilGeneratorService,
+    private brushGenerator: BrushGeneratorService,
+    private colorApplicator: ColorApplicatorService,
+    private objectSelector: ObjectSelectorService,
+    private lineGenerator: LineGeneratorService,
+    protected colorService: ColorService,
+    protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
   }
 
@@ -235,24 +235,33 @@ export class ToolManagerService {
     }
   }
   selectorLeftClick(): void {
-    const selectorBox = this.canvasElement.lastChild as SVGGElement;
+    const selectorBox = this.canvasElement.querySelector('#boxrect') as SVGGElement;
     const box = selectorBox.getBBox();
     if (this.mousePosition._canvasMousePositionX < box.x || this.mousePosition._canvasMousePositionX > (box.x + box.width)
       || this.mousePosition._canvasMousePositionY < box.y || this.mousePosition._canvasMousePositionY > (box.y + box.height)) {
       this.removeSelector();
-    } // else translation
+    // si il y a objet présent, inverser
+    } else { this.objectSelector.startTranslation(); }
+  }
+
+  translate(mouseEvent: MouseEvent): void {
+    this.objectSelector.translate(mouseEvent);
+  }
+
+  finishTranslation(): void {
+    this.objectSelector.drop();
   }
 
   removeSelector(): void {
-    const group = this.canvasElement.querySelector('g') as Node;
+    const box = this.canvasElement.querySelector('#box') as Node;
+    const boxrect = this.canvasElement.querySelector('#boxrect') as Node;
+    const selected = this.canvasElement.querySelector('#selected') as SVGGElement;
     // tslint:disable-next-line: no-non-null-assertion
-    const childArray = Array.from(group!.childNodes);
-    // tslint:disable-next-line: no-non-null-assertion
+    const childArray = Array.from(selected!.childNodes);
     childArray.forEach((child) => {
       this.canvasElement.appendChild(child);
     });
-    this.canvasElement.removeChild(group);
-    const box = document.getElementById('box') as Node;
+    box.removeChild(boxrect);
     this.canvasElement.removeChild(box);
   }
 

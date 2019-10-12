@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Colors } from 'src/app/data-structures/Colors';
+import { MousePositionService } from '../../mouse-position/mouse-position.service';
 
 const DASHED_LINE_VALUE = 5;
 const STROKE_COLOR = Colors.BLACK;
@@ -9,12 +10,14 @@ export class ObjectSelectorService {
 
   private OFFSET_CANVAS_Y: number;
   private OFFSET_CANVAS_X: number;
-  private mouseDown: boolean;
+  private mouseDownSelector: boolean;
+  private mouseDownTranslation: boolean;
   private currentRect: Element;
   private SVGArray: SVGElement[] = new Array();
+  private isSelectorVisible: boolean;
 
-  constructor() {
-    this.mouseDown = false;
+  constructor(protected mousePosition: MousePositionService) {
+    this.mouseDownSelector = false;
   }
 
   createSelectorRectangle(mouseEvent: MouseEvent, canvas: HTMLElement) {
@@ -24,20 +27,21 @@ export class ObjectSelectorService {
 
     canvas.innerHTML +=
       `<rect
-            x=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-            data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-            y=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-            data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-            width = \'0\' height = \'0\' stroke=\'${STROKE_COLOR}\' stroke-dasharray = \'${DASHED_LINE_VALUE}\'
-            fill=\'transparent\'></rect>`;
-    this.mouseDown = true;
+            x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
+            data-start-x = "${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
+            y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+            data-start-y = "${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+            width = "0" height = "0" stroke="${STROKE_COLOR}" stroke-dasharray = "${DASHED_LINE_VALUE}"
+            fill="transparent"></rect>`;
+    this.mouseDownSelector = true;
   }
 
   updateSelectorRectangle(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
 
-    if (this.mouseDown) {
+    if (this.mouseDownSelector) {
       this.currentRect = canvas.children[currentChildPosition - 1];
       if (this.currentRect != null) {
+        this.isSelectorVisible = true;
         const startRectX: number = Number(this.currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(this.currentRect.getAttribute('data-start-y'));
         const actualWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startRectX;
@@ -79,34 +83,61 @@ export class ObjectSelectorService {
   }
 
   finishSelector(canvas: HTMLElement): void {
-    if (this.mouseDown) {
-      canvas.removeChild(this.currentRect);
-      if (this.SVGArray.length !== 0) {
-        this.addToGroup(canvas);
+    if (this.mouseDownSelector) {
+      if (this.isSelectorVisible) {
+        canvas.removeChild(this.currentRect);
+        this.isSelectorVisible = false;
+        if (this.SVGArray.length !== 0) {
+          this.addToGroup(canvas);
+        }
       }
-      this.mouseDown = false;
     }
+    this.mouseDownSelector = false;
   }
 
   addToGroup(canvas: HTMLElement): void {
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    group.setAttribute('id', 'selected');
     this.SVGArray.forEach((drawing) => {
       group.append(drawing);
     });
     canvas.append(group);
-    const groupElement = canvas.querySelector('g');
     // tslint:disable-next-line: no-non-null-assertion
-    const boxGroup = groupElement!.getBBox();
+    const boxGroup = group!.getBBox();
     canvas.innerHTML +=
-      `<rect id=\'box\'
-            x=\'${boxGroup.x}\'
-            data-start-x = \'${boxGroup.x}\'
-            y=\'${boxGroup.y}\'
-            data-start-y = \'${boxGroup.y}\'
-            width = \'${boxGroup.width}\' height = \'${boxGroup.height}\'
-            stroke=\'${STROKE_COLOR}\'
-            fill=\'transparent\'
-            </rect>`;
-
+      `<svg id="box"><rect id="boxrect"
+            x="${boxGroup.x}"
+            data-start-x = "${boxGroup.x}"
+            y="${boxGroup.y}"
+            data-start-y = "${boxGroup.y}"
+            width = "${boxGroup.width}" height = "${boxGroup.height}"
+            stroke="${STROKE_COLOR}"
+            fill="transparent">
+            </rect></svg>`;
+    const box = canvas.querySelector('#box') as SVGGElement;
+    box.append(group);
+    const selected = canvas.querySelector('#selected') as SVGGElement;
+    canvas.removeChild(selected);
   }
+
+  startTranslation(): void {
+    this.mouseDownTranslation = true;
+  }
+
+  translate(mouseEvent: MouseEvent): void {
+    if (this.mouseDownTranslation) {
+      const group = document.querySelector('#box') as SVGGElement;
+      // tslint:disable-next-line: no-non-null-assertion
+      const box = group!.getBBox();
+      group.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X -  box.width  - (box.width / 2) ));
+      group.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y -  box.height - (box.height / 2)));
+    }
+  }
+
+  drop() {
+    const groupElement = document.querySelector('#box') as SVGGElement;
+    groupElement.setAttributeNS(null, 'onmousemove', 'null');
+    this.mouseDownTranslation = false;
+  }
+
 }

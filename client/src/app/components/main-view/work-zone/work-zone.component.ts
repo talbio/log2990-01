@@ -56,20 +56,23 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   hasActiveSelector(): boolean {
     let hasSelector = false;
-    this.canvasElement.childNodes.forEach((element) => {
-      if (element.nodeName === 'g') {
-        hasSelector = true;
-      }
-    });
+    const groupElement = this.canvasElement.querySelector('#selected');
+    if (groupElement) {
+      hasSelector = true;
+    }
     return hasSelector;
   }
 
   onMouseMove(mouseEvent: MouseEvent) {
-    this.toolManager.updateElement(mouseEvent, this.canvasElement);
+    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
+      this.toolManager.translate(mouseEvent);
+    } else {this.toolManager.updateElement(mouseEvent, this.canvasElement); }
   }
 
   onMouseUp() {
-    this.toolManager.finishElement();
+    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
+      this.toolManager.finishTranslation();
+    } else {this.toolManager.finishElement(); }
   }
 
   onLeftClick(mouseEvent: MouseEvent) {
