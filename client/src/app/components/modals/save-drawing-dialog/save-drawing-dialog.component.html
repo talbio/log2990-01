@@ -25,7 +25,7 @@
               <input matInput
                      placeholder="Tag #{{i}} (optionnel)"
                      formControlName="tag">
-              <mat-error *ngIf="tag.invalid">{{TAGS_INVALID_ERR_MSG}}</mat-error>
+              <mat-error *ngIf="tag.invalid && tag.dirty">{{TAGS_INVALID_ERR_MSG}}</mat-error>
               <button mat-icon-button
                       matSuffix
                       matTooltip="supprimer le tag"
