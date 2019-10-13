@@ -13,9 +13,11 @@ export class SaveDrawingDialogComponent {
   private static httpPosting: boolean;
 
   protected readonly NO_SPACES_REGEX = /^\S*$/;
+  protected readonly ALPHA_NUMERIC_REGEX = '^[a-zA-Z0-9_]*$';
+  protected readonly ALPHA_NUMERIC_AND_SPACES_REGEX = /^[-\w\s]+$/;
   protected readonly DIALOG_TITLE = 'Sauvegarder votre dessin';
-  protected readonly NON_EMPTY_NAME_ERR_MSG = 'nom obligatoire';
-  protected readonly TAGS_INVALID_ERR_MSG = `champ requis (sans espace)`;
+  protected readonly INVALID_NAME_ERR_MSG = 'nom invalide';
+  protected readonly INVALID_TAG_ERR_MSG = `tag invalide`;
 
   protected formGroup: FormGroup;
 
@@ -24,6 +26,7 @@ export class SaveDrawingDialogComponent {
               protected saveDrawing: SaveDrawingService) {
     this.formGroup = this.formBuilder.group({
       name: ['', [
+        Validators.pattern(this.ALPHA_NUMERIC_AND_SPACES_REGEX),
         Validators.required,
       ]],
       tags: this.formBuilder.array([]),
@@ -46,6 +49,7 @@ export class SaveDrawingDialogComponent {
     const tagFormControl = this.formBuilder.group({
       tag: ['', [
         Validators.pattern(this.NO_SPACES_REGEX),
+        Validators.pattern(this.ALPHA_NUMERIC_REGEX),
         Validators.required,
       ]],
     });
