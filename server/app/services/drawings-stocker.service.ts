@@ -21,28 +21,13 @@ export class DrawingsStockerService {
         }
     }
 
-    private loadData = (path: string) => {
+    private loadFile = (path: string) => {
         try {
             return JSON.parse(fs.readFileSync(path, 'utf8') as string);
         } catch (err) {
             console.error(err);
             return false;
         }
-    }
-
-    async getDrawings(): Promise<DrawingWithId[]> {
-        const drawingsWithIds: DrawingWithId[] = [];
-        const dirname  = './app/storage';
-        return new Promise((resolve, reject) => {
-            fs.readdir(dirname, (err, filenames) => {
-                if (err) {
-                    console.error(err);
-                    reject(err);
-                }
-                filenames.forEach((fileName) => drawingsWithIds.push(this.loadData(fileName)));
-                resolve(drawingsWithIds);
-            });
-        });
     }
 
     constructor() {
@@ -63,11 +48,25 @@ export class DrawingsStockerService {
         });
     }
 
+    async getDrawings(): Promise<DrawingWithId[]> {
+        const drawingsWithIds: DrawingWithId[] = [];
+        const dirname  = './app/storage/';
+        return new Promise((resolve, reject) => {
+            fs.readdir(dirname, (err, filenames) => {
+                if (err) {
+                    console.error(err);
+                    reject(err);
+                }
+                filenames.forEach((fileName) => drawingsWithIds.push(this.loadFile(dirname + fileName)));
+                resolve(drawingsWithIds);
+            });
+        });
+    }
+
     storeDrawing(drawing: Drawing): boolean {
         if (!drawing.name) {
             return false;
         }
-        console.log(drawing.miniature);
         const id: number = this.generateNextId();
         const drawingWithId: DrawingWithId = {id, drawing};
         this.storeData(drawingWithId, './app/storage/drawing' + id + '.json');
@@ -75,11 +74,10 @@ export class DrawingsStockerService {
     }
 
     getDrawing(id: string) {
-        return this.loadData('/../storage/drawing' + id + '.json');
+        return this.loadFile('/../storage/drawing' + id + '.json');
     }
 
     private generateNextId(): number {
-        console.log(this.currentId);
         return ++this.currentId;
     }
 }
