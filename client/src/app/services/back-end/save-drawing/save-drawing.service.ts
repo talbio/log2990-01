@@ -5,7 +5,6 @@ import {catchError} from 'rxjs/operators';
 import {Drawing} from '../../../../../../common/communication/Drawing';
 import {ToolManagerService} from '../../tools/tool-manager/tool-manager.service';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -46,10 +45,10 @@ export class SaveDrawingService {
     });
   }
 
-  httpGetDrawing(): Observable<Drawing> {
+  httpGetDrawing(): Observable<Drawing[]> {
 
-    return this.httpClient.get<Drawing>(this.BASE_URL).pipe(
-      catchError(this.handleError<Drawing>('httpGetDrawing')),
+    return this.httpClient.get<Drawing[]>(this.BASE_URL).pipe(
+      catchError(this.handleError<Drawing[]>('httpGetDrawing')),
     );
   }
 
