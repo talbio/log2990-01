@@ -1,6 +1,9 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Drawing } from '../../../../../../common/communication/Drawing';
+import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
-import {SaveDrawingService} from "../../../services/back-end/save-drawing/save-drawing.service";
 
 @Component({
   selector: 'app-work-zone',
@@ -12,13 +15,14 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   private readonly DEFAULT_WIDTH = 1080;
   private readonly DEFAULT_HEIGHT = 720;
   private readonly SHIFT_KEY = 'SHIFT';
-  private readonly DEFAULT_WHITE_COLOR = '#FFFFFF'
+  private readonly DEFAULT_WHITE_COLOR = '#FFFFFF';
 
   @Input() width: number;
   @Input() height: number;
   @Input() color: string;
 
   private canvasElement: any;
+  drawing = new BehaviorSubject<string>('');
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
@@ -27,6 +31,12 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
     this.color = this.DEFAULT_WHITE_COLOR;
+
+    this.saveDrawing.httpGetDrawing()
+    .pipe(
+      map((drawing: Drawing) => `${drawing.name} ${drawing.svgElements} ${drawing.tags} ${drawing.miniature}`),
+    )
+    .subscribe(this.drawing);
   }
 
   ngOnInit(): void {

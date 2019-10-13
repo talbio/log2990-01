@@ -1,7 +1,10 @@
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Injectable, Renderer2} from '@angular/core';
+import { Observable, of } from 'rxjs';
+import {catchError} from 'rxjs/operators';
 import {Drawing} from '../../../../../../common/communication/Drawing';
 import {ToolManagerService} from '../../tools/tool-manager/tool-manager.service';
+
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +44,20 @@ export class SaveDrawingService {
     }).catch((err: HttpErrorResponse) => {
       console.error('httpPostDrawing failed: ', err.error);
     });
+  }
+
+  httpGetDrawing(): Observable<Drawing> {
+
+    return this.httpClient.get<Drawing>(this.BASE_URL).pipe(
+      catchError(this.handleError<Drawing>('httpGetDrawing')),
+    );
+  }
+
+  private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
+
+    return (error: Error): Observable<T> => {
+      return of(result as T);
+    };
   }
 
   getWidth(): number {
