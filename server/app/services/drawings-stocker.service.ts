@@ -67,7 +67,6 @@ export class DrawingsStockerService {
         if (!drawing.name) {
             return false;
         }
-        console.log(drawing.miniature);
         const id: number = this.generateNextId();
         const drawingWithId: DrawingWithId = {id, drawing};
         this.storeData(drawingWithId, './app/storage/drawing' + id + '.json');
@@ -79,7 +78,6 @@ export class DrawingsStockerService {
     }
 
     private generateNextId(): number {
-        console.log(this.currentId);
         return ++this.currentId;
     }
 }
