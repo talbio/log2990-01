@@ -28,6 +28,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
     this.color = this.DEFAULT_WHITE_COLOR;
+    this.gridSize = this.grid.gridSize;
   }
 
   ngOnInit(): void {
@@ -87,5 +88,9 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     return {
       'background-color': this.color,
     };
+  }
+
+  getGridSize() {
+    this.gridSize = this.grid.gridSize;
   }
 }

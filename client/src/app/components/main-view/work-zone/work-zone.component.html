@@ -11,9 +11,9 @@
 
     <defs>
         <!-- Pattern for grid -->
-        <pattern id="backgroundGridPattern" patternUnits="userSpaceOnUse" [attr.width]='grid._gridSize()' [attr.height]='grid._gridSize()'>
-            <line [attr.x1]="0" [attr.y1]="grid.gridSize/2" [attr.x2]="grid.gridSize" [attr.y2]="grid.gridSize/2" stroke="black" stroke-width="1"/>
-            <line [attr.x1]="grid.gridSize/2" [attr.y1]="0" [attr.x2]="grid.gridSize/2" [attr.y2]="grid.gridSize" stroke="black" stroke-width="1"/>
+        <pattern id="backgroundGridPattern" patternUnits="userSpaceOnUse" [attr.width]="gridSize" [attr.height]="gridSize">
+            <line [attr.x1]="0" [attr.y1]="gridSize/2" [attr.x2]="gridSize" [attr.y2]="gridSize/2" stroke="black" stroke-width="1"/>
+            <line [attr.x1]="gridSize/2" [attr.y1]="0" [attr.x2]="gridSize/2" [attr.y2]="gridSize" stroke="black" stroke-width="1"/>
         </pattern>
         <!-- Patterns for brush -->
         <pattern id="brushPattern1" patternUnits="userSpaceOnUse" width="3" height="3">

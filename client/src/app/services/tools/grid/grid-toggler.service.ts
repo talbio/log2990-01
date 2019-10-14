@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Input, Output } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class GridTogglerService {
@@ -7,12 +8,16 @@ export class GridTogglerService {
   protected hidden: boolean;
   protected gridSize: number;
   protected gridOpacity: number;
-  protected rgbaValue: string;
+
+  isVisibilityChange: Subject<boolean> = new Subject<boolean>();
 
   constructor() {
     this.hidden = false;
     this.gridSize = 50;
     this.gridOpacity = 0.4;
+    this.isVisibilityChange.subscribe((value) => {
+      this.hidden = value;
+    }
   }
 
   toggleGrid() {
@@ -27,10 +32,16 @@ export class GridTogglerService {
   }
 
   getGridSize() {
-    return this.gridSize;
+    // const grid = canvas.children[1];
+    // grid.setAttribute('width', size.toString());
+    // grid.setAttribute('height', size.toString());
   }
 
   _gridOpacity(opacity: number) { this.gridOpacity = opacity; }
+
+  getGridOpacity() {
+    return this.gridOpacity;
+  }
 
   changeGridTransparency(canvas: HTMLElement, opacity: number) {
     this.gridOpacity = opacity;
