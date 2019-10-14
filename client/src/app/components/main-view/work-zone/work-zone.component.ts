@@ -1,5 +1,5 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
-import { Tools } from 'src/app/data-structures/Tools';
+import { Tools } from '../../../data-structures/Tools';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({

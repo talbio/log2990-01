@@ -9,7 +9,7 @@ export class EllipseGeneratorService {
   private currentEllipseNumber: number;
   private mouseDown: boolean;
 
-  // attributes of rectangle
+  // attributes of ellipse
   private strokeWidth: number;
   private plotType: PlotType;
 

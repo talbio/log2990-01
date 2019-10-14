@@ -26,6 +26,7 @@ import { ColorService } from './services/tools/color/color.service';
 import { EllipseGeneratorService } from './services/tools/ellipse-generator/ellipse-generator.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
+import { PolygonGeneratorService } from './services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
 
@@ -60,6 +61,7 @@ import { ToolManagerService } from './services/tools/tool-manager/tool-manager.s
     StorageService,
     RectangleGeneratorService,
     EllipseGeneratorService,
+    PolygonGeneratorService,
     ToolManagerService,
     StorageService,
     PencilGeneratorService,

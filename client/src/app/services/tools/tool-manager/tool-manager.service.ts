@@ -8,6 +8,7 @@ import {RectangleGeneratorService} from '../rectangle-generator/rectangle-genera
 import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import { EllipseGeneratorService } from './../ellipse-generator/ellipse-generator.service';
 import { LineGeneratorService } from './../line-generator/line-generator.service';
+import { PolygonGeneratorService } from './../polygon-generator/polygon-generator.service';
 
 @Injectable()
 export class ToolManagerService {
@@ -31,6 +32,7 @@ export class ToolManagerService {
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
               private lineGenerator: LineGeneratorService,
+              private polygonGenerator: PolygonGeneratorService,
               protected colorService: ColorService,
               protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
@@ -55,6 +57,10 @@ export class ToolManagerService {
       case Tools.Ellipse:
         this.ellipseGenerator.createEllipse(mouseEvent, canvas,
           this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
+        break;
+      case Tools.Polygon:
+        this.polygonGenerator.createPolygon(mouseEvent, canvas, this.colorService.getSecondaryColor(),
+          this.colorService.getPrimaryColor());
         break;
       default:
         return;
@@ -92,6 +98,9 @@ export class ToolManagerService {
             this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         }
         break;
+      case Tools.Polygon:
+        this.polygonGenerator.updatePolygon(mouseEvent, canvas, this.numberOfElements);
+        break;
       default:
           return;
     }
@@ -110,6 +119,9 @@ export class ToolManagerService {
         break;
       case Tools.Ellipse:
         this.ellipseGenerator.finishEllipse();
+        break;
+      case Tools.Polygon:
+        this.polygonGenerator.finishPolygon();
         break;
       default:
         return;

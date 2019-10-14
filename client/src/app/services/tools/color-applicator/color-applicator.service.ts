@@ -31,9 +31,12 @@ export class ColorApplicatorService {
           alert('Object id is \'' + targetObject.getAttribute('id') + '\' and this case is not treated!');
         }
         break;
-        case 'ellipse':
-            targetObject.setAttribute('fill', newColor);
-            break;
+      case 'ellipse':
+        targetObject.setAttribute('fill', newColor);
+        break;
+      case 'polygon':
+        targetObject.setAttribute('fill', newColor);
+        break;
       case 'svg':
         // Canvas
         break;
@@ -64,8 +67,11 @@ export class ColorApplicatorService {
         }
         break;
       case 'ellipse':
-          targetObject.setAttribute('stroke', newColor);
-          break;
+        targetObject.setAttribute('stroke', newColor);
+        break;
+      case 'polygon':
+        targetObject.setAttribute('stroke', newColor);
+        break;
       case 'svg':
         // Canvas
         break;
