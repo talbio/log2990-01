@@ -27,14 +27,14 @@ export class ToolManagerService {
   }
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
-    private ellipseGenerator: EllipseGeneratorService,
-    private pencilGenerator: PencilGeneratorService,
-    private brushGenerator: BrushGeneratorService,
-    private colorApplicator: ColorApplicatorService,
-    private objectSelector: ObjectSelectorService,
-    private lineGenerator: LineGeneratorService,
-    protected colorService: ColorService,
-    protected mousePosition: MousePositionService) {
+              private ellipseGenerator: EllipseGeneratorService,
+              private pencilGenerator: PencilGeneratorService,
+              private brushGenerator: BrushGeneratorService,
+              private colorApplicator: ColorApplicatorService,
+              private objectSelector: ObjectSelectorService,
+              private lineGenerator: LineGeneratorService,
+              protected colorService: ColorService,
+              protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
   }
 
@@ -253,12 +253,13 @@ export class ToolManagerService {
   }
 
   removeSelector(): void {
-    const box = this.canvasElement.querySelector('#box') as Node;
-    const boxrect = this.canvasElement.querySelector('#boxrect') as Node;
+    const box = this.canvasElement.querySelector('#box') as SVGElement;
+    const boxrect = this.canvasElement.querySelector('#boxrect') as SVGElement;
     const selected = this.canvasElement.querySelector('#selected') as SVGGElement;
     // tslint:disable-next-line: no-non-null-assertion
-    const childArray = Array.from(selected!.childNodes);
+    const childArray = Array.from(selected!.children);
     childArray.forEach((child) => {
+      this.changeChildPosition(child, box);
       this.canvasElement.appendChild(child);
     });
     box.removeChild(boxrect);
@@ -275,6 +276,36 @@ export class ToolManagerService {
         break;
       default:
         return;
+    }
+  }
+
+  changeChildPosition(child: Element, box: SVGElement): void {
+    let newX: number;
+    let newY: number;
+    switch (child.nodeName) {
+      case 'rect' :
+        newX = parseFloat('' + child.getAttribute('x')) + parseFloat('' + box.getAttribute('x'));
+        newY = parseFloat('' + child.getAttribute('y')) + parseFloat('' + box.getAttribute('y'));
+        child.setAttribute('x', newX as unknown as string);
+        child.setAttribute('y', newY as unknown as string);
+        break;
+      case 'ellipse' :
+        newX = parseFloat('' + child.getAttribute('cx')) + parseFloat('' + box.getAttribute('x'));
+        newY = parseFloat('' + child.getAttribute('cy')) + parseFloat('' + box.getAttribute('y'));
+        child.setAttribute('cx', newX as unknown as string);
+        child.setAttribute('cy', newY as unknown as string);
+        break;
+      case 'path' :
+        // TODO
+        break;
+      case 'polyline' :
+        // TODO if g does not pan out
+        break;
+      case 'polygon' :
+        // TODO
+        break;
+      default:
+        break;
     }
   }
 }
