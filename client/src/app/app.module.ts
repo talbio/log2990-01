@@ -6,6 +6,7 @@ import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
+import {NotifierModule, NotifierOptions, NotifierService} from 'angular-notifier';
 import { ColorToolComponent } from './components/main-view/color-tool/color-tool.component';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
 import { LateralBarComponent } from './components/main-view/lateral-bar/lateral-bar.component';
@@ -29,6 +30,47 @@ import { EllipseGeneratorService } from './services/tools/ellipse-generator.serv
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
+
+const customNotifierOptions: NotifierOptions = {
+  position: {
+    horizontal: {
+      position: 'right',
+      distance: 12
+    },
+    vertical: {
+      position: 'bottom',
+      distance: 12,
+      gap: 10
+    }
+  },
+  theme: 'material',
+  behaviour: {
+    autoHide: 5000,
+    onClick: 'hide',
+    onMouseover: 'pauseAutoHide',
+    showDismissButton: true,
+    stacking: 4
+  },
+  animations: {
+    enabled: true,
+    show: {
+      preset: 'slide',
+      speed: 300,
+      easing: 'ease'
+    },
+    hide: {
+      preset: 'fade',
+      speed: 300,
+      easing: 'ease',
+      offset: 50
+    },
+    shift: {
+      speed: 300,
+      easing: 'ease'
+    },
+    overlap: 150
+  }
+};
 
 @NgModule({
   declarations: [
@@ -55,7 +97,7 @@ import { ToolManagerService } from './services/tools/tool-manager/tool-manager.s
     FormsModule,
     PortalModule,
     DemoMaterialModule,
-
+    NotifierModule.withConfig(customNotifierOptions),
   ],
   providers: [
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'legacy' } },
@@ -69,6 +111,7 @@ import { ToolManagerService } from './services/tools/tool-manager/tool-manager.s
     ColorApplicatorService,
     ColorService,
     SaveDrawingService,
+    NotifierService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [
