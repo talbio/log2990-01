@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ColorService } from 'src/app/services/tools/color/color.service';
+import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { PlotType } from '../../../data-structures/PlotType';
 import { Tools } from '../../../data-structures/Tools';
 import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
@@ -22,7 +23,8 @@ export class ToolsAttributesComponent {
               protected brushGenerator: BrushGeneratorService,
               protected lineGenerator: LineGeneratorService,
               protected ellipseGenerator: EllipseGeneratorService,
-              protected colorService: ColorService) {
+              protected colorService: ColorService,
+              protected emojiGenerator: EmojiGeneratorService ) {
   }
 
   protected get PlotType() {

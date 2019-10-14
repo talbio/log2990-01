@@ -3,6 +3,7 @@ import {Tools} from '../../../data-structures/Tools';
 import {BrushGeneratorService} from '../brush-generator/brush-generator.service';
 import {ColorApplicatorService} from '../color-applicator/color-applicator.service';
 import { ColorService } from '../color/color.service';
+import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
 import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 import { MousePositionService } from './../../mouse-position/mouse-position.service';
@@ -27,6 +28,7 @@ export class ToolManagerService {
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private ellipseGenerator: EllipseGeneratorService,
+              private emojiGenerator: EmojiGeneratorService,
               private pencilGenerator: PencilGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
@@ -55,6 +57,9 @@ export class ToolManagerService {
       case Tools.Ellipse:
         this.ellipseGenerator.createEllipse(mouseEvent, canvas,
           this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
+        break;
+      case Tools.Stamp:
+        this.emojiGenerator.addEmoji(mouseEvent, canvas);
         break;
       default:
         return;
