@@ -43,7 +43,7 @@
             (click)="toggleAttributesAndSetTool(Tools.Ellipse)"
             matTooltip="Ellipse"
             matTooltipPosition="left">
-      <mat-icon>panorama_fish_eye</mat-icon></button>
+      <mat-icon svgIcon="ellipse"></mat-icon></button>
   </mat-list-item>
 
   <!-- Color Applicator button -->
@@ -71,6 +71,15 @@
               matTooltipPosition="left"
               (click)="openCreateDrawingDialog()">
         <mat-icon>add</mat-icon></button>
+    </mat-list-item>
+
+    <!-- Save drawing button -->
+    <mat-list-item>
+      <button mat-icon-button
+              matTooltip="Sauvegarder Dessin"
+              matTooltipPosition="left"
+              (click)="openSaveDrawingDialog()">
+        <mat-icon>save</mat-icon></button>
     </mat-list-item>
 
     <!-- Open drawing button -->

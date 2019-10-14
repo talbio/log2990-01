@@ -17,8 +17,12 @@ import {ToolManagerService} from '../../../services/tools/tool-manager/tool-mana
 import {CreateDrawingDialogComponent} from '../../modals/create-drawing-dialog/create-drawing-dialog.component';
 import { MousePositionService } from './../../../services/mouse-position/mouse-position.service';
 import { ModalManagerSingleton } from './../../modals/modal-manager-singleton';
+import {SaveDrawingDialogComponent} from '../../modals/save-drawing-dialog/save-drawing-dialog.component';
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
+const ELLIPSE_ICON_PATH = '../../../../assets/svg-icons/ellipse.svg';
+const ADD_TAG_ICON_PATH = '../../../../assets/svg-icons/add-tag.svg';
+const DELETE_TAG_ICON_PATH = '../../../../assets/svg-icons/delete-tag.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -108,7 +112,17 @@ export class LateralBarComponent implements OnInit {
     }
   }
 
-  protected openCreateDrawingDialog() {
+  protected openSaveDrawingDialog(): void {
+    const dialogRef = this.dialog.open(SaveDrawingDialogComponent, {
+      autoFocus: false,
+      data: { },
+    });
+    dialogRef.afterClosed().subscribe(() => {
+
+    });
+  }
+
+  protected openCreateDrawingDialog(): void {
     const dialogRef = this.dialog.open(CreateDrawingDialogComponent, {
       autoFocus: false,
       data: { drawingNonEmpty: this.toolManager.drawingNonEmpty() },
@@ -141,7 +155,13 @@ export class LateralBarComponent implements OnInit {
 
   private loadSVGIcons(): void {
     this.matIconRegistry.addSvgIcon('rectangle',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH), );
+      this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('ellipse',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(ELLIPSE_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('add-tag',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(ADD_TAG_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('delete-tag',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(DELETE_TAG_ICON_PATH));
   }
 
 }
