@@ -35,5 +35,4 @@ export class ToolsAttributesComponent {
   protected get Tools() {
     return Tools;
   }
-
 }

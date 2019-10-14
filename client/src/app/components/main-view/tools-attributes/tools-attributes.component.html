@@ -97,7 +97,7 @@
                 thumbLabel
                 tickInterval="1">
     </mat-slider>
-    <mat-label>Opacité de la grille : {{this.gridService.changeGridTransparency}}</mat-label>
+    <mat-label>Opacité de la grille : {{this.gridService._gridOpacity}}</mat-label>
     <mat-slider [(ngModel)]="this.gridService._gridOpacity"
                 min="0.1"
                 max="1"

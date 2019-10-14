@@ -24,16 +24,16 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
-              protected grid: GridTogglerService) {
+              protected gridService: GridTogglerService) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
     this.color = this.DEFAULT_WHITE_COLOR;
-    this.gridSize = this.grid.gridSize;
+    this.gridSize = this.gridService._gridSize;
   }
 
   ngOnInit(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
-    this.grid = this.renderer.selectRootElement('#backgroundGrid', true);
+    this.gridService._grid = this.renderer.selectRootElement('#backgroundGrid', true);
   }
 
   ngAfterViewInit(): void {
@@ -88,9 +88,5 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     return {
       'background-color': this.color,
     };
-  }
-
-  getGridSize() {
-    this.gridSize = this.grid.gridSize;
   }
 }
