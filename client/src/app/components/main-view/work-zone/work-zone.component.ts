@@ -34,6 +34,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
     this.gridService._grid = this.renderer.selectRootElement('#backgroundGrid', true);
+    this.gridService._gridPattern = this.renderer.selectRootElement('#backgroundGridPattern', true);
   }
 
   ngAfterViewInit(): void {
