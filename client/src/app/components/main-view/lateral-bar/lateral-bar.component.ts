@@ -100,14 +100,19 @@ export class LateralBarComponent implements OnInit {
   }
 
   protected toggleAttributesAndSetTool(tool: Tools) {
-    this.toolManager._activeTool = tool;
-    void this.attributesSideNav.toggle();
+    if (this.toolManager._activeTool === tool) {
+      void this.attributesSideNav.toggle();
+    } else {
+      this.toolManager._activeTool = tool;
+      void this.attributesSideNav.open();
+    }
   }
 
   protected openCreateDrawingDialog() {
     const dialogRef = this.dialog.open(CreateDrawingDialogComponent, {
       autoFocus: false,
       data: { drawingNonEmpty: this.toolManager.drawingNonEmpty() },
+      disableClose: true,
     });
     dialogRef.afterClosed().subscribe((formValues: CreateDrawingFormValues) => {
       if (formValues) {

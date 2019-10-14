@@ -3,7 +3,7 @@
 <mat-sidenav-container class="lateral-bar-container">
 
   <!-- Tools Side Nav -->
-  <mat-sidenav mode="side" opened id="tools-side-nav">
+  <mat-sidenav mode="side" opened id="tools-side-nav" disableClose="true">
     <app-lateral-bar (createDrawing)="onCreateDrawing($event)"
                      [attributesSideNav]="attributesSideNav">
     </app-lateral-bar>
