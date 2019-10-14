@@ -81,10 +81,11 @@ fdescribe('SaveDrawingDialogComponent', () => {
 
   it('submit should not close the dialog and notify user that his drawings has not been saved if the http post failed', async () => {
     component = fixture.componentInstance;
+    spyDialog.close.calls.reset();
     saveDrawingServiceSpy.httpPostDrawing.and.returnValue(Promise.resolve(false));
     await component.submit().then( () => {
       expect(notifierServiceSpy.notify).toHaveBeenCalledWith('error', HTTP_POST_DRAWING_FAILED_MSG);
-      expect(spyDialog.close).toHaveBeenCalled();
+      expect(spyDialog.close).not.toHaveBeenCalled();
     });
   });
 
