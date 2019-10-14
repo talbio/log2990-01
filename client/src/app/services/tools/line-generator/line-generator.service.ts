@@ -5,18 +5,14 @@ export class LineGeneratorService {
 
   private readonly DEFAULT_WIDTH = 5;
   private strokeWidth: number;
-  private currentLineNumber: number;
-  private currentLineBlockNumber: number;
-  private OFFSET_CANVAS_X: number;
-  private OFFSET_CANVAS_Y: number;
+  private currentPolylineNumber: number;
   private isMakingLine = false;
-  private currentLineBlockStartX: number;
-  private currentLineBlockStartY: number;
+  private currentPolyineStartX: number;
+  private currentPolyineStartY: number;
 
   constructor() {
     this.strokeWidth = this.DEFAULT_WIDTH;
-    this.currentLineNumber = 0;
-    this.currentLineBlockNumber = 0;
+    this.currentPolylineNumber = 0;
   }
 
   set _strokeWidth(width: number) {
@@ -32,96 +28,94 @@ export class LineGeneratorService {
   }
 
   // Initializes the path
-  makeLine(mouseEvent: MouseEvent, canvas: HTMLElement, primaryColor: string, currentChildPosition: number) {
+  makeLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, primaryColor: string, currentChildPosition: number) {
     if (!this.isMakingLine) {
       // Initiate the line
-      this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
-      this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
-
       canvas.innerHTML +=
-        `<g id=\'lineBlock${this.currentLineBlockNumber}\'
-        stroke-width=\'${this.strokeWidth}\'
-        stroke-linecap=\'round\'
-        stroke=\'${primaryColor}\'>
-          <line id=\'line${this.currentLineNumber}OfBlock${this.currentLineBlockNumber}\'
-          pointer-events="none"
-          x1=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-          y1=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-          x2=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-          y2=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'>
-          </line>
-        </g>`;
+      `<polyline id="line${this.currentPolylineNumber}"
+      stroke-width="${this.strokeWidth}"
+      stroke-linecap="round"
+      stroke="${primaryColor}"
+      pointer-events="none"
+      fill="none"
+      stroke-linejoin="round"
+      points="${canvasPosX},${canvasPosY}">
+      </polyline>`;
+
       this.isMakingLine = true;
-      this.currentLineBlockStartX = (mouseEvent.pageX - this.OFFSET_CANVAS_X);
-      this.currentLineBlockStartY = (mouseEvent.pageY - this.OFFSET_CANVAS_Y);
+      this.currentPolyineStartX = canvasPosX;
+      this.currentPolyineStartY = canvasPosY;
 
     } else {
-      this.addPointToCurrentLine(mouseEvent, canvas, currentChildPosition);
+      this.addPointToCurrentLine(canvasPosX, canvasPosY, canvas, currentChildPosition);
     }
   }
 
-  addPointToCurrentLine(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  addPointToCurrentLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
     if (!this.isMakingLine) {
       return;
     }
-    const currentLineBlock = canvas.children[currentChildPosition - 1];
-    const previousLine = currentLineBlock.children[this.currentLineNumber];
-    const previousX = previousLine.getAttribute('x2');
-    const previousY = previousLine.getAttribute('y2');
-    this.currentLineNumber += 1;
-    currentLineBlock.innerHTML +=
-    `<line id=\'line${this.currentLineNumber}OfBlock${this.currentLineBlockNumber}\'
-    pointer-events="none"
-    x1=\'${previousX}\'
-    y1=\'${previousY}\'
-    x2=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-    y2=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'>
-    </line>`;
+    const currentPolyLine = canvas.children[currentChildPosition - 1];
+    const newPoint = ` ${canvasPosX},${canvasPosY}`;
+    currentPolyLine.setAttribute('points', currentPolyLine.getAttribute('points') + newPoint);
   }
   updateLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
     if (this.isMakingLine) {
-      const currentLineBlock = canvas.children[currentChildPosition - 1];
-      const currentLine = currentLineBlock.children[this.currentLineNumber];
-      currentLine.setAttribute('x2', '' + canvasPosX);
-      currentLine.setAttribute('y2', '' + canvasPosY);
+      const currentPolyLine = canvas.children[currentChildPosition - 1];
+      let pointsStr = currentPolyLine.getAttribute('points') as string;
+      let indexLastPoint = pointsStr.lastIndexOf(' ');
+      if (indexLastPoint === -1) {
+        // There is only one point, add a second to enable the update
+        this.addPointToCurrentLine(canvasPosX, canvasPosY, canvas, currentChildPosition);
+        // There will be a splace since we added a point
+        pointsStr = currentPolyLine.getAttribute('points') as string;
+        indexLastPoint = pointsStr.lastIndexOf(' ');
+      }
+      const pointsWithoutLastStr = pointsStr.substring(0, indexLastPoint);
+      const newPoints = `${pointsWithoutLastStr} ${canvasPosX},${canvasPosY}`;
+      currentPolyLine.setAttribute('points', newPoints);
     }
   }
-  finishLineBlock() {
+  finishLineBlock(canvas: HTMLElement, currentChildPosition: number) {
     if (this.isMakingLine) {
-      this.currentLineBlockNumber += 1;
-      this.currentLineNumber = 0;
+      // delete the two last lines for double click
+      this.deleteLine(canvas, currentChildPosition);
+      this.deleteLine(canvas, currentChildPosition);
+      this.currentPolylineNumber += 1;
       this.isMakingLine = false;
     }
   }
-  finishAndLinkLineBlock(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  finishAndLinkLineBlock(canvas: HTMLElement, currentChildPosition: number) {
     if (this.isMakingLine) {
-      const currentLineBlock = canvas.children[currentChildPosition - 1];
-      currentLineBlock.innerHTML +=
-      `<line id=\'line${this.currentLineNumber}OfBlock${this.currentLineBlockNumber}\'
-      x1=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-      y1=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-      x2=\'${this.currentLineBlockStartX}\'
-      y2=\'${this.currentLineBlockStartY}\'>
-      </line>`;
-      this.currentLineBlockNumber += 1;
-      this.currentLineNumber = 0;
+      // delete the two last lines for double click
+      this.deleteLine(canvas, currentChildPosition);
+      this.deleteLine(canvas, currentChildPosition);
+      const currentPolyLine = canvas.children[currentChildPosition - 1];
+      const newPoint = ` ${this.currentPolyineStartX},${this.currentPolyineStartY}`;
+      currentPolyLine.setAttribute('points', currentPolyLine.getAttribute('points') + newPoint);
+      this.currentPolylineNumber += 1;
       this.isMakingLine = false;
     }
   }
   deleteLineBlock(canvas: HTMLElement, currentChildPosition: number) {
-    const currentLineBlock = canvas.children[currentChildPosition - 1];
-    currentLineBlock.remove();
-    this.isMakingLine = false;
-    this.currentLineNumber = 0;
-    this.currentLineBlockNumber -= 1;
+    if (this.isMakingLine) {
+      const currentPolyLine = canvas.children[currentChildPosition - 1];
+      currentPolyLine.remove();
+      this.currentPolylineNumber -= 1;
+      this.isMakingLine = false;
+    }
   }
   deleteLine(canvas: HTMLElement, currentChildPosition: number) {
-    if (this.currentLineNumber <= 0) {
-      return;
+    if (this.isMakingLine) {
+      const currentPolyLine = canvas.children[currentChildPosition - 1];
+      const pointsStr = currentPolyLine.getAttribute('points') as string;
+      const indexLastPoint = pointsStr.lastIndexOf(' ');
+      if (indexLastPoint === -1) {
+        // Only one point, user never moved after creating the line
+        return;
+      }
+      const pointsWithoutLastStr = pointsStr.substring(0, indexLastPoint);
+      currentPolyLine.setAttribute('points', pointsWithoutLastStr);
     }
-    const currentLineBlock = canvas.children[currentChildPosition - 1];
-    const previousLine = currentLineBlock.children[this.currentLineNumber];
-    previousLine.remove();
-    this.currentLineNumber -= 1;
   }
 }

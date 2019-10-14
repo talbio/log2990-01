@@ -32,12 +32,13 @@ export class LateralBarComponent implements OnInit {
   @Output() createDrawing = new EventEmitter<CreateDrawingFormValues>();
 
   protected appropriateClass: string;
-  private canvas:HTMLElement;
+  private canvas: HTMLElement;
 
   private readonly HEIGHT_THRESHOLD = 412;
   private readonly PENCIL_KEY = 'c';
   private readonly PAINTBRUSH_KEY = 'w';
   private readonly RECTANGLE_KEY = '1';
+  private readonly ELLIPSE_KEY = '2';
   private readonly COLOR_APPLICATOR_KEY = 'r';
   private readonly NEW_DRAWING_KEY = 'o';
   private readonly LINE_KEY = 'l';
@@ -69,7 +70,9 @@ export class LateralBarComponent implements OnInit {
         this.toolManager._activeTool = Tools.Brush;
       } else if (keyboardEvent.key === this.RECTANGLE_KEY) {
         this.toolManager._activeTool = Tools.Rectangle;
-      }  else if (keyboardEvent.key === this.LINE_KEY) {
+      } else if (keyboardEvent.key === this.ELLIPSE_KEY) {
+        this.toolManager._activeTool = Tools.Ellipse;
+      } else if (keyboardEvent.key === this.LINE_KEY) {
         this.toolManager._activeTool = Tools.Line;
       } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
         keyboardEvent.preventDefault();
@@ -97,14 +100,19 @@ export class LateralBarComponent implements OnInit {
   }
 
   protected toggleAttributesAndSetTool(tool: Tools) {
-    this.toolManager._activeTool = tool;
-    void this.attributesSideNav.toggle();
+    if (this.toolManager._activeTool === tool) {
+      void this.attributesSideNav.toggle();
+    } else {
+      this.toolManager._activeTool = tool;
+      void this.attributesSideNav.open();
+    }
   }
 
   protected openCreateDrawingDialog() {
     const dialogRef = this.dialog.open(CreateDrawingDialogComponent, {
       autoFocus: false,
       data: { drawingNonEmpty: this.toolManager.drawingNonEmpty() },
+      disableClose: true,
     });
     dialogRef.afterClosed().subscribe((formValues: CreateDrawingFormValues) => {
       if (formValues) {
