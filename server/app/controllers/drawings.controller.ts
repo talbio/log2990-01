@@ -22,13 +22,14 @@ export class DrawingsController {
         this.router.post('/', (req: Request, res: Response, next: NextFunction) => {
             const drawing: Drawing = req.body.data as Drawing;
             this.drawingsStockerService.storeDrawing(drawing) ?
-                res.sendStatus(this.HTTP_CODE_SUCCESS) : res.sendStatus(this.HTTP_CODE_BAD_REQUEST);
+                res.send({httpCode: this.HTTP_CODE_SUCCESS}) :
+                res.send({httpCode: this.HTTP_CODE_BAD_REQUEST});
         });
 
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
             const drawings: Drawing[] = [];
             await this.drawingsStockerService.getDrawings().then( (drawingsWithIds: DrawingWithId[]) => {
-                drawingsWithIds.forEach( (drawingWithId: DrawingWithId) => drawings.push(drawingWithId.drawing) );
+                drawingsWithIds.forEach( (drawingWithId: DrawingWithId) => drawings.push(drawingWithId.drawing));
             });
             res.send(drawings);
         });
