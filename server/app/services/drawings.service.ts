@@ -9,7 +9,7 @@ export interface DrawingWithId {
 }
 
 @injectable()
-export class DrawingsStockerService {
+export class DrawingsService {
 
     private currentId: number;
 

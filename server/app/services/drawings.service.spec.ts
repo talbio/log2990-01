@@ -2,10 +2,10 @@ import {expect} from 'chai';
 import * as fs from 'fs';
 import * as sinon from 'sinon';
 import {Drawing} from '../../../common/communication/Drawing';
-import {DrawingWithId} from './drawings-stocker.service';
+import {DrawingsStockerService, DrawingWithId} from './drawings-stocker.service';
 // import * as drawingStockerService from './drawings-stocker.service.ts';
 
-describe('drawings stocker service', () => {
+describe('DrawingsStockerService', () => {
 
     const sandbox = sinon.createSandbox();
     it('should be logged in the coverage', (done: Mocha.Done) => {
@@ -14,8 +14,7 @@ describe('drawings stocker service', () => {
         done();
     });
 
-    // tslint:disable-next-line:no-require-imports
-    const drawingsStocker = require('drawings-stocker.service');
+    const drawingsStocker = new DrawingsStockerService();
     it('getDrawings should retrieve all drawings in server', async () => {
         sandbox.stub(fs, 'readdir')
             .value( (path: string, callback: (err: NodeJS.ErrnoException | null, files: string[]) => void) => {
@@ -30,6 +29,6 @@ describe('drawings stocker service', () => {
                 ++i;
                 return JSON.stringify(drawingWithId);
             });
-        await drawingsStocker.getDrawings().then( (drawings: DrawingWithId[]) => expect(drawings.length).to.be('3'));
+        await drawingsStocker.getDrawings().then( (drawings: DrawingWithId[]) => expect(drawings).to.be.of.length(3));
     });
 });
