@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef} from '@angular/material/dialog';
+import { NotifierService } from 'angular-notifier';
 import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 
 @Component({
@@ -18,12 +19,16 @@ export class SaveDrawingDialogComponent {
   protected readonly DIALOG_TITLE = 'Sauvegarder votre dessin';
   protected readonly INVALID_NAME_ERR_MSG = 'nom invalide';
   protected readonly INVALID_TAG_ERR_MSG = `tag invalide`;
+  protected readonly HTTP_POST_DRAWING_FAILED_MSG = 'La sauvegarde du dessin a échoué! Veuillez réessayer.';
+  protected readonly HTTP_POST_DRAWING_SUCCEEDED_MSG = 'Votre dessin a bien été sauvegardé!';
 
+  protected httpPostDrawingFailed: boolean;
   protected formGroup: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
               private dialogRef: MatDialogRef<SaveDrawingDialogComponent>,
-              protected saveDrawing: SaveDrawingService) {
+              protected saveDrawing: SaveDrawingService,
+              private notifier: NotifierService) {
     this.formGroup = this.formBuilder.group({
       name: ['', [
         Validators.pattern(this.ALPHA_NUMERIC_AND_SPACES_REGEX),
@@ -31,6 +36,7 @@ export class SaveDrawingDialogComponent {
       ]],
       tags: this.formBuilder.array([]),
     });
+    this.httpPostDrawingFailed = false;
   }
 
   get isPostingToServer() {
@@ -60,10 +66,6 @@ export class SaveDrawingDialogComponent {
     this.tags.removeAt(index);
   }
 
-  empty(abstractControl: AbstractControl): boolean {
-    return abstractControl.value === '';
-  }
-
   close() {
     this.dialogRef.close();
   }
@@ -74,9 +76,24 @@ export class SaveDrawingDialogComponent {
       tags.push(tagFormControl.tag);
     }
     SaveDrawingDialogComponent.httpPosting = true;
-    await this.saveDrawing.httpPostDrawing(this.name.value, tags);
-    SaveDrawingDialogComponent.httpPosting = false;
-    this.dialogRef.close();
+    await this.saveDrawing.httpPostDrawing(this.name.value, tags)
+      .then(
+        (success: boolean) => {
+          if (success) {
+            this.notifier.notify('success', this.HTTP_POST_DRAWING_SUCCEEDED_MSG);
+            this.dialogRef.close();
+            return Promise.resolve();
+          } else {
+            return Promise.reject(success);
+          }
+        },
+        (error) => {
+          return Promise.reject(error);
+        })
+      .catch( (_) => {
+        this.notifier.notify('error', this.HTTP_POST_DRAWING_FAILED_MSG);
+      })
+      .finally(() => SaveDrawingDialogComponent.httpPosting = false);
   }
 
 }
