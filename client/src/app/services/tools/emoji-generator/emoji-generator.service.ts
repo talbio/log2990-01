@@ -12,10 +12,12 @@ export class EmojiGeneratorService {
     private OFFSET_CANVAS_X: number;
     private width = 20;
     private height = 20;
+    private angle: number;
 
     constructor() {
-        this.emoji = '';
-      }
+        this.emoji = '../../../../assets/svg-icons/happy.svg';
+        this.angle = 180;
+    }
 
     get _emoji() {
         return this.emoji;
@@ -25,12 +27,21 @@ export class EmojiGeneratorService {
         this.emoji = emoji;
     }
 
+    get _rotationAngle() {
+        return this.angle;
+    }
+
+    set _rotationAngle(angle: number) {
+        this.angle = angle;
+    }
+
     addEmoji(mouseEvent: MouseEvent, canvas: HTMLElement) {
         if (this.emoji !== '') {
             this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
             canvas.innerHTML +=
                 `<image x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X - this.width / 2)}" y="${(mouseEvent.pageY) - this.height / 2}"
-        xlink:href="${this.emoji}"' width="${this.width}" width="${this.height}" />
+        xlink:href="${this.emoji}"' width="${this.width}" height="${this.height}"
+        transform="rotate(${this.angle} ${mouseEvent.pageX - this.OFFSET_CANVAS_X } ${(mouseEvent.pageY)})" />
         `;
         }
     }
