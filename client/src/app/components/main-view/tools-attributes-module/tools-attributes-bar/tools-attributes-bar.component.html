@@ -1,0 +1,25 @@
+<mat-card-content [ngSwitch]="toolManager._activeTool">
+
+  <!-- Pencil Attributes -->
+  <app-pencil-tools *ngSwitchCase="Tools.Pencil"></app-pencil-tools>
+
+  <!-- Rectangle Attributes -->
+  <app-rectangle-tools *ngSwitchCase="Tools.Rectangle"></app-rectangle-tools>
+
+  <!-- Line Attributes -->
+  <app-line-tools *ngSwitchCase="Tools.Line"></app-line-tools>
+
+  <!-- Ellipse Attributes -->
+  <app-ellipse-tools *ngSwitchCase="Tools.Ellipse"></app-ellipse-tools>
+
+   <!-- Emoji Attributes -->
+   <app-emoji-tools *ngSwitchCase="Tools.Stamp"></app-emoji-tools>
+
+  <!-- Paintbrush Attributes -->
+  <app-brush-tools *ngSwitchCase="Tools.Brush"></app-brush-tools>
+
+  <!-- Color Applicator Attributes -->
+  <app-color-applicator-tools *ngSwitchCase="Tools.ColorApplicator"></app-color-applicator-tools>
+</mat-card-content>
+
+
