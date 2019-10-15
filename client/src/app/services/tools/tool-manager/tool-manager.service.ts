@@ -3,6 +3,7 @@ import { Tools } from '../../../data-structures/Tools';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
 import { ColorService } from '../color/color.service';
+import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
@@ -28,6 +29,7 @@ export class ToolManagerService {
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private ellipseGenerator: EllipseGeneratorService,
+              private emojiGenerator: EmojiGeneratorService,
               private pencilGenerator: PencilGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
@@ -60,6 +62,9 @@ export class ToolManagerService {
       case Tools.Ellipse:
         this.ellipseGenerator.createEllipse(mouseEvent, canvas,
           this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
+        break;
+      case Tools.Stamp:
+        this.emojiGenerator.addEmoji(mouseEvent, canvas);
         break;
       default:
         return;
@@ -142,7 +147,8 @@ export class ToolManagerService {
   createElementOnClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this._activeTool) {
       case Tools.Line:
-        this.lineGenerator.makeLine(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.numberOfElements);
+        this.lineGenerator.makeLine(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, canvas, this.colorService.getPrimaryColor(), this.numberOfElements);
         break;
       default:
         return;
@@ -163,9 +169,9 @@ export class ToolManagerService {
   finishElementDoubleClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
     if (this._activeTool === Tools.Line) {
       if (mouseEvent.shiftKey) {
-        this.lineGenerator.finishAndLinkLineBlock(mouseEvent, canvas, this.numberOfElements);
+        this.lineGenerator.finishAndLinkLineBlock(canvas, this.numberOfElements);
       } else {
-        this.lineGenerator.finishLineBlock();
+        this.lineGenerator.finishLineBlock(canvas, this.numberOfElements);
       }
     }
   }
@@ -307,5 +313,9 @@ export class ToolManagerService {
       default:
         break;
     }
+  }
+
+  rotateEmoji(mouseEvent: WheelEvent): void {
+    this.emojiGenerator.rotateEmoji(mouseEvent);
   }
 }

@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
 import { Colors } from 'src/app/data-structures/Colors';
 import { Tools } from 'src/app/data-structures/Tools';
+import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
@@ -11,7 +12,7 @@ import { ToolManagerService } from '../../../services/tools/tool-manager/tool-ma
 export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   private readonly DEFAULT_WIDTH = 1080;
-  private readonly DEFAULT_HEIGHT = 720;
+  private readonly DEFAULT_HEIGHT = 500;
   private readonly SHIFT_KEY = 'Shift';
 
   @Input() width: number;
@@ -21,7 +22,8 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   private canvasElement: HTMLElement;
 
   constructor(private toolManager: ToolManagerService,
-              private renderer: Renderer2) {
+              private renderer: Renderer2,
+              private saveDrawing: SaveDrawingService) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
     this.color = Colors.WHITE;
@@ -29,6 +31,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+    this.saveDrawing._renderer = this.renderer;
   }
 
   ngAfterViewInit(): void {
@@ -98,7 +101,11 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.toolManager.finishElementDoubleClick(mouseEvent, this.canvasElement);
   }
 
-  protected setBackGroundColor(): { 'background-color': string } {
+  onMouseWheel(mouseEvent: WheelEvent) {
+    this.toolManager.rotateEmoji(mouseEvent);
+  }
+
+  protected setBackGroundColor(): {'background-color': string} {
     return {
       'background-color': this.color,
     };
