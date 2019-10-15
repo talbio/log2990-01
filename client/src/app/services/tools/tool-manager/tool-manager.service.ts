@@ -16,6 +16,7 @@ export class ToolManagerService {
   private numberOfElements = 1;
   private renderer: Renderer2;
   private canvasElement: HTMLElement;
+  private defsElement: SVGElement;
   private activeTool: Tools;
 
   set _activeTool(tool: Tools) {
@@ -134,8 +135,10 @@ export class ToolManagerService {
   createElementOnClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this._activeTool) {
       case Tools.Line:
+        this.defsElement = this.renderer.selectRootElement('#definitions', true);
         this.lineGenerator.makeLine(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, canvas, this.colorService.getPrimaryColor(), this.numberOfElements);
+          this.mousePosition._canvasMousePositionY, canvas, this.colorService.getPrimaryColor(),
+           this.numberOfElements, this.defsElement, this.renderer);
         break;
       default:
         return;

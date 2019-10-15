@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Renderer2 } from '@angular/core';
 
 @Injectable()
 export class LineGeneratorService {
 
   private readonly DEFAULT_WIDTH = 5;
+  private readonly DEFAULT_DIAMETER = 5;
   private strokeWidth: number;
+  private markerDiameter: number;
   private currentPolylineNumber: number;
   private isMakingLine = false;
   private currentPolyineStartX: number;
@@ -13,6 +15,7 @@ export class LineGeneratorService {
   constructor() {
     this.strokeWidth = this.DEFAULT_WIDTH;
     this.currentPolylineNumber = 0;
+    this.markerDiameter = this.DEFAULT_DIAMETER;
   }
 
   set _strokeWidth(width: number) {
@@ -23,12 +26,21 @@ export class LineGeneratorService {
     return this.strokeWidth;
   }
 
+  set _markerDiameter(diameter: number) {
+    this.markerDiameter = diameter;
+  }
+
+  get _markerDiameter(): number {
+    return this.markerDiameter;
+  }
+
   get _isMakingLine(): boolean {
     return this.isMakingLine;
   }
 
   // Initializes the path
-  makeLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, primaryColor: string, currentChildPosition: number) {
+  makeLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, primaryColor: string, currentChildPosition: number,
+           defsElement: SVGElement, renderer: Renderer2) {
     if (!this.isMakingLine) {
       // Initiate the line
       canvas.innerHTML +=
@@ -41,6 +53,8 @@ export class LineGeneratorService {
       stroke-linejoin="round"
       points="${canvasPosX},${canvasPosY}">
       </polyline>`;
+
+      this.createMarkers(primaryColor, renderer);
 
       this.isMakingLine = true;
       this.currentPolyineStartX = canvasPosX;
@@ -117,5 +131,46 @@ export class LineGeneratorService {
       const pointsWithoutLastStr = pointsStr.substring(0, indexLastPoint);
       currentPolyLine.setAttribute('points', pointsWithoutLastStr);
     }
+  }
+
+  // This function creates a marker tag with the color and the id of the polyline and returns a string for the URL
+  createMarkers(color: string, renderer: Renderer2): SVGElement {
+    const marker = renderer.createElement('marker');
+    const circle = renderer.createElement('circle');
+
+    renderer.setAttribute(circle, 'fill', color);
+    renderer.setAttribute(circle, 'r', this.markerDiameter as unknown as string);
+    renderer.setAttribute(circle, 'cy', '5');
+    renderer.setAttribute(circle, 'cx', '5');
+    renderer.setProperty(marker, 'id', `line${this.currentPolylineNumber}marker`);
+
+    renderer.appendChild(marker, circle);
+    const defs = renderer.selectRootElement('#definitions', true);
+    const canvas = renderer.selectRootElement('#canvas', true);
+    renderer.appendChild(defs, marker);
+    this.addMarkersToNewLine(marker, canvas);
+    return marker;
+  }
+
+  addMarkersToNewLine(markers: SVGElement, canvas: HTMLElement) {
+    const newLine = canvas.children[canvas.children.length - 1];
+    console.log('new line: \n' + newLine);
+    const markersAddress = `url(#${markers.id})`;
+    newLine.setAttribute('marker-start', markersAddress);
+    newLine.setAttribute('marker-mid', markersAddress);
+    newLine.setAttribute('marker-end', markersAddress);
+  }
+  // this function returns the markers element corresponding to a specific polyline so it can be modified
+  findMarkerFromPolyline(polyline: SVGElement, defsElement: SVGElement): SVGElement {
+    for (const child of [].slice.call(defsElement.children)) {
+      const childCast = child as SVGElement;
+      if (childCast.id === polyline.id + 'marker') {
+        console.log(childCast);
+        return childCast;
+      }
+    }
+    // No marker was found for corresponding polyline, this should not happen as the marker is created with the polyline
+    const returnEmpty = new SVGElement();
+    return returnEmpty;
   }
 }
