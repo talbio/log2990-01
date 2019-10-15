@@ -6,10 +6,18 @@ import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NotifierModule, NotifierOptions, NotifierService} from 'angular-notifier';
-import { ColorToolComponent } from './components/main-view/color-tool/color-tool.component';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
-import { LateralBarComponent } from './components/main-view/lateral-bar/lateral-bar.component';
-import { ToolsAttributesComponent } from './components/main-view/tools-attributes/tools-attributes.component';
+import { AbstractDialogButtonComponent } from './components/main-view/lateral-bar-module/abstract-dialog-button/abstract-dialog-button.component';
+import { AbstractToolButtonComponent } from './components/main-view/lateral-bar-module/abstract-tool-button/abstract-tool-button.component';
+import { ColorToolButtonsComponent } from './components/main-view/lateral-bar-module/color-tool-buttons/color-tool-buttons.component';
+import { LateralBarComponent } from './components/main-view/lateral-bar-module/lateral-bar/lateral-bar.component';
+import { ToolsAttributesBarComponent } from './components/main-view/tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
+import { BrushToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/brush/brush-tools.component';
+import { ColorApplicatorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/color-applicator/color-applicator-tools.component';
+import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
+import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
+import { PencilToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pencil/pencil-tools.component';
+import { RectangleToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/rectangle/rectangle-tools.component';
 import { WorkZoneComponent } from './components/main-view/work-zone/work-zone.component';
 import { ColorPaletteComponent } from './components/modals/color-picker-module/color-palette/color-palette.component';
 import { ColorPickerDialogComponent } from './components/modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
@@ -20,8 +28,8 @@ import { GiveUpChangesDialogComponent } from './components/modals/give-up-change
 import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
 import {DemoMaterialModule} from './material.module';
-import { MousePositionService } from './services/mouse-position/mouse-position.service';
 import {SaveDrawingService} from './services/back-end/save-drawing/save-drawing.service';
+import { MousePositionService } from './services/mouse-position/mouse-position.service';
 import { StorageService } from './services/storage/storage.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
 import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
@@ -36,13 +44,13 @@ const customNotifierOptions: NotifierOptions = {
   position: {
     horizontal: {
       position: 'right',
-      distance: 12
+      distance: 12,
     },
     vertical: {
       position: 'bottom',
       distance: 12,
-      gap: 10
-    }
+      gap: 10,
+    },
   },
   theme: 'material',
   behaviour: {
@@ -50,27 +58,27 @@ const customNotifierOptions: NotifierOptions = {
     onClick: 'hide',
     onMouseover: 'pauseAutoHide',
     showDismissButton: true,
-    stacking: 4
+    stacking: 4,
   },
   animations: {
     enabled: true,
     show: {
       preset: 'slide',
       speed: 300,
-      easing: 'ease'
+      easing: 'ease',
     },
     hide: {
       preset: 'fade',
       speed: 300,
       easing: 'ease',
-      offset: 50
+      offset: 50,
     },
     shift: {
       speed: 300,
-      easing: 'ease'
+      easing: 'ease',
     },
-    overlap: 150
-  }
+    overlap: 150,
+  },
 };
 
 @NgModule({
@@ -80,15 +88,23 @@ const customNotifierOptions: NotifierOptions = {
     WorkZoneComponent,
     DrawingViewComponent,
     WelcomeModalComponent,
-    ColorToolComponent,
+    ColorToolButtonsComponent,
     ColorPaletteComponent,
     ColorSliderComponent,
     GiveUpChangesDialogComponent,
-    ToolsAttributesComponent,
+    ToolsAttributesBarComponent,
     LateralBarComponent,
     ColorPickerDialogComponent,
     LastTenColorsComponent,
     SaveDrawingDialogComponent,
+    AbstractToolButtonComponent,
+    AbstractDialogButtonComponent,
+    PencilToolsComponent,
+    RectangleToolsComponent,
+    LineToolsComponent,
+    EllipseToolsComponent,
+    BrushToolsComponent,
+    ColorApplicatorToolsComponent,
   ],
   imports: [
     BrowserModule,
@@ -118,12 +134,18 @@ const customNotifierOptions: NotifierOptions = {
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [
-    ColorToolComponent,
+    ColorToolButtonsComponent,
     CreateDrawingDialogComponent,
     GiveUpChangesDialogComponent,
-    ToolsAttributesComponent,
+    ToolsAttributesBarComponent,
     ColorPickerDialogComponent,
     SaveDrawingDialogComponent,
+    PencilToolsComponent,
+    RectangleToolsComponent,
+    LineToolsComponent,
+    EllipseToolsComponent,
+    BrushToolsComponent,
+    ColorApplicatorToolsComponent,
   ],
 })
 export class AppModule {
