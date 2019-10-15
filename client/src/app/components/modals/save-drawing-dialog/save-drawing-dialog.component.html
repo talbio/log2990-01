@@ -5,7 +5,6 @@
 </svg>
 
 <mat-dialog-content [formGroup]="formGroup">
-
   <form [formGroup]="formGroup">
     <ul>
 
@@ -14,7 +13,7 @@
           <input matInput
                  placeholder="Nom du dessin"
                  formControlName="name">
-          <mat-error *ngIf="empty(name) && name.dirty">{{NON_EMPTY_NAME_ERR_MSG}}</mat-error>
+          <mat-error *ngIf="name.invalid && name.dirty">{{INVALID_NAME_ERR_MSG}}</mat-error>
         </mat-form-field>
       </li>
 
@@ -25,7 +24,7 @@
               <input matInput
                      placeholder="Tag #{{i}} (optionnel)"
                      formControlName="tag">
-              <mat-error *ngIf="tag.invalid && tag.dirty">{{TAGS_INVALID_ERR_MSG}}</mat-error>
+              <mat-error *ngIf="tag.invalid && tag.dirty">{{INVALID_TAG_ERR_MSG}}</mat-error>
               <button mat-icon-button
                       matSuffix
                       matTooltip="supprimer le tag"
@@ -44,7 +43,6 @@
 
     </ul>
   </form>
-
 </mat-dialog-content>
 
 <mat-dialog-actions>

@@ -1,9 +1,8 @@
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Injectable, Renderer2} from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {Drawing} from '../../../../../../common/communication/Drawing';
-import {ToolManagerService} from '../../tools/tool-manager/tool-manager.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,33 +15,31 @@ export class SaveDrawingService {
     }),
   };
 
+  private readonly HTTP_CODE_SUCCESS = 200;
   private readonly BASE_URL: string = 'http://localhost:3000/api/drawings/';
 
   private svgCanvas: any;
   private renderer: Renderer2;
 
-  constructor(private toolManager: ToolManagerService,
-              private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient) {}
 
   set _renderer(renderer: Renderer2) {
     this.renderer = renderer;
     this.svgCanvas = this.renderer.selectRootElement('#canvas', true);
   }
 
-  httpPostDrawing(name: string, tags: string[]): Promise<void> {
+  httpPostDrawing(name: string, tags: string[]): Promise<boolean> {
     const svgElements: string = this.getSvgElements();
     const miniature: string = this.getMiniature();
     const drawing: Drawing = {name, svgElements, tags, miniature};
-    return this.httpClient.post<{data: Drawing}>(this.BASE_URL, {data: drawing}, this.HTTP_OPTIONS).toPromise().then(() => {
-      this.toolManager.deleteAllDrawings();
-    }).catch( (success: Response) => {
-      if (success.status === 400) {
-        console.error('httpPostDrawing failed: name was not valid');
-      }
-      this.toolManager.deleteAllDrawings();
-    }).catch((err: HttpErrorResponse) => {
-      console.error('httpPostDrawing failed: ', err.error);
-    });
+    return this.httpClient.post<{httpCode: number}>(this.BASE_URL, {data: drawing}, this.HTTP_OPTIONS)
+      .toPromise()
+      .then( (response: {httpCode: number}) => {
+        return response.httpCode === this.HTTP_CODE_SUCCESS;
+      })
+      .catch((err: HttpErrorResponse) => {
+        return this.handleError(err);
+      });
   }
 
   httpGetDrawing(): Observable<Drawing[]> {
@@ -50,13 +47,6 @@ export class SaveDrawingService {
     return this.httpClient.get<Drawing[]>(this.BASE_URL).pipe(
       catchError(this.handleError<Drawing[]>('httpGetDrawing')),
     );
-  }
-
-  private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
-
-    return (error: Error): Observable<T> => {
-      return of(result as T);
-    };
   }
 
   getWidth(): number {
@@ -77,4 +67,19 @@ export class SaveDrawingService {
     const miniature = this.renderer.selectRootElement('#min', true);
     return miniature.outerHTML as string;
   }
+
+  private handleError(error: HttpErrorResponse): Promise<never> {
+    if (error.error instanceof ErrorEvent) {
+      console.error('An error occurred:', error.error.message);
+      return throwError(
+        'A client side network error occurred').toPromise();
+    } else {
+      console.error(
+        `Backend returned code ${error.status}, ` +
+        `body was: ${error.error}`);
+      return throwError(
+        'The backend returned an unsuccessful response code').toPromise();
+    }
+  }
+
 }

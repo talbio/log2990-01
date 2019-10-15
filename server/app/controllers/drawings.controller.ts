@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response, Router} from 'express';
 import {inject, injectable} from 'inversify';
 import {Drawing} from '../../../common/communication/Drawing';
-import {DrawingsStockerService, DrawingWithId} from '../services/drawings-stocker.service';
+import {DrawingsService, DrawingWithId} from '../services/drawings.service';
 import Types from '../types';
 
 @injectable()
@@ -12,7 +12,7 @@ export class DrawingsController {
 
     router: Router;
 
-    constructor(@inject(Types.DrawingsStockerService) private drawingsStockerService: DrawingsStockerService) {
+    constructor(@inject(Types.DrawingsService) private drawingsService: DrawingsService) {
         this.configureRouter();
     }
 
@@ -21,14 +21,15 @@ export class DrawingsController {
 
         this.router.post('/', (req: Request, res: Response, next: NextFunction) => {
             const drawing: Drawing = req.body.data as Drawing;
-            this.drawingsStockerService.storeDrawing(drawing) ?
-                res.sendStatus(this.HTTP_CODE_SUCCESS) : res.sendStatus(this.HTTP_CODE_BAD_REQUEST);
+            this.drawingsService.storeDrawing(drawing) ?
+                res.send({httpCode: this.HTTP_CODE_SUCCESS}) :
+                res.send({httpCode: this.HTTP_CODE_BAD_REQUEST});
         });
 
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
             const drawings: Drawing[] = [];
-            await this.drawingsStockerService.getDrawings().then( (drawingsWithIds: DrawingWithId[]) => {
-                drawingsWithIds.forEach( (drawingWithId: DrawingWithId) => drawings.push(drawingWithId.drawing) );
+            await this.drawingsService.getDrawings().then( (drawingsWithIds: DrawingWithId[]) => {
+                drawingsWithIds.forEach( (drawingWithId: DrawingWithId) => drawings.push(drawingWithId.drawing));
             });
             res.send(drawings);
         });
