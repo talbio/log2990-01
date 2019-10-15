@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {GiveUpChangesDialogComponent} from '../give-up-changes-dialog/give-up-changes-dialog.component';
+import { ModalManagerSingleton } from '../modal-manager-singleton';
 
 export interface DialogData {
   drawingNonEmpty: boolean;
@@ -24,6 +25,7 @@ export class CreateDrawingDialogComponent implements OnInit {
   private canvasHeight: number;
   private canvasWidth: number;
   private workZoneSize: DOMRect;
+  private modalManager = ModalManagerSingleton.getInstance();
 
   constructor(private dialogRef: MatDialogRef<CreateDrawingDialogComponent>,
               private formBuilder: FormBuilder,
@@ -31,6 +33,7 @@ export class CreateDrawingDialogComponent implements OnInit {
               private renderer: Renderer2,
               private toolManager: ToolManagerService,
               @Inject(MAT_DIALOG_DATA) private data: DialogData) {
+                this.modalManager._isModalActive = true;
   }
 
   ngOnInit(): void {
@@ -83,29 +86,32 @@ export class CreateDrawingDialogComponent implements OnInit {
     return this.COLOR_HAS_TO_BE_A_HEX_VALUE;
   }
 
-  protected clear(formControlName: AbstractControl): void {
+  clear(formControlName: AbstractControl): void {
     formControlName.setValue('');
   }
 
   @HostListener('window:resize', ['$event'])
-  protected onResize(): void {
+  onResize(): void {
     this.updateWidthAndHeight();
   }
 
-  protected close(): void {
+  close(): void {
     this.dialogRef.close();
+    this.modalManager._isModalActive = false;
   }
 
-  protected async onSubmit(): Promise<void> {
+  async submit(): Promise<void> {
     if (this.data.drawingNonEmpty) {
       await this.openConfirmGiveUpChangesDialog().then((confirm) => {
         if (confirm) {
           this.toolManager.deleteAllDrawings();
           this.dialogRef.close(this.drawingForm.value);
+          this.modalManager._isModalActive = false;
         }
       });
     } else {
       this.dialogRef.close(this.drawingForm.value);
+      this.modalManager._isModalActive = false;
     }
   }
 

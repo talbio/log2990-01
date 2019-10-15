@@ -1,5 +1,5 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
-import { Drawing } from '../../../../../../common/communication/Drawing';
+import { Tools } from 'src/app/data-structures/Tools';
 import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
@@ -12,7 +12,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   private readonly DEFAULT_WIDTH = 1080;
   private readonly DEFAULT_HEIGHT = 720;
-  private readonly SHIFT_KEY = 'SHIFT';
+  private readonly SHIFT_KEY = 'Shift';
   private readonly DEFAULT_WHITE_COLOR = '#FFFFFF';
 
   @Input() width: number;
@@ -25,7 +25,6 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
               private saveDrawing: SaveDrawingService) {
-
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
     this.color = this.DEFAULT_WHITE_COLOR;
@@ -70,14 +69,23 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.toolManager.finishElement();
   }
 
-  onLeftClick(mouseEvent: Event) {
-    this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
+  onLeftClick(mouseEvent: MouseEvent) {
+    if (this.toolManager._activeTool === Tools.ColorApplicator) {
+      this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
+    } else if (this.toolManager._activeTool === Tools.Line) {
+      this.toolManager.createElementOnClick(mouseEvent, this.canvasElement);
+    }
+    return true;
   }
 
   onRightClick(mouseEvent: Event) {
     this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
     // deactivate context menu on right click
     return false;
+  }
+
+  onDoubleClick(mouseEvent: MouseEvent) {
+    this.toolManager.finishElementDoubleClick(mouseEvent, this.canvasElement);
   }
 
   protected setBackGroundColor(): {'background-color': string} {

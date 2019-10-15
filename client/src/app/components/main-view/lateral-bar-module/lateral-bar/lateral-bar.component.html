@@ -1,0 +1,28 @@
+<mat-list>
+
+  <!-- Tools Buttons -->
+  <mat-list-item *ngFor="let toolButtonProperties of toolsButtonsProperties">
+    <app-abstract-tool-button
+      [attributesSideNav]="attributesSideNav"
+      [toolProperties]="toolButtonProperties">
+    </app-abstract-tool-button>
+  </mat-list-item>
+
+
+  <!-- primary & secondary colors -->
+  <br />
+  <br />
+  <mat-list-item>
+        <app-color-tool-buttons></app-color-tool-buttons>
+  </mat-list-item>
+
+  <!-- bottom elements -->
+  <div [ngClass]="appropriateClass">
+    <mat-list-item *ngFor="let dialogButtonProperties of dialogsButtonsProperties">
+      <app-abstract-dialog-button
+        [dialogProperties]="dialogButtonProperties">
+      </app-abstract-dialog-button>
+    </mat-list-item>
+  </div>
+
+</mat-list>

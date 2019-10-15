@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { ModalManagerSingleton } from './../modal-manager-singleton';
 
 @Component({
   selector: 'app-welcome-modal',
@@ -13,13 +14,20 @@ export class WelcomeModalComponent {
   protected readonly doNotShowAgain: string = 'Ne plus afficher ce message';
   protected readonly close: string = 'fermer';
   show: boolean;
+  private modalManager = ModalManagerSingleton.getInstance();
 
   constructor(private storage: StorageService) {
     this.show = !this.storage.getWelcomeModalStatus();
+    this.modalManager._isModalActive = true;
   }
 
   onChange(event: Event): void {
     this.storage.setWelcomeModalStatus(event.returnValue);
+  }
+
+  closeDialog(): void {
+    this.show = false;
+    this.modalManager._isModalActive = false;
   }
 
 }

@@ -6,11 +6,11 @@ import { DemoMaterialModule } from 'src/app/material.module';
 import { BrushGeneratorService } from 'src/app/services/tools/brush-generator/brush-generator.service';
 import { PencilGeneratorService } from 'src/app/services/tools/pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from 'src/app/services/tools/rectangle-generator/rectangle-generator.service';
-import { ToolsAttributesComponent } from './tools-attributes.component';
+import { ToolsAttributesBarComponent } from './tools-attributes-bar.component';
 
-describe('ToolsAttributeComponent', () => {
-  let component: ToolsAttributesComponent;
-  let fixture: ComponentFixture<ToolsAttributesComponent>;
+describe('ToolsAttributesBarComponent', () => {
+  let component: ToolsAttributesBarComponent;
+  let fixture: ComponentFixture<ToolsAttributesBarComponent>;
   // tslint:disable-next-line:prefer-const
   let pencilGeneratorServiceStub: Partial<PencilGeneratorService>;
   // tslint:disable-next-line:prefer-const
@@ -20,7 +20,7 @@ describe('ToolsAttributeComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ToolsAttributesComponent ],
+      declarations: [ ToolsAttributesBarComponent ],
       imports: [DemoMaterialModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule,  ],
       providers:    [
         {provide: PencilGeneratorService, useValue: pencilGeneratorServiceStub },
@@ -32,7 +32,7 @@ describe('ToolsAttributeComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ToolsAttributesComponent);
+    fixture = TestBed.createComponent(ToolsAttributesBarComponent);
     component = fixture.componentInstance;
      // UserService actually injected into the component
     pencilGeneratorServiceStub = fixture.debugElement.injector.get(PencilGeneratorService);

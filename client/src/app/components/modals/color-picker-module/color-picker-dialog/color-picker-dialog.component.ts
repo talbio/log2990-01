@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { ColorService } from 'src/app/services/tools/color/color.service';
+import { ModalManagerSingleton } from './../../modal-manager-singleton';
 
 export interface DialogData {
   color: string;
@@ -17,11 +18,15 @@ export class ColorPickerDialogComponent {
   private opacity: number;
   private selectedColor: string;
   private hue: string;
+  private modalManager = ModalManagerSingleton.getInstance();
 
   constructor(private dialogRef: MatDialogRef<ColorPickerDialogComponent>, protected colorService: ColorService,
-              @Inject(MAT_DIALOG_DATA) private data: DialogData) { }
+              @Inject(MAT_DIALOG_DATA) private data: DialogData) {
+                this.modalManager._isModalActive = true;
+               }
 
   close(): void {
+    this.modalManager._isModalActive = false;
     this.dialogRef.close();
   }
 
@@ -65,6 +70,7 @@ export class ColorPickerDialogComponent {
     }
     const modifiedColor = this.modifyColorOpacity();
     this.dialogRef.close(modifiedColor);
+    this.modalManager._isModalActive = false;
   }
 
   modifyColorOpacity(): string {
