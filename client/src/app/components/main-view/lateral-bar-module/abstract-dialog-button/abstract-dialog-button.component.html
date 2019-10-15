@@ -1,0 +1,8 @@
+<button mat-icon-button
+          matTooltip="{{dialogProperties.matToolTip}}"
+          matTooltipPosition="left"
+          (click)="dialogProperties.openDialog()">
+  <mat-icon *ngIf="!dialogProperties.isSvgIcon">{{dialogProperties.icon}}</mat-icon>
+  <mat-icon *ngIf="dialogProperties.isSvgIcon" svgIcon="{{dialogProperties.icon}}" ></mat-icon>
+</button>
+
