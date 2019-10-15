@@ -1,6 +1,6 @@
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Injectable, Renderer2} from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {Drawing} from '../../../../../../common/communication/Drawing';
 
@@ -45,8 +45,15 @@ export class SaveDrawingService {
   httpGetDrawing(): Observable<Drawing[]> {
 
     return this.httpClient.get<Drawing[]>(this.BASE_URL).pipe(
-      catchError(this.handleError<Drawing[]>('httpGetDrawing')),
+      catchError(this.handleErrorGet<Drawing[]>('httpGetDrawing')),
     );
+  }
+
+  private handleErrorGet<T> (operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+    console.error(error);
+    return of(result as T);
+    };
   }
 
   getWidth(): number {

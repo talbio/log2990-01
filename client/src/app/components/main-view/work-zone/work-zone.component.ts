@@ -1,5 +1,6 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import { Tools } from 'src/app/data-structures/Tools';
+import { Drawing } from '../../../../../../common/communication/Drawing';
 import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
