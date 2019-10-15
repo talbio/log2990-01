@@ -1,4 +1,9 @@
 import { Injectable } from '@angular/core';
+const MIN_ROTATION_STEP = 1;
+const MAX_ROTATION_STEP = 15;
+const MIN_ROTATION_ANGLE = 0;
+const MAX_ROTATION_ANGLE = 360;
+const DEFAULT_SCALING_FACTOR = 1;
 
 @Injectable()
 export class EmojiGeneratorService {
@@ -14,11 +19,13 @@ export class EmojiGeneratorService {
     private height = 100;
     private angle: number;
     private scalingFactor: number;
+    private rotationStep: number;
 
     constructor() {
         this.emoji = '../../../../assets/svg-icons/happy.svg';
-        this.angle = 0;
-        this.scalingFactor = 2;
+        this.angle = MIN_ROTATION_ANGLE;
+        this.scalingFactor = DEFAULT_SCALING_FACTOR;
+        this.rotationStep = MAX_ROTATION_STEP;
     }
 
     get _emoji() {
@@ -45,11 +52,19 @@ export class EmojiGeneratorService {
         this.scalingFactor = factor;
     }
 
+    get _rotationStep() {
+        return this.rotationStep;
+    }
+
+    set _rotationStep(step: number) {
+        this.rotationStep = step;
+    }
+
     addEmoji(mouseEvent: MouseEvent, canvas: HTMLElement) {
         if (this.emoji !== '') {
             this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
             canvas.innerHTML +=
-                `<image x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X - (this.width * this.scalingFactor / 2))}" 
+                `<image x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X - (this.width * this.scalingFactor / 2))}"
                 y="${(mouseEvent.pageY) - (this.height * this.scalingFactor / 2)}"
         xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
         transform="rotate(${this.angle} ${mouseEvent.pageX - this.OFFSET_CANVAS_X} ${(mouseEvent.pageY)})"
@@ -59,10 +74,20 @@ export class EmojiGeneratorService {
     }
 
     rotateEmoji(mouseEvent: WheelEvent): void {
-        if (mouseEvent.deltaY < 0) {
-            this._rotationAngle += 10;
-        } else {this._rotationAngle -= 10; }
-        if (this._rotationAngle > 360) {this._rotationAngle = 360; }
-        if (this._rotationAngle < 0) {this._rotationAngle = 0; }
+        if (mouseEvent.deltaY < MIN_ROTATION_ANGLE) {
+            this.angle  += this.rotationStep;
+        } else {this.angle  -= this.rotationStep; }
+        if (this.angle > MAX_ROTATION_ANGLE) {this.angle  = MAX_ROTATION_ANGLE; }
+        if (this.angle  < MIN_ROTATION_ANGLE) {this.angle  = MIN_ROTATION_ANGLE; }
+
     }
+
+    lowerRotationStep(): void {
+        this.rotationStep = MIN_ROTATION_STEP;
+    }
+
+    higherRotationStep(): void {
+        this.rotationStep = MAX_ROTATION_STEP;
+    }
+
 }

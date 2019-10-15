@@ -162,6 +162,13 @@ export class ToolManagerService {
       }
     }
   }
+  changeElementAltDown() {
+    this.emojiGenerator.lowerRotationStep();
+  }
+
+  changeElementAltUp() {
+    this.emojiGenerator.higherRotationStep();
+  }
 
   changeElementShiftDown() {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);

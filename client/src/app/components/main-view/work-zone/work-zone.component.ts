@@ -1,6 +1,6 @@
-import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
+import { AfterViewInit, Component, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
 import { Tools } from 'src/app/data-structures/Tools';
-import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
+import { SaveDrawingService } from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
@@ -13,6 +13,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   private readonly DEFAULT_WIDTH = 1080;
   private readonly DEFAULT_HEIGHT = 500;
   private readonly SHIFT_KEY = 'Shift';
+  private readonly ALT_KEY = 'Alt';
   private readonly DEFAULT_WHITE_COLOR = '#FFFFFF';
 
   @Input() width: number;
@@ -43,11 +44,18 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     if (keyboardEvent.key === this.SHIFT_KEY) {
       this.toolManager.changeElementShiftDown();
     }
+    if (keyboardEvent.key === this.ALT_KEY) {
+      this.toolManager.changeElementAltDown();
+    }
+
   }
   @HostListener('document:keyup', ['$event'])
   keyUpEvent(keyboardEvent: KeyboardEvent) {
     if (keyboardEvent.key === this.SHIFT_KEY) {
       this.toolManager.changeElementShiftUp();
+    }
+    if (keyboardEvent.key === this.ALT_KEY) {
+      this.toolManager.changeElementAltUp();
     }
   }
 
@@ -86,7 +94,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.toolManager.rotateEmoji(mouseEvent);
   }
 
-  protected setBackGroundColor(): {'background-color': string} {
+  protected setBackGroundColor(): { 'background-color': string } {
     return {
       'background-color': this.color,
     };
