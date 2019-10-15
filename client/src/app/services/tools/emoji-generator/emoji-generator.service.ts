@@ -52,9 +52,17 @@ export class EmojiGeneratorService {
                 `<image x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X - (this.width * this.scalingFactor / 2))}" 
                 y="${(mouseEvent.pageY) - (this.height * this.scalingFactor / 2)}"
         xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
-        transform="rotate(${this.angle} ${mouseEvent.pageX - this.OFFSET_CANVAS_X } ${(mouseEvent.pageY)})"
+        transform="rotate(${this.angle} ${mouseEvent.pageX - this.OFFSET_CANVAS_X} ${(mouseEvent.pageY)})"
         />
         `;
         }
+    }
+
+    rotateEmoji(mouseEvent: WheelEvent): void {
+        if (mouseEvent.deltaY < 0) {
+            this._rotationAngle += 10;
+        } else {this._rotationAngle -= 10; }
+        if (this._rotationAngle > 360) {this._rotationAngle = 360; }
+        if (this._rotationAngle < 0) {this._rotationAngle = 0; }
     }
 }

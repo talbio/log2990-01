@@ -10,7 +10,7 @@ import { ToolManagerService } from '../../../services/tools/tool-manager/tool-ma
 export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   private readonly DEFAULT_WIDTH = 1080;
-  private readonly DEFAULT_HEIGHT = 720;
+  private readonly DEFAULT_HEIGHT = 500;
   private readonly SHIFT_KEY = 'Shift';
   private readonly DEFAULT_WHITE_COLOR = '#FFFFFF';
 
@@ -77,6 +77,10 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   onDoubleClick(mouseEvent: MouseEvent) {
     this.toolManager.finishElementDoubleClick(mouseEvent, this.canvasElement);
+  }
+
+  onMouseWheel(mouseEvent: WheelEvent) {
+    this.toolManager.rotateEmoji(mouseEvent);
   }
 
   protected setBackGroundColor(): {'background-color': string} {
