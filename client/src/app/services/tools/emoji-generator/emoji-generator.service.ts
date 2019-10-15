@@ -10,13 +10,15 @@ export class EmojiGeneratorService {
         '../../../../assets/svg-icons/turkey.svg',
         '../../../../assets/svg-icons/pumpkin.svg'];
     private OFFSET_CANVAS_X: number;
-    private width = 20;
-    private height = 20;
+    private width = 100;
+    private height = 100;
     private angle: number;
+    private scalingFactor: number;
 
     constructor() {
         this.emoji = '../../../../assets/svg-icons/happy.svg';
-        this.angle = 180;
+        this.angle = 0;
+        this.scalingFactor = 2;
     }
 
     get _emoji() {
@@ -35,13 +37,23 @@ export class EmojiGeneratorService {
         this.angle = angle;
     }
 
+    get _scalingFactor() {
+        return this.scalingFactor;
+    }
+
+    set _scalingFactor(factor: number) {
+        this.scalingFactor = factor;
+    }
+
     addEmoji(mouseEvent: MouseEvent, canvas: HTMLElement) {
         if (this.emoji !== '') {
             this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
             canvas.innerHTML +=
-                `<image x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X - this.width / 2)}" y="${(mouseEvent.pageY) - this.height / 2}"
-        xlink:href="${this.emoji}"' width="${this.width}" height="${this.height}"
-        transform="rotate(${this.angle} ${mouseEvent.pageX - this.OFFSET_CANVAS_X } ${(mouseEvent.pageY)})" />
+                `<image x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X - (this.width * this.scalingFactor / 2))}" 
+                y="${(mouseEvent.pageY) - (this.height * this.scalingFactor / 2)}"
+        xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
+        transform="rotate(${this.angle} ${mouseEvent.pageX - this.OFFSET_CANVAS_X } ${(mouseEvent.pageY)})"
+        />
         `;
         }
     }
