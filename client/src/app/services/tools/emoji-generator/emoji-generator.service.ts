@@ -9,6 +9,7 @@ export class EmojiGeneratorService {
         '../../../../assets/svg-icons/leaf.svg',
         '../../../../assets/svg-icons/turkey.svg',
         '../../../../assets/svg-icons/pumpkin.svg'];
+    private currentEmojiNumber: number;
     private OFFSET_CANVAS_X: number;
     private width = 100;
     private height = 100;
@@ -19,6 +20,7 @@ export class EmojiGeneratorService {
         this.emoji = '../../../../assets/svg-icons/happy.svg';
         this.angle = 0;
         this.scalingFactor = 2;
+        this.currentEmojiNumber = 0;
     }
 
     get _emoji() {
@@ -49,7 +51,8 @@ export class EmojiGeneratorService {
         if (this.emoji !== '') {
             this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
             canvas.innerHTML +=
-                `<image x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X - (this.width * this.scalingFactor / 2))}" 
+                `<image id="emoji${this.currentEmojiNumber}"
+                x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X - (this.width * this.scalingFactor / 2))}" 
                 y="${(mouseEvent.pageY) - (this.height * this.scalingFactor / 2)}"
         xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
         transform="rotate(${this.angle} ${mouseEvent.pageX - this.OFFSET_CANVAS_X} ${(mouseEvent.pageY)})"

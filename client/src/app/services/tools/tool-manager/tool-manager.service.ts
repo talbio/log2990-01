@@ -246,7 +246,7 @@ export class ToolManagerService {
     if (this.mousePosition._canvasMousePositionX < box.x || this.mousePosition._canvasMousePositionX > (box.x + box.width)
       || this.mousePosition._canvasMousePositionY < box.y || this.mousePosition._canvasMousePositionY > (box.y + box.height)) {
       this.removeSelector();
-    // si il y a objet présent, inverser
+      // si il y a objet présent, inverser
     } else { this.objectSelector.startTranslation(); }
   }
 
@@ -289,25 +289,31 @@ export class ToolManagerService {
     let newX: number;
     let newY: number;
     switch (child.nodeName) {
-      case 'rect' :
+      case 'rect':
         newX = parseFloat('' + child.getAttribute('x')) + parseFloat('' + box.getAttribute('x'));
         newY = parseFloat('' + child.getAttribute('y')) + parseFloat('' + box.getAttribute('y'));
         child.setAttribute('x', newX as unknown as string);
         child.setAttribute('y', newY as unknown as string);
         break;
-      case 'ellipse' :
+      case 'ellipse':
         newX = parseFloat('' + child.getAttribute('cx')) + parseFloat('' + box.getAttribute('x'));
         newY = parseFloat('' + child.getAttribute('cy')) + parseFloat('' + box.getAttribute('y'));
         child.setAttribute('cx', newX as unknown as string);
         child.setAttribute('cy', newY as unknown as string);
         break;
-      case 'path' :
+      case 'image':
+        newX = parseFloat('' + child.getAttribute('x')) + parseFloat('' + box.getAttribute('x'));
+        newY = parseFloat('' + child.getAttribute('y')) + parseFloat('' + box.getAttribute('y'));
+        child.setAttribute('x', newX as unknown as string);
+        child.setAttribute('y', newY as unknown as string);
+        break;
+      case 'path':
         // TODO
         break;
-      case 'polyline' :
+      case 'polyline':
         // TODO if g does not pan out
         break;
-      case 'polygon' :
+      case 'polygon':
         // TODO
         break;
       default:

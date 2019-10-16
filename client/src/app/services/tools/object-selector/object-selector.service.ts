@@ -26,7 +26,7 @@ export class ObjectSelectorService {
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
     canvas.innerHTML +=
-      `<rect
+      `<rect id="selector"
             x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
             data-start-x = "${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
             y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
@@ -39,7 +39,8 @@ export class ObjectSelectorService {
   updateSelectorRectangle(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
 
     if (this.mouseDownSelector) {
-      this.currentRect = canvas.children[currentChildPosition - 1];
+      // tslint:disable-next-line: no-non-null-assertion
+      this.currentRect = canvas.querySelector('#selector')!;
       if (this.currentRect != null) {
         this.isSelectorVisible = true;
         const startRectX: number = Number(this.currentRect.getAttribute('data-start-x'));
@@ -64,14 +65,15 @@ export class ObjectSelectorService {
   }
 
   selectItems(canvas: HTMLElement): void {
-    const drawings = canvas.querySelectorAll('rect, path, ellipse, line');
+    const drawings = canvas.querySelectorAll('rect, path, ellipse, image');
     const tempArray = new Array();
     drawings.forEach((drawing) => {
-      if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== '')) {
+      if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== 'selector') && (drawing.id !== '')) {
         tempArray.push(drawing);
       }
     });
     this.SVGArray = tempArray;
+    console.log(this.SVGArray);
   }
 
   intersects(a: DOMRect): boolean {
