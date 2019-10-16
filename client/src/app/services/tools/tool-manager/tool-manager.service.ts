@@ -48,8 +48,8 @@ export class ToolManagerService {
   createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.createRectangle(mouseEvent, canvas,
-          this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
+        this.rectangleGenerator
+          .createRectangle(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Pencil:
         this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getPrimaryColor());
@@ -58,8 +58,8 @@ export class ToolManagerService {
         this.brushGenerator.createBrushPath(mouseEvent, canvas);
         break;
       case Tools.Ellipse:
-        this.ellipseGenerator.createEllipse(mouseEvent, canvas,
-          this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
+        this.ellipseGenerator
+          .createEllipse(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Stamp:
         this.emojiGenerator.addEmoji(mouseEvent, canvas);
