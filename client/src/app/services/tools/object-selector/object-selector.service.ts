@@ -15,6 +15,8 @@ export class ObjectSelectorService {
   private currentRect: Element;
   private SVGArray: SVGElement[] = new Array();
   private isSelectorVisible: boolean;
+  private initialX: number;
+  private initialY: number;
 
   constructor(protected mousePosition: MousePositionService) {
     this.mouseDownSelector = false;
@@ -124,15 +126,22 @@ export class ObjectSelectorService {
 
   startTranslation(): void {
     this.mouseDownTranslation = true;
+    const group = document.querySelector('#box');
+    // tslint:disable-next-line: no-non-null-assertion
+    const box = group!.getBoundingClientRect();
+    this.initialX = box.left;
+    this.initialY = box.top;
   }
 
   translate(mouseEvent: MouseEvent): void {
     if (this.mouseDownTranslation) {
-      const group = document.querySelector('#box') as SVGGElement;
+      const group = document.querySelector('#box');
       // tslint:disable-next-line: no-non-null-assertion
-      const box = group!.getBBox();
-      group.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X -  box.width  - (box.width / 2) ));
-      group.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y -  box.height - (box.height / 2)));
+      const box = group!.getBoundingClientRect();
+      // tslint:disable-next-line: no-non-null-assertion
+      group!.setAttribute('x', '' + (mouseEvent.x  - this.initialX - (box.width / 2)));
+      // tslint:disable-next-line: no-non-null-assertion
+      group!.setAttribute('y', '' + (mouseEvent.y -  this.initialY - (box.height / 2) ));
     }
   }
 

@@ -19,7 +19,7 @@ export class EmojiGeneratorService {
     constructor() {
         this.emoji = '../../../../assets/svg-icons/happy.svg';
         this.angle = 0;
-        this.scalingFactor = 2;
+        this.scalingFactor = 1;
         this.currentEmojiNumber = 0;
     }
 
