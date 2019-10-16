@@ -83,7 +83,6 @@ export class ColorApplicatorService {
         targetObject.setAttribute('stroke', newColor);
         break;
       case 'polyline':
-        targetObject.setAttribute('stroke', newColor);
         break;
       case 'svg':
         // Canvas
