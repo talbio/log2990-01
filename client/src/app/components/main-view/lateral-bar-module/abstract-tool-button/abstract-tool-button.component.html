@@ -1,0 +1,9 @@
+<button mat-icon-button
+        (click)="toggleAttributesAndSetTool()"
+        matTooltip="{{toolProperties.matToolTip}}"
+        matTooltipPosition="right">
+  <mat-icon *ngIf="!toolProperties.isSvgIcon">{{toolProperties.icon}}</mat-icon>
+  <mat-icon *ngIf="toolProperties.isSvgIcon" svgIcon="{{toolProperties.icon}}" ></mat-icon>
+</button>
+
+

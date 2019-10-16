@@ -1,11 +1,13 @@
-import {Injectable, Renderer2} from '@angular/core';
-import {Tools} from '../../../data-structures/Tools';
-import {BrushGeneratorService} from '../brush-generator/brush-generator.service';
-import {ColorApplicatorService} from '../color-applicator/color-applicator.service';
-import {ColorService} from '../color/color.service';
-import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.service';
-import {PencilGeneratorService} from '../pencil-generator/pencil-generator.service';
-import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
+import { Injectable, Renderer2 } from '@angular/core';
+import { Tools } from '../../../data-structures/Tools';
+import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
+import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
+import { ColorService } from '../color/color.service';
+import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
+import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
+import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
+import { MousePositionService } from './../../mouse-position/mouse-position.service';
+import { EllipseGeneratorService } from './../ellipse-generator/ellipse-generator.service';
 import { LineGeneratorService } from './../line-generator/line-generator.service';
 
 @Injectable()
@@ -27,11 +29,13 @@ export class ToolManagerService {
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private ellipseGenerator: EllipseGeneratorService,
+              private emojiGenerator: EmojiGeneratorService,
               private pencilGenerator: PencilGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
               private lineGenerator: LineGeneratorService,
-              protected colorService: ColorService) {
+              protected colorService: ColorService,
+              protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
     this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
   }
@@ -43,8 +47,8 @@ export class ToolManagerService {
   createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.createRectangle(mouseEvent, canvas,
-           this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
+        this.rectangleGenerator
+          .createRectangle(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Pencil:
         this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getPrimaryColor());
@@ -53,8 +57,11 @@ export class ToolManagerService {
         this.brushGenerator.createBrushPath(mouseEvent, canvas);
         break;
       case Tools.Ellipse:
-        this.ellipseGenerator.createEllipse(mouseEvent, canvas,
-          this.colorService.getSecondaryColor(), this.colorService.getPrimaryColor());
+        this.ellipseGenerator
+          .createEllipse(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+        break;
+      case Tools.Stamp:
+        this.emojiGenerator.addEmoji(mouseEvent, canvas);
         break;
       default:
         return;
@@ -66,29 +73,34 @@ export class ToolManagerService {
     switch (this._activeTool) {
       case Tools.Rectangle:
         if (mouseEvent.shiftKey) {
-          this.rectangleGenerator.updateSquare(mouseEvent, canvas, this.numberOfElements);
+          this.rectangleGenerator.updateSquare(this.mousePosition._canvasMousePositionX,
+            this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         } else {
-          this.rectangleGenerator.updateRectangle(mouseEvent, canvas, this.numberOfElements);
+          this.rectangleGenerator.updateRectangle(this.mousePosition._canvasMousePositionX,
+            this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         }
         break;
       case Tools.Pencil:
         this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
         break;
       case Tools.Brush:
-          this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
-          break;
+        this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
+        break;
       case Tools.Line:
-        this.lineGenerator.updateLine(mouseEvent, canvas, this.numberOfElements);
+        this.lineGenerator.updateLine(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         break;
       case Tools.Ellipse:
         if (mouseEvent.shiftKey) {
-          this.ellipseGenerator.updateCircle(mouseEvent, canvas, this.numberOfElements);
+          this.ellipseGenerator.updateCircle(this.mousePosition._canvasMousePositionX,
+            this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         } else {
-          this.ellipseGenerator.updateEllipse(mouseEvent, canvas, this.numberOfElements);
+          this.ellipseGenerator.updateEllipse(this.mousePosition._canvasMousePositionX,
+            this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         }
         break;
       default:
-          return;
+        return;
     }
   }
 
@@ -124,7 +136,8 @@ export class ToolManagerService {
   createElementOnClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this._activeTool) {
       case Tools.Line:
-        this.lineGenerator.makeLine(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.numberOfElements);
+        this.lineGenerator.makeLine(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, canvas, this.colorService.getPrimaryColor(), this.numberOfElements);
         break;
       default:
         return;
@@ -145,18 +158,25 @@ export class ToolManagerService {
   finishElementDoubleClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
     if (this._activeTool === Tools.Line) {
       if (mouseEvent.shiftKey) {
-        this.lineGenerator.finishAndLinkLineBlock(mouseEvent, canvas, this.numberOfElements);
+        this.lineGenerator.finishAndLinkLineBlock(canvas, this.numberOfElements);
       } else {
-        this.lineGenerator.finishLineBlock();
+        this.lineGenerator.finishLineBlock(canvas, this.numberOfElements);
       }
     }
   }
 
   changeElementShiftDown() {
+    this.canvasElement = this.renderer.selectRootElement('#canvas', true);
     switch (this._activeTool) {
       case Tools.Rectangle:
         // change into square
-        // this.rectangleGenerator.updateSquare(mouseEvent, this.numberOfElements);
+        this.rectangleGenerator.updateSquare(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
+        break;
+      case Tools.Ellipse:
+        // change into circle
+        this.ellipseGenerator.updateCircle(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
         break;
       default:
         return;
@@ -164,12 +184,17 @@ export class ToolManagerService {
   }
 
   changeElementShiftUp() {
+    this.canvasElement = this.renderer.selectRootElement('#canvas', true);
     switch (this._activeTool) {
       case Tools.Rectangle:
         // change into rectangle
-        // this.rectangleGenerator.updateRectangle(mouseEvent, this.numberOfElements);
+        this.rectangleGenerator.updateRectangle(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
         break;
       case Tools.Ellipse:
+        // change into ellipse
+        this.ellipseGenerator.updateEllipse(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
         break;
       default:
         return;
@@ -205,9 +230,15 @@ export class ToolManagerService {
       case Tools.Line:
         this.canvasElement = this.renderer.selectRootElement('#canvas', true);
         this.lineGenerator.deleteLine(this.canvasElement, this.numberOfElements);
+        this.lineGenerator.updateLine(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
         break;
       default:
         return;
     }
+  }
+
+  rotateEmoji(mouseEvent: WheelEvent): void {
+    this.emojiGenerator.rotateEmoji(mouseEvent);
   }
 }

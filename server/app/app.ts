@@ -4,8 +4,7 @@ import * as cors from 'cors';
 import * as express from 'express';
 import {inject, injectable} from 'inversify';
 import * as logger from 'morgan';
-import {DateController} from './controllers/date.controller';
-import {IndexController} from './controllers/index.controller';
+import {DrawingsController} from './controllers/drawings.controller';
 import Types from './types';
 
 @injectable()
@@ -14,8 +13,7 @@ export class Application {
     private readonly internalError: number = 500;
     app: express.Application;
 
-    constructor(@inject(Types.IndexController) private indexController: IndexController,
-                @inject(Types.DateController) private dateController: DateController) {
+    constructor(@inject(Types.DrawingsController) private drawingsController: DrawingsController) {
         this.app = express();
 
         this.config();
@@ -33,9 +31,7 @@ export class Application {
     }
 
     bindRoutes(): void {
-        // Notre application utilise le routeur de notre API `Index`
-        this.app.use('/api/index', this.indexController.router);
-        this.app.use('/api/date', this.dateController.router);
+        this.app.use('/api/drawings', this.drawingsController.router);
         this.errorHandling();
     }
 

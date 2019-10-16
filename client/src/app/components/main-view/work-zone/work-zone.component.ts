@@ -1,5 +1,6 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import { Tools } from '../../../data-structures/Tools';
+import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 
@@ -11,8 +12,8 @@ import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.
 export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   private readonly DEFAULT_WIDTH = 1080;
-  private readonly DEFAULT_HEIGHT = 720;
-  private readonly SHIFT_KEY = 'SHIFT';
+  private readonly DEFAULT_HEIGHT = 500;
+  private readonly SHIFT_KEY = 'Shift';
   private readonly DEFAULT_WHITE_COLOR = '#FFFFFF';
 
   @Input() width: number;
@@ -24,7 +25,8 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
-              protected gridService: GridTogglerService) {
+              protected gridService: GridTogglerService,
+              private saveDrawing: SaveDrawingService) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
     this.color = this.DEFAULT_WHITE_COLOR;
@@ -35,6 +37,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
     this.gridService._grid = this.renderer.selectRootElement('#backgroundGrid', true);
     this.gridService._gridPattern = this.renderer.selectRootElement('#backgroundGridPattern', true);
+    this.saveDrawing._renderer = this.renderer;
   }
 
   ngAfterViewInit(): void {
@@ -83,6 +86,10 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   onDoubleClick(mouseEvent: MouseEvent) {
     this.toolManager.finishElementDoubleClick(mouseEvent, this.canvasElement);
+  }
+
+  onMouseWheel(mouseEvent: WheelEvent) {
+    this.toolManager.rotateEmoji(mouseEvent);
   }
 
   protected setBackGroundColor(): {'background-color': string} {

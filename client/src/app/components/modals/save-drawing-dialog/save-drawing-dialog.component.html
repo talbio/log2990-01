@@ -1,0 +1,59 @@
+<p mat-dialog-title>{{DIALOG_TITLE}}</p>
+
+<svg id = "min" width="100px" height="100px" viewBox="0 0 100 100" style="border-style: solid;border-width: 1px;">
+  <use preserveAspectRatio="none" transform="scale(0.1)" viewBox="0 0 100 100" xlink:href="#canvas"/>
+</svg>
+
+<mat-dialog-content [formGroup]="formGroup">
+  <form [formGroup]="formGroup">
+    <ul>
+
+      <li>
+        <mat-form-field>
+          <input matInput
+                 placeholder="Nom du dessin"
+                 formControlName="name">
+          <mat-error *ngIf="name.invalid && name.dirty">{{INVALID_NAME_ERR_MSG}}</mat-error>
+        </mat-form-field>
+      </li>
+
+      <li>
+        <div formArrayName="tags">
+          <div *ngFor="let tag of tags.controls; let i = index" [formGroupName]="i">
+            <mat-form-field>
+              <input matInput
+                     placeholder="Tag #{{i}} (optionnel)"
+                     formControlName="tag">
+              <mat-error *ngIf="tag.invalid && tag.dirty">{{INVALID_TAG_ERR_MSG}}</mat-error>
+              <button mat-icon-button
+                      matSuffix
+                      matTooltip="supprimer le tag"
+                      (click)="deleteTag(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+        </div>
+        <button mat-icon-button
+                matTooltip="ajouter un tag"
+                (click)="addTag()">
+          <mat-icon svgIcon="add-tag"></mat-icon>
+        </button>
+      </li>
+
+    </ul>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="mat-raised-button mat-warn"
+          (click)="close()">
+    Annuler
+  </button>
+  <div class="divider"></div>
+  <button class="mat-raised-button mat-primary"
+          [disabled] ="formGroup.invalid || isPostingToServer"
+          (click)="submit()">
+    Confirmer
+  </button>
+</mat-dialog-actions>

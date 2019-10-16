@@ -7,8 +7,8 @@
      (mouseup)='onMouseUp()'
      (click)='onLeftClick($event)'
      (contextmenu)='onRightClick($event)'
-     (dblclick)='onDoubleClick($event)'>
-
+     (dblclick)='onDoubleClick($event)'
+     (mousewheel)='onMouseWheel($event)'>
     <defs>
         <!-- Pattern for grid -->
         <pattern id="backgroundGridPattern" patternUnits="userSpaceOnUse" [attr.width]="gridSize" [attr.height]="gridSize">
