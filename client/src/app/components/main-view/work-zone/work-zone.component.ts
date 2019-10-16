@@ -1,6 +1,6 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import { Tools } from '../../../data-structures/Tools';
-import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
+import { SaveDrawingService } from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 

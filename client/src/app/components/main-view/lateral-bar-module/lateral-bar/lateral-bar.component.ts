@@ -91,6 +91,8 @@ export class LateralBarComponent {
       this.toolPropertiesFactory(Tools.Stamp, 'Étampe', 'sentiment_satisfied_alt', false));
     this.toolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.ColorApplicator, 'Applicateur de couleur', 'format_paint', false));
+    this.toolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Grid, 'Grille', 'grid_on', false));
   }
 
   private initializeDialogsButtons() {

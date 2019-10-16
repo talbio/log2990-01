@@ -16,6 +16,7 @@ import { BrushToolsComponent } from './components/main-view/tools-attributes-mod
 import { ColorApplicatorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/color-applicator/color-applicator-tools.component';
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
+import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
 import { PencilToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pencil/pencil-tools.component';
 import { RectangleToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/rectangle/rectangle-tools.component';
@@ -109,6 +110,7 @@ const customNotifierOptions: NotifierOptions = {
     EmojiToolsComponent,
     BrushToolsComponent,
     ColorApplicatorToolsComponent,
+    GridComponent,
   ],
   imports: [
     BrowserModule,
@@ -153,6 +155,7 @@ const customNotifierOptions: NotifierOptions = {
     EmojiToolsComponent,
     BrushToolsComponent,
     ColorApplicatorToolsComponent,
+    GridComponent,
   ],
 })
 export class AppModule {

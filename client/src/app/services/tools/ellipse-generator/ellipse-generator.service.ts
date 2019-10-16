@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Axis, PlotType } from '../../../data-structures/PlotType';
+import { PlotType } from '../../../data-structures/PlotType';
+
+enum Axis {
+  x,
+  y,
+}
 
 @Injectable()
 export class EllipseGeneratorService {
@@ -9,7 +14,7 @@ export class EllipseGeneratorService {
   private currentEllipseNumber: number;
   private mouseDown: boolean;
 
-  // attributes of ellipse
+  // attributes of rectangle
   private strokeWidth: number;
   private plotType: PlotType;
 
@@ -40,117 +45,45 @@ export class EllipseGeneratorService {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
-
-    switch (this.plotType) {
-      case PlotType.Contour:
-        canvas.innerHTML +=
-        `<ellipse id=\'ellipse${this.currentEllipseNumber}\'
-        data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        cx=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        cy=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        rx=\'0\' ry=\'0\'
-        stroke=\'${secondaryColor}\' stroke-width=\'${this.strokeWidth}\'
-        fill=\'transparent\'></ellipse>`;
-        break;
-      case PlotType.Full:
-        canvas.innerHTML +=
-        `<ellipse id=\'ellipse${this.currentEllipseNumber}\'
-        data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        cx=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        cy=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        rx=\'0\' ry=\'0\'
-        stroke=\'transparent\' stroke-width= \'${this.strokeWidth}\'
-        fill=\'${primaryColor}\'></ellipse>`;
-        break;
-      case PlotType.FullWithContour:
-        canvas.innerHTML +=
-        `<ellipse id=\'ellipse${this.currentEllipseNumber}\'
-        data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        cx=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        cy=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        rx=\'0\' ry=\'0\'
-        stroke=\'${secondaryColor}\' stroke-width=\'${this.strokeWidth}\'
-        fill=\'${primaryColor}\'></ellipse>`;
-        break;
-    }
+    const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
+    const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
+    canvas.innerHTML +=
+      this.generateEllipseElement(this.currentEllipseNumber, xPos, yPos, primaryColor, secondaryColor);
     this.mouseDown = true;
     return true;
   }
 
-  updateCircle(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updateCircle(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentEllipse = canvas.children[currentChildPosition - 1];
       if (currentEllipse != null) {
         const startEllipseX: number = Number(currentEllipse.getAttribute('data-start-x'));
         const startEllipseY: number = Number(currentEllipse.getAttribute('data-start-y'));
-        const radiusWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X - startEllipseX) / 2;
-        const radiusHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y - startEllipseY) / 2;
-        if (radiusWidth >= 0) {
-          if (Math.abs(radiusHeight) > Math.abs(radiusWidth)) {
-            // height is bigger
-            this.setAttributesEllipse(Axis.xAxis, currentEllipse, Math.abs(radiusHeight), (startEllipseX + Math.abs(radiusHeight)));
-          } else {
-            // width is bigger, act normal
-            this.setAttributesEllipse(Axis.xAxis, currentEllipse, radiusWidth, (startEllipseX + radiusWidth));
-          }
-        } else {
-          if (Math.abs(radiusHeight) > Math.abs(radiusWidth)) {
-            // height is bigger
-            this.setAttributesEllipse(Axis.xAxis, currentEllipse, Math.abs(radiusHeight), (startEllipseX - Math.abs(radiusHeight)));
-          } else {
-            // width is bigger, act normal
-            this.setAttributesEllipse(Axis.xAxis, currentEllipse, Math.abs(radiusWidth), (startEllipseX + radiusWidth));
-          }
-        }
-        if (radiusHeight >= 0) {
-          if (Math.abs(radiusWidth) > Math.abs(radiusHeight)) {
-            // width is bigger
-            currentEllipse.setAttribute('ry', '' + Math.abs(radiusWidth));
-            currentEllipse.setAttribute('cy', '' + (startEllipseY + Math.abs(radiusWidth)));
-          } else {
-            // height is bigger, act normal
-            currentEllipse.setAttribute('ry', '' + radiusHeight);
-            currentEllipse.setAttribute('cy', '' + (startEllipseY + radiusHeight));
-          }
-        } else {
-          if (Math.abs(radiusWidth) > Math.abs(radiusHeight)) {
-            // width is bigger
-            currentEllipse.setAttribute('ry', '' + Math.abs(radiusWidth));
-            currentEllipse.setAttribute('cy', '' + (startEllipseY - Math.abs(radiusWidth)));
-          } else {
-            // height is bigger, act normal
-            currentEllipse.setAttribute('ry', '' + Math.abs(radiusHeight));
-            currentEllipse.setAttribute('cy', '' + (startEllipseY + radiusHeight));
-          }
-        }
+        const radiusWidth: number = (canvasPosX - startEllipseX) / 2;
+        const radiusHeight: number = (canvasPosY - startEllipseY) / 2;
+        this.updateAxisAttributes(currentEllipse, radiusWidth, radiusHeight, startEllipseX);
+        this.updateAxisAttributes(currentEllipse, radiusHeight, radiusWidth, startEllipseY);
       }
     }
   }
 
-  updateEllipse(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updateEllipse(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentEllipse = canvas.children[currentChildPosition - 1];
       if (currentEllipse != null) {
         const startEllipseX: number = Number(currentEllipse.getAttribute('data-start-x'));
         const startEllipseY: number = Number(currentEllipse.getAttribute('data-start-y'));
-        const radiusWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X - startEllipseX) / 2;
-        const radiusHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y - startEllipseY) / 2;
+        const radiusWidth: number = (canvasPosX - startEllipseX) / 2;
+        const radiusHeight: number = (canvasPosY - startEllipseY) / 2;
         if (radiusWidth >= 0) {
-          currentEllipse.setAttribute('rx', '' + radiusWidth);
-          currentEllipse.setAttribute('cx', '' + (startEllipseX + radiusWidth));
+          this.setAxisAttributes(currentEllipse, Axis.x, radiusWidth, startEllipseX + radiusWidth);
         } else {
-          currentEllipse.setAttribute('rx', '' + Math.abs(radiusWidth));
-          currentEllipse.setAttribute('cx', '' + (startEllipseX + radiusWidth));
+          this.setAxisAttributes(currentEllipse, Axis.x, Math.abs(radiusWidth), startEllipseX + radiusWidth);
         }
         if (radiusHeight >= 0) {
-          currentEllipse.setAttribute('ry', '' + radiusHeight);
-          currentEllipse.setAttribute('cy', '' + (startEllipseY + radiusHeight));
+          this.setAxisAttributes(currentEllipse, Axis.y, radiusHeight, startEllipseY + radiusHeight);
         } else {
-          currentEllipse.setAttribute('ry', '' + Math.abs(radiusHeight));
-          currentEllipse.setAttribute('cy', '' + (startEllipseY + radiusHeight));
+          this.setAxisAttributes(currentEllipse, Axis.y, Math.abs(radiusHeight), startEllipseY + radiusHeight);
         }
       }
     }
@@ -163,13 +96,65 @@ export class EllipseGeneratorService {
     }
   }
 
-  setAttributesEllipse(axis: Axis, currentEllipse: Element, radius: number, center: number) {
-    if (axis === Axis.xAxis) {
-      currentEllipse.setAttribute('rx', '' + radius.toString());
-      currentEllipse.setAttribute('cx', '' + center.toString());
+  private updateAxisAttributes(currentEllipse: Element, firstRadius: number, secondRadius: number, startAxisPosition: number): void {
+    if (firstRadius >= 0) {
+      if (Math.abs(secondRadius) > Math.abs(firstRadius)) {
+        // width is bigger
+        this.setAxisAttributes(currentEllipse, Axis.y, Math.abs(secondRadius), startAxisPosition + Math.abs(secondRadius));
+      } else {
+        // height is bigger, act normal
+        this.setAxisAttributes(currentEllipse, Axis.y, firstRadius, startAxisPosition + firstRadius);
+      }
     } else {
-      currentEllipse.setAttribute('ry', '' + radius.toString());
-      currentEllipse.setAttribute('cy', '' + center.toString());
+      if (Math.abs(secondRadius) > Math.abs(firstRadius)) {
+        // width is bigger
+        this.setAxisAttributes(currentEllipse, Axis.y, Math.abs(secondRadius), startAxisPosition - Math.abs(secondRadius));
+      } else {
+        // height is bigger, act normal
+        this.setAxisAttributes(currentEllipse, Axis.y, Math.abs(firstRadius), startAxisPosition + firstRadius);
+      }
     }
+  }
+
+  private setAxisAttributes(currentEllipse: Element, axis: Axis, radiusValue: number, positionValue: number): void {
+    let positionAxis = '';
+    let radiusAxis = '';
+
+    switch (axis) {
+      case Axis.x:
+        radiusAxis = 'rx';
+        positionAxis = 'cx';
+        break;
+      case Axis.y:
+        radiusAxis = 'ry';
+        positionAxis = 'cy';
+        break;
+    }
+    currentEllipse.setAttribute(radiusAxis, radiusValue.toString());
+    currentEllipse.setAttribute(positionAxis, positionValue.toString());
+  }
+
+  private generateEllipseElement(id: number, xPos: number, yPos: number, primaryColor: string, secondaryColor: string): string {
+    let strokeProperty = '';
+    let fillProperty = '';
+    switch (this.plotType) {
+      case PlotType.Contour:
+        strokeProperty = secondaryColor;
+        fillProperty = 'transparent';
+        break;
+      case PlotType.Full:
+        strokeProperty = 'transparent';
+        fillProperty = primaryColor;
+        break;
+      case PlotType.FullWithContour:
+        strokeProperty = secondaryColor;
+        fillProperty = primaryColor;
+        break;
+    }
+    return `<ellipse
+        id='ellipse${id.toString()}'
+        data-start-x = '${xPos.toString()}' data-start-y = '${yPos.toString()}'
+        cx='${xPos.toString()}' cy='${yPos.toString()}' rx='0' ry='0'
+        stroke='${strokeProperty}' stroke-width='${this.strokeWidth}' fill='${fillProperty}'></ellipse>`;
   }
 }
