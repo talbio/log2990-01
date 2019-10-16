@@ -57,7 +57,7 @@ export class BrushGeneratorService {
   }
 
   // Updates the path when the mouse is moving (mousedown)
-  updateBrushPath(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updateBrushPath(mouseEvent: MouseEvent, canvas: SVGElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentPath = canvas.children[currentChildPosition - 1];
       if (currentPath != null) {

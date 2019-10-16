@@ -1,11 +1,11 @@
 <app-welcome-modal></app-welcome-modal>
+<notifier-container></notifier-container>
 
 <mat-sidenav-container class="lateral-bar-container">
 
   <!-- Tools Side Nav -->
-  <mat-sidenav mode="side" opened id="tools-side-nav">
-    <app-lateral-bar (createDrawing)="onCreateDrawing($event)"
-                     [attributesSideNav]="attributesSideNav">
+  <mat-sidenav mode="side" opened id="tools-side-nav" disableClose="true">
+    <app-lateral-bar [attributesSideNav]="attributesSideNav">
     </app-lateral-bar>
   </mat-sidenav>
 

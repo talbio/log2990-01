@@ -106,11 +106,12 @@ export class CreateDrawingDialogComponent implements OnInit {
         if (confirm) {
           this.toolManager.deleteAllDrawings();
           this.dialogRef.close(this.drawingForm.value);
+          this.modalManager._isModalActive = false;
         }
       });
     } else {
       this.dialogRef.close(this.drawingForm.value);
-      this.modalManager._isModalActive = true;
+      this.modalManager._isModalActive = false;
     }
   }
 

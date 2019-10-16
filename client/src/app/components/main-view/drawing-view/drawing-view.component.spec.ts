@@ -6,7 +6,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {DemoMaterialModule} from '../../../material.module';
 // import {MatSidenavModule} from '@angular/material/sidenav';
-// import {ToolsAttributesComponent} from '../tools-attributes/tools-attributes.component';
+// import {ToolsAttributesBarComponent} from '../tools-attributes-bar-module/tools-attributes-bar-module.component';
 import { DrawingViewComponent } from './drawing-view.component';
 // import {NgTemplateOutlet} from "@angular/common";
 
@@ -31,7 +31,7 @@ fdescribe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
   // let toolSelectorServiceStub: Partial<ToolSelectorService>;
-  // const cp = new ComponentPortal <ToolsAttributesComponent>(ToolsAttributesComponent);
+  // const cp = new ComponentPortal <ToolsAttributesBarComponent>(ToolsAttributesBarComponent);
 
   beforeAll(async(() => {
     TestBed.configureTestingModule({

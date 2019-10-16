@@ -1,0 +1,24 @@
+<p mat-card-title>Paramètres de Pinceau</p>
+
+<mat-label>
+  Épaisseur du trait du pinceau en pixels: {{this.brushGenerator._strokeWidth}}
+</mat-label>
+<mat-slider [(ngModel)]="this.brushGenerator._strokeWidth"
+            min="5"
+            max="50"
+            step="0.5"
+            value="1.5"
+            thumbLabel
+            tickInterval="1">
+</mat-slider>
+
+<mat-form-field>
+  <mat-label>
+    Texture du pinceau:
+  </mat-label>
+  <mat-select [(ngModel)]="this.brushGenerator._currentBrushPattern">
+    <mat-option *ngFor="let i of [1,2,3,4,5,6];" [value]="'url(#brushPattern'+i+')'">
+      Texture {{i}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
