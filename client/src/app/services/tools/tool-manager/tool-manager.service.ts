@@ -41,6 +41,8 @@ export class ToolManagerService {
 
   loadRenderer(renderer: Renderer2) {
     this.renderer = renderer;
+    // Give it to the tools who also need it
+    this.colorApplicator._renderer = renderer;
   }
 
   createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
@@ -122,7 +124,7 @@ export class ToolManagerService {
     }
   }
 
-  changeElementLeftClick(clickedElement: HTMLElement) {
+  changeElementLeftClick(clickedElement: SVGElement) {
     switch (this._activeTool) {
       case Tools.ColorApplicator:
         this.colorApplicator.changePrimaryColor(clickedElement, this.colorService.getPrimaryColor());

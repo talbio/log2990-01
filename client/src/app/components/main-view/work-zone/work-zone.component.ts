@@ -65,7 +65,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   onLeftClick(mouseEvent: MouseEvent) {
     if (this.toolManager._activeTool === Tools.ColorApplicator) {
-      this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
+      this.toolManager.changeElementLeftClick(mouseEvent.target as SVGElement);
     } else if (this.toolManager._activeTool === Tools.Line) {
       this.toolManager.createElementOnClick(mouseEvent, this.canvasElement);
     }

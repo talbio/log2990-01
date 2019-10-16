@@ -1,25 +1,99 @@
 import { Injectable, Renderer2 } from '@angular/core';
+import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
 
 @Injectable()
 export class LineGeneratorService {
 
   private readonly DEFAULT_WIDTH = 5;
   private readonly DEFAULT_DIAMETER = 5;
+  private readonly DEFAULT_LINEJOIN = 'round';
+  private readonly DEFAULT_DASHARRAY = 'none';
+  private readonly DEFAULT_LINECAP = 'butt';
+  private readonly STRAIGHT_ENDS = 'butt';
+  private readonly CURVY_ENDS = 'round';
+  private readonly LINEJOIN_ANGLE = 'miter';
+  private readonly LINEJOIN_ROUND = 'round';
+  private readonly DOT_SIZE = '1';
+  private readonly DEFAULT_LINEJOINSTYLE = LineJoinStyle.Round;
+  private readonly DEFAULT_LINEDASHSTYLE = LineDashStyle.Continuous;
   private strokeWidth: number;
   private markerDiameter: number;
   private currentPolylineNumber: number;
   private isMakingLine = false;
   private currentPolyineStartX: number;
   private currentPolyineStartY: number;
+  private isMarkersActive: boolean;
+  private lineJoin: string;
+  private dashArray: string;
+  private lineCap: string;
+  private lineJoinStyle: LineJoinStyle;
+  private lineDashStyle: LineDashStyle;
 
   constructor() {
     this.strokeWidth = this.DEFAULT_WIDTH;
     this.currentPolylineNumber = 0;
     this.markerDiameter = this.DEFAULT_DIAMETER;
+    this.isMarkersActive = false;
+    this.lineJoin = this.DEFAULT_LINEJOIN;
+    this.dashArray = this.DEFAULT_DASHARRAY;
+    this.lineCap = this.DEFAULT_LINECAP;
+    this.lineJoinStyle = this.DEFAULT_LINEJOINSTYLE;
+    this.lineDashStyle = this.DEFAULT_LINEDASHSTYLE;
+  }
+
+  set _lineJoinStyle(style: LineJoinStyle) {
+    this.lineJoinStyle = style;
+    switch (style) {
+      case LineJoinStyle.WithPoints:
+        this.isMarkersActive = true;
+        this.lineJoin = this.DEFAULT_LINEJOIN;
+        break;
+      case LineJoinStyle.Angled:
+        this.isMarkersActive = false;
+        this.lineJoin = this.LINEJOIN_ANGLE;
+        break;
+      case LineJoinStyle.Round:
+        this.isMarkersActive = false;
+        this.lineJoin = this.LINEJOIN_ROUND;
+        break;
+      default:
+        break;
+    }
+  }
+
+  get _lineJoinStyle(): LineJoinStyle {
+    return this.lineJoinStyle;
+  }
+
+  set _lineDashStyle(style: LineDashStyle) {
+    this.lineDashStyle = style;
+    switch (style) {
+      case LineDashStyle.Continuous:
+        this.dashArray = this.DEFAULT_DASHARRAY;
+        this.lineCap = this.DEFAULT_LINECAP;
+        break;
+      case LineDashStyle.Dashed:
+        this.dashArray = `${this.strokeWidth * 2}, ${this.strokeWidth}`;
+        this.lineCap = this.STRAIGHT_ENDS;
+        break;
+      case LineDashStyle.Dotted:
+        this.dashArray = `${this.DOT_SIZE}, ${this.strokeWidth * 2}`;
+        this.lineCap = this.CURVY_ENDS;
+        break;
+      default:
+        break;
+    }
+  }
+
+  get _lineDashStyle(): LineDashStyle {
+    return this.lineDashStyle;
   }
 
   set _strokeWidth(width: number) {
     this.strokeWidth = width;
+    // reload linedashstyle with new strokewidth
+    this._lineDashStyle = this.lineDashStyle;
+
   }
 
   get _strokeWidth(): number {
@@ -46,11 +120,11 @@ export class LineGeneratorService {
       canvas.innerHTML +=
       `<polyline id="line${this.currentPolylineNumber}"
       stroke-width="${this.strokeWidth}"
-      stroke-linecap="round"
+      stroke-linecap="${this.lineCap}"
       stroke="${primaryColor}"
-      pointer-events="none"
+      stroke-dasharray="${this.dashArray}"
       fill="none"
-      stroke-linejoin="round"
+      stroke-linejoin="${this.lineJoin}"
       points="${canvasPosX},${canvasPosY}">
       </polyline>`;
 
@@ -140,21 +214,29 @@ export class LineGeneratorService {
 
     renderer.setAttribute(circle, 'fill', color);
     renderer.setAttribute(circle, 'r', this.markerDiameter as unknown as string);
-    renderer.setAttribute(circle, 'cy', '5');
-    renderer.setAttribute(circle, 'cx', '5');
+    renderer.setAttribute(circle, 'cy', this.markerDiameter as unknown as string);
+    renderer.setAttribute(circle, 'cx', this.markerDiameter as unknown as string);
+    renderer.setAttribute(marker, 'markerWidth', (this.markerDiameter * 2) as unknown as string);
+    renderer.setAttribute(marker, 'markerHeight', (this.markerDiameter * 2) as unknown as string);
+    renderer.setAttribute(marker, 'refX', this.markerDiameter as unknown as string);
+    renderer.setAttribute(marker, 'refY', this.markerDiameter as unknown as string);
+    renderer.setAttribute(marker, 'markerUnits', 'userSpaceOnUse');
     renderer.setProperty(marker, 'id', `line${this.currentPolylineNumber}marker`);
 
     renderer.appendChild(marker, circle);
     const defs = renderer.selectRootElement('#definitions', true);
     const canvas = renderer.selectRootElement('#canvas', true);
     renderer.appendChild(defs, marker);
-    this.addMarkersToNewLine(marker, canvas);
+    if (this.isMarkersActive) {
+      this.addMarkersToNewLine(marker, canvas);
+    }
+    // reload
+    canvas.innerHTML = canvas.innerHTML;
     return marker;
   }
 
   addMarkersToNewLine(markers: SVGElement, canvas: HTMLElement) {
     const newLine = canvas.children[canvas.children.length - 1];
-    console.log('new line: \n' + newLine);
     const markersAddress = `url(#${markers.id})`;
     newLine.setAttribute('marker-start', markersAddress);
     newLine.setAttribute('marker-mid', markersAddress);
@@ -165,7 +247,6 @@ export class LineGeneratorService {
     for (const child of [].slice.call(defsElement.children)) {
       const childCast = child as SVGElement;
       if (childCast.id === polyline.id + 'marker') {
-        console.log(childCast);
         return childCast;
       }
     }

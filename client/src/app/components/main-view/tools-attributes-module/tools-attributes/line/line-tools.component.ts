@@ -1,16 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {LineGeneratorService} from '../../../../../services/tools/line-generator/line-generator.service';
+import { LineDashStyle, LineJoinStyle } from './../../../../../data-structures/LineStyles';
 
 @Component({
   selector: 'app-line-tools',
   templateUrl: './line-tools.component.html',
   styleUrls: ['./line-tools.component.scss'],
 })
-export class LineToolsComponent implements OnInit {
+export class LineToolsComponent {
 
   constructor(protected lineGenerator: LineGeneratorService) { }
 
-  ngOnInit() {
+  protected get LineDashStyle() {
+    return LineDashStyle;
+  }
+  protected get LineJoinStyle() {
+    return LineJoinStyle;
   }
 
 }
