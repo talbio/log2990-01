@@ -48,7 +48,6 @@
               min="1"
               max="10"
               step="0.5"
-              value="1.5"
               thumbLabel
               tickInterval="1"></mat-slider>
   <mat-form-field>
@@ -68,7 +67,6 @@
               min="5"
               max="50"
               step="0.5"
-              value="1.5"
               thumbLabel
               tickInterval="1">
   </mat-slider>
@@ -89,20 +87,18 @@
 <mat-card-content *ngIf="toolManager._activeTool === Tools.Grid" >
     <button (click)="this.gridService.toggleGrid()">Montrer/Cacher la grille</button>
     <mat-label>Taille des mailles : {{this.gridService._gridSize}}</mat-label>
-    <mat-slider [(ngModel)]="this.gridService._gridSize"
+    <mat-slider [(ngModel)]="this.gridService._gridSize" (input)="this.gridService.adjustGridSize($event)"
                 min="10"
                 max="100"
-                step="5"
-                value="50"
+                step="1"
                 thumbLabel
                 tickInterval="1">
     </mat-slider>
     <mat-label>Opacité de la grille : {{this.gridService._gridOpacity}}</mat-label>
-    <mat-slider [(ngModel)]="this.gridService._gridOpacity"
-                min="0.2"
+    <mat-slider [(ngModel)]="this.gridService._gridOpacity" (input)="this.gridService.adjustGridOpacity($event)"
+                min="0.1"
                 max="1"
                 step="0.01"
-                value="0.4"
                 thumbLabel
                 tickInterval="1">
     </mat-slider>
