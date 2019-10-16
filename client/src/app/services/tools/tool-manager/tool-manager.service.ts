@@ -8,6 +8,7 @@ import { PencilGeneratorService } from '../pencil-generator/pencil-generator.ser
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import { EllipseGeneratorService } from './../ellipse-generator/ellipse-generator.service';
+import { EyedropperService } from './../eyedropper/eyedropper.service';
 import { LineGeneratorService } from './../line-generator/line-generator.service';
 
 @Injectable()
@@ -15,7 +16,7 @@ export class ToolManagerService {
 
   private numberOfElements = 1;
   private renderer: Renderer2;
-  private canvasElement: HTMLElement;
+  private canvasElement: SVGElement;
   private defsElement: SVGElement;
   private activeTool: Tools;
 
@@ -34,6 +35,7 @@ export class ToolManagerService {
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
               private lineGenerator: LineGeneratorService,
+              private eyedropper: EyedropperService,
               protected colorService: ColorService,
               protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
@@ -43,6 +45,7 @@ export class ToolManagerService {
     this.renderer = renderer;
     // Give it to the tools who also need it
     this.colorApplicator._renderer = renderer;
+    this.eyedropper._renderer = renderer;
   }
 
   createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
@@ -70,7 +73,7 @@ export class ToolManagerService {
     this.numberOfElements = canvas.children.length;
   }
 
-  updateElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
+  updateElement(mouseEvent: MouseEvent, canvas: SVGElement) {
     switch (this._activeTool) {
       case Tools.Rectangle:
         if (mouseEvent.shiftKey) {
@@ -124,23 +127,19 @@ export class ToolManagerService {
     }
   }
 
-  changeElementLeftClick(clickedElement: SVGElement) {
+  changeElementLeftClick(clickedElement: SVGElement,  canvas: SVGElement) {
     switch (this._activeTool) {
       case Tools.ColorApplicator:
         this.colorApplicator.changePrimaryColor(clickedElement, this.colorService.getPrimaryColor());
         break;
-      default:
-        return;
-    }
-  }
-
-  createElementOnClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
-    switch (this._activeTool) {
       case Tools.Line:
         this.defsElement = this.renderer.selectRootElement('#definitions', true);
         this.lineGenerator.makeLine(this.mousePosition._canvasMousePositionX,
           this.mousePosition._canvasMousePositionY, canvas, this.colorService.getPrimaryColor(),
-           this.numberOfElements, this.defsElement, this.renderer);
+            this.numberOfElements, this.defsElement, this.renderer);
+        break;
+      case Tools.Eyedropper:
+        this.eyedropper.getColorOnPixel(canvas);
         break;
       default:
         return;
@@ -158,7 +157,7 @@ export class ToolManagerService {
     }
   }
 
-  finishElementDoubleClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
+  finishElementDoubleClick(mouseEvent: MouseEvent, canvas: SVGElement) {
     if (this._activeTool === Tools.Line) {
       if (mouseEvent.shiftKey) {
         this.lineGenerator.finishAndLinkLineBlock(canvas, this.numberOfElements);

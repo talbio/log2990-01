@@ -54,8 +54,8 @@ export class ColorService {
         if (color !== this.empty) {
             this.primaryColor = this.storage.getPrimaryColor();
         }
-        this.storage.setPrimaryColor(Colors.BLACK);
-        this.primaryColor = Colors.BLACK;
+        this.storage.setPrimaryColor(Colors.WHITE);
+        this.primaryColor = Colors.WHITE;
     }
 
     assignSecondaryColor(): void {
@@ -63,8 +63,8 @@ export class ColorService {
         if (color !== this.empty) {
             this.secondaryColor = this.storage.getSecondaryColor();
         }
-        this.storage.setSecondaryColor(Colors.WHITE);
-        this.secondaryColor = Colors.WHITE;
+        this.storage.setSecondaryColor(Colors.BLACK);
+        this.secondaryColor = Colors.BLACK;
     }
 
     addToTopTenColors(color: string): void {
