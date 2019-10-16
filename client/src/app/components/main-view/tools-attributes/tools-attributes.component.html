@@ -32,8 +32,8 @@
 
 <!-- Polygon Attributes -->
 <mat-card-content *ngIf="toolManager._activeTool === Tools.Rectangle" >
-  <mat-label> Epaisseur du polygone : {{this.polygonGenerator.getStrokeWidth}}</mat-label>
-  <mat-slider [(ngModel)]="this.polygonGenerator.getStrokeWidth"
+  <mat-label> Epaisseur du polygone : {{this.polygonGenerator._strokeWidth}}</mat-label>
+  <mat-slider [(ngModel)]="this.polygonGenerator._strokeWidth"
               min="1"
               max="10"
               step="0.5"
@@ -48,6 +48,13 @@
       <mat-option [value]="PlotType.FullWithContour">Plein avec contour</mat-option>
     </mat-select>
   </mat-form-field>
+  <mat-label> Nombre de cotes : {{this.polygonGenerator._nbOfApex}}</mat-label>
+  <mat-slider [(ngModel)]="this.polygonGenerator._nbOfApex"
+              min="3"
+              max="12"
+              step="1"
+              thumbLabel
+              tickInterval="1"></mat-slider>
 </mat-card-content>
 
 <!-- Line Attributes -->

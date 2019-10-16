@@ -40,6 +40,11 @@ export class ToolManagerService {
 
   loadRenderer(renderer: Renderer2) {
     this.renderer = renderer;
+    this.polygonGenerator._renderer = renderer;
+  }
+
+  loadRectangleGenerator(){
+    this.polygonGenerator._rectangleGenerator = this.rectangleGenerator;
   }
 
   createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
@@ -99,7 +104,8 @@ export class ToolManagerService {
         }
         break;
       case Tools.Polygon:
-        this.polygonGenerator.updatePolygon(mouseEvent, canvas, this.numberOfElements);
+        this.polygonGenerator.updatePolygon(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         break;
       default:
           return;
