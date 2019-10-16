@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Renderer2 } from '@angular/core';
+import { LineGeneratorService } from './../line-generator/line-generator.service';
 
 @Injectable()
 export class ColorApplicatorService {
-
-  changePrimaryColor(targetObject: HTMLElement, newColor: string) {
+  private renderer: Renderer2;
+  constructor(private lineGenerator: LineGeneratorService) {}
+  changePrimaryColor(targetObject: SVGElement, newColor: string) {
     switch (targetObject.nodeName) {
 
       case 'rect':
@@ -31,9 +33,17 @@ export class ColorApplicatorService {
           alert('Object id is \'' + targetObject.getAttribute('id') + '\' and this case is not treated!');
         }
         break;
-        case 'ellipse':
-            targetObject.setAttribute('fill', newColor);
-            break;
+      case 'ellipse':
+        targetObject.setAttribute('fill', newColor);
+        break;
+      case 'polyline':
+        targetObject.setAttribute('stroke', newColor);
+        // find the markers
+        const defs = this.renderer.selectRootElement('#definitions', true);
+        const markers = this.lineGenerator.findMarkerFromPolyline(targetObject, defs);
+        // change color of the circles in the markers
+        markers.children[0].setAttribute('fill', newColor);
+        break;
       case 'svg':
         // Canvas
         break;
@@ -66,6 +76,8 @@ export class ColorApplicatorService {
       case 'ellipse':
           targetObject.setAttribute('stroke', newColor);
           break;
+      case 'polyline':
+        break;
       case 'svg':
         // Canvas
         break;
@@ -74,5 +86,7 @@ export class ColorApplicatorService {
         break;
     }
   }
-
+  set _renderer(rend: Renderer2) {
+    this.renderer = rend;
+  }
 }

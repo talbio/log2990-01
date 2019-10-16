@@ -16,6 +16,7 @@ export class ToolManagerService {
   private numberOfElements = 1;
   private renderer: Renderer2;
   private canvasElement: HTMLElement;
+  private defsElement: SVGElement;
   private activeTool: Tools;
 
   set _activeTool(tool: Tools) {
@@ -40,6 +41,8 @@ export class ToolManagerService {
 
   loadRenderer(renderer: Renderer2) {
     this.renderer = renderer;
+    // Give it to the tools who also need it
+    this.colorApplicator._renderer = renderer;
   }
 
   createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
@@ -121,7 +124,7 @@ export class ToolManagerService {
     }
   }
 
-  changeElementLeftClick(clickedElement: HTMLElement) {
+  changeElementLeftClick(clickedElement: SVGElement) {
     switch (this._activeTool) {
       case Tools.ColorApplicator:
         this.colorApplicator.changePrimaryColor(clickedElement, this.colorService.getPrimaryColor());
@@ -134,8 +137,10 @@ export class ToolManagerService {
   createElementOnClick(mouseEvent: MouseEvent, canvas: HTMLElement) {
     switch (this._activeTool) {
       case Tools.Line:
+        this.defsElement = this.renderer.selectRootElement('#definitions', true);
         this.lineGenerator.makeLine(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, canvas, this.colorService.getPrimaryColor(), this.numberOfElements);
+          this.mousePosition._canvasMousePositionY, canvas, this.colorService.getPrimaryColor(),
+           this.numberOfElements, this.defsElement, this.renderer);
         break;
       default:
         return;
