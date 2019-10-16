@@ -7,16 +7,20 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NotifierModule, NotifierOptions, NotifierService} from 'angular-notifier';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
+// tslint:disable-next-line:max-line-length
 import { AbstractDialogButtonComponent } from './components/main-view/lateral-bar-module/abstract-dialog-button/abstract-dialog-button.component';
 import { AbstractToolButtonComponent } from './components/main-view/lateral-bar-module/abstract-tool-button/abstract-tool-button.component';
 import { ColorToolButtonsComponent } from './components/main-view/lateral-bar-module/color-tool-buttons/color-tool-buttons.component';
 import { LateralBarComponent } from './components/main-view/lateral-bar-module/lateral-bar/lateral-bar.component';
+// tslint:disable-next-line:max-line-length
 import { ToolsAttributesBarComponent } from './components/main-view/tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { BrushToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/brush/brush-tools.component';
+// tslint:disable-next-line:max-line-length
 import { ColorApplicatorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/color-applicator/color-applicator-tools.component';
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
 import { PencilToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pencil/pencil-tools.component';
+// tslint:disable-next-line:max-line-length
 import { RectangleToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/rectangle/rectangle-tools.component';
 import { WorkZoneComponent } from './components/main-view/work-zone/work-zone.component';
 import { ColorPaletteComponent } from './components/modals/color-picker-module/color-palette/color-palette.component';
@@ -25,6 +29,7 @@ import { ColorSliderComponent } from './components/modals/color-picker-module/co
 import { LastTenColorsComponent } from './components/modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
+import { OpenListDrawingsServerComponent } from './components/modals/open-list-drawings-server/open-list-drawings-server.component';
 import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
 import {DemoMaterialModule} from './material.module';
@@ -105,6 +110,7 @@ const customNotifierOptions: NotifierOptions = {
     EllipseToolsComponent,
     BrushToolsComponent,
     ColorApplicatorToolsComponent,
+    OpenListDrawingsServerComponent,
   ],
   imports: [
     BrowserModule,
@@ -146,6 +152,7 @@ const customNotifierOptions: NotifierOptions = {
     EllipseToolsComponent,
     BrushToolsComponent,
     ColorApplicatorToolsComponent,
+    OpenListDrawingsServerComponent,
   ],
 })
 export class AppModule {
