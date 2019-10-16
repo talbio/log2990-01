@@ -53,7 +53,7 @@ export class EllipseGeneratorService {
     return true;
   }
 
-  updateCircle(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
+  updateCircle(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentEllipse = canvas.children[currentChildPosition - 1];
       if (currentEllipse != null) {
@@ -67,7 +67,7 @@ export class EllipseGeneratorService {
     }
   }
 
-  updateEllipse(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
+  updateEllipse(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentEllipse = canvas.children[currentChildPosition - 1];
       if (currentEllipse != null) {

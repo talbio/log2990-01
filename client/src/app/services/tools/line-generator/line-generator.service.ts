@@ -113,7 +113,7 @@ export class LineGeneratorService {
   }
 
   // Initializes the path
-  makeLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, primaryColor: string, currentChildPosition: number,
+  makeLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, primaryColor: string, currentChildPosition: number,
            defsElement: SVGElement, renderer: Renderer2) {
     if (!this.isMakingLine) {
       // Initiate the line
@@ -139,7 +139,7 @@ export class LineGeneratorService {
     }
   }
 
-  addPointToCurrentLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
+  addPointToCurrentLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
     if (!this.isMakingLine) {
       return;
     }
@@ -147,7 +147,7 @@ export class LineGeneratorService {
     const newPoint = ` ${canvasPosX},${canvasPosY}`;
     currentPolyLine.setAttribute('points', currentPolyLine.getAttribute('points') + newPoint);
   }
-  updateLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
+  updateLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       const currentPolyLine = canvas.children[currentChildPosition - 1];
       let pointsStr = currentPolyLine.getAttribute('points') as string;
@@ -164,7 +164,7 @@ export class LineGeneratorService {
       currentPolyLine.setAttribute('points', newPoints);
     }
   }
-  finishLineBlock(canvas: HTMLElement, currentChildPosition: number) {
+  finishLineBlock(canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       // delete the two last lines for double click
       this.deleteLine(canvas, currentChildPosition);
@@ -173,7 +173,7 @@ export class LineGeneratorService {
       this.isMakingLine = false;
     }
   }
-  finishAndLinkLineBlock(canvas: HTMLElement, currentChildPosition: number) {
+  finishAndLinkLineBlock(canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       // delete the two last lines for double click
       this.deleteLine(canvas, currentChildPosition);
@@ -185,7 +185,7 @@ export class LineGeneratorService {
       this.isMakingLine = false;
     }
   }
-  deleteLineBlock(canvas: HTMLElement, currentChildPosition: number) {
+  deleteLineBlock(canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       const currentPolyLine = canvas.children[currentChildPosition - 1];
       currentPolyLine.remove();
@@ -193,7 +193,7 @@ export class LineGeneratorService {
       this.isMakingLine = false;
     }
   }
-  deleteLine(canvas: HTMLElement, currentChildPosition: number) {
+  deleteLine(canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       const currentPolyLine = canvas.children[currentChildPosition - 1];
       const pointsStr = currentPolyLine.getAttribute('points') as string;
