@@ -112,6 +112,7 @@ export class LineGeneratorService {
   get _isMakingLine(): boolean {
     return this.isMakingLine;
   }
+  set _currentPolylineNumber(count: number) { this.currentPolylineNumber = count; }
 
   // Initializes the path
   makeLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, primaryColor: string, currentChildPosition: number) {

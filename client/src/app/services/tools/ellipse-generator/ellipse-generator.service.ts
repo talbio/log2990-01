@@ -37,6 +37,7 @@ export class EllipseGeneratorService {
   get _plotType() { return this.plotType; }
   set _plotType(plotType: PlotType) { this.plotType = plotType; }
 
+  set _currentEllipseNumber(count: number) { this.currentEllipseNumber = count; }
   createEllipse(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
