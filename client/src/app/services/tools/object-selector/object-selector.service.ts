@@ -75,7 +75,6 @@ export class ObjectSelectorService {
       }
     });
     this.SVGArray = tempArray;
-    console.log(this.SVGArray);
   }
 
   intersects(a: DOMRect): boolean {

@@ -28,15 +28,15 @@ export class ToolManagerService {
   }
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
-              private ellipseGenerator: EllipseGeneratorService,
-              private emojiGenerator: EmojiGeneratorService,
-              private pencilGenerator: PencilGeneratorService,
-              private brushGenerator: BrushGeneratorService,
-              private colorApplicator: ColorApplicatorService,
-              private objectSelector: ObjectSelectorService,
-              private lineGenerator: LineGeneratorService,
-              protected colorService: ColorService,
-              protected mousePosition: MousePositionService) {
+    private ellipseGenerator: EllipseGeneratorService,
+    private emojiGenerator: EmojiGeneratorService,
+    private pencilGenerator: PencilGeneratorService,
+    private brushGenerator: BrushGeneratorService,
+    private colorApplicator: ColorApplicatorService,
+    private objectSelector: ObjectSelectorService,
+    private lineGenerator: LineGeneratorService,
+    protected colorService: ColorService,
+    protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
   }
 
@@ -308,7 +308,23 @@ export class ToolManagerService {
         child.setAttribute('y', newY as unknown as string);
         break;
       case 'path':
-        // TODO
+        const xforms = child.getAttribute('transform');
+        if (xforms) {
+          // tslint:disable-next-line: no-non-null-assertion
+          const parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms!);
+          // tslint:disable-next-line: no-non-null-assertion
+          const firstX = parseFloat(parts![1]);
+          // tslint:disable-next-line: no-non-null-assertion
+          const firstY = parseFloat(parts![2]);
+          // tslint:disable-next-line: no-non-null-assertion
+          newX = parseFloat('' + (firstX + parseFloat(box.getAttribute('x')!)));
+          // tslint:disable-next-line: no-non-null-assertion
+          newY = parseFloat('' + (firstY + parseFloat(box.getAttribute('y')!)));
+        } else {
+          newX = parseFloat('' + box.getAttribute('x'));
+          newY = parseFloat('' + box.getAttribute('y'));
+        }
+        child.setAttribute('transform', 'translate(' + newX + ' ' + newY + ')');
         break;
       case 'polyline':
         // TODO if g does not pan out
