@@ -1,8 +1,11 @@
 import { Component, Inject, OnInit} from '@angular/core';
 import {  MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
+import { Drawing } from '../../../../../../common/communication/Drawing';
+import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { GiveUpChangesDialogComponent } from '../give-up-changes-dialog/give-up-changes-dialog.component';
 import { ModalManagerSingleton } from '../modal-manager-singleton';
+
 
 
 export interface DialogData {
@@ -16,15 +19,23 @@ export interface DialogData {
 })
 export class OpenListDrawingsServerComponent implements OnInit {
   protected readonly DIALOG_TITLE = 'Ouvrir un dessin';
+  drawings: Drawing[] = [];
   private modalManager = ModalManagerSingleton.getInstance();
   constructor(private dialogRef: MatDialogRef<OpenListDrawingsServerComponent>,
               private dialog: MatDialog,
               private toolManager: ToolManagerService,
+              private saveDrawing: SaveDrawingService,
               @Inject(MAT_DIALOG_DATA) private data: DialogData) {
                 this.modalManager._isModalActive = true;
               }
 
   ngOnInit() {
+    this.saveDrawing.httpGetDrawing().toPromise().then( (d: Drawing[]) => {
+      this.drawings = d;
+      console.log(this.drawings);
+      console.log(this.drawings[0].svgElements);
+
+    });
   }
 
   close(): void {

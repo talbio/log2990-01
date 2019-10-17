@@ -1,6 +1,5 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import { Tools } from 'src/app/data-structures/Tools';
-import { Drawing } from '../../../../../../common/communication/Drawing';
 import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
@@ -21,7 +20,6 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   @Input() color: string;
 
   private canvasElement: any;
-  drawings: Drawing[] = [];
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
@@ -30,10 +28,6 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.height = this.DEFAULT_HEIGHT;
     this.color = this.DEFAULT_WHITE_COLOR;
 
-    this.saveDrawing.httpGetDrawing().toPromise().then( (d: Drawing[]) => {
-      this.drawings = d;
-      console.log(this.drawings);
-    });
   }
 
   ngOnInit(): void {

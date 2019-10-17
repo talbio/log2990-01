@@ -1,6 +1,11 @@
 <h2 mat-dialog-title>{{DIALOG_TITLE}}</h2>
 <mat-dialog-content >
 <p>Il faut mettre la liste des images ici!!!</p>
+<ul>
+    <li *ngFor="let drawing of drawings">
+    <svg>{{drawing.svgElements}}</svg>
+    </li>
+</ul>
 </mat-dialog-content>
 
 <mat-dialog-actions>
