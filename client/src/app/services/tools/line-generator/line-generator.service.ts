@@ -4,7 +4,6 @@ import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles
 @Injectable()
 export class LineGeneratorService {
 
-
   private readonly DEFAULT_WIDTH = 5;
   private readonly DEFAULT_DIAMETER = 5;
   private readonly DEFAULT_LINEJOIN = 'round';
