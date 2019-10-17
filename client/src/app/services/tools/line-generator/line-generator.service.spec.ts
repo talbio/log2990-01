@@ -1,12 +1,12 @@
 /* tslint:disable:no-unused-variable */
 
-import { TestBed, async, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { LineGeneratorService } from './line-generator.service';
 
 describe('Service: LineGenerator', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [LineGeneratorService]
+      providers: [LineGeneratorService],
     });
   });
 
