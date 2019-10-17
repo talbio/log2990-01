@@ -9,7 +9,7 @@ export class PolygonGeneratorService {
   private OFFSET_CANVAS_X: number;
   private currentPolygonNumber: number;
   private mouseDown: boolean;
-  private canvasElement: HTMLElement;
+  private canvasElement: SVGElement;
   private renderer: Renderer2;
 
   // attributes of polygon
@@ -18,9 +18,8 @@ export class PolygonGeneratorService {
   private nbOfApex: number;
   private tempRect: SVGElement;
   private currentPolygon: SVGElement;
-  private rectangleGenerator: RectangleGeneratorService;
 
-  constructor() {
+  constructor(private rectangleGenerator: RectangleGeneratorService) {
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.currentPolygonNumber = 0;
@@ -29,7 +28,6 @@ export class PolygonGeneratorService {
   }
 
   // Getters/Setters
-  set _rectangleGenerator(recGen: RectangleGeneratorService) { this.rectangleGenerator = recGen; }
   set _renderer(renderer: Renderer2) { this.renderer = renderer; }
 
   get _strokeWidth() { return this.strokeWidth; }
@@ -42,7 +40,7 @@ export class PolygonGeneratorService {
   set _nbOfApex(nb: number) { this.nbOfApex = nb; }
 
   // First layer functions
-  createPolygon(mouseEvent: MouseEvent, canvas: HTMLElement, primaryColor: string, secondaryColor: string) {
+  createPolygon(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
 
     // Setup of the service's parameters
     this.canvasElement = canvas;
@@ -52,21 +50,29 @@ export class PolygonGeneratorService {
     // Setup of the children's HTML in canvas
     this.injectInitialHTML(mouseEvent, canvas, primaryColor, secondaryColor);
     const currentPolygonID = '#polygon' + this.currentPolygonNumber;
+    console.log(currentPolygonID);
     this.currentPolygon = this.renderer.selectRootElement(currentPolygonID, true) as SVGElement;
+    if (this.currentPolygon != null) {
+      console.log('found the polygon');
+    }
     this.createTemporaryRectangle(mouseEvent, canvas, primaryColor, secondaryColor);
     this.mouseDown = true;
     return true;
   }
 
-  updatePolygon(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentPolygonNumber: number) {
-    this.rectangleGenerator.updateRectangle(canvasPosX, canvasPosY, canvas, currentPolygonNumber);
-    const radius: number = this.determineRadius();
-    // if radius doesn't make sense...
-    if (radius === -1) { console.log('Failure to determine radius'); }
-    const center: number[] = this.determineCenter();
-    // For debugging purposes
-    console.log(center[0] + ' in X and ' + center[1] + ' in Y');
-    this.currentPolygon.setAttribute('points', this.getNewPointsAttribute(center, radius));
+  updatePolygon(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentPolygonNumber: number) {
+    if (this.mouseDown) {
+      this.rectangleGenerator.updateRectangle(canvasPosX, canvasPosY, canvas, currentPolygonNumber);
+      const radius: number = this.determineRadius();
+      // if radius doesn't make sense...
+      if (radius === -1) { console.log('Failure to determine radius'); }
+      const center: number[] = this.determineCenter();
+      // For debugging purposes
+      console.log(center[0] + ' in X and ' + center[1] + ' in Y');
+      const newPoints = this.getNewPointsAttribute(center, radius);
+      console.log('I generated new points');
+      this.currentPolygon.setAttribute('points', newPoints);
+    }
   }
 
   finishPolygon() {
@@ -79,53 +85,61 @@ export class PolygonGeneratorService {
   }
 
   // Second layer functions
-  injectInitialHTML(mouseEvent: MouseEvent, canvas: HTMLElement, primaryColor: string, secondaryColor: string) {
+  injectInitialHTML(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
+    const point = '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) + ',' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y);
+    const points = point + ' ' + point + ' ' + point;
     switch (this.plotType) {
       case PlotType.Contour:
         canvas.innerHTML +=
         `<polygon id=polygon${this.currentPolygonNumber}
-        points=${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}
-        ,${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
-        tempRect=tempRectPolygon${this.currentPolygonNumber}
-        stroke=${secondaryColor} stroke-width=${this.strokeWidth}
+        points=${points}
+        stroke=${primaryColor} stroke-width=${this.strokeWidth}
         fill=transparent></polygon>`;
         break;
       case PlotType.Full:
         canvas.innerHTML +=
         `<polygon id=polygon${this.currentPolygonNumber}
-         points=${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}
-        ,${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
-        tempRect=tempRectPolygon${this.currentPolygonNumber}
+        points="${points}"
         stroke=transparent stroke-width=${this.strokeWidth}
-        fill=${primaryColor}></polygon>`;
+        fill=${secondaryColor}></polygon>`;
         break;
       case PlotType.FullWithContour:
         canvas.innerHTML +=
         `<polygon id=polygon${this.currentPolygonNumber}
-        points=${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}
-        ,${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
-        tempRect=tempRectPolygon${this.currentPolygonNumber}
-        stroke=${secondaryColor} stroke-width=${this.strokeWidth}
-        fill=${primaryColor}></polygon>`;
+        points=${points}
+        stroke=${primaryColor} stroke-width=${this.strokeWidth}
+        fill=${secondaryColor}></polygon>`;
         break;
     }
+    // console.log(`<polygon id=polygon${this.currentPolygonNumber}
+    // points=${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}
+    // ,${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)} ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}
+    // ,${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)} ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}
+    // ,${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
+    // stroke=${secondaryColor} stroke-width=${this.strokeWidth}
+    // fill=transparent></polygon>`);
   }
 
-  createTemporaryRectangle(mouseEvent: MouseEvent, canvas: HTMLElement, primaryColor: string, secondaryColor: string) {
-    this.rectangleGenerator.createRectangle(mouseEvent, canvas, primaryColor, secondaryColor);
-    canvas.children[canvas.children.length - 1].setAttribute('stroke-type', 'dotted');
-    const tempRectID = 'tempRectPolygon' + this.currentPolygonNumber;
-    canvas.children[canvas.children.length - 1].setAttribute('id', tempRectID);
-    this.tempRect = this.renderer.selectRootElement(tempRectID, true) as SVGElement;
+  createTemporaryRectangle(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
+    // console.log('reached creatTemporaryRectangle()');
+    this.rectangleGenerator.createRectangle(mouseEvent, canvas, secondaryColor, primaryColor);
+    // console.log('created the rectangle');
+    canvas.children[canvas.children.length - 1].id = 'tempRect';
+    this.tempRect = this.renderer.selectRootElement('#tempRect', true) as SVGElement;
+    if (this.tempRect != null) {
+      console.log('found the rectangle');
+    }
   }
 
   determineRadius(): number {
     if (this.tempRect != null) {
-      if ((this.tempRect.getAttribute('width') as unknown as number)
-        < (this.tempRect.getAttribute('height') as unknown as number)) {
-        return (this.tempRect.getAttribute('width') as unknown as number) / 2;
+      if (parseFloat(this.tempRect.getAttribute('width') as string)
+        < parseFloat(this.tempRect.getAttribute('height') as string)) {
+        console.log('we kept width');
+        return parseFloat(this.tempRect.getAttribute('width') as string) / 2;
       } else {
-        return (this.tempRect.getAttribute('height') as unknown as number) / 2;
+        console.log('we kept height');
+        return parseFloat(this.tempRect.getAttribute('height') as string) / 2;
       }
     } else {
       return -1;
@@ -133,18 +147,20 @@ export class PolygonGeneratorService {
   }
 
   determineCenter(): number[] {
-    const h: number = this.tempRect.getAttribute('height') as unknown as number;
-    const w: number = this.tempRect.getAttribute('width') as unknown as number;
-    const x: number = this.tempRect.getAttribute('x') as unknown as number;
-    const y: number = this.tempRect.getAttribute('y') as unknown as number;
+    const h: number = parseFloat(this.tempRect.getAttribute('height') as string);
+    const w: number = parseFloat(this.tempRect.getAttribute('width') as string);
+    const x: number = parseFloat(this.tempRect.getAttribute('x') as string);
+    const y: number = parseFloat(this.tempRect.getAttribute('y') as string);
     const center: number[] = [(x + w / 2), (y + h / 2)];
+    console.log('rect X is ' + x + ' and rect Y is ' + y);
     return center;
   }
 
   getNewPointsAttribute(center: number[], radius: number): string {
     // We convert degrees to radians
-    const angleBetweenVertex = (360 / this.nbOfApex) * Math.PI / 180;
+    const angleBetweenVertex = (2 * Math.PI / this.nbOfApex);
     let pointsAttribute: string = center[0] + ',' + (center[1] - radius);
+    console.log(pointsAttribute);
     let i = 1;
     // We determine what is the position of each vertex
     for (i ; i < this.nbOfApex ; i++) {
@@ -153,6 +169,7 @@ export class PolygonGeneratorService {
       const yPos = center[1] - (radius * (Math.sin((Math.PI) / 2 + angleBetweenVertex * i)));
       pointsAttribute += ' ' + xPos + ',' + yPos;
     }
+    console.log(pointsAttribute);
     return pointsAttribute;
   }
 }

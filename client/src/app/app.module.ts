@@ -1,11 +1,11 @@
-import {PortalModule} from '@angular/cdk/portal';
-import {HttpClientModule} from '@angular/common/http';
-import {NgModule } from '@angular/core';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
-import {BrowserModule} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {NotifierModule, NotifierOptions, NotifierService} from 'angular-notifier';
+import { PortalModule } from '@angular/cdk/portal';
+import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NotifierModule, NotifierOptions, NotifierService } from 'angular-notifier';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
 import { AbstractDialogButtonComponent } from './components/main-view/lateral-bar-module/abstract-dialog-button/abstract-dialog-button.component';
 import { AbstractToolButtonComponent } from './components/main-view/lateral-bar-module/abstract-tool-button/abstract-tool-button.component';
@@ -19,6 +19,7 @@ import { EmojiToolsComponent } from './components/main-view/tools-attributes-mod
 import { EyedropperToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eyedropper/eyedropper-tools.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
 import { PencilToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pencil/pencil-tools.component';
+import { PolygonToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/polygon/polygon-tools.component';
 import { RectangleToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/rectangle/rectangle-tools.component';
 import { WorkZoneComponent } from './components/main-view/work-zone/work-zone.component';
 import { ColorPaletteComponent } from './components/modals/color-picker-module/color-palette/color-palette.component';
@@ -29,8 +30,8 @@ import { CreateDrawingDialogComponent } from './components/modals/create-drawing
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
 import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
-import {DemoMaterialModule} from './material.module';
-import {SaveDrawingService} from './services/back-end/save-drawing/save-drawing.service';
+import { DemoMaterialModule } from './material.module';
+import { SaveDrawingService } from './services/back-end/save-drawing/save-drawing.service';
 import { MousePositionService } from './services/mouse-position/mouse-position.service';
 import { StorageService } from './services/storage/storage.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
@@ -112,6 +113,7 @@ const customNotifierOptions: NotifierOptions = {
     BrushToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
+    PolygonToolsComponent,
   ],
   imports: [
     BrowserModule,
@@ -158,6 +160,7 @@ const customNotifierOptions: NotifierOptions = {
     BrushToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
+    PolygonToolsComponent,
   ],
 })
 export class AppModule {

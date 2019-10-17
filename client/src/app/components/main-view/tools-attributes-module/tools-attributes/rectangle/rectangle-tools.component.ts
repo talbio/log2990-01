@@ -1,6 +1,6 @@
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 import { PlotType } from '../../../../../data-structures/PlotType';
-import {RectangleGeneratorService} from '../../../../../services/tools/rectangle-generator/rectangle-generator.service';
+import { RectangleGeneratorService } from '../../../../../services/tools/rectangle-generator/rectangle-generator.service';
 
 @Component({
   selector: 'app-rectangle-tools',

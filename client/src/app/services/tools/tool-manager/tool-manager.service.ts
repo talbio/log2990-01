@@ -51,7 +51,7 @@ export class ToolManagerService {
     this.eyedropper._renderer = renderer;
   }
 
-  createElement(mouseEvent: MouseEvent, canvas: HTMLElement) {
+  createElement(mouseEvent: MouseEvent, canvas: SVGElement) {
     switch (this._activeTool) {
       case Tools.Rectangle:
         this.rectangleGenerator

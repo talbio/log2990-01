@@ -43,7 +43,7 @@ export class BrushGeneratorService {
       stroke=\'${stroke}\' stroke-width=\'${strokeWidth}\' stroke-linecap=\'round\' fill=\'none\'></path>`;
   }
 
-  createBrushPath(mouseEvent: MouseEvent, canvas: HTMLElement) {
+  createBrushPath(mouseEvent: MouseEvent, canvas: SVGElement) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;

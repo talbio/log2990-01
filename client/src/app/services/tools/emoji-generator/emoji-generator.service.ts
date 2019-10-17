@@ -45,11 +45,11 @@ export class EmojiGeneratorService {
         this.scalingFactor = factor;
     }
 
-    addEmoji(mouseEvent: MouseEvent, canvas: HTMLElement) {
+    addEmoji(mouseEvent: MouseEvent, canvas: SVGElement) {
         if (this.emoji !== '') {
             this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
             canvas.innerHTML +=
-                `<image x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X - (this.width * this.scalingFactor / 2))}" 
+                `<image x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X - (this.width * this.scalingFactor / 2))}"
                 y="${(mouseEvent.pageY) - (this.height * this.scalingFactor / 2)}"
         xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
         transform="rotate(${this.angle} ${mouseEvent.pageX - this.OFFSET_CANVAS_X} ${(mouseEvent.pageY)})"
