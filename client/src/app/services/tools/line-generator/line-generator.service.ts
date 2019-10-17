@@ -4,6 +4,7 @@ import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles
 @Injectable()
 export class LineGeneratorService {
 
+
   private readonly DEFAULT_WIDTH = 5;
   private readonly DEFAULT_DIAMETER = 5;
   private readonly DEFAULT_LINEJOIN = 'round';
@@ -16,6 +17,7 @@ export class LineGeneratorService {
   private readonly DOT_SIZE = '1';
   private readonly DEFAULT_LINEJOINSTYLE = LineJoinStyle.Round;
   private readonly DEFAULT_LINEDASHSTYLE = LineDashStyle.Continuous;
+  private renderer: Renderer2;
   private strokeWidth: number;
   private markerDiameter: number;
   private currentPolylineNumber: number;
@@ -113,8 +115,7 @@ export class LineGeneratorService {
   }
 
   // Initializes the path
-  makeLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, primaryColor: string, currentChildPosition: number,
-           defsElement: SVGElement, renderer: Renderer2) {
+  makeLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, primaryColor: string, currentChildPosition: number) {
     if (!this.isMakingLine) {
       // Initiate the line
       canvas.innerHTML +=
@@ -128,7 +129,7 @@ export class LineGeneratorService {
       points="${canvasPosX},${canvasPosY}">
       </polyline>`;
 
-      this.createMarkers(primaryColor, renderer);
+      this.createMarkers(primaryColor);
 
       this.isMakingLine = true;
       this.currentPolyineStartX = canvasPosX;
@@ -208,25 +209,25 @@ export class LineGeneratorService {
   }
 
   // This function creates a marker tag with the color and the id of the polyline and returns a string for the URL
-  createMarkers(color: string, renderer: Renderer2): SVGElement {
-    const marker = renderer.createElement('marker');
-    const circle = renderer.createElement('circle');
+  createMarkers(color: string): SVGElement {
+    const marker = this.renderer.createElement('marker');
+    const circle = this.renderer.createElement('circle');
 
-    renderer.setAttribute(circle, 'fill', color);
-    renderer.setAttribute(circle, 'r', this.markerDiameter as unknown as string);
-    renderer.setAttribute(circle, 'cy', this.markerDiameter as unknown as string);
-    renderer.setAttribute(circle, 'cx', this.markerDiameter as unknown as string);
-    renderer.setAttribute(marker, 'markerWidth', (this.markerDiameter * 2) as unknown as string);
-    renderer.setAttribute(marker, 'markerHeight', (this.markerDiameter * 2) as unknown as string);
-    renderer.setAttribute(marker, 'refX', this.markerDiameter as unknown as string);
-    renderer.setAttribute(marker, 'refY', this.markerDiameter as unknown as string);
-    renderer.setAttribute(marker, 'markerUnits', 'userSpaceOnUse');
-    renderer.setProperty(marker, 'id', `line${this.currentPolylineNumber}marker`);
+    this.renderer.setAttribute(circle, 'fill', color);
+    this.renderer.setAttribute(circle, 'r', this.markerDiameter as unknown as string);
+    this.renderer.setAttribute(circle, 'cy', this.markerDiameter as unknown as string);
+    this.renderer.setAttribute(circle, 'cx', this.markerDiameter as unknown as string);
+    this.renderer.setAttribute(marker, 'markerWidth', (this.markerDiameter * 2) as unknown as string);
+    this.renderer.setAttribute(marker, 'markerHeight', (this.markerDiameter * 2) as unknown as string);
+    this.renderer.setAttribute(marker, 'refX', this.markerDiameter as unknown as string);
+    this.renderer.setAttribute(marker, 'refY', this.markerDiameter as unknown as string);
+    this.renderer.setAttribute(marker, 'markerUnits', 'userSpaceOnUse');
+    this.renderer.setProperty(marker, 'id', `line${this.currentPolylineNumber}marker`);
 
-    renderer.appendChild(marker, circle);
-    const defs = renderer.selectRootElement('#definitions', true);
-    const canvas = renderer.selectRootElement('#canvas', true);
-    renderer.appendChild(defs, marker);
+    this.renderer.appendChild(marker, circle);
+    const defs = this.renderer.selectRootElement('#definitions', true);
+    const canvas = this.renderer.selectRootElement('#canvas', true);
+    this.renderer.appendChild(defs, marker);
     if (this.isMarkersActive) {
       this.addMarkersToNewLine(marker, canvas);
     }
@@ -251,7 +252,9 @@ export class LineGeneratorService {
       }
     }
     // No marker was found for corresponding polyline, this should not happen as the marker is created with the polyline
-    const returnEmpty = new SVGElement();
-    return returnEmpty;
+    return new SVGElement();
+  }
+  set _renderer(rend: Renderer2) {
+    this.renderer = rend;
   }
 }

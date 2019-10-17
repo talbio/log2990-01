@@ -31,7 +31,7 @@ export class PencilGeneratorService {
   }
 
   // Initializes the path
-  createPenPath(mouseEvent: MouseEvent, canvas: HTMLElement, primaryColor: string) {
+  createPenPath(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
