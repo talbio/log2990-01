@@ -55,7 +55,7 @@ export class ToolManagerService {
           .createRectangle(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Pencil:
-        this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getPrimaryColor());
+        this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getSecondaryColor());
         break;
       case Tools.Brush:
         this.brushGenerator.createBrushPath(mouseEvent, canvas);
@@ -135,11 +135,11 @@ export class ToolManagerService {
       case Tools.Line:
         this.defsElement = this.renderer.selectRootElement('#definitions', true);
         this.lineGenerator.makeLine(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, canvas, this.colorService.getPrimaryColor(),
+          this.mousePosition._canvasMousePositionY, canvas, this.colorService.getSecondaryColor(),
             this.numberOfElements, this.defsElement, this.renderer);
         break;
       case Tools.Eyedropper:
-        this.eyedropper.getColorOnPixel(canvas);
+        this.eyedropper.changePrimaryColor(clickedElement);
         break;
       default:
         return;
@@ -147,11 +147,14 @@ export class ToolManagerService {
     this.numberOfElements = canvas.children.length;
   }
 
-  changeElementRightClick(clickedElement: HTMLElement) {
+  changeElementRightClick(clickedElement: SVGElement) {
     switch (this._activeTool) {
       case Tools.ColorApplicator:
         this.colorApplicator.changeSecondaryColor(clickedElement, this.colorService.getSecondaryColor());
         break;
+      case Tools.Eyedropper:
+          this.eyedropper.changeSecondaryColor(clickedElement);
+          break;
       default:
         return;
     }

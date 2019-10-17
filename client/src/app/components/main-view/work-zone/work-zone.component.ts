@@ -68,7 +68,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   }
 
   onRightClick(mouseEvent: Event) {
-    this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
+    this.toolManager.changeElementRightClick(mouseEvent.target as SVGElement);
     // deactivate context menu on right click
     return false;
   }
