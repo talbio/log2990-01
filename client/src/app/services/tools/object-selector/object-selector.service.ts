@@ -38,7 +38,7 @@ export class ObjectSelectorService {
     this.mouseDownSelector = true;
   }
 
-  updateSelectorRectangle(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updateSelectorRectangle(mouseEvent: MouseEvent, canvas: HTMLElement) {
 
     if (this.mouseDownSelector) {
       // tslint:disable-next-line: no-non-null-assertion
@@ -67,7 +67,7 @@ export class ObjectSelectorService {
   }
 
   selectItems(canvas: HTMLElement): void {
-    const drawings = canvas.querySelectorAll('rect, path, ellipse, image');
+    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline');
     const tempArray = new Array();
     drawings.forEach((drawing) => {
       if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== 'selector') && (drawing.id !== '')) {

@@ -90,7 +90,7 @@ export class ToolManagerService {
         this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
         break;
       case Tools.Selector:
-        this.objectSelector.updateSelectorRectangle(mouseEvent, canvas, this.numberOfElements);
+        this.objectSelector.updateSelectorRectangle(mouseEvent, canvas);
         this.updateNumberOfElements();
         break;
       case Tools.Line:
@@ -290,6 +290,7 @@ export class ToolManagerService {
     let newY: number;
     switch (child.nodeName) {
       case 'rect':
+      case 'image':
         newX = parseFloat('' + child.getAttribute('x')) + parseFloat('' + box.getAttribute('x'));
         newY = parseFloat('' + child.getAttribute('y')) + parseFloat('' + box.getAttribute('y'));
         child.setAttribute('x', newX as unknown as string);
@@ -301,13 +302,8 @@ export class ToolManagerService {
         child.setAttribute('cx', newX as unknown as string);
         child.setAttribute('cy', newY as unknown as string);
         break;
-      case 'image':
-        newX = parseFloat('' + child.getAttribute('x')) + parseFloat('' + box.getAttribute('x'));
-        newY = parseFloat('' + child.getAttribute('y')) + parseFloat('' + box.getAttribute('y'));
-        child.setAttribute('x', newX as unknown as string);
-        child.setAttribute('y', newY as unknown as string);
-        break;
       case 'path':
+      case 'polyline':
         const xforms = child.getAttribute('transform');
         if (xforms) {
           // tslint:disable-next-line: no-non-null-assertion
@@ -325,9 +321,6 @@ export class ToolManagerService {
           newY = parseFloat('' + box.getAttribute('y'));
         }
         child.setAttribute('transform', 'translate(' + newX + ' ' + newY + ')');
-        break;
-      case 'polyline':
-        // TODO if g does not pan out
         break;
       case 'polygon':
         // TODO
