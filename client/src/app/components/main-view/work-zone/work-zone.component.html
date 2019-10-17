@@ -7,8 +7,9 @@
      (mouseup)='onMouseUp()'
      (click)='onLeftClick($event)'
      (contextmenu)='onRightClick($event)'
-     (dblclick)='onDoubleClick($event)'>
-    <defs>
+     (dblclick)='onDoubleClick($event)'
+     (mousewheel)='onMouseWheel($event)'>
+    <defs id="definitions">
         <pattern id="brushPattern1" patternUnits="userSpaceOnUse" width="3" height="3">
             <rect x="0" y="0" width="100%" height="100%" [attr.fill]="toolManager.colorService.primaryColor"></rect>
             <rect x="0" y="0" width="1" height="1" [attr.stroke]="toolManager.colorService.secondaryColor"></rect>

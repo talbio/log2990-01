@@ -4,17 +4,17 @@ import { ChangeDetectorRef,  Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
-import { Tools } from 'src/app/data-structures/Tools';
-import { MousePositionService } from 'src/app/services/mouse-position/mouse-position.service';
-import { BrushGeneratorService } from 'src/app/services/tools/brush-generator/brush-generator.service';
-import { ColorApplicatorService } from 'src/app/services/tools/color-applicator/color-applicator.service';
-import { ColorService } from 'src/app/services/tools/color/color.service';
-import { EllipseGeneratorService } from 'src/app/services/tools/ellipse-generator/ellipse-generator.service';
-import { LineGeneratorService } from 'src/app/services/tools/line-generator/line-generator.service';
-import { PencilGeneratorService } from 'src/app/services/tools/pencil-generator/pencil-generator.service';
-import { RectangleGeneratorService } from 'src/app/services/tools/rectangle-generator/rectangle-generator.service';
-import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
+import { Tools } from '../../../data-structures/Tools';
 import { DemoMaterialModule } from '../../../material.module';
+import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
+import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
+import { ColorApplicatorService } from '../../../services/tools/color-applicator/color-applicator.service';
+import { ColorService } from '../../../services/tools/color/color.service';
+import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
+import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
+import { PencilGeneratorService } from '../../../services/tools/pencil-generator/pencil-generator.service';
+import { RectangleGeneratorService } from '../../../services/tools/rectangle-generator/rectangle-generator.service';
+import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { ColorPaletteComponent } from '../../modals/color-picker-module/color-palette/color-palette.component';
 import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 import { ColorSliderComponent } from '../../modals/color-picker-module/color-slider/color-slider.component';
@@ -22,6 +22,8 @@ import { LastTenColorsComponent } from '../../modals/color-picker-module/last-te
 import { ColorToolComponent } from '../color-tool/color-tool.component';
 import { ToolsAttributesComponent } from '../tools-attributes/tools-attributes.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+// import {MatSidenavModule} from '@angular/material/sidenav';
+// import {ToolsAttributesBarComponent} from '../tools-attributes-bar-module/tools-attributes-bar-module.component';
 import { DrawingViewComponent } from './drawing-view.component';
 /* tslint:disable:max-classes-per-file for mocking classes*/
 @Component({ selector: 'app-lateral-bar', template: '' })
@@ -41,6 +43,9 @@ const DRAWING_SERVICES = [
 fdescribe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
+  // let toolSelectorServiceStub: Partial<ToolSelectorService>;
+  // const cp = new ComponentPortal <ToolsAttributesBarComponent>(ToolsAttributesBarComponent);
+
   beforeAll(async(() => {
     TestBed.configureTestingModule({
       declarations: [
@@ -71,7 +76,7 @@ fdescribe('DrawingViewComponent', () => {
       fixture.detectChanges();
     });
   }));
-  it('should create', () => {
+  it('should create an ellipse in work-zone', () => {
     expect(component).toBeTruthy();
   });
   // Step 1: Arrange
@@ -83,9 +88,12 @@ fdescribe('DrawingViewComponent', () => {
     // Step 1. Select ellipse
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Ellipse;
+    // Create the work-zone
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
+
+    // Setting up the event
     const spy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
     const xInitial = 100;
     const yInitial = 100;
@@ -105,21 +113,21 @@ fdescribe('DrawingViewComponent', () => {
     expect(lastChild.tagName).toEqual('ellipse');
   });
 
-  // const drawEllipseOnCanvas = (svgHandle?: SVGElement, mouseEvent?: MouseEvent) => {
-  //   ///
-  // };
+  const drawEllipseOnCanvas = (svgHandle?: SVGElement, mouseEvent?: MouseEvent) => {
 
-  // const getLastSvgElement = (svgHandle: SVGElement) => {
-  //   return svgHandle.children.item(svgHandle.children.length - 1) as SVGElement;
-  // };
+  };
 
-  // it('should be able to draw an ellipse', () => {
-  //   const colorService = fixture.debugElement.injector.get(ColorService);
-  //   colorService.setPrimaryColor('red');
-  //   // Draw an ellipse..
-  //   // drawEllipseOnCanvas(null, null)
+  const getLastSvgElement = (svgHandle: SVGElement) => {
+    return svgHandle.children.item(svgHandle.children.length - 1) as SVGElement;
+  };
 
-  //   // const lastChild = getLastSvgElement(null);
-  //   // expect(lastChild.getAttributeNS('fill')).toEqual('red');
-  // });
+  it('should be able to interacte properly with the color applicator', () => {
+    const colorService = fixture.debugElement.injector.get(ColorService);
+    colorService.setPrimaryColor('red');
+    // Draw an ellipse..
+    drawEllipseOnCanvas(null, null)
+
+    const lastChild = getLastSvgElement(null);
+    expect(lastChild.getAttribute('fill')).toEqual('red');
+  });
 });

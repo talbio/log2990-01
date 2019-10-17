@@ -49,7 +49,7 @@ export class PencilGeneratorService {
   /**
    * @desc // Updates the path when the mouse is moving (mousedown)
    */
-  updatePenPath(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updatePenPath(mouseEvent: MouseEvent, canvas: SVGElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentPath = canvas.children[currentChildPosition - 1];
       if (currentPath != null) {
