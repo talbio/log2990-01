@@ -20,6 +20,8 @@ export class RectangleGeneratorService {
     this.mouseDown = false;
   }
 
+  get _currentRectNumber() { return this.currentRectNumber; }
+
   get _strokeWidth() {
     return this.strokeWidth;
   }

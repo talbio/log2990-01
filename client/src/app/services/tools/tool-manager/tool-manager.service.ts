@@ -44,6 +44,7 @@ export class ToolManagerService {
   loadRenderer(renderer: Renderer2) {
     this.renderer = renderer;
     // Give it to the tools who also need it
+    this.ellipseGenerator._renderer = renderer;
     this.colorApplicator._renderer = renderer;
     this.eyedropper._renderer = renderer;
   }

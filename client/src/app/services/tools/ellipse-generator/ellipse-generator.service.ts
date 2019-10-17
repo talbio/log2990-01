@@ -1,6 +1,6 @@
-import { RectangleGeneratorService } from './../rectangle-generator/rectangle-generator.service';
 import { Injectable, Renderer2 } from '@angular/core';
-import { Axis, PlotType } from '../../../data-structures/PlotType';
+import { PlotType } from '../../../data-structures/PlotType';
+import { RectangleGeneratorService } from './../rectangle-generator/rectangle-generator.service';
 
 enum Axis {
   x,
@@ -46,8 +46,12 @@ export class EllipseGeneratorService {
     canvas.innerHTML +=
       this.generateEllipseElement(this.currentEllipseNumber, xPos, yPos, primaryColor, secondaryColor);
     this.rectangleGenerator.createRectangle(mouseEvent, canvas, primaryColor, secondaryColor);
-    this.tempRect = canvas.children[canvas.children.length - 1] as SVGElement;
+    const rectID = '#rect' + this.rectangleGenerator._currentRectNumber;
+    this.tempRect = this.renderer.selectRootElement(rectID, true) as SVGElement;
     this.tempRect.id = 'tempRect';
+    if (this.tempRect.id === 'tempRect') {
+      console.log('found and renamed the rectangle');
+    }
     this.mouseDown = true;
     return true;
   }
@@ -67,8 +71,9 @@ export class EllipseGeneratorService {
   }
 
   updateEllipse(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
+    this.rectangleGenerator.updateRectangle(canvasPosX, canvasPosY, canvas, currentChildPosition);
     if (this.mouseDown) {
-      const currentEllipse = canvas.children[currentChildPosition - 1];
+      const currentEllipse = canvas.children[currentChildPosition - 2];
       if (currentEllipse != null) {
         const startEllipseX: number = Number(currentEllipse.getAttribute('data-start-x'));
         const startEllipseY: number = Number(currentEllipse.getAttribute('data-start-y'));
@@ -90,6 +95,7 @@ export class EllipseGeneratorService {
 
   finishEllipse() {
     if (this.mouseDown) {
+      this.renderer.selectRootElement('#canvas', true).removeChild(this.tempRect);
       this.currentEllipseNumber += 1;
       this.mouseDown = false;
     }
