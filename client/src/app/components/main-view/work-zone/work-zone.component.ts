@@ -1,6 +1,5 @@
-import { AfterViewInit, Component, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
-import { Tools } from 'src/app/data-structures/Tools';
-import { SaveDrawingService } from '../../../services/back-end/save-drawing/save-drawing.service';
+import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
+import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
@@ -74,16 +73,12 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   }
 
   onLeftClick(mouseEvent: MouseEvent) {
-    if (this.toolManager._activeTool === Tools.ColorApplicator) {
-      this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
-    } else if (this.toolManager._activeTool === Tools.Line) {
-      this.toolManager.createElementOnClick(mouseEvent, this.canvasElement);
-    }
+    this.toolManager.changeElementLeftClick(mouseEvent.target as SVGElement, this.canvasElement);
     return true;
   }
 
   onRightClick(mouseEvent: Event) {
-    this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
+    this.toolManager.changeElementRightClick(mouseEvent.target as SVGElement);
     // deactivate context menu on right click
     return false;
   }
