@@ -37,6 +37,10 @@ export class BrushGeneratorService {
     return this.currentBrushPattern;
   }
 
+  set _currentBrushPathNumber(count: number) {
+    this.currentBrushPathNumber = count;
+  }
+
   generateBrushPath(id: number, xPos: number, yPos: number, strokeWidth: number): string {
     return `<path
       id=\'brushPath${id}\'

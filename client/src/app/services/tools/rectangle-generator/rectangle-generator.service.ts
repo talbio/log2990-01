@@ -21,7 +21,7 @@ export class RectangleGeneratorService {
   }
 
   get _currentRectNumber() { return this.currentRectNumber; }
-
+  set _currentRectNumber(count: number) { this.currentRectNumber = count; }
   get _strokeWidth() {
     return this.strokeWidth;
   }
