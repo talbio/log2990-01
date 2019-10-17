@@ -108,15 +108,19 @@ export class ObjectSelectorService {
     // tslint:disable-next-line: no-non-null-assertion
     const boxGroup = group!.getBBox();
     canvas.innerHTML +=
-      `<svg id="box"><rect id="boxrect"
-            x="${boxGroup.x}"
-            data-start-x = "${boxGroup.x}"
-            y="${boxGroup.y}"
-            data-start-y = "${boxGroup.y}"
-            width = "${boxGroup.width}" height = "${boxGroup.height}"
-            stroke="${STROKE_COLOR}"
-            fill="transparent">
-            </rect></svg>`;
+      `<svg id="box">
+        <defs><marker id="dot" viewBox="0 0 10 10" refX="5" refY="5"
+        markerWidth="5" markerHeight="5">
+        <circle cx="5" cy="5" r="20" fill="red" />
+        </marker></defs>
+        <polyline id="boxrect"
+        points="${boxGroup.x},${boxGroup.y} ${boxGroup.x + (boxGroup.width / 2)},${boxGroup.y} ${boxGroup.x + boxGroup.width},${boxGroup.y}
+        ${boxGroup.x + boxGroup.width},${boxGroup.y + (boxGroup.height / 2)} ${boxGroup.x + boxGroup.width},${boxGroup.y + boxGroup.height}
+        ${boxGroup.x + (boxGroup.width / 2)},${boxGroup.y + boxGroup.height} ${boxGroup.x},${boxGroup.y + boxGroup.height} 
+        ${boxGroup.x},${boxGroup.y + (boxGroup.height / 2)} ${boxGroup.x},${boxGroup.y}"
+        stroke="${STROKE_COLOR}" fill="transparent"
+        marker-start="url(#dot)" marker-mid="url(#dot)">
+        </polyline></svg>`;
     const box = canvas.querySelector('#box') as SVGGElement;
     box.append(group);
     const selected = canvas.querySelector('#selected') as SVGGElement;
@@ -138,9 +142,9 @@ export class ObjectSelectorService {
       // tslint:disable-next-line: no-non-null-assertion
       const box = group!.getBoundingClientRect();
       // tslint:disable-next-line: no-non-null-assertion
-      group!.setAttribute('x', '' + (mouseEvent.x  - this.initialX - (box.width / 2)));
+      group!.setAttribute('x', '' + (mouseEvent.x - this.initialX - (box.width / 2)));
       // tslint:disable-next-line: no-non-null-assertion
-      group!.setAttribute('y', '' + (mouseEvent.y -  this.initialY - (box.height / 2) ));
+      group!.setAttribute('y', '' + (mouseEvent.y - this.initialY - (box.height / 2)));
     }
   }
 
