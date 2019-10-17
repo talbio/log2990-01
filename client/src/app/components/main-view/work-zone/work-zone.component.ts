@@ -44,8 +44,9 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     if (keyboardEvent.key === this.SHIFT_KEY) {
       this.toolManager.changeElementShiftDown();
     }
-    if (keyboardEvent.key === this.ALT_KEY) {
+    if (keyboardEvent.key === this.ALT_KEY)  {
       this.toolManager.changeElementAltDown();
+      keyboardEvent.preventDefault();
     }
 
   }
@@ -56,6 +57,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     }
     if (keyboardEvent.key === this.ALT_KEY) {
       this.toolManager.changeElementAltUp();
+      keyboardEvent.preventDefault();
     }
   }
 
