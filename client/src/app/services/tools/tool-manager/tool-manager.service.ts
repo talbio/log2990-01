@@ -28,15 +28,15 @@ export class ToolManagerService {
   }
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
-    private ellipseGenerator: EllipseGeneratorService,
-    private emojiGenerator: EmojiGeneratorService,
-    private pencilGenerator: PencilGeneratorService,
-    private brushGenerator: BrushGeneratorService,
-    private colorApplicator: ColorApplicatorService,
-    private objectSelector: ObjectSelectorService,
-    private lineGenerator: LineGeneratorService,
-    protected colorService: ColorService,
-    protected mousePosition: MousePositionService) {
+              private ellipseGenerator: EllipseGeneratorService,
+              private emojiGenerator: EmojiGeneratorService,
+              private pencilGenerator: PencilGeneratorService,
+              private brushGenerator: BrushGeneratorService,
+              private colorApplicator: ColorApplicatorService,
+              private objectSelector: ObjectSelectorService,
+              private lineGenerator: LineGeneratorService,
+              protected colorService: ColorService,
+              protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
   }
 
@@ -240,7 +240,7 @@ export class ToolManagerService {
         return;
     }
   }
-  selectorLeftClick(): void {
+  selectorMouseDown(): void {
     const selectorBox = this.canvasElement.querySelector('#boxrect') as SVGGElement;
     const box = selectorBox.getBBox();
     if (this.mousePosition._canvasMousePositionX < box.x || this.mousePosition._canvasMousePositionX > (box.x + box.width)

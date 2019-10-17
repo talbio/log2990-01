@@ -53,7 +53,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   onMouseDown(mouseEvent: MouseEvent) {
     if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
-      this.toolManager.selectorLeftClick();
+      this.toolManager.selectorMouseDown();
     } else { this.toolManager.createElement(mouseEvent, this.canvasElement); }
   }
 
