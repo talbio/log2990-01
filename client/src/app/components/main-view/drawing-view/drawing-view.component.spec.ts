@@ -1,7 +1,7 @@
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
-import {HttpClient} from '@angular/common/http';
-import { ChangeDetectorRef,  Component, NO_ERRORS_SCHEMA } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2 } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
@@ -21,19 +21,23 @@ import { ColorPaletteComponent } from '../../modals/color-picker-module/color-pa
 import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 import { ColorSliderComponent } from '../../modals/color-picker-module/color-slider/color-slider.component';
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
+import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
-import { SaveDrawingService } from './../../../services/back-end/save-drawing/save-drawing.service';
+import { ModalManagerService } from './../../../services/modal-manager/modal-manager.service';
 import { EyedropperService } from './../../../services/tools/eyedropper/eyedropper.service';
-import { ColorToolButtonsComponent } from './../lateral-bar-module/color-tool-buttons/color-tool-buttons.component';
-// import { ToolsAttributesBarComponent } from './../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { DrawingViewComponent } from './drawing-view.component';
 /* tslint:disable:max-classes-per-file for mocking classes*/
 @Component({ selector: 'app-lateral-bar', template: '' })
 class LateralBarStubComponent { }
 @Component({ selector: 'app-welcome-modal', template: '' })
 class WelcomeModalStubComponent { }
-@Component({ selector: 'app-tools-attributes', template: '' })
-class ToolAttributesBarStubComponent { }
+
+const rendererSpy: jasmine.SpyObj<Renderer2> =
+  jasmine.createSpyObj('Renderer2', ['selectRootElement']);
+const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =
+  jasmine.createSpyObj('ModalManagerService', ['showCreateDrawingDialog', 'loadRenderer']);
+const httpClientSpy: jasmine.SpyObj<HttpClient> =
+  jasmine.createSpyObj('HttpClient', ['get', 'post']);
 
 const DRAWING_SERVICES = [
   RectangleGeneratorService,
@@ -57,12 +61,11 @@ fdescribe('DrawingViewComponent', () => {
         WelcomeModalStubComponent,
         WorkZoneComponent,
         LateralBarStubComponent,
-        ToolAttributesBarStubComponent,
-        ColorToolButtonsComponent,
         ColorPaletteComponent,
         ColorSliderComponent,
         ColorPickerDialogComponent,
         LastTenColorsComponent,
+        ToolsAttributesBarComponent,
       ],
       imports: [
         DemoMaterialModule,
@@ -70,18 +73,20 @@ fdescribe('DrawingViewComponent', () => {
         FormsModule,
         PortalModule,
       ],
-      providers: [ToolManagerService, ...DRAWING_SERVICES, ColorService, SaveDrawingService, ChangeDetectorRef,
-        HttpClient, ],
+      providers: [ToolManagerService, ...DRAWING_SERVICES, ColorService, ChangeDetectorRef,
+        {provide: Renderer2, useValue: rendererSpy},
+        {provide: ModalManagerService, useValue: modalManagerSpy},
+        {provide: HttpClient, useValue: httpClientSpy}, ],
       schemas: [ NO_ERRORS_SCHEMA ],
-    }).overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [DrawingViewComponent] } },
+    }).overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [ToolsAttributesBarComponent,
+       DrawingViewComponent] } },
     ).compileComponents().then(() => {
-      console.log(TestBed.createComponent(DrawingViewComponent));
       fixture = TestBed.createComponent(DrawingViewComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
     });
   }));
-  it('should create an ellipse in work-zone', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
   // Step 1: Arrange
@@ -113,8 +118,10 @@ fdescribe('DrawingViewComponent', () => {
     expect(spy).toHaveBeenCalled();
     console.log(svgHandle);
     // Step 3. Expect un <ellipse>
-    expect(workChilds.length).toEqual(initialChildsLength + 1);
-    const lastChild = workChilds.item(workChilds.length - 1) as SVGElement;
+    console.log(workChilds.length);
+    console.log(initialChildsLength);
+    expect(workChilds.length).toEqual(initialChildsLength + 2);
+    const lastChild = workChilds.item(workChilds.length - 2) as SVGElement;
     expect(lastChild.tagName).toEqual('ellipse');
   });
 
