@@ -19,6 +19,7 @@ export class ToolManagerService {
   private renderer: Renderer2;
   private canvasElement: SVGElement;
   private activeTool: Tools;
+  private hasBeenTranslated: boolean;
 
   set _activeTool(tool: Tools) {
     this.activeTool = tool;
@@ -40,6 +41,7 @@ export class ToolManagerService {
               protected colorService: ColorService,
               protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
+    this.hasBeenTranslated = false;
   }
 
   loadRenderer(renderer: Renderer2) {
@@ -260,7 +262,7 @@ export class ToolManagerService {
     const box = selectorBox.getBBox();
     if (this.mousePosition._canvasMousePositionX < box.x || this.mousePosition._canvasMousePositionX > (box.x + box.width)
       || this.mousePosition._canvasMousePositionY < box.y || this.mousePosition._canvasMousePositionY > (box.y + box.height)) {
-      this.removeSelector();
+        this.removeSelector();
       // si il y a objet présent, inverser
     } else { this.objectSelector.startTranslation(); }
   }
@@ -271,6 +273,7 @@ export class ToolManagerService {
 
   finishTranslation(): void {
     this.objectSelector.drop();
+    this.hasBeenTranslated = true;
   }
 
   removeSelector(): void {
@@ -280,11 +283,14 @@ export class ToolManagerService {
     // tslint:disable-next-line: no-non-null-assertion
     const childArray = Array.from(selected!.children);
     childArray.forEach((child) => {
+      if (this.hasBeenTranslated) {
       this.changeChildPosition(child, box);
+      }
       this.canvasElement.appendChild(child);
     });
     box.removeChild(boxrect);
     this.canvasElement.removeChild(box);
+    this.hasBeenTranslated = false;
   }
 
   backSpacePress() {
