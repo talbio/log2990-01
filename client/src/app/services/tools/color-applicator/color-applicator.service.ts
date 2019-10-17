@@ -1,9 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Renderer2 } from '@angular/core';
+import { BrushGeneratorService } from './../brush-generator/brush-generator.service';
+import { LineGeneratorService } from './../line-generator/line-generator.service';
 
 @Injectable()
 export class ColorApplicatorService {
+  private renderer: Renderer2;
+  constructor(private lineGenerator: LineGeneratorService, private brushGenerator: BrushGeneratorService) {}
 
-  changePrimaryColor(targetObject: HTMLElement, newColor: string) {
+  changePrimaryColor(targetObject: SVGElement, newColor: string) {
+    const defs = this.renderer.selectRootElement('#definitions', true);
     switch (targetObject.nodeName) {
 
       case 'rect':
@@ -17,9 +22,9 @@ export class ColorApplicatorService {
           targetObject.setAttribute('stroke', newColor);
         } else if (('' + targetObject.getAttribute('id')).startsWith('brush')) {
           // PaintBrush
-          // targetObject.setAttribute('stroke', newColor);
-          // attribute stroke for brush paths are structed as follows: url(#brushPatternX), therefore the id is in substring 5 to 18
-          const pattern = document.getElementById((targetObject.getAttribute('stroke') as string).substring(5, 18));
+          // Find the pattern
+          const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, defs);
+          // Change color of the fill attribute of all children
           if (pattern != null) {
             for (const child of [].slice.call(pattern.children)) {
               if (child.hasAttribute('fill')) {
@@ -31,9 +36,19 @@ export class ColorApplicatorService {
           alert('Object id is \'' + targetObject.getAttribute('id') + '\' and this case is not treated!');
         }
         break;
-        case 'ellipse':
-            targetObject.setAttribute('fill', newColor);
-            break;
+      case 'ellipse':
+        targetObject.setAttribute('fill', newColor);
+        break;
+      case 'polyline':
+        targetObject.setAttribute('stroke', newColor);
+        // find the markers
+        const markers = this.lineGenerator.findMarkerFromPolyline(targetObject, defs);
+        // change color of the circles in the markers
+        markers.children[0].setAttribute('fill', newColor);
+        break;
+      case 'image':
+        // Image should not change color
+        break;
       case 'svg':
         // Canvas
         break;
@@ -44,7 +59,8 @@ export class ColorApplicatorService {
 
   }
 
-  changeSecondaryColor(targetObject: HTMLElement, newColor: string) {
+  changeSecondaryColor(targetObject: SVGElement, newColor: string) {
+    const defs = this.renderer.selectRootElement('#definitions', true);
     switch (targetObject.nodeName) {
       case 'rect':
         // Rectangle
@@ -53,7 +69,10 @@ export class ColorApplicatorService {
       case 'path':
         // Paths should only be able to change the primary colorSelected, unless they are a paintbrush texture
         if ((targetObject.getAttribute('id') as string).startsWith('brush')) {
-          const pattern = document.getElementById((targetObject.getAttribute('stroke') as string).substring(5, 18));
+          // PaintBrush
+          // Find the pattern
+          const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, defs);
+          // Change color of the stroke attribute of all children
           if (pattern != null) {
             for (const child of [].slice.call(pattern.children)) {
               if (child.hasAttribute('stroke')) {
@@ -66,6 +85,11 @@ export class ColorApplicatorService {
       case 'ellipse':
           targetObject.setAttribute('stroke', newColor);
           break;
+      case 'polyline':
+        break;
+      case 'image':
+          // Image should not change color
+          break;
       case 'svg':
         // Canvas
         break;
@@ -74,5 +98,7 @@ export class ColorApplicatorService {
         break;
     }
   }
-
+  set _renderer(rend: Renderer2) {
+    this.renderer = rend;
+  }
 }

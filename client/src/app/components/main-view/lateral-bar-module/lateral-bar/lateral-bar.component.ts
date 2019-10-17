@@ -93,6 +93,8 @@ export class LateralBarComponent {
       this.toolPropertiesFactory(Tools.ColorApplicator, 'Applicateur de couleur', 'format_paint', false));
     this.toolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Selector, 'Outil de sélection', 'select_all', false));
+    this.toolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Eyedropper, 'Pipette', 'colorize', false));
   }
 
   private initializeDialogsButtons() {

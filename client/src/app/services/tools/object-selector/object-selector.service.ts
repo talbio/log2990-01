@@ -22,7 +22,7 @@ export class ObjectSelectorService {
     this.mouseDownSelector = false;
   }
 
-  createSelectorRectangle(mouseEvent: MouseEvent, canvas: HTMLElement) {
+  createSelectorRectangle(mouseEvent: MouseEvent, canvas: SVGElement) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
@@ -38,7 +38,7 @@ export class ObjectSelectorService {
     this.mouseDownSelector = true;
   }
 
-  updateSelectorRectangle(mouseEvent: MouseEvent, canvas: HTMLElement) {
+  updateSelectorRectangle(mouseEvent: MouseEvent, canvas: SVGElement) {
 
     if (this.mouseDownSelector) {
       // tslint:disable-next-line: no-non-null-assertion
@@ -66,7 +66,7 @@ export class ObjectSelectorService {
     }
   }
 
-  selectItems(canvas: HTMLElement): void {
+  selectItems(canvas: SVGElement): void {
     const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline');
     const tempArray = new Array();
     drawings.forEach((drawing) => {
@@ -85,7 +85,7 @@ export class ObjectSelectorService {
         b.top > a.bottom));
   }
 
-  finishSelector(canvas: HTMLElement): void {
+  finishSelector(canvas: SVGElement): void {
     if (this.mouseDownSelector) {
       if (this.isSelectorVisible) {
         canvas.removeChild(this.currentRect);
@@ -98,7 +98,7 @@ export class ObjectSelectorService {
     this.mouseDownSelector = false;
   }
 
-  addToGroup(canvas: HTMLElement): void {
+  addToGroup(canvas: SVGElement): void {
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     group.setAttribute('id', 'selected');
     this.SVGArray.forEach((drawing) => {

@@ -1,26 +1,112 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Renderer2 } from '@angular/core';
+import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
 
 @Injectable()
 export class LineGeneratorService {
 
   private readonly DEFAULT_WIDTH = 5;
+  private readonly DEFAULT_DIAMETER = 5;
+  private readonly DEFAULT_LINEJOIN = 'round';
+  private readonly DEFAULT_DASHARRAY = 'none';
+  private readonly DEFAULT_LINECAP = 'butt';
+  private readonly STRAIGHT_ENDS = 'butt';
+  private readonly CURVY_ENDS = 'round';
+  private readonly LINEJOIN_ANGLE = 'miter';
+  private readonly LINEJOIN_ROUND = 'round';
+  private readonly DOT_SIZE = '1';
+  private readonly DEFAULT_LINEJOINSTYLE = LineJoinStyle.Round;
+  private readonly DEFAULT_LINEDASHSTYLE = LineDashStyle.Continuous;
+  private renderer: Renderer2;
   private strokeWidth: number;
+  private markerDiameter: number;
   private currentPolylineNumber: number;
   private isMakingLine = false;
   private currentPolyineStartX: number;
   private currentPolyineStartY: number;
+  private isMarkersActive: boolean;
+  private lineJoin: string;
+  private dashArray: string;
+  private lineCap: string;
+  private lineJoinStyle: LineJoinStyle;
+  private lineDashStyle: LineDashStyle;
 
   constructor() {
     this.strokeWidth = this.DEFAULT_WIDTH;
     this.currentPolylineNumber = 0;
+    this.markerDiameter = this.DEFAULT_DIAMETER;
+    this.isMarkersActive = false;
+    this.lineJoin = this.DEFAULT_LINEJOIN;
+    this.dashArray = this.DEFAULT_DASHARRAY;
+    this.lineCap = this.DEFAULT_LINECAP;
+    this.lineJoinStyle = this.DEFAULT_LINEJOINSTYLE;
+    this.lineDashStyle = this.DEFAULT_LINEDASHSTYLE;
+  }
+
+  set _lineJoinStyle(style: LineJoinStyle) {
+    this.lineJoinStyle = style;
+    switch (style) {
+      case LineJoinStyle.WithPoints:
+        this.isMarkersActive = true;
+        this.lineJoin = this.DEFAULT_LINEJOIN;
+        break;
+      case LineJoinStyle.Angled:
+        this.isMarkersActive = false;
+        this.lineJoin = this.LINEJOIN_ANGLE;
+        break;
+      case LineJoinStyle.Round:
+        this.isMarkersActive = false;
+        this.lineJoin = this.LINEJOIN_ROUND;
+        break;
+      default:
+        break;
+    }
+  }
+
+  get _lineJoinStyle(): LineJoinStyle {
+    return this.lineJoinStyle;
+  }
+
+  set _lineDashStyle(style: LineDashStyle) {
+    this.lineDashStyle = style;
+    switch (style) {
+      case LineDashStyle.Continuous:
+        this.dashArray = this.DEFAULT_DASHARRAY;
+        this.lineCap = this.DEFAULT_LINECAP;
+        break;
+      case LineDashStyle.Dashed:
+        this.dashArray = `${this.strokeWidth * 2}, ${this.strokeWidth}`;
+        this.lineCap = this.STRAIGHT_ENDS;
+        break;
+      case LineDashStyle.Dotted:
+        this.dashArray = `${this.DOT_SIZE}, ${this.strokeWidth * 2}`;
+        this.lineCap = this.CURVY_ENDS;
+        break;
+      default:
+        break;
+    }
+  }
+
+  get _lineDashStyle(): LineDashStyle {
+    return this.lineDashStyle;
   }
 
   set _strokeWidth(width: number) {
     this.strokeWidth = width;
+    // reload linedashstyle with new strokewidth
+    this._lineDashStyle = this.lineDashStyle;
+
   }
 
   get _strokeWidth(): number {
     return this.strokeWidth;
+  }
+
+  set _markerDiameter(diameter: number) {
+    this.markerDiameter = diameter;
+  }
+
+  get _markerDiameter(): number {
+    return this.markerDiameter;
   }
 
   get _isMakingLine(): boolean {
@@ -28,19 +114,21 @@ export class LineGeneratorService {
   }
 
   // Initializes the path
-  makeLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, primaryColor: string, currentChildPosition: number) {
+  makeLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, primaryColor: string, currentChildPosition: number) {
     if (!this.isMakingLine) {
       // Initiate the line
       canvas.innerHTML +=
       `<polyline id="line${this.currentPolylineNumber}"
       stroke-width="${this.strokeWidth}"
-      stroke-linecap="round"
+      stroke-linecap="${this.lineCap}"
       stroke="${primaryColor}"
-      pointer-events="none"
+      stroke-dasharray="${this.dashArray}"
       fill="none"
-      stroke-linejoin="round"
+      stroke-linejoin="${this.lineJoin}"
       points="${canvasPosX},${canvasPosY}">
       </polyline>`;
+
+      this.createMarkers(primaryColor);
 
       this.isMakingLine = true;
       this.currentPolyineStartX = canvasPosX;
@@ -51,7 +139,7 @@ export class LineGeneratorService {
     }
   }
 
-  addPointToCurrentLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
+  addPointToCurrentLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
     if (!this.isMakingLine) {
       return;
     }
@@ -59,7 +147,7 @@ export class LineGeneratorService {
     const newPoint = ` ${canvasPosX},${canvasPosY}`;
     currentPolyLine.setAttribute('points', currentPolyLine.getAttribute('points') + newPoint);
   }
-  updateLine(canvasPosX: number, canvasPosY: number, canvas: HTMLElement, currentChildPosition: number) {
+  updateLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       const currentPolyLine = canvas.children[currentChildPosition - 1];
       let pointsStr = currentPolyLine.getAttribute('points') as string;
@@ -76,7 +164,7 @@ export class LineGeneratorService {
       currentPolyLine.setAttribute('points', newPoints);
     }
   }
-  finishLineBlock(canvas: HTMLElement, currentChildPosition: number) {
+  finishLineBlock(canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       // delete the two last lines for double click
       this.deleteLine(canvas, currentChildPosition);
@@ -85,7 +173,7 @@ export class LineGeneratorService {
       this.isMakingLine = false;
     }
   }
-  finishAndLinkLineBlock(canvas: HTMLElement, currentChildPosition: number) {
+  finishAndLinkLineBlock(canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       // delete the two last lines for double click
       this.deleteLine(canvas, currentChildPosition);
@@ -97,7 +185,7 @@ export class LineGeneratorService {
       this.isMakingLine = false;
     }
   }
-  deleteLineBlock(canvas: HTMLElement, currentChildPosition: number) {
+  deleteLineBlock(canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       const currentPolyLine = canvas.children[currentChildPosition - 1];
       currentPolyLine.remove();
@@ -105,7 +193,7 @@ export class LineGeneratorService {
       this.isMakingLine = false;
     }
   }
-  deleteLine(canvas: HTMLElement, currentChildPosition: number) {
+  deleteLine(canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       const currentPolyLine = canvas.children[currentChildPosition - 1];
       const pointsStr = currentPolyLine.getAttribute('points') as string;
@@ -117,5 +205,55 @@ export class LineGeneratorService {
       const pointsWithoutLastStr = pointsStr.substring(0, indexLastPoint);
       currentPolyLine.setAttribute('points', pointsWithoutLastStr);
     }
+  }
+
+  // This function creates a marker tag with the color and the id of the polyline and returns a string for the URL
+  createMarkers(color: string): SVGElement {
+    const marker = this.renderer.createElement('marker');
+    const circle = this.renderer.createElement('circle');
+
+    this.renderer.setAttribute(circle, 'fill', color);
+    this.renderer.setAttribute(circle, 'r', this.markerDiameter as unknown as string);
+    this.renderer.setAttribute(circle, 'cy', this.markerDiameter as unknown as string);
+    this.renderer.setAttribute(circle, 'cx', this.markerDiameter as unknown as string);
+    this.renderer.setAttribute(marker, 'markerWidth', (this.markerDiameter * 2) as unknown as string);
+    this.renderer.setAttribute(marker, 'markerHeight', (this.markerDiameter * 2) as unknown as string);
+    this.renderer.setAttribute(marker, 'refX', this.markerDiameter as unknown as string);
+    this.renderer.setAttribute(marker, 'refY', this.markerDiameter as unknown as string);
+    this.renderer.setAttribute(marker, 'markerUnits', 'userSpaceOnUse');
+    this.renderer.setProperty(marker, 'id', `line${this.currentPolylineNumber}marker`);
+
+    this.renderer.appendChild(marker, circle);
+    const defs = this.renderer.selectRootElement('#definitions', true);
+    const canvas = this.renderer.selectRootElement('#canvas', true);
+    this.renderer.appendChild(defs, marker);
+    if (this.isMarkersActive) {
+      this.addMarkersToNewLine(marker, canvas);
+    }
+    // reload
+    canvas.innerHTML = canvas.innerHTML;
+    return marker;
+  }
+
+  addMarkersToNewLine(markers: SVGElement, canvas: HTMLElement) {
+    const newLine = canvas.children[canvas.children.length - 1];
+    const markersAddress = `url(#${markers.id})`;
+    newLine.setAttribute('marker-start', markersAddress);
+    newLine.setAttribute('marker-mid', markersAddress);
+    newLine.setAttribute('marker-end', markersAddress);
+  }
+  // this function returns the markers element corresponding to a specific polyline so it can be modified
+  findMarkerFromPolyline(polyline: SVGElement, defsElement: SVGElement): SVGElement {
+    for (const child of [].slice.call(defsElement.children)) {
+      const childCast = child as SVGElement;
+      if (childCast.id === polyline.id + 'marker') {
+        return childCast;
+      }
+    }
+    // No marker was found for corresponding polyline, this should not happen as the marker is created with the polyline
+    return new SVGElement();
+  }
+  set _renderer(rend: Renderer2) {
+    this.renderer = rend;
   }
 }

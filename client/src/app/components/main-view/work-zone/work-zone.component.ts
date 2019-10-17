@@ -14,12 +14,12 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   private readonly DEFAULT_WIDTH = 1080;
   private readonly DEFAULT_HEIGHT = 500;
   private readonly SHIFT_KEY = 'Shift';
-
+  private readonly ALT_KEY = 'Alt';
   @Input() width: number;
   @Input() height: number;
   @Input() color: string;
 
-  private canvasElement: HTMLElement;
+  private canvasElement: SVGElement;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
@@ -43,11 +43,20 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     if (keyboardEvent.key === this.SHIFT_KEY) {
       this.toolManager.changeElementShiftDown();
     }
+    if (keyboardEvent.key === this.ALT_KEY)  {
+      this.toolManager.changeElementAltDown();
+      keyboardEvent.preventDefault();
+    }
+
   }
   @HostListener('document:keyup', ['$event'])
   keyUpEvent(keyboardEvent: KeyboardEvent) {
     if (keyboardEvent.key === this.SHIFT_KEY) {
       this.toolManager.changeElementShiftUp();
+    }
+    if (keyboardEvent.key === this.ALT_KEY) {
+      this.toolManager.changeElementAltUp();
+      keyboardEvent.preventDefault();
     }
   }
 
@@ -79,20 +88,12 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   }
 
   onLeftClick(mouseEvent: MouseEvent) {
-    switch (this.toolManager._activeTool) {
-      case Tools.ColorApplicator:
-        this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
-        break;
-      case Tools.Line:
-        this.toolManager.createElementOnClick(mouseEvent, this.canvasElement);
-        break;
-      default:
-        return;
-    }
+    this.toolManager.changeElementLeftClick(mouseEvent.target as SVGElement, this.canvasElement);
+    return true;
   }
 
   onRightClick(mouseEvent: Event) {
-    this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
+    this.toolManager.changeElementRightClick(mouseEvent.target as SVGElement);
     // deactivate context menu on right click
     return false;
   }
@@ -105,7 +106,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.toolManager.rotateEmoji(mouseEvent);
   }
 
-  protected setBackGroundColor(): {'background-color': string} {
+  protected setBackGroundColor(): { 'background-color': string } {
     return {
       'background-color': this.color,
     };

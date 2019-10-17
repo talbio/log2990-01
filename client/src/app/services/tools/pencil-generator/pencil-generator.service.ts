@@ -31,7 +31,7 @@ export class PencilGeneratorService {
   }
 
   // Initializes the path
-  createPenPath(mouseEvent: MouseEvent, canvas: HTMLElement, primaryColor: string) {
+  createPenPath(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
@@ -49,7 +49,7 @@ export class PencilGeneratorService {
   /**
    * @desc // Updates the path when the mouse is moving (mousedown)
    */
-  updatePenPath(mouseEvent: MouseEvent, canvas: HTMLElement, currentChildPosition: number) {
+  updatePenPath(mouseEvent: MouseEvent, canvas: SVGElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentPath = canvas.children[currentChildPosition - 1];
       if (currentPath != null) {
