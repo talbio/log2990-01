@@ -2,7 +2,7 @@
 
 
 <mat-label>Choix d'étampes</mat-label>
-<mat-select [(ngModel)]="this.emojiGenerator._emoji">
+<mat-select [(ngModel)]="this.emojiGenerator.emoji">
     <mat-option *ngFor="let emoji of this.emojiGenerator.emojis" [value]="emoji">
         <img src={{emoji}} width="20" width="20" />
     </mat-option>

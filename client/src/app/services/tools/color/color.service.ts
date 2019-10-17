@@ -16,8 +16,6 @@ export class ColorService {
     primaryColor: string;
     secondaryColor: string;
     topTenColors: string[];
-    primaryTransparency: number;
-    secondaryTransparency: number;
 
     constructor(private storage: StorageService) {
         this.assignTopTenColors();

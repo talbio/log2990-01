@@ -12,6 +12,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   private readonly DEFAULT_WIDTH = 1080;
   private readonly DEFAULT_HEIGHT = 500;
   private readonly SHIFT_KEY = 'Shift';
+  private readonly ALT_KEY = 'Alt';
   private readonly DEFAULT_WHITE_COLOR = '#FFFFFF';
 
   @Input() width: number;
@@ -42,11 +43,20 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     if (keyboardEvent.key === this.SHIFT_KEY) {
       this.toolManager.changeElementShiftDown();
     }
+    if (keyboardEvent.key === this.ALT_KEY)  {
+      this.toolManager.changeElementAltDown();
+      keyboardEvent.preventDefault();
+    }
+
   }
   @HostListener('document:keyup', ['$event'])
   keyUpEvent(keyboardEvent: KeyboardEvent) {
     if (keyboardEvent.key === this.SHIFT_KEY) {
       this.toolManager.changeElementShiftUp();
+    }
+    if (keyboardEvent.key === this.ALT_KEY) {
+      this.toolManager.changeElementAltUp();
+      keyboardEvent.preventDefault();
     }
   }
 
@@ -68,7 +78,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   }
 
   onRightClick(mouseEvent: Event) {
-    this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
+    this.toolManager.changeElementRightClick(mouseEvent.target as SVGElement);
     // deactivate context menu on right click
     return false;
   }
@@ -81,7 +91,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.toolManager.rotateEmoji(mouseEvent);
   }
 
-  protected setBackGroundColor(): {'background-color': string} {
+  protected setBackGroundColor(): { 'background-color': string } {
     return {
       'background-color': this.color,
     };
