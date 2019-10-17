@@ -1,4 +1,5 @@
 import { Injectable, Renderer2 } from '@angular/core';
+import { BrushGeneratorService } from 'src/app/services/tools/brush-generator/brush-generator.service';
 import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import { ColorService } from './../color/color.service';
 
@@ -6,9 +7,10 @@ import { ColorService } from './../color/color.service';
 export class EyedropperService {
   private renderer: Renderer2;
 
-  constructor(private colorTool: ColorService, private mousePosition: MousePositionService) {
-    // nothing to do here
-  }
+  constructor(private colorTool: ColorService,
+              private brushGenerator: BrushGeneratorService,
+              private mousePosition: MousePositionService) {}
+
   // This function returns the color on the object as a string of format "rgba(rVal,gVal,bVal,aVal)"
   getColorOnObject(object: SVGElement): string {
     let foundColor = '';
@@ -24,8 +26,8 @@ export class EyedropperService {
           foundColor = object.getAttribute('stroke') as string;
         } else if (object.id.startsWith('brush')) {
           // PaintBrush
-          // attribute stroke for brush paths are structed as follows: url(#brushPatternX), therefore the id is in substring 5 to 18
-          const pattern = this.renderer.selectRootElement((object.getAttribute('stroke') as string).substring(5, 18));
+          const defs = this.renderer.selectRootElement('#definitions', true);
+          const pattern = this.brushGenerator.findPatternFromBrushPath(object, defs);
           for (const child of [].slice.call(pattern.children)) {
             if (child.hasAttribute('fill')) {
               foundColor = child.getAttribute('fill');

@@ -45,7 +45,7 @@ export class EmojiGeneratorService {
         this.scalingFactor = factor;
     }
 
-    addEmoji(mouseEvent: MouseEvent, canvas: HTMLElement) {
+    addEmoji(mouseEvent: MouseEvent, canvas: SVGElement) {
         if (this.emoji !== '') {
             this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
             canvas.innerHTML +=
