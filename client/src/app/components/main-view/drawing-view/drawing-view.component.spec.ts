@@ -116,13 +116,12 @@ fdescribe('DrawingViewComponent', () => {
     });
     component.workZoneComponent.onMouseDown(mouseEvent);
     expect(spy).toHaveBeenCalled();
-    console.log(svgHandle);
+    // console.log(svgHandle);
     // Step 3. Expect un <ellipse>
-    console.log(workChilds.length);
-    console.log(initialChildsLength);
+    // Vu qu'une ellipse et un rectangle sont créés, on s'attend à une ellipse comme avant-dernier élément.
     expect(workChilds.length).toEqual(initialChildsLength + 2);
-    const lastChild = workChilds.item(workChilds.length - 2) as SVGElement;
-    expect(lastChild.tagName).toEqual('ellipse');
+    const ellipseChild = workChilds.item(workChilds.length - 2) as SVGElement;
+    expect(ellipseChild.tagName).toEqual('ellipse');
   });
 
   // const drawEllipseOnCanvas = (svgHandle?: SVGElement, mouseEvent?: MouseEvent) => {
