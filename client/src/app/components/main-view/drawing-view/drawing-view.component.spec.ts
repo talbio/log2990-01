@@ -1,9 +1,11 @@
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
+import {HttpClient} from '@angular/common/http';
 import { ChangeDetectorRef,  Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { Tools } from '../../../data-structures/Tools';
 import { DemoMaterialModule } from '../../../material.module';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
@@ -19,42 +21,44 @@ import { ColorPaletteComponent } from '../../modals/color-picker-module/color-pa
 import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 import { ColorSliderComponent } from '../../modals/color-picker-module/color-slider/color-slider.component';
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
-import { ColorToolComponent } from '../color-tool/color-tool.component';
-import { ToolsAttributesComponent } from '../tools-attributes/tools-attributes.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
-// import {MatSidenavModule} from '@angular/material/sidenav';
-// import {ToolsAttributesBarComponent} from '../tools-attributes-bar-module/tools-attributes-bar-module.component';
+import { SaveDrawingService } from './../../../services/back-end/save-drawing/save-drawing.service';
+import { EyedropperService } from './../../../services/tools/eyedropper/eyedropper.service';
+import { ColorToolButtonsComponent } from './../lateral-bar-module/color-tool-buttons/color-tool-buttons.component';
+// import { ToolsAttributesBarComponent } from './../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { DrawingViewComponent } from './drawing-view.component';
 /* tslint:disable:max-classes-per-file for mocking classes*/
 @Component({ selector: 'app-lateral-bar', template: '' })
 class LateralBarStubComponent { }
 @Component({ selector: 'app-welcome-modal', template: '' })
 class WelcomeModalStubComponent { }
+@Component({ selector: 'app-tools-attributes', template: '' })
+class ToolAttributesBarStubComponent { }
+
 const DRAWING_SERVICES = [
   RectangleGeneratorService,
   EllipseGeneratorService,
+  EmojiGeneratorService,
   PencilGeneratorService,
   BrushGeneratorService,
   ColorApplicatorService,
   LineGeneratorService,
+  EyedropperService,
   ColorService,
   MousePositionService,
 ];
 fdescribe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
-  // let toolSelectorServiceStub: Partial<ToolSelectorService>;
-  // const cp = new ComponentPortal <ToolsAttributesBarComponent>(ToolsAttributesBarComponent);
-
-  beforeAll(async(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
         DrawingViewComponent,
         WelcomeModalStubComponent,
         WorkZoneComponent,
-        ToolsAttributesComponent,
         LateralBarStubComponent,
-        ColorToolComponent,
+        ToolAttributesBarStubComponent,
+        ColorToolButtonsComponent,
         ColorPaletteComponent,
         ColorSliderComponent,
         ColorPickerDialogComponent,
@@ -66,11 +70,12 @@ fdescribe('DrawingViewComponent', () => {
         FormsModule,
         PortalModule,
       ],
-      providers: [ToolManagerService, ...DRAWING_SERVICES, ColorService, ChangeDetectorRef,
-      ],
+      providers: [ToolManagerService, ...DRAWING_SERVICES, ColorService, SaveDrawingService, ChangeDetectorRef,
+        HttpClient, ],
       schemas: [ NO_ERRORS_SCHEMA ],
-    }).overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [ToolsAttributesComponent, DrawingViewComponent] } },
+    }).overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [DrawingViewComponent] } },
     ).compileComponents().then(() => {
+      console.log(TestBed.createComponent(DrawingViewComponent));
       fixture = TestBed.createComponent(DrawingViewComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
@@ -113,21 +118,21 @@ fdescribe('DrawingViewComponent', () => {
     expect(lastChild.tagName).toEqual('ellipse');
   });
 
-  const drawEllipseOnCanvas = (svgHandle?: SVGElement, mouseEvent?: MouseEvent) => {
+  // const drawEllipseOnCanvas = (svgHandle?: SVGElement, mouseEvent?: MouseEvent) => {
 
-  };
+  // };
 
-  const getLastSvgElement = (svgHandle: SVGElement) => {
-    return svgHandle.children.item(svgHandle.children.length - 1) as SVGElement;
-  };
+  // const getLastSvgElement = (svgHandle: SVGElement) => {
+  //   return svgHandle.children.item(svgHandle.children.length - 1) as SVGElement;
+  // };
 
-  it('should be able to interacte properly with the color applicator', () => {
-    const colorService = fixture.debugElement.injector.get(ColorService);
-    colorService.setPrimaryColor('red');
-    // Draw an ellipse..
-    drawEllipseOnCanvas(null, null)
+  // it('should be able to interacte properly with the color applicator', () => {
+  //   const colorService = fixture.debugElement.injector.get(ColorService);
+  //   colorService.setPrimaryColor('red');
+  //   // Draw an ellipse..
+  //   drawEllipseOnCanvas(null, null)
 
-    const lastChild = getLastSvgElement(null);
-    expect(lastChild.getAttribute('fill')).toEqual('red');
-  });
+  //   const lastChild = getLastSvgElement(null);
+  //   expect(lastChild.getAttribute('fill')).toEqual('red');
+  // });
 });
