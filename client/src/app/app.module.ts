@@ -2,6 +2,7 @@ import {PortalModule} from '@angular/cdk/portal';
 import {HttpClientModule} from '@angular/common/http';
 import {NgModule } from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatChipsModule} from '@angular/material/chips';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -29,7 +30,8 @@ import { ColorSliderComponent } from './components/modals/color-picker-module/co
 import { LastTenColorsComponent } from './components/modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
-import { OpenListDrawingsServerComponent } from './components/modals/open-list-drawings-server/open-list-drawings-server.component';
+import { FilterByTags } from './components/modals/open-drawing-dialog/filter-by-tags.pipe';
+import {OpenDrawingDialogComponent} from './components/modals/open-drawing-dialog/open-drawing-dialog.component';
 import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
 import {DemoMaterialModule} from './material.module';
@@ -110,7 +112,8 @@ const customNotifierOptions: NotifierOptions = {
     EllipseToolsComponent,
     BrushToolsComponent,
     ColorApplicatorToolsComponent,
-    OpenListDrawingsServerComponent,
+    OpenDrawingDialogComponent,
+    FilterByTags,
   ],
   imports: [
     BrowserModule,
@@ -121,6 +124,7 @@ const customNotifierOptions: NotifierOptions = {
     PortalModule,
     DemoMaterialModule,
     NotifierModule.withConfig(customNotifierOptions),
+    MatChipsModule,
   ],
   providers: [
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'legacy' } },
@@ -152,7 +156,7 @@ const customNotifierOptions: NotifierOptions = {
     EllipseToolsComponent,
     BrushToolsComponent,
     ColorApplicatorToolsComponent,
-    OpenListDrawingsServerComponent,
+    OpenDrawingDialogComponent,
   ],
 })
 export class AppModule {
