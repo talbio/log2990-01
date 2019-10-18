@@ -125,7 +125,7 @@ fdescribe('DrawingViewComponent', () => {
   });
 
   // This returns the child at 'position' from the canvas's last position (1 for last)
-  const getNewSvgElement = (svgHandle: SVGElement, position: number) => {
+  const getLastSvgElement = (svgHandle: SVGElement, position: number) => {
     return svgHandle.children.item(svgHandle.children.length - position) as SVGElement;
   };
 
@@ -157,7 +157,7 @@ fdescribe('DrawingViewComponent', () => {
     // Step 3. Expect un <polyline>
     // Since line was just created it should be our last element
     expect(workChilds.length).toEqual(initialChildsLength + 1);
-    const polyLineChild = getNewSvgElement(svgHandle, 1);
+    const polyLineChild = getLastSvgElement(svgHandle, 1);
     expect(polyLineChild.tagName).toEqual('polyline');
   });
 
@@ -213,7 +213,7 @@ fdescribe('DrawingViewComponent', () => {
     // Step 3. Expect a <polyline>
     // Since polyline was just created it should be the last element
     expect(workChilds.length).toEqual(initialChildsLength + 1);
-    const polyLineChild = getNewSvgElement(svgHandle, 1);
+    const polyLineChild = getLastSvgElement(svgHandle, 1);
     expect(polyLineChild.tagName).toEqual('polyline');
     // The 'points' attribute should contain the initial point and the new point
     expect(polyLineChild.getAttribute('points')).toEqual('100,100 200,200');
@@ -246,7 +246,7 @@ fdescribe('DrawingViewComponent', () => {
     // Step 3. Expect a <polyline>
     // Since polyline was just created it should be the last element
     expect(workChilds.length).toEqual(initialChildsLength + 1);
-    const polyLineChild = getNewSvgElement(svgHandle, 1);
+    const polyLineChild = getLastSvgElement(svgHandle, 1);
     expect(polyLineChild.tagName).toEqual('polyline');
     // The 'points' attribute should contain the initial point and the current mouse position
     expect(polyLineChild.getAttribute('points')).toEqual('100,100 200,200');
@@ -279,7 +279,7 @@ fdescribe('DrawingViewComponent', () => {
     // Expect a <polyline>
     // Since polyline was just created it should be the last element
     expect(workChilds.length).toEqual(initialChildsLength + 1);
-    const polyLineChild = getNewSvgElement(svgHandle, 1);
+    const polyLineChild = getLastSvgElement(svgHandle, 1);
     expect(polyLineChild.tagName).toEqual('polyline');
     // The 'points' attribute should contain the initial point and the new point
     expect(polyLineChild.getAttribute('points')).toEqual('100,100 200,200');
@@ -297,7 +297,40 @@ fdescribe('DrawingViewComponent', () => {
     component.workZoneComponent._toolManager.backSpacePress();
     expect(polyLineChild.getAttribute('points')).toEqual('100,100 250,250');
   });
-  // it('should be able to interacte properly with the color applicator', () => {
+
+  it('should be able to delete entire polyline with escape and immediately update', () => {
+    // Step 1. Select line
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Line;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+
+    // Setting up the event
+    const spy = spyOn(component.workZoneComponent, 'onLeftClick').and.callThrough();
+    drawPolylineOnCanvas();
+    expect(spy).toHaveBeenCalled();
+
+    // Expect a <polyline>
+    // Since polyline was just created it should be the last element
+    expect(workChilds.length).toEqual(initialChildsLength + 1);
+    const polyLineChild = getLastSvgElement(svgHandle, 1);
+    expect(polyLineChild.tagName).toEqual('polyline');
+    // Verify that it is indeed a child of svgHandle to verify its deletion later
+    expect(svgHandle.contains(polyLineChild)).toBeTruthy();
+    // Now delete the whole polyline by simulating an escape press
+    component.workZoneComponent._toolManager.escapePress();
+    // Step 3.
+    // The created polyline should have been removed, so we should have the same number of children as initial
+    expect(workChilds.length).toEqual(initialChildsLength);
+    // The deleted child should be removed, so the handler should contain it anymore
+    expect(svgHandle.contains(polyLineChild)).toBeFalsy();
+    // You should not be able to delete when a line isn't being made, so subsequent calls should have no effect
+    component.workZoneComponent._toolManager.escapePress();
+    expect(workChilds.length).toEqual(initialChildsLength);
+  });
+  // it('should be able to interact properly with the color applicator', () => {
   //   const colorService = fixture.debugElement.injector.get(ColorService);
   //   colorService.setPrimaryColor('red');
   //   // Draw an ellipse..
