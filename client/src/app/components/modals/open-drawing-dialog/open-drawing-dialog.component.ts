@@ -6,8 +6,6 @@ import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-d
 import { GiveUpChangesDialogComponent } from '../give-up-changes-dialog/give-up-changes-dialog.component';
 import { ModalManagerSingleton } from '../modal-manager-singleton';
 
-
-
 export interface DialogData {
   drawingNonEmpty: boolean;
 }
@@ -15,7 +13,7 @@ export interface DialogData {
 @Component({
   selector: 'app-open-list-drawings-server',
   templateUrl: './open-list-drawings-server.component.html',
-  styleUrls: ['./open-list-drawings-server.component.scss']
+  styleUrls: ['./open-list-drawings-server.component.scss'],
 })
 export class OpenListDrawingsServerComponent implements OnInit {
   protected readonly DIALOG_TITLE = 'Ouvrir un dessin';
@@ -37,6 +35,12 @@ export class OpenListDrawingsServerComponent implements OnInit {
 
     });
   }
+
+  openDrawing(drawing: Drawing) {
+
+    this.svgCanvas.innerHTML += dessin;
+  }
+
 
   close(): void {
     this.dialogRef.close();
