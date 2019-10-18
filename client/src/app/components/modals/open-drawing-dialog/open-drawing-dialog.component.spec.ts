@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OpenListDrawingsServerComponent } from './open-list-drawings-server.component';
+import { OpenDrawingDialogComponent } from './open-drawing-dialog.component';
 
 describe('OpenListDrawingsServerComponent', () => {
-  let component: OpenListDrawingsServerComponent;
-  let fixture: ComponentFixture<OpenListDrawingsServerComponent>;
+  let component: OpenDrawingDialogComponent;
+  let fixture: ComponentFixture<OpenDrawingDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ OpenListDrawingsServerComponent ]
+      declarations: [ OpenDrawingDialogComponent ],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(OpenListDrawingsServerComponent);
+    fixture = TestBed.createComponent(OpenDrawingDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
