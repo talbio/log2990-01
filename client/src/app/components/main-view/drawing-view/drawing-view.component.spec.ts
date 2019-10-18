@@ -169,6 +169,29 @@ fdescribe('DrawingViewComponent', () => {
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
+  const wheelEvent = new WheelEvent('mousewheel', {
+    deltaY: -500,
+  });
+  const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+  const mouseEvent = new MouseEvent('mousedown', {});
+  component.workZoneComponent.onMouseWheel(wheelEvent);
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  expect(wheelSpy).toHaveBeenCalled();
+  expect(mouseSpy).toHaveBeenCalled();
+  const emoji = svgHandle.childNodes[children.length - 2] as Element;
+  // tslint:disable-next-line: no-non-null-assertion
+  const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
+  expect(angle).toEqual('15');
+});
+
+  it('shouldnt be possible to enter an angle under 0 or over 360 for the rotation', () => {
+  // Select Stamp Tool
+  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  toolManagerService._activeTool = Tools.Stamp;
+  // Create the work-zone
+  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+  const children = svgHandle.childNodes;
+  const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
   let wheelEvent = new WheelEvent('mousewheel', {
     deltaY: -500,
   });
@@ -178,19 +201,14 @@ fdescribe('DrawingViewComponent', () => {
   component.workZoneComponent.onMouseDown(mouseEvent);
   expect(wheelSpy).toHaveBeenCalled();
   expect(mouseSpy).toHaveBeenCalled();
-  let emoji = svgHandle.childNodes[children.length - 2] as Element;
-  // tslint:disable-next-line: no-non-null-assertion
-  let angle = emoji.getAttribute('transform')!.substr(7, 2) ;
-  expect(angle).toEqual('15');
-
   // It shouldn't be possible to increase the angle over 360
   for (let i = 0; i < 100; i++) {
   component.workZoneComponent.onMouseWheel(wheelEvent);
   }
   component.workZoneComponent.onMouseDown(mouseEvent);
-  emoji = svgHandle.childNodes[children.length - 2] as Element;
+  let emoji = svgHandle.childNodes[children.length - 2] as Element;
   // tslint:disable-next-line: no-non-null-assertion
-  angle = emoji.getAttribute('transform')!.substr(7, 3) ;
+  let angle = emoji.getAttribute('transform')!.substr(7, 3) ;
   expect(angle).toEqual('360');
 
   // It shouldn't be possible to lower the angle under 0
@@ -205,5 +223,34 @@ fdescribe('DrawingViewComponent', () => {
   // tslint:disable-next-line: no-non-null-assertion
   angle = emoji.getAttribute('transform')!.substr(7, 1) ;
   expect(angle).toEqual('0');
+});
+
+  it('should be possible to modify an emoji rotation step from 15 to 1 with the ALT button', () => {
+  // Select Stamp Tool
+  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  toolManagerService._activeTool = Tools.Stamp;
+  // Create the work-zone
+  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+  const children = svgHandle.childNodes;
+  const altSpy = spyOn(component.workZoneComponent, 'keyDownEvent').and.callThrough();
+  const altEvent = new KeyboardEvent('keydown', {
+    key: 'Shift',
+  });
+  const wheelEvent = new WheelEvent('mousewheel', {
+    deltaY: -500,
+  });
+  const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
+  const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+  const mouseEvent = new MouseEvent('mousedown', {});
+  component.workZoneComponent.keyDownEvent(altEvent);
+  component.workZoneComponent.onMouseWheel(wheelEvent);
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  expect(altSpy).toHaveBeenCalled();
+  expect(wheelSpy).toHaveBeenCalled();
+  expect(mouseSpy).toHaveBeenCalled();
+  const emoji = svgHandle.childNodes[children.length - 2] as Element;
+  // tslint:disable-next-line: no-non-null-assertion
+  const angle = emoji.getAttribute('transform')!.substr(7, 1) ;
+  expect(angle).toEqual('1');
 });
 });
