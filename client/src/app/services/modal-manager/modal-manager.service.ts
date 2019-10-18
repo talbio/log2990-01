@@ -1,12 +1,13 @@
 import {Injectable, Renderer2} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import { OpenListDrawingsServerComponent } from 'src/app/components/modals/open-list-drawings-server/open-list-drawings-server.component';
+import { OpenDrawingDialogComponent } from 'src/app/components/modals/open-drawing-dialog/open-drawing-dialog.component';
 import {ColorPickerDialogComponent} from '../../components/modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 import {CreateDrawingDialogComponent} from '../../components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import {SaveDrawingDialogComponent} from '../../components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import {CreateDrawingFormValues} from '../../data-structures/CreateDrawingFormValues';
 import {ColorService} from '../tools/color/color.service';
 import {ToolManagerService} from '../tools/tool-manager/tool-manager.service';
+import {GiveUpChangesDialogComponent} from "../../components/modals/give-up-changes-dialog/give-up-changes-dialog.component";
 
 export enum Color {
   primaryColor,
@@ -73,7 +74,7 @@ export class ModalManagerService {
   }
 
   showOpenDrawingDialog(): void {
-    this.dialog.open(OpenListDrawingsServerComponent, {
+    this.dialog.open(OpenDrawingDialogComponent, {
       autoFocus: false,
       data: {drawingNonEmpty: this.toolManager.drawingNonEmpty()},
       disableClose: true,
