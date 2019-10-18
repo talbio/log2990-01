@@ -116,7 +116,6 @@ fdescribe('DrawingViewComponent', () => {
     });
     component.workZoneComponent.onMouseDown(mouseEvent);
     expect(spy).toHaveBeenCalled();
-    // console.log(svgHandle);
     // Step 3. Expect un <ellipse>
     // Vu qu'une ellipse et un rectangle sont créés, on s'attend à une ellipse comme avant-dernier élément.
     expect(workChilds.length).toEqual(initialChildsLength + 2);
@@ -226,16 +225,14 @@ fdescribe('DrawingViewComponent', () => {
 });
 
   it('should be possible to modify an emoji rotation step from 15 to 1 with the ALT button', () => {
-  // Select Stamp Tool
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Stamp;
-  // Create the work-zone
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const altSpy = spyOn(component.workZoneComponent, 'keyDownEvent').and.callThrough();
   const altEvent = new KeyboardEvent('keydown', {
-    key: 'Shift',
-  });
+     key: 'Alt',
+   });
   const wheelEvent = new WheelEvent('mousewheel', {
     deltaY: -500,
   });
@@ -250,7 +247,19 @@ fdescribe('DrawingViewComponent', () => {
   expect(mouseSpy).toHaveBeenCalled();
   const emoji = svgHandle.childNodes[children.length - 2] as Element;
   // tslint:disable-next-line: no-non-null-assertion
-  const angle = emoji.getAttribute('transform')!.substr(7, 1) ;
-  expect(angle).toEqual('1');
+  const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
+  expect(angle).toEqual('1 ');
+});
+  it('should be impossible to add an emoji if no emoji is selected', () => {
+  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  toolManagerService._activeTool = Tools.Stamp;
+  const emojiService = fixture.debugElement.injector.get(EmojiGeneratorService);
+  emojiService._emoji = '';
+  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+  const children = svgHandle.childNodes;
+  const initialChildsLength = svgHandle.children.length;
+  const mouseEvent = new MouseEvent('mousedown', {});
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  expect(children.length).toEqual(initialChildsLength);
 });
 });
