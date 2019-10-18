@@ -141,4 +141,46 @@ fdescribe('DrawingViewComponent', () => {
   //   const lastChild = getLastSvgElement(null);
   //   expect(lastChild.getAttribute('fill')).toEqual('red');
   // });
+
+  it('should be able to add an emoji', () => {
+  // Select Stamp Tool
+  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  toolManagerService._activeTool = Tools.Stamp;
+  // Create the work-zone
+  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+  const initialChildsLength = svgHandle.children.length;
+  const workChilds = svgHandle.children;
+  // Setting up the event
+  const spy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+  const mouseEvent = new MouseEvent('mousedown', {});
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  expect(spy).toHaveBeenCalled();
+  // Expect an emoji
+  expect(workChilds.length).toEqual(initialChildsLength + 1);
+  const emoji = workChilds.item(workChilds.length - 1) as SVGElement;
+  expect(emoji.tagName).toEqual('image');
+});
+
+  it('should be possible to modify an emoji angle with the wheel', () => {
+  // Select Stamp Tool
+  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  toolManagerService._activeTool = Tools.Stamp;
+  // Create the work-zone
+  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+  const children = svgHandle.childNodes;
+  const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
+  const wheelEvent = new WheelEvent('mousewheel', {
+    deltaY: -500,
+  });
+  const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+  const mouseEvent = new MouseEvent('mousedown', {});
+  component.workZoneComponent.onMouseWheel(wheelEvent);
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  expect(wheelSpy).toHaveBeenCalled();
+  expect(mouseSpy).toHaveBeenCalled();
+  const emoji = svgHandle.childNodes[children.length - 2] as Element;
+  // tslint:disable-next-line: no-non-null-assertion
+  const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
+  expect(angle).toEqual('15');
+});
 });
