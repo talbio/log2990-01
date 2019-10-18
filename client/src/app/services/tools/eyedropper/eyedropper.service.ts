@@ -86,11 +86,13 @@ export class EyedropperService {
   changePrimaryColor(object: SVGElement) {
     const objectColor = this.getColorOnObject(object);
     this.colorTool.setPrimaryColor(objectColor);
+    this.colorTool.assignPrimaryColor();
   }
 
   changeSecondaryColor(object: SVGElement) {
     const objectColor = this.getColorOnObject(object);
     this.colorTool.setSecondaryColor(objectColor);
+    this.colorTool.assignSecondaryColor();
   }
 
   // This function gets the exact color of the hovered pixel by transfering the svg to an html5 canvas element.
