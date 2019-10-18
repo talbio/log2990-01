@@ -124,14 +124,179 @@ fdescribe('DrawingViewComponent', () => {
     expect(ellipseChild.tagName).toEqual('ellipse');
   });
 
-  // const drawEllipseOnCanvas = (svgHandle?: SVGElement, mouseEvent?: MouseEvent) => {
+  // This returns the child at 'position' from the canvas's last position (1 for last)
+  const getNewSvgElement = (svgHandle: SVGElement, position: number) => {
+    return svgHandle.children.item(svgHandle.children.length - position) as SVGElement;
+  };
 
-  // };
+  it('should be able to draw a polyline', () => {
+    // Step 1. Select line
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Line;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
 
-  // const getLastSvgElement = (svgHandle: SVGElement) => {
-  //   return svgHandle.children.item(svgHandle.children.length - 1) as SVGElement;
-  // };
+    // Setting up the event
+    const spy = spyOn(component.workZoneComponent, 'onLeftClick').and.callThrough();
+    const xInitial = 100;
+    const yInitial = 100;
+    // Step 2. First click avec xInitial , yInitial
+    // Step 2.1 Last click (release) -> save coordinates
+    const mouseEvent = new MouseEvent('click', {
+      button: 0,
+      clientX: xInitial,
+      clientY: yInitial,
+    });
+    // Also change the positions on the mouse position service
+    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionX = xInitial;
+    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionY = yInitial;
+    component.workZoneComponent.onLeftClick(mouseEvent);
+    expect(spy).toHaveBeenCalled();
+    // Step 3. Expect un <polyline>
+    // Since line was just created it should be our last element
+    expect(workChilds.length).toEqual(initialChildsLength + 1);
+    const polyLineChild = getNewSvgElement(svgHandle, 1);
+    expect(polyLineChild.tagName).toEqual('polyline');
+  });
 
+  // This function uses the code of the first test to draw a polyline on the canvas
+  const drawPolylineOnCanvas = () => {
+
+    const xInitial = 100;
+    const yInitial = 100;
+
+    const mouseEvent = new MouseEvent('click', {
+      button: 0,
+      clientX: xInitial,
+      clientY: yInitial,
+    });
+    // Also change the positions on the mouse position service
+    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionX = xInitial;
+    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionY = yInitial;
+    component.workZoneComponent.onLeftClick(mouseEvent);
+  };
+
+  const addClickToCanvas = (mouseEvent: MouseEvent) => {
+    // Change the positions on the mouse position service
+    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionX = mouseEvent.clientX;
+    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionY = mouseEvent.clientY;
+    // Click the canvas
+    component.workZoneComponent.onLeftClick(mouseEvent);
+  };
+
+  it('should be able to draw a line from one point to the next with a click after the initial click', () => {
+    // Step 1. Select line
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Line;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+
+    // Setting up the event
+    const spy = spyOn(component.workZoneComponent, 'onLeftClick').and.callThrough();
+    drawPolylineOnCanvas();
+    expect(spy).toHaveBeenCalled();
+    // Add new click
+    const newX = 200;
+    const newY = 200;
+    const newMouseEvent = new MouseEvent('click', {
+      button: 0,
+      clientX: newX,
+      clientY: newY,
+    });
+
+    addClickToCanvas(newMouseEvent);
+    expect(spy).toHaveBeenCalled();
+    // Step 3. Expect a <polyline>
+    // Since polyline was just created it should be the last element
+    expect(workChilds.length).toEqual(initialChildsLength + 1);
+    const polyLineChild = getNewSvgElement(svgHandle, 1);
+    expect(polyLineChild.tagName).toEqual('polyline');
+    // The 'points' attribute should contain the initial point and the new point
+    expect(polyLineChild.getAttribute('points')).toEqual('100,100 200,200');
+  });
+
+  it('should be able to show next line with mousemove', () => {
+    // Step 1. Select line
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Line;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+
+    // Setting up the event
+    const spy = spyOn(component.workZoneComponent, 'onMouseMove').and.callThrough();
+    drawPolylineOnCanvas();
+    // Add new click
+    const newX = 200;
+    const newY = 200;
+    const newMouseEvent = new MouseEvent('mousemove', {
+      clientX: newX,
+      clientY: newY,
+    });
+    // update mouse position on the service
+    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionX = newX;
+    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionY = newY;
+    component.workZoneComponent.onMouseMove(newMouseEvent);
+    expect(spy).toHaveBeenCalled();
+    // Step 3. Expect a <polyline>
+    // Since polyline was just created it should be the last element
+    expect(workChilds.length).toEqual(initialChildsLength + 1);
+    const polyLineChild = getNewSvgElement(svgHandle, 1);
+    expect(polyLineChild.tagName).toEqual('polyline');
+    // The 'points' attribute should contain the initial point and the current mouse position
+    expect(polyLineChild.getAttribute('points')).toEqual('100,100 200,200');
+  });
+
+  it('should be able to delete last line with backspace and immediately update', () => {
+    // Step 1. Select line
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Line;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+
+    // Setting up the event
+    const spy = spyOn(component.workZoneComponent, 'onLeftClick').and.callThrough();
+    drawPolylineOnCanvas();
+    expect(spy).toHaveBeenCalled();
+    // Add new click
+    let newX = 200;
+    let newY = 200;
+    const newMouseEvent = new MouseEvent('click', {
+      button: 0,
+      clientX: newX,
+      clientY: newY,
+    });
+
+    addClickToCanvas(newMouseEvent);
+    expect(spy).toHaveBeenCalled();
+    // Expect a <polyline>
+    // Since polyline was just created it should be the last element
+    expect(workChilds.length).toEqual(initialChildsLength + 1);
+    const polyLineChild = getNewSvgElement(svgHandle, 1);
+    expect(polyLineChild.tagName).toEqual('polyline');
+    // The 'points' attribute should contain the initial point and the new point
+    expect(polyLineChild.getAttribute('points')).toEqual('100,100 200,200');
+    // Move mouse to verify line updates as soon as escape is pressed
+    newX = 250;
+    newY = 250;
+    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionX = newX;
+    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionY = newY;
+    // Now delete the last point by simulating a backspace press
+    component.workZoneComponent._toolManager.backSpacePress();
+    // Step 3.
+    // Since last point is deleted and mouse has moved, the points attribute should show initial point and current mouse position
+    expect(polyLineChild.getAttribute('points')).toEqual('100,100 250,250');
+    // You should not be able to delete first point with a backspace, so subsequent calls should have the same value
+    component.workZoneComponent._toolManager.backSpacePress();
+    expect(polyLineChild.getAttribute('points')).toEqual('100,100 250,250');
+  });
   // it('should be able to interacte properly with the color applicator', () => {
   //   const colorService = fixture.debugElement.injector.get(ColorService);
   //   colorService.setPrimaryColor('red');

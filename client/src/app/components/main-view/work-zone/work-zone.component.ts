@@ -60,6 +60,10 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     }
   }
 
+  get _toolManager(): ToolManagerService {
+    return this.toolManager;
+  }
+
   onMouseDown(mouseEvent: MouseEvent) {
     this.toolManager.createElement(mouseEvent, this.canvasElement);
   }
