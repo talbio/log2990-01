@@ -44,8 +44,8 @@ describe('DrawingsStockerService', () => {
         } );
     });
 
-    it('getNumberOfFiles should return number of stored files', async () => {
-        await drawingsService.getNumberOfFiles().then( (numberOfFiles: number) => expect(numberOfFiles).to.be.equal(3));
+    it('getFiles should return stored files', async () => {
+        await drawingsService.getFiles().then( (fetchedFiles: string[]) => expect(fetchedFiles.length).to.be.equal(3));
     });
 
     it('storeDrawing should write json object to file', async () => {

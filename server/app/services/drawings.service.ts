@@ -36,14 +36,23 @@ export class DrawingsService {
     }
 
     async getIdFromLastSession() {
-        this.currentId = await this.getNumberOfFiles();
+        // the id is just the number of files
+        await this.getFiles()
+            .then((files: string[]) => this.currentId = files.length);
     }
 
-    async getNumberOfFiles(): Promise<number> {
+    async getFiles(): Promise<string[]> {
         const dir = './app/storage';
         return new Promise((resolve, reject) => {
             fs.readdir(dir, (err, files) => {
-                files ? resolve(files.length) : resolve(0);
+                if (err) {
+                    console.error(err);
+                    reject(err);
+                } else if (files) {
+                    resolve(files.filter( (fileName: string) => fileName.includes('drawing')));
+                } else {
+                    resolve([]);
+                }
             });
         });
     }
@@ -51,13 +60,11 @@ export class DrawingsService {
     async getDrawings(): Promise<DrawingWithId[]> {
         const drawingsWithIds: DrawingWithId[] = [];
         const dirname  = './app/storage/';
-        return new Promise((resolve, reject) => {
-            fs.readdir(dirname, (err, filenames) => {
-                if (err) {
-                    console.error(err);
-                    reject(err);
+        return new Promise(async (resolve, reject) => {
+            await this.getFiles().then( (files: string[]) => {
+                if (files.length !== 0) {
+                    files.forEach((fileName: string) => drawingsWithIds.push(this.loadFile(dirname + fileName)));
                 }
-                filenames.forEach((fileName) => drawingsWithIds.push(this.loadFile(dirname + fileName)));
                 resolve(drawingsWithIds);
             });
         });
@@ -67,9 +74,9 @@ export class DrawingsService {
         if (!drawing.name) {
             return false;
         }
-        const id: number = this.generateNextId();
-        const drawingWithId: DrawingWithId = {id, drawing};
-        this.storeData(drawingWithId, './app/storage/drawing' + id + '.json');
+        const drawingWithId: DrawingWithId = {id: this.currentId, drawing};
+        this.storeData(drawingWithId, './app/storage/drawing' + this.currentId + '.json');
+        this.generateNextId();
         return true;
     }
 
@@ -77,7 +84,7 @@ export class DrawingsService {
         return this.loadFile('/../storage/drawing' + id + '.json');
     }
 
-    private generateNextId(): number {
-        return ++this.currentId;
+    private generateNextId() {
+        this.currentId++;
     }
 }

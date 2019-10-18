@@ -29,7 +29,9 @@ export class DrawingsController {
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
             const drawings: Drawing[] = [];
             await this.drawingsService.getDrawings().then( (drawingsWithIds: DrawingWithId[]) => {
-                drawingsWithIds.forEach( (drawingWithId: DrawingWithId) => drawings.push(drawingWithId.drawing));
+                if (drawingsWithIds) {
+                    drawingsWithIds.forEach( (drawingWithId: DrawingWithId) => drawings.push(drawingWithId.drawing));
+                }
             });
             res.send(drawings);
         });
