@@ -117,7 +117,6 @@ fdescribe('DrawingViewComponent', () => {
     });
     component.workZoneComponent.onMouseDown(mouseEvent);
     expect(spy).toHaveBeenCalled();
-    // console.log(svgHandle);
     // Step 3. Expect un <ellipse>
     // Vu qu'une ellipse et un rectangle sont créés, on s'attend à une ellipse comme avant-dernier élément.
     expect(workChilds.length).toEqual(initialChildsLength + 2);
@@ -609,4 +608,126 @@ fdescribe('DrawingViewComponent', () => {
   //   const lastChild = getLastSvgElement(null);
   //   expect(lastChild.getAttribute('fill')).toEqual('red');
   // });
+
+  it('should be able to add an emoji', () => {
+  // Select Stamp Tool
+  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  toolManagerService._activeTool = Tools.Stamp;
+  // Create the work-zone
+  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+  const initialChildsLength = svgHandle.children.length;
+  const workChilds = svgHandle.children;
+  // Setting up the event
+  const spy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+  const mouseEvent = new MouseEvent('mousedown', {});
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  expect(spy).toHaveBeenCalled();
+  // Expect an emoji
+  expect(workChilds.length).toEqual(initialChildsLength + 1);
+  const emoji = workChilds.item(workChilds.length - 1) as SVGElement;
+  expect(emoji.tagName).toEqual('image');
+});
+
+  it('should be possible to modify an emoji angle with the wheel', () => {
+  // Select Stamp Tool
+  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  toolManagerService._activeTool = Tools.Stamp;
+  // Create the work-zone
+  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+  const children = svgHandle.childNodes;
+  const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
+  const wheelEvent = new WheelEvent('mousewheel', {
+    deltaY: -500,
+  });
+  const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+  const mouseEvent = new MouseEvent('mousedown', {});
+  component.workZoneComponent.onMouseWheel(wheelEvent);
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  expect(wheelSpy).toHaveBeenCalled();
+  expect(mouseSpy).toHaveBeenCalled();
+  const emoji = svgHandle.childNodes[children.length - 2] as Element;
+  // tslint:disable-next-line: no-non-null-assertion
+  const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
+  expect(angle).toEqual('15');
+});
+
+  it('shouldnt be possible to enter an angle under 0 or over 360 for the rotation', () => {
+  // Select Stamp Tool
+  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  toolManagerService._activeTool = Tools.Stamp;
+  // Create the work-zone
+  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+  const children = svgHandle.childNodes;
+  const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
+  let wheelEvent = new WheelEvent('mousewheel', {
+    deltaY: -500,
+  });
+  const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+  const mouseEvent = new MouseEvent('mousedown', {});
+  component.workZoneComponent.onMouseWheel(wheelEvent);
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  expect(wheelSpy).toHaveBeenCalled();
+  expect(mouseSpy).toHaveBeenCalled();
+  // It shouldn't be possible to increase the angle over 360
+  for (let i = 0; i < 100; i++) {
+  component.workZoneComponent.onMouseWheel(wheelEvent);
+  }
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  let emoji = svgHandle.childNodes[children.length - 2] as Element;
+  // tslint:disable-next-line: no-non-null-assertion
+  let angle = emoji.getAttribute('transform')!.substr(7, 3) ;
+  expect(angle).toEqual('360');
+
+  // It shouldn't be possible to lower the angle under 0
+  wheelEvent = new WheelEvent('mousewheel', {
+    deltaY: 500,
+  });
+  for (let i = 0; i < 100; i++) {
+    component.workZoneComponent.onMouseWheel(wheelEvent);
+    }
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  emoji = svgHandle.childNodes[children.length - 2] as Element;
+  // tslint:disable-next-line: no-non-null-assertion
+  angle = emoji.getAttribute('transform')!.substr(7, 1) ;
+  expect(angle).toEqual('0');
+});
+
+  it('should be possible to modify an emoji rotation step from 15 to 1 with the ALT button', () => {
+  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  toolManagerService._activeTool = Tools.Stamp;
+  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+  const children = svgHandle.childNodes;
+  const altSpy = spyOn(component.workZoneComponent, 'keyDownEvent').and.callThrough();
+  const altEvent = new KeyboardEvent('keydown', {
+     key: 'Alt',
+   });
+  const wheelEvent = new WheelEvent('mousewheel', {
+    deltaY: -500,
+  });
+  const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
+  const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+  const mouseEvent = new MouseEvent('mousedown', {});
+  component.workZoneComponent.keyDownEvent(altEvent);
+  component.workZoneComponent.onMouseWheel(wheelEvent);
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  expect(altSpy).toHaveBeenCalled();
+  expect(wheelSpy).toHaveBeenCalled();
+  expect(mouseSpy).toHaveBeenCalled();
+  const emoji = svgHandle.childNodes[children.length - 2] as Element;
+  // tslint:disable-next-line: no-non-null-assertion
+  const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
+  expect(angle).toEqual('1 ');
+});
+  it('should be impossible to add an emoji if no emoji is selected', () => {
+  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  toolManagerService._activeTool = Tools.Stamp;
+  const emojiService = fixture.debugElement.injector.get(EmojiGeneratorService);
+  emojiService._emoji = '';
+  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+  const children = svgHandle.childNodes;
+  const initialChildsLength = svgHandle.children.length;
+  const mouseEvent = new MouseEvent('mousedown', {});
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  expect(children.length).toEqual(initialChildsLength);
+});
 });
