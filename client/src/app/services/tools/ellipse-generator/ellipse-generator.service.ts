@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Renderer2 } from '@angular/core';
 import { PlotType } from '../../../data-structures/PlotType';
+import { RectangleGeneratorService } from './../rectangle-generator/rectangle-generator.service';
 
 enum Axis {
   x,
@@ -12,35 +13,31 @@ export class EllipseGeneratorService {
   private OFFSET_CANVAS_Y: number;
   private OFFSET_CANVAS_X: number;
   private currentEllipseNumber: number;
+  private renderer: Renderer2;
   private mouseDown: boolean;
 
   // attributes of rectangle
   private strokeWidth: number;
   private plotType: PlotType;
+  private tempRect: SVGElement;
 
-  constructor() {
+  constructor(private rectangleGenerator: RectangleGeneratorService) {
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.currentEllipseNumber = 0;
     this.mouseDown = false;
   }
 
-  get _strokeWidth() {
-    return this.strokeWidth;
-  }
+  // Getters/Setters
+  set _renderer(renderer: Renderer2) { this.renderer = renderer; }
 
-  set _strokeWidth(width: number) {
-    this.strokeWidth = width;
-  }
+  get _strokeWidth() { return this.strokeWidth; }
+  set _strokeWidth(width: number) { this.strokeWidth = width; }
 
-  get _plotType() {
-    return this.plotType;
-  }
+  get _plotType() { return this.plotType; }
+  set _plotType(plotType: PlotType) { this.plotType = plotType; }
 
-  set _plotType(plotType: PlotType) {
-    this.plotType = plotType;
-  }
-
+  set _currentEllipseNumber(count: number) { this.currentEllipseNumber = count; }
   createEllipse(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
@@ -49,6 +46,13 @@ export class EllipseGeneratorService {
     const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
     canvas.innerHTML +=
       this.generateEllipseElement(this.currentEllipseNumber, xPos, yPos, primaryColor, secondaryColor);
+    this.rectangleGenerator.createRectangle(mouseEvent, canvas, primaryColor, secondaryColor);
+    const rectID = '#rect' + this.rectangleGenerator._currentRectNumber;
+    this.tempRect = this.renderer.selectRootElement(rectID, true) as SVGElement;
+    this.tempRect.id = 'tempRect';
+    if (this.tempRect.id === 'tempRect') {
+      console.log('found and renamed the rectangle');
+    }
     this.mouseDown = true;
     return true;
   }
@@ -68,8 +72,9 @@ export class EllipseGeneratorService {
   }
 
   updateEllipse(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
+    this.rectangleGenerator.updateRectangle(canvasPosX, canvasPosY, canvas, currentChildPosition);
     if (this.mouseDown) {
-      const currentEllipse = canvas.children[currentChildPosition - 1];
+      const currentEllipse = canvas.children[currentChildPosition - 2];
       if (currentEllipse != null) {
         const startEllipseX: number = Number(currentEllipse.getAttribute('data-start-x'));
         const startEllipseY: number = Number(currentEllipse.getAttribute('data-start-y'));
@@ -91,6 +96,7 @@ export class EllipseGeneratorService {
 
   finishEllipse() {
     if (this.mouseDown) {
+      this.renderer.selectRootElement('#canvas', true).removeChild(this.tempRect);
       this.currentEllipseNumber += 1;
       this.mouseDown = false;
     }

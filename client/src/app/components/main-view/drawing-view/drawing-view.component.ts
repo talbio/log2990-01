@@ -73,6 +73,11 @@ export class DrawingViewComponent implements AfterViewInit {
       } else if (keyboardEvent.key === this.DELETE_LAST_ELEMENT_KEY) {
         this.toolManager.backSpacePress();
       }
+    } else {
+      // Still prevent shorcuts we use to be replaced with common browser shortcuts
+      if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
+        keyboardEvent.preventDefault();
+      }
     }
   }
   @HostListener('document:mousemove', ['$event'])

@@ -1,12 +1,12 @@
 /* tslint:disable:no-unused-variable */
 
-import { TestBed, async, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { MousePositionService } from './mouse-position.service';
 
 describe('Service: MousePosition', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [MousePositionService]
+      providers: [MousePositionService],
     });
   });
 

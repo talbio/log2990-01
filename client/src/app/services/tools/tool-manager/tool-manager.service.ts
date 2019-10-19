@@ -47,6 +47,7 @@ export class ToolManagerService {
   loadRenderer(renderer: Renderer2) {
     this.renderer = renderer;
     // Give it to the tools who also need it
+    this.ellipseGenerator._renderer = renderer;
     this.colorApplicator._renderer = renderer;
     this.eyedropper._renderer = renderer;
     this.lineGenerator._renderer = renderer;
@@ -239,6 +240,7 @@ export class ToolManagerService {
       this.canvasElement.children[i].remove();
     }
     this.numberOfElements = 1;
+    this.resetCounters();
   }
 
   updateNumberOfElements(): void {
@@ -353,5 +355,57 @@ export class ToolManagerService {
 
   rotateEmoji(mouseEvent: WheelEvent): void {
     this.emojiGenerator.rotateEmoji(mouseEvent);
+  }
+
+  synchronizeAllCounters() {
+    let brushCount = 0;
+    let ellipseCount = 0;
+    let polylineCount = 0;
+    let pencilCount = 0;
+    let rectangleCount = 0;
+    const canvas = this.renderer.selectRootElement('#canvas', true);
+    for (const child of [].slice.call(canvas.children)) {
+      const childCast = child as SVGElement;
+      switch (childCast.tagName) {
+        case 'defs':
+          break;
+        case 'rect':
+          rectangleCount += 1;
+          break;
+        case 'ellipse':
+          ellipseCount += 1;
+          break;
+        case 'path':
+          if (childCast.id.startsWith('pencil')) {
+            pencilCount += 1;
+          } else if (childCast.id.startsWith('brush')) {
+            brushCount += 1;
+          } else {
+            alert(`Untreated case: element ${childCast.id}!`);
+          }
+          break;
+        case 'polyline':
+          polylineCount += 1;
+          break;
+        default:
+          alert(`Untreated item ${childCast.nodeName}!`);
+          break;
+      }
+    }
+    // Always remove 1 from rect since the grid is a rectangle
+    // grid not in master yet
+    // rectangleCount -= 1;
+    this.rectangleGenerator._currentRectNumber = rectangleCount;
+    this.ellipseGenerator._currentEllipseNumber = ellipseCount;
+    this.lineGenerator._currentPolylineNumber = polylineCount;
+    this.brushGenerator._currentBrushPathNumber = brushCount;
+    this.pencilGenerator._currentPencilPathNumber = pencilCount;
+  }
+  resetCounters() {
+    this.rectangleGenerator._currentRectNumber = 0;
+    this.ellipseGenerator._currentEllipseNumber = 0;
+    this.lineGenerator._currentPolylineNumber = 0;
+    this.brushGenerator._currentBrushPathNumber = 0;
+    this.pencilGenerator._currentPencilPathNumber = 0;
   }
 }

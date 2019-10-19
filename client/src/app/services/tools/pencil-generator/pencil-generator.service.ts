@@ -30,6 +30,8 @@ export class PencilGeneratorService {
     this.mouseDown = state;
   }
 
+  set _currentPencilPathNumber(count: number) { this.currentPencilPathNumber = count; }
+
   // Initializes the path
   createPenPath(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string) {
 

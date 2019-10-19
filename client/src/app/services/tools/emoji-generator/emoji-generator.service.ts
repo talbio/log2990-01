@@ -29,6 +29,10 @@ export class EmojiGeneratorService {
         this.rotationStep = MAX_ROTATION_STEP;
     }
 
+    getEmojis() {
+        return this.emojis;
+    }
+
     get _emoji() {
         return this.emoji;
     }

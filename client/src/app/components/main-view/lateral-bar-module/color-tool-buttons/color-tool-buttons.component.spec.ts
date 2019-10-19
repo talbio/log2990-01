@@ -29,7 +29,7 @@ const spyColorService: jasmine.SpyObj<ColorService> =
 
 /* ------------------------------------------------------------------------------------------ */
 
-fdescribe('ColorToolButtonsComponent', () => {
+describe('ColorToolButtonsComponent', () => {
   let component: ColorToolButtonsComponent;
   let fixture: ComponentFixture<ColorToolButtonsComponent>;
 

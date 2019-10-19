@@ -3,3 +3,8 @@ export enum PlotType {
   Full,
   FullWithContour,
 }
+
+export enum Axis{
+  xAxis,
+  yAxis,
+}

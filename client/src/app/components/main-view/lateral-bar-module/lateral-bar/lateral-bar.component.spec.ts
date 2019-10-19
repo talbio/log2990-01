@@ -1,7 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import {HttpClientModule} from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DemoMaterialModule } from 'src/app/material.module';
 import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
 import { LateralBarComponent } from './lateral-bar.component';
@@ -12,7 +11,6 @@ class ColorToolStubComponent {}
 describe('LateralBarComponent', () => {
   let component: LateralBarComponent;
   let fixture: ComponentFixture<LateralBarComponent>;
-  // tslint:disable-next-line:prefer-const
   // tslint:disable-next-line:prefer-const
   let toolManagerServiceStub: Partial<ToolManagerService>;
 
