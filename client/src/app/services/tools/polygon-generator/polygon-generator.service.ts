@@ -5,6 +5,8 @@ import { RectangleGeneratorService } from '../rectangle-generator/rectangle-gene
 @Injectable()
 export class PolygonGeneratorService {
 
+  private readonly TEMP_RECT_ID = '#tempRect';
+
   private OFFSET_CANVAS_Y: number;
   private OFFSET_CANVAS_X: number;
   private currentPolygonNumber: number;
@@ -16,15 +18,20 @@ export class PolygonGeneratorService {
   private strokeWidth: number;
   private plotType: PlotType;
   private nbOfApex: number;
-  private tempRect: SVGElement;
-  private currentPolygon: SVGElement;
+  private angleBetweenVertex: number;
+  private currentPolygonID: string;
+  private aspectRatio: number;
+  private adjustment: number[];
 
   constructor(private rectangleGenerator: RectangleGeneratorService) {
+    this.adjustment = [0, 0];
+    this.aspectRatio = 0;
+    this.nbOfApex = 3;
+    this.angleBetweenVertex = (Math.PI * 2) / this.nbOfApex;
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.currentPolygonNumber = 0;
     this.mouseDown = false;
-    this.nbOfApex = 3;
   }
 
   // Getters/Setters
@@ -46,15 +53,11 @@ export class PolygonGeneratorService {
     this.canvasElement = canvas;
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
+    this.setUpAttributes();
 
     // Setup of the children's HTML in canvas
     this.injectInitialHTML(mouseEvent, canvas, primaryColor, secondaryColor);
-    const currentPolygonID = '#polygon' + this.currentPolygonNumber;
-    console.log(currentPolygonID);
-    this.currentPolygon = this.renderer.selectRootElement(currentPolygonID, true) as SVGElement;
-    if (this.currentPolygon != null) {
-      console.log('found the polygon');
-    }
+    this.currentPolygonID = '#polygon' + this.currentPolygonNumber;
     this.createTemporaryRectangle(mouseEvent, canvas, primaryColor, secondaryColor);
     this.mouseDown = true;
     return true;
@@ -62,23 +65,19 @@ export class PolygonGeneratorService {
 
   updatePolygon(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentPolygonNumber: number) {
     if (this.mouseDown) {
+      const currentPolygon = this.renderer.selectRootElement(this.currentPolygonID, true);
       this.rectangleGenerator.updateRectangle(canvasPosX, canvasPosY, canvas, currentPolygonNumber);
       const radius: number = this.determineRadius();
-      // if radius doesn't make sense...
-      if (radius === -1) { console.log('Failure to determine radius'); }
-      const center: number[] = this.determineCenter();
-      // For debugging purposes
-      console.log(center[0] + ' in X and ' + center[1] + ' in Y');
-      const newPoints = this.getNewPointsAttribute(center, radius);
-      console.log('I generated new points');
-      this.currentPolygon.setAttribute('points', newPoints);
+      const center: number[] = this.determineCenter(radius);
+      const newPoints = this.determinePolygonVertex(center, radius);
+      currentPolygon.setAttribute('points', newPoints);
     }
   }
 
   finishPolygon() {
     if (this.mouseDown) {
       // Remove the rectangle
-      this.canvasElement.removeChild(this.tempRect);
+      this.canvasElement.removeChild(this.renderer.selectRootElement(this.TEMP_RECT_ID, true));
       this.currentPolygonNumber += 1;
       this.mouseDown = false;
     }
@@ -91,85 +90,120 @@ export class PolygonGeneratorService {
     switch (this.plotType) {
       case PlotType.Contour:
         canvas.innerHTML +=
-        `<polygon id=polygon${this.currentPolygonNumber}
-        points=${points}
-        stroke=${primaryColor} stroke-width=${this.strokeWidth}
-        fill=transparent></polygon>`;
+        `<polygon id="polygon${this.currentPolygonNumber}"
+        points="${points}"
+        stroke="${primaryColor}" stroke-width="${this.strokeWidth}"
+        fill="transparent"></polygon>`;
         break;
       case PlotType.Full:
         canvas.innerHTML +=
-        `<polygon id=polygon${this.currentPolygonNumber}
+        `<polygon id="polygon${this.currentPolygonNumber}"
         points="${points}"
-        stroke=transparent stroke-width=${this.strokeWidth}
-        fill=${secondaryColor}></polygon>`;
+        stroke="transparent" stroke-width="${this.strokeWidth}"
+        fill="${secondaryColor}"></polygon>`;
         break;
       case PlotType.FullWithContour:
         canvas.innerHTML +=
-        `<polygon id=polygon${this.currentPolygonNumber}
-        points=${points}
-        stroke=${primaryColor} stroke-width=${this.strokeWidth}
-        fill=${secondaryColor}></polygon>`;
+        `<polygon id="polygon${this.currentPolygonNumber}"
+        points="${points}"
+        stroke="${primaryColor}" stroke-width="${this.strokeWidth}"
+        fill="${secondaryColor}"></polygon>`;
         break;
     }
-    // console.log(`<polygon id=polygon${this.currentPolygonNumber}
-    // points=${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}
-    // ,${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)} ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}
-    // ,${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)} ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}
-    // ,${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
-    // stroke=${secondaryColor} stroke-width=${this.strokeWidth}
-    // fill=transparent></polygon>`);
   }
 
   createTemporaryRectangle(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
-    // console.log('reached creatTemporaryRectangle()');
-    this.rectangleGenerator.createRectangle(mouseEvent, canvas, secondaryColor, primaryColor);
-    // console.log('created the rectangle');
+    this.rectangleGenerator._plotType = PlotType.Contour;
+    this.rectangleGenerator.createRectangle(mouseEvent, canvas, 'black', 'black');
     canvas.children[canvas.children.length - 1].id = 'tempRect';
-    this.tempRect = this.renderer.selectRootElement('#tempRect', true) as SVGElement;
-    if (this.tempRect != null) {
-      console.log('found the rectangle');
-    }
+    canvas.children[canvas.children.length - 1].setAttribute('stroke-dasharray', '4');
   }
 
   determineRadius(): number {
-    if (this.tempRect != null) {
-      if (parseFloat(this.tempRect.getAttribute('width') as string)
-        < parseFloat(this.tempRect.getAttribute('height') as string)) {
-        console.log('we kept width');
-        return parseFloat(this.tempRect.getAttribute('width') as string) / 2;
+    const tempRect = this.renderer.selectRootElement(this.TEMP_RECT_ID, true);
+    const h: number = parseFloat(tempRect.getAttribute('height') as string);
+    const w: number = parseFloat(tempRect.getAttribute('width') as string);
+    if ((w / h) <= this.aspectRatio) {
+      if ((this.nbOfApex % 4) === 0) {
+        return (w / 2) * this.adjustment[0];
+      } else if ((this.nbOfApex % 2) === 0) {
+        return w / 2;
       } else {
-        console.log('we kept height');
-        return parseFloat(this.tempRect.getAttribute('height') as string) / 2;
+        return w * this.adjustment[1];
       }
     } else {
-      return -1;
+      if ((this.nbOfApex % 4) === 0) {
+        return (h / 2) * this.adjustment[0];
+      } else if ((this.nbOfApex % 2) === 0) {
+        return (h / 2) * this.adjustment[0];
+      } else {
+        return h * this.adjustment[0];
+      }
     }
   }
 
-  determineCenter(): number[] {
-    const h: number = parseFloat(this.tempRect.getAttribute('height') as string);
-    const w: number = parseFloat(this.tempRect.getAttribute('width') as string);
-    const x: number = parseFloat(this.tempRect.getAttribute('x') as string);
-    const y: number = parseFloat(this.tempRect.getAttribute('y') as string);
-    const center: number[] = [(x + w / 2), (y + h / 2)];
-    console.log('rect X is ' + x + ' and rect Y is ' + y);
+  determineCenter(radius: number): number[] {
+    const tempRect = this.renderer.selectRootElement(this.TEMP_RECT_ID, true);
+    const h: number = parseFloat(tempRect.getAttribute('height') as string);
+    const w: number = parseFloat(tempRect.getAttribute('width') as string);
+    const x: number = parseFloat(tempRect.getAttribute('x') as string);
+    const y: number = parseFloat(tempRect.getAttribute('y') as string);
+    console.log(h + ' is height');
+    console.log(w + ' is width');
+    console.log(this.adjustment + ' is adjustment');
+    console.log(this.aspectRatio + ' is ratio');
+    let center: number[] = [(x + w / 2), (y + h / 2)];
+    if (this.nbOfApex % 2 === 1) {
+      if ((w / h) > this.aspectRatio ) {
+        center[1] = y + radius;
+      } else {
+        center[1] = y + h / 2 + radius / 2 * this.adjustment[1];
+      }
+    }
     return center;
   }
 
-  getNewPointsAttribute(center: number[], radius: number): string {
+  determinePolygonVertex(center: number[], radius: number): string {
+    let pointsAttribute = '';
     // We convert degrees to radians
     const angleBetweenVertex = (2 * Math.PI / this.nbOfApex);
-    let pointsAttribute: string = center[0] + ',' + (center[1] - radius);
-    console.log(pointsAttribute);
-    let i = 1;
+    let i = 0;
     // We determine what is the position of each vertex
     for (i ; i < this.nbOfApex ; i++) {
-      const xPos = center[0] + (radius * (Math.cos((Math.PI) / 2 + angleBetweenVertex * i)));
+      const xPos = center[0] + (radius * Math.cos((angleBetweenVertex * i - ((Math.PI / 2) + angleBetweenVertex / 2))));
       // Since the Y axis is inverted on canvas, we substract the radius
-      const yPos = center[1] - (radius * (Math.sin((Math.PI) / 2 + angleBetweenVertex * i)));
+      const yPos = center[1] - (radius * Math.sin((angleBetweenVertex * i - ((Math.PI / 2) + angleBetweenVertex / 2))));
       pointsAttribute += ' ' + xPos + ',' + yPos;
     }
-    console.log(pointsAttribute);
     return pointsAttribute;
+  }
+
+  setUpAttributes() {
+    this.angleBetweenVertex = (2 * Math.PI / this.nbOfApex);
+    if (this.nbOfApex % 4 === 0) {
+      const cosMax = Math.cos(this.angleBetweenVertex / 2);
+      this.adjustment[0] = 1 / cosMax;
+      this.aspectRatio = 1;
+      // if r = 1...
+    } else if (this.nbOfApex % 2 === 0) {
+      const sinMax = Math.sin((Math.PI / 2) + this.angleBetweenVertex / 2);
+      const xAspect = 2;
+      const yAspect = 2 * sinMax;
+      this.adjustment[0] = 1 / sinMax;
+      this.aspectRatio = xAspect / yAspect;
+    } else {
+      // If r = 1...
+      const i = Math.round((this.nbOfApex - 1) / 3);
+      const cosMax = Math.cos((Math.PI / 2) + (i * this.angleBetweenVertex));
+      const xAspect = Math.abs(cosMax) * 2;
+      const sinFlat = Math.sin((Math.PI / 2) + this.angleBetweenVertex / 2);
+      const yAspect = 1 + sinFlat;
+      this.aspectRatio = xAspect / yAspect;
+      this.adjustment[0] = 1 / yAspect;
+      this.adjustment[1] = 1 / xAspect;
+      // si plus grand que ratio => x est trop grand
+      // const r = 1 / yAspect;
+      // const r = this.adjustment;
+    }
   }
 }
