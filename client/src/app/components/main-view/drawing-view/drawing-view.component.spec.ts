@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
+import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { Tools } from '../../../data-structures/Tools';
 import { DemoMaterialModule } from '../../../material.module';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
@@ -51,6 +52,7 @@ const DRAWING_SERVICES = [
   EyedropperService,
   ColorService,
   MousePositionService,
+  ObjectSelectorService,
 ];
 fdescribe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
@@ -645,7 +647,7 @@ fdescribe('DrawingViewComponent', () => {
   component.workZoneComponent.onMouseDown(mouseEvent);
   expect(wheelSpy).toHaveBeenCalled();
   expect(mouseSpy).toHaveBeenCalled();
-  const emoji = svgHandle.childNodes[children.length - 2] as Element;
+  const emoji = svgHandle.childNodes[children.length - 1] as Element;
   // tslint:disable-next-line: no-non-null-assertion
   const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
   expect(angle).toEqual('15');
@@ -673,7 +675,7 @@ fdescribe('DrawingViewComponent', () => {
   component.workZoneComponent.onMouseWheel(wheelEvent);
   }
   component.workZoneComponent.onMouseDown(mouseEvent);
-  let emoji = svgHandle.childNodes[children.length - 2] as Element;
+  let emoji = svgHandle.childNodes[children.length - 1] as Element;
   // tslint:disable-next-line: no-non-null-assertion
   let angle = emoji.getAttribute('transform')!.substr(7, 3) ;
   expect(angle).toEqual('360');
@@ -686,7 +688,7 @@ fdescribe('DrawingViewComponent', () => {
     component.workZoneComponent.onMouseWheel(wheelEvent);
     }
   component.workZoneComponent.onMouseDown(mouseEvent);
-  emoji = svgHandle.childNodes[children.length - 2] as Element;
+  emoji = svgHandle.childNodes[children.length - 1] as Element;
   // tslint:disable-next-line: no-non-null-assertion
   angle = emoji.getAttribute('transform')!.substr(7, 1) ;
   expect(angle).toEqual('0');
@@ -713,7 +715,7 @@ fdescribe('DrawingViewComponent', () => {
   expect(altSpy).toHaveBeenCalled();
   expect(wheelSpy).toHaveBeenCalled();
   expect(mouseSpy).toHaveBeenCalled();
-  const emoji = svgHandle.childNodes[children.length - 2] as Element;
+  const emoji = svgHandle.childNodes[children.length - 1] as Element;
   // tslint:disable-next-line: no-non-null-assertion
   const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
   expect(angle).toEqual('1 ');
@@ -729,5 +731,50 @@ fdescribe('DrawingViewComponent', () => {
   const mouseEvent = new MouseEvent('mousedown', {});
   component.workZoneComponent.onMouseDown(mouseEvent);
   expect(children.length).toEqual(initialChildsLength);
+});
+  it('should be possible to select a drawing', () => {
+  // add an emoji
+  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  toolManagerService._activeTool = Tools.Stamp;
+  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+  const children = svgHandle.childNodes;
+  const initialChildsLength = svgHandle.children.length;
+  const mouseEvent = new MouseEvent('mousedown', {});
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  let emoji: Element = svgHandle.childNodes[children.length - 1] as Element;
+  emoji.setAttribute('x', '' + 100);
+  emoji.setAttribute('y', '' + 100);
+  emoji.setAttribute('id', 'testEmoji');
+  expect(children.length).toEqual(initialChildsLength + 1);
+
+  // select the emoji
+  toolManagerService._activeTool = Tools.Selector;
+  const mouseEvent2 = new MouseEvent('mousedown', {
+    button: 0,
+    clientX: 100,
+    clientY: 100,
+  });
+
+  // Add new click
+  const newX = 200;
+  const newY = 200;
+  const mouseMove = new MouseEvent('mousemove', {
+    clientX: newX,
+    clientY: newY,
+  });
+  component.workZoneComponent.onMouseDown(mouseEvent2);
+  component.workZoneComponent.onMouseMove(mouseMove);
+  component.workZoneComponent.onMouseUp();
+
+  // notre canvas a maintenant une boîte <svg> qui contient un groupe <g> qui contient notre emoji testEmoji
+  const selectorBox = svgHandle.children[1];
+  // tslint:disable-next-line: no-non-null-assertion
+  expect(selectorBox.getAttribute('id')!).toBe('box');
+  const group = selectorBox.children[2];
+  // tslint:disable-next-line: no-non-null-assertion
+  expect(group.getAttribute('id')!).toBe('selected');
+  expect(group.tagName).toBe('g');
+  // tslint:disable-next-line: no-non-null-assertion
+  expect(group.children[0].getAttribute('id')!).toBe('testEmoji');
 });
 });
