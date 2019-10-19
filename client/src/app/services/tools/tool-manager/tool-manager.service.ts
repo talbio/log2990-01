@@ -27,10 +27,6 @@ export class ToolManagerService {
     return this.activeTool;
   }
 
-  get _mousePosition(): MousePositionService {
-    return this.mousePosition;
-  }
-
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private ellipseGenerator: EllipseGeneratorService,
               private emojiGenerator: EmojiGeneratorService,
