@@ -5,6 +5,7 @@ import { ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2 } from '@angu
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { Tools } from '../../../data-structures/Tools';
 import { DemoMaterialModule } from '../../../material.module';
@@ -150,8 +151,9 @@ fdescribe('DrawingViewComponent', () => {
       clientY: yInitial,
     });
     // Also change the positions on the mouse position service
-    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionX = xInitial;
-    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionY = yInitial;
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService._canvasMousePositionX = xInitial;
+    mousePositionService._canvasMousePositionY = yInitial;
     component.workZoneComponent.onLeftClick(mouseEvent);
     expect(spy).toHaveBeenCalled();
     // Step 3. Expect un <polyline>
@@ -163,7 +165,7 @@ fdescribe('DrawingViewComponent', () => {
 
   // This function uses the code of the first test to draw a polyline on the canvas
   const drawPolylineOnCanvas = () => {
-
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     const xInitial = 100;
     const yInitial = 100;
 
@@ -173,15 +175,16 @@ fdescribe('DrawingViewComponent', () => {
       clientY: yInitial,
     });
     // Also change the positions on the mouse position service
-    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionX = xInitial;
-    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionY = yInitial;
+    mousePositionService._canvasMousePositionX = xInitial;
+    mousePositionService._canvasMousePositionY = yInitial;
     component.workZoneComponent.onLeftClick(mouseEvent);
   };
 
   const addClickToCanvas = (mouseEvent: MouseEvent) => {
     // Change the positions on the mouse position service
-    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionX = mouseEvent.clientX;
-    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionY = mouseEvent.clientY;
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService._canvasMousePositionX = mouseEvent.clientX;
+    mousePositionService._canvasMousePositionY = mouseEvent.clientY;
     // Click the canvas
     component.workZoneComponent.onLeftClick(mouseEvent);
   };
@@ -239,8 +242,9 @@ fdescribe('DrawingViewComponent', () => {
       clientY: newY,
     });
     // update mouse position on the service
-    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionX = newX;
-    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionY = newY;
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService._canvasMousePositionX = newX;
+    mousePositionService._canvasMousePositionY = newY;
     component.workZoneComponent.onMouseMove(newMouseEvent);
     expect(spy).toHaveBeenCalled();
     // Step 3. Expect a <polyline>
@@ -284,17 +288,18 @@ fdescribe('DrawingViewComponent', () => {
     // The 'points' attribute should contain the initial point and the new point
     expect(polyLineChild.getAttribute('points')).toEqual('100,100 200,200');
     // Move mouse to verify line updates as soon as escape is pressed
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     newX = 250;
     newY = 250;
-    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionX = newX;
-    component.workZoneComponent._toolManager._mousePosition._canvasMousePositionY = newY;
+    mousePositionService._canvasMousePositionX = newX;
+    mousePositionService._canvasMousePositionY = newY;
     // Now delete the last point by simulating a backspace press
-    component.workZoneComponent._toolManager.backSpacePress();
+    toolManagerService.backSpacePress();
     // Step 3.
     // Since last point is deleted and mouse has moved, the points attribute should show initial point and current mouse position
     expect(polyLineChild.getAttribute('points')).toEqual('100,100 250,250');
     // You should not be able to delete first point with a backspace, so subsequent calls should have the same value
-    component.workZoneComponent._toolManager.backSpacePress();
+    toolManagerService.backSpacePress();
     expect(polyLineChild.getAttribute('points')).toEqual('100,100 250,250');
   });
 
@@ -320,16 +325,281 @@ fdescribe('DrawingViewComponent', () => {
     // Verify that it is indeed a child of svgHandle to verify its deletion later
     expect(svgHandle.contains(polyLineChild)).toBeTruthy();
     // Now delete the whole polyline by simulating an escape press
-    component.workZoneComponent._toolManager.escapePress();
+    toolManagerService.escapePress();
     // Step 3.
     // The created polyline should have been removed, so we should have the same number of children as initial
     expect(workChilds.length).toEqual(initialChildsLength);
     // The deleted child should be removed, so the handler should contain it anymore
     expect(svgHandle.contains(polyLineChild)).toBeFalsy();
     // You should not be able to delete when a line isn't being made, so subsequent calls should have no effect
-    component.workZoneComponent._toolManager.escapePress();
+    toolManagerService.escapePress();
     expect(workChilds.length).toEqual(initialChildsLength);
   });
+
+  it('should be finish line with doubleclick', () => {
+    // Step 1. Select line
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Line;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+
+    // Setting up the event
+    const spy = spyOn(component.workZoneComponent, 'onLeftClick').and.callThrough();
+    drawPolylineOnCanvas();
+    expect(spy).toHaveBeenCalled();
+    // Add new click
+    const newX = 200;
+    const newY = 200;
+    let newMouseEvent = new MouseEvent('click', {
+      button: 0,
+      clientX: newX,
+      clientY: newY,
+    });
+
+    addClickToCanvas(newMouseEvent);
+    expect(spy).toHaveBeenCalled();
+    // Expect a <polyline>
+    // Since polyline was just created it should be the last element
+    expect(workChilds.length).toEqual(initialChildsLength + 1);
+    const polyLineChild = getLastSvgElement(svgHandle, 1);
+    expect(polyLineChild.tagName).toEqual('polyline');
+    // The 'points' attribute should contain the initial point and the new point
+    expect(polyLineChild.getAttribute('points')).toEqual('100,100 200,200');
+
+    // Since double click also triggers the click function twice, we add a click call at the same location
+    // We also add a buffer click since we usually have an extra current line being shown.
+    // The function that finishes the line will get rid of those two points
+    addClickToCanvas(newMouseEvent);
+    addClickToCanvas(newMouseEvent);
+    // Now end the line creation by simulating a doubleclick done right after the click of the second line
+    newMouseEvent = new MouseEvent('dblclick', {
+      button: 0,
+      clientX: newX,
+      clientY: newY,
+      shiftKey: false,
+    });
+    component.workZoneComponent.onDoubleClick(newMouseEvent);
+    // Step 3.
+    // The created polyline should be finished, so we can attempt to remove it with escape as proven in previous test
+    toolManagerService.escapePress();
+    // Since the line creation was over, the escape press should not have removed the polyline
+    expect(svgHandle.contains(polyLineChild)).toBeTruthy();
+    // The final points attribute should be the same as after the click
+    expect(polyLineChild.getAttribute('points')).toEqual('100,100 200,200');
+  });
+
+  it('should be finish line and complete the shape with doubleclick and shift key pressed', () => {
+    // Step 1. Select line
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Line;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+
+    // Setting up the event
+    const spy = spyOn(component.workZoneComponent, 'onLeftClick').and.callThrough();
+    drawPolylineOnCanvas();
+    expect(spy).toHaveBeenCalled();
+    // Add new click
+    const newX = 200;
+    const newY = 200;
+    let newMouseEvent = new MouseEvent('click', {
+      button: 0,
+      clientX: newX,
+      clientY: newY,
+    });
+
+    addClickToCanvas(newMouseEvent);
+    expect(spy).toHaveBeenCalled();
+    // Expect a <polyline>
+    // Since polyline was just created it should be the last element
+    expect(workChilds.length).toEqual(initialChildsLength + 1);
+    const polyLineChild = getLastSvgElement(svgHandle, 1);
+    expect(polyLineChild.tagName).toEqual('polyline');
+    // The 'points' attribute should contain the initial point and the new point
+    expect(polyLineChild.getAttribute('points')).toEqual('100,100 200,200');
+
+    // Since double click also triggers the click function twice, we add a click call at the same location
+    // We also add a buffer click since we usually have an extra current line being shown.
+    // The function that finishes the line will get rid of those two points
+    addClickToCanvas(newMouseEvent);
+    addClickToCanvas(newMouseEvent);
+    // Now end the line creation by simulating a doubleclick done right after the click of the second line
+    // The event has shiftKey set to true to simulate a shift key press
+    newMouseEvent = new MouseEvent('dblclick', {
+      button: 0,
+      clientX: newX,
+      clientY: newY,
+      shiftKey: true,
+    });
+    component.workZoneComponent.onDoubleClick(newMouseEvent);
+    // Step 3.
+    // The created polyline should be finished, so we can attempt to remove it with escape as proven in previous test
+    toolManagerService.escapePress();
+    // Since the line creation was over, the escape press should not have removed the polyline
+    expect(svgHandle.contains(polyLineChild)).toBeTruthy();
+    // The polyline should have a point added to the end equal to its first point, which is 100,100
+    expect(polyLineChild.getAttribute('points')).toBe('100,100 200,200 100,100');
+  });
+
+  it('should be able to change strokewidth', () => {
+    // Step 1. Select line
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Line;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+
+    // Setting up the event
+    const lineGeneratorService = fixture.debugElement.injector.get(LineGeneratorService);
+    const initialStrokeWidth = lineGeneratorService._strokeWidth;
+    lineGeneratorService._strokeWidth = 20;
+    drawPolylineOnCanvas();
+
+    const polyLineChild = getLastSvgElement(svgHandle, 1);
+    // the stroke-width should be equal to 20, which should be different from the initial stroke-width
+    expect(polyLineChild.getAttribute('stroke-width')).toEqual('20');
+    expect(polyLineChild.getAttribute('stroke-width')).not.toEqual(initialStrokeWidth as unknown as string);
+  });
+
+  it('should be able to change junction point diameter', () => {
+    // Step 1. Select line
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Line;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+
+    // Setting up the event
+    const lineGeneratorService = fixture.debugElement.injector.get(LineGeneratorService);
+    lineGeneratorService._markerDiameter = 20;
+    drawPolylineOnCanvas();
+    const polyLineChild = getLastSvgElement(svgHandle, 1);
+    // Find the marker created in relation to the polyLineChild
+    const markers = fixture.debugElement.nativeElement.querySelector(`#${polyLineChild.id}marker`);
+    // the radius of the circle within the marker should be equal to the new marker diameter, which is 20
+    expect(markers.children[0].getAttribute('r')).toEqual('20');
+  });
+
+  it('should be able to change line type', () => {
+    // Step 1. Select line
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Line;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+
+    const lineGeneratorService = fixture.debugElement.injector.get(LineGeneratorService);
+
+    // Set it as default (continuous)
+    lineGeneratorService._lineDashStyle = LineDashStyle.Continuous;
+    drawPolylineOnCanvas();
+
+    let polyLineChild = getLastSvgElement(svgHandle, 1);
+    // the stroke-linecap should be equal to butt and dasharray should be equal to none
+    expect(polyLineChild.getAttribute('stroke-linecap')).toEqual('butt');
+    expect(polyLineChild.getAttribute('stroke-dasharray')).toEqual('none');
+
+    // End line
+    const newX = 200;
+    const newY = 200;
+    const doubleClick = new MouseEvent('dblclick', {
+      button: 0,
+      clientX: newX,
+      clientY: newY,
+      shiftKey: false,
+    });
+    component.workZoneComponent.onDoubleClick(doubleClick);
+
+    // Set it as dashed
+    lineGeneratorService._lineDashStyle = LineDashStyle.Dashed;
+    drawPolylineOnCanvas();
+
+    polyLineChild = getLastSvgElement(svgHandle, 1);
+    // the stroke-linecap should be equal to butt and dasharray should be equal to `${strokeWidth * 2}, ${strokeWidth}`
+    expect(polyLineChild.getAttribute('stroke-linecap')).toEqual('butt');
+    expect(polyLineChild.getAttribute('stroke-dasharray'))
+    .toEqual(`${lineGeneratorService._strokeWidth * 2}, ${lineGeneratorService._strokeWidth}`);
+
+    // End line
+    component.workZoneComponent.onDoubleClick(doubleClick);
+
+    // Set it as dotted
+    lineGeneratorService._lineDashStyle = LineDashStyle.Dotted;
+    drawPolylineOnCanvas();
+
+    polyLineChild = getLastSvgElement(svgHandle, 1);
+    // the stroke-linecap should be equal to round and dasharray should be equal to `1, ${strokeWidth  * 2}`
+    expect(polyLineChild.getAttribute('stroke-linecap')).toEqual('round');
+    expect(polyLineChild.getAttribute('stroke-dasharray'))
+    .toEqual(`1, ${lineGeneratorService._strokeWidth * 2}`);
+
+    // // End line
+    // component.workZoneComponent.onDoubleClick(doubleClick);
+
+  });
+
+  it('should be able to change join type', () => {
+    // Step 1. Select line
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Line;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+
+    const lineGeneratorService = fixture.debugElement.injector.get(LineGeneratorService);
+
+    // Set it as default (arrondi)
+    lineGeneratorService._lineJoinStyle = LineJoinStyle.Round;
+    drawPolylineOnCanvas();
+
+    let polyLineChild = getLastSvgElement(svgHandle, 1);
+    // the stroke-linejoin should be equal to round and marker-start, marker-mid and marker-end should be equal to none
+    expect(polyLineChild.getAttribute('stroke-linejoin')).toEqual('round');
+    expect(polyLineChild.getAttribute('marker-start')).toBeNull();
+    expect(polyLineChild.getAttribute('marker-mid')).toBeNull();
+    expect(polyLineChild.getAttribute('marker-end')).toBeNull();
+
+    // End line
+    const newX = 200;
+    const newY = 200;
+    const doubleClick = new MouseEvent('dblclick', {
+      button: 0,
+      clientX: newX,
+      clientY: newY,
+      shiftKey: false,
+    });
+    component.workZoneComponent.onDoubleClick(doubleClick);
+
+    // Set it as angled
+    lineGeneratorService._lineJoinStyle = LineJoinStyle.Angled;
+    drawPolylineOnCanvas();
+
+    polyLineChild = getLastSvgElement(svgHandle, 1);
+    // the stroke-linejoin should be equal to miter and marker-start, marker-mid and marker-end should be null
+    expect(polyLineChild.getAttribute('stroke-linejoin')).toEqual('miter');
+    expect(polyLineChild.getAttribute('marker-start')).toBeNull();
+    expect(polyLineChild.getAttribute('marker-mid')).toBeNull();
+    expect(polyLineChild.getAttribute('marker-end')).toBeNull();
+
+    // End line
+    component.workZoneComponent.onDoubleClick(doubleClick);
+
+    // Set it as with points
+    lineGeneratorService._lineJoinStyle = LineJoinStyle.WithPoints;
+    drawPolylineOnCanvas();
+
+    polyLineChild = getLastSvgElement(svgHandle, 1);
+    expect(polyLineChild.getAttribute('stroke-linejoin')).toEqual('round');
+    const markerId = `url(#${polyLineChild.id}marker)`;
+    expect(polyLineChild.getAttribute('marker-start')).toEqual(markerId);
+    expect(polyLineChild.getAttribute('marker-mid')).toEqual(markerId);
+    expect(polyLineChild.getAttribute('marker-end')).toEqual(markerId);
+
+    // // End line
+    // component.workZoneComponent.onDoubleClick(doubleClick);
+
+  });
+
   // it('should be able to interact properly with the color applicator', () => {
   //   const colorService = fixture.debugElement.injector.get(ColorService);
   //   colorService.setPrimaryColor('red');
