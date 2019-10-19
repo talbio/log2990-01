@@ -27,6 +27,7 @@ export class EmojiGeneratorService {
         this.angle = MIN_ROTATION_ANGLE;
         this.scalingFactor = DEFAULT_SCALING_FACTOR;
         this.rotationStep = MAX_ROTATION_STEP;
+        this.currentEmojiNumber = 0;
     }
 
     getEmojis() {
@@ -74,8 +75,8 @@ export class EmojiGeneratorService {
                 y="${(mouseEvent.pageY) - (this.height * this.scalingFactor / 2)}"
         xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
         transform="rotate(${this.angle} ${mouseEvent.pageX - this.OFFSET_CANVAS_X} ${(mouseEvent.pageY)})"
-        />
-        `;
+        />`;
+            this.currentEmojiNumber ++;
         }
     }
 
