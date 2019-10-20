@@ -29,6 +29,7 @@ import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { ModalManagerService } from './../../../services/modal-manager/modal-manager.service';
 import { EyedropperService } from './../../../services/tools/eyedropper/eyedropper.service';
 import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
+import { PolygonGeneratorService } from './../../../services/tools/polygon-generator/polygon-generator.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -57,6 +58,7 @@ const DRAWING_SERVICES = [
   MousePositionService,
   ObjectSelectorService,
   GridTogglerService,
+  PolygonGeneratorService,
 ];
 fdescribe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
