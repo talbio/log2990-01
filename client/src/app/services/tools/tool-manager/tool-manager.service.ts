@@ -15,7 +15,8 @@ import { LineGeneratorService } from './../line-generator/line-generator.service
 @Injectable()
 export class ToolManagerService {
 
-  private numberOfElements = 1;
+  private readonly DEFAULT_NUMBER_OF_ELEMENTS: number = 2;
+  private numberOfElements: number;
   private renderer: Renderer2;
   private canvasElement: SVGElement;
   private activeTool: Tools;
@@ -41,6 +42,7 @@ export class ToolManagerService {
               protected colorService: ColorService,
               protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
+    this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
     this.hasBeenTranslated = false;
   }
 
@@ -236,9 +238,10 @@ export class ToolManagerService {
 
   deleteAllDrawings(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
-    for (let i = this.canvasElement.children.length - 1; i > 0; i--) {
+    for (let i = this.canvasElement.children.length - 1; i >= this.DEFAULT_NUMBER_OF_ELEMENTS ; i--) {
       this.canvasElement.children[i].remove();
     }
+    this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
     this.numberOfElements = 1;
     this.resetCounters();
   }
@@ -393,8 +396,7 @@ export class ToolManagerService {
       }
     }
     // Always remove 1 from rect since the grid is a rectangle
-    // grid not in master yet
-    // rectangleCount -= 1;
+    rectangleCount -= 1;
     this.rectangleGenerator._currentRectNumber = rectangleCount;
     this.ellipseGenerator._currentEllipseNumber = ellipseCount;
     this.lineGenerator._currentPolylineNumber = polylineCount;

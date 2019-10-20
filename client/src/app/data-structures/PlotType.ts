@@ -4,7 +4,7 @@ export enum PlotType {
   FullWithContour,
 }
 
-export enum Axis{
+export enum Axis {
   xAxis,
   yAxis,
 }

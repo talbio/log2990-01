@@ -92,6 +92,8 @@ export class LateralBarComponent {
     this.toolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.ColorApplicator, 'Applicateur de couleur', 'format_paint', false));
     this.toolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Grid, 'Grille', 'grid_on', false));
+    this.toolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Selector, 'Outil de sélection', 'select_all', false));
     this.toolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Eyedropper, 'Pipette', 'colorize', false));

@@ -3,6 +3,7 @@ import { Colors } from 'src/app/data-structures/Colors';
 import { Tools } from 'src/app/data-structures/Tools';
 import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
+import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 
 @Component({
   selector: 'app-work-zone',
@@ -18,19 +19,24 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   @Input() width: number;
   @Input() height: number;
   @Input() color: string;
+  @Input() gridSize: number;
 
   private canvasElement: SVGElement;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
+              protected gridService: GridTogglerService,
               private saveDrawing: SaveDrawingService) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
+    this.gridSize = this.gridService._gridSize;
     this.color = Colors.WHITE;
   }
 
   ngOnInit(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+    this.gridService._grid = this.renderer.selectRootElement('#backgroundGrid', true);
+    this.gridService._gridPattern = this.renderer.selectRootElement('#backgroundGridPattern', true);
     this.saveDrawing._renderer = this.renderer;
   }
 
