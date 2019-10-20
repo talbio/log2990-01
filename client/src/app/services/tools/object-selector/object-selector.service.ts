@@ -70,11 +70,25 @@ export class ObjectSelectorService {
     const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline');
     const tempArray = new Array();
     drawings.forEach((drawing) => {
-      if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== 'selector') && (drawing.id !== '')) {
+      if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== 'selector')
+         && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
         tempArray.push(drawing);
       }
     });
     this.SVGArray = tempArray;
+  }
+
+  selectAll(canvas: SVGElement): void {
+    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline');
+    const tempArray = new Array();
+    drawings.forEach((drawing) => {
+      if ((drawing.id !== 'selector') && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
+        tempArray.push(drawing);
+      }
+    });
+    this.SVGArray = tempArray;
+    // not quite working
+    // this.addToGroup(canvas);
   }
 
   intersects(a: DOMRect): boolean {
@@ -116,8 +130,8 @@ export class ObjectSelectorService {
         <polyline id="boxrect"
         points="${boxGroup.x},${boxGroup.y} ${boxGroup.x + (boxGroup.width / 2)},${boxGroup.y} ${boxGroup.x + boxGroup.width},${boxGroup.y}
         ${boxGroup.x + boxGroup.width},${boxGroup.y + (boxGroup.height / 2)} ${boxGroup.x + boxGroup.width},${boxGroup.y + boxGroup.height}
-        ${boxGroup.x + (boxGroup.width / 2)},${boxGroup.y + boxGroup.height} ${boxGroup.x},${boxGroup.y + boxGroup.height} 
-        ${boxGroup.x},${boxGroup.y + (boxGroup.height / 2)} ${boxGroup.x},${boxGroup.y}"
+        ${boxGroup.x + (boxGroup.width / 2)},${boxGroup.y + boxGroup.height} ${boxGroup.x},${boxGroup.y + boxGroup.height}
+         ${boxGroup.x},${boxGroup.y + (boxGroup.height / 2)} ${boxGroup.x},${boxGroup.y}"
         stroke="${STROKE_COLOR}" fill="transparent"
         marker-start="url(#dot)" marker-mid="url(#dot)">
         </polyline></svg>`;

@@ -1,3 +1,4 @@
+import { ObjectSelectorService } from './../../../services/tools/object-selector/object-selector.service';
 import { ComponentPortal } from '@angular/cdk/portal';
 import {AfterViewInit, ChangeDetectorRef, Component, HostListener, Renderer2, ViewChild} from '@angular/core';
 import {MatCardContent} from '@angular/material/card';
@@ -34,6 +35,7 @@ export class DrawingViewComponent implements AfterViewInit {
   private readonly DELETE_LAST_ELEMENT_KEY = 'Backspace';
   private readonly EYEDROPPER_KEY = 'i';
   private readonly GRID_KEY = 'g';
+  private readonly SELECT_ALL_KEY = 'a';
 
   private canvas: HTMLElement;
 
@@ -42,7 +44,8 @@ export class DrawingViewComponent implements AfterViewInit {
               private gridToggler: GridTogglerService,
               private renderer: Renderer2,
               private mousePosition: MousePositionService,
-              private modalManagerService: ModalManagerService) {
+              private modalManagerService: ModalManagerService,
+              private objectSelector: ObjectSelectorService) {
     this.toolAttributesComponent = new ComponentPortal(ToolsAttributesBarComponent);
   }
 
@@ -73,6 +76,11 @@ export class DrawingViewComponent implements AfterViewInit {
         this.toolManager._activeTool = Tools.Eyedropper;
       } else if (keyboardEvent.key === this.GRID_KEY) {
         this.gridToggler.toggleGrid();
+      } else if (keyboardEvent.key === this.SELECT_ALL_KEY && keyboardEvent.ctrlKey) {
+        keyboardEvent.preventDefault();
+        this.toolManager._activeTool = Tools.Selector;
+        const canvas = this.renderer.selectRootElement('#canvas', true);
+        this.objectSelector.selectAll(canvas);
       } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
         keyboardEvent.preventDefault();
         this.modalManagerService.showCreateDrawingDialog();
@@ -84,6 +92,8 @@ export class DrawingViewComponent implements AfterViewInit {
     } else {
       // Still prevent shorcuts we use to be replaced with common browser shortcuts
       if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
+        keyboardEvent.preventDefault();
+      } else if (keyboardEvent.key === this.SELECT_ALL_KEY && keyboardEvent.ctrlKey) {
         keyboardEvent.preventDefault();
       }
     }

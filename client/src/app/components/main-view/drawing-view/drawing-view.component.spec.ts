@@ -28,6 +28,7 @@ import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-at
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { ModalManagerService } from './../../../services/modal-manager/modal-manager.service';
 import { EyedropperService } from './../../../services/tools/eyedropper/eyedropper.service';
+import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -55,6 +56,7 @@ const DRAWING_SERVICES = [
   ColorService,
   MousePositionService,
   ObjectSelectorService,
+  GridTogglerService,
 ];
 fdescribe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
@@ -776,7 +778,7 @@ fdescribe('DrawingViewComponent', () => {
   component.workZoneComponent.onMouseMove(mouseMove);
   component.workZoneComponent.onMouseUp();
 
-  const selectorBox = svgHandle.children[1];
+  const selectorBox = getLastSvgElement(svgHandle, 1);
 
   // notre canvas a maintenant un enfant <svg> qui contient un groupe <g> qui contient nos deux emojis
   expect(selectorBox.tagName).toBe('svg');
