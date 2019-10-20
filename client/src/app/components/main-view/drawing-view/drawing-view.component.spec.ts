@@ -6,6 +6,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
+import { PlotType } from 'src/app/data-structures/PlotType';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { Tools } from '../../../data-structures/Tools';
 import { DemoMaterialModule } from '../../../material.module';
@@ -729,5 +730,177 @@ fdescribe('DrawingViewComponent', () => {
   const mouseEvent = new MouseEvent('mousedown', {});
   component.workZoneComponent.onMouseDown(mouseEvent);
   expect(children.length).toEqual(initialChildsLength);
-});
+  });
+
+  // Tests for Eyedropper
+  it('should be able to assign a color to primary color with left click as eyedropper', () => {
+    // Step 1. Place a rectangle with a specific fill color
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Rectangle;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+
+    // Set the first color
+    let newColor = 'rgba(200,200,200,1)';
+    const colorService = fixture.debugElement.injector.get(ColorService);
+    colorService.setPrimaryColor(newColor);
+    colorService.assignPrimaryColor();
+    const initialPrimaryColor = colorService.getPrimaryColor();
+
+    // Create the rectangle with the initial color and make sure it has a fill
+    const rectangleGeneratorService = fixture.debugElement.injector.get(RectangleGeneratorService);
+    rectangleGeneratorService._plotType = PlotType.FullWithContour;
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    const xInitial = 100;
+    const yInitial = 100;
+
+    let mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: xInitial,
+      clientY: yInitial,
+    });
+    // Also change the positions on the mouse position service
+    mousePositionService._canvasMousePositionX = xInitial;
+    mousePositionService._canvasMousePositionY = yInitial;
+    component.workZoneComponent.onMouseDown(mouseEvent);
+
+    // Make the rectangle cover a space so we can click it
+    let newX = 200;
+    let newY = 200;
+    mouseEvent = new MouseEvent('mousemove', {
+      clientX: newX,
+      clientY: newY,
+    });
+    // update mouse position on the service
+    mousePositionService._canvasMousePositionX = newX;
+    mousePositionService._canvasMousePositionY = newY;
+    component.workZoneComponent.onMouseMove(mouseEvent);
+    component.workZoneComponent.onMouseUp();
+    // Expect a <rectangle>
+    // Since the rectangle was just created it should be the last element
+    const rectangle = getLastSvgElement(svgHandle, 1);
+    expect(rectangle.tagName).toEqual('rect');
+
+    // Now change the color, the pipette should bring it back to the initial value, since the rectangle was made with it
+    newColor = 'rgba(100,0,0,1)';
+    colorService.setPrimaryColor(newColor);
+    colorService.assignPrimaryColor();
+    const secondPrimaryColor = colorService.getPrimaryColor();
+    expect(initialPrimaryColor).not.toBe(secondPrimaryColor);
+
+    // Select the eyedropper (pipette)
+    toolManagerService._activeTool = Tools.Eyedropper;
+
+    // Click inside the rectangle (between 100,100 and 200,200)
+    newX = 150;
+    newY = 150;
+    mouseEvent = new MouseEvent('click', {
+      button: 0,
+      clientX: newX,
+      clientY: newY,
+      bubbles: true,
+    });
+    // update mouse position on the service
+    mousePositionService._canvasMousePositionX = newX;
+    mousePositionService._canvasMousePositionY = newY;
+    // click the rectangle
+    const spy = spyOn(component.workZoneComponent, 'onLeftClick').and.callThrough();
+    const eyedropperService = fixture.debugElement.injector.get(EyedropperService);
+    const deepSpy = spyOn(eyedropperService, 'changePrimaryColor').and.callThrough();
+    rectangle.dispatchEvent(mouseEvent);
+    expect(spy).toHaveBeenCalled();
+    expect(deepSpy).toHaveBeenCalled();
+    // Look at the new primary color
+    const lastPrimaryColor = colorService.getPrimaryColor();
+
+    // Step 3. compare values
+    // The color should be equal to the initial value and different from the modified one
+    expect(lastPrimaryColor).toBe(initialPrimaryColor);
+    expect(lastPrimaryColor).not.toBe(secondPrimaryColor);
+  });
+
+  it('should be able to assign a color to secondary color with right click as eyedropper', () => {
+    // Step 1. Place a path with a specific stroke color
+    // We use a pencil path since it uses the secondary color as its stroke
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Pencil;
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+
+    // Set the first color
+    let newColor = 'rgba(200,200,200,1)';
+    const colorService = fixture.debugElement.injector.get(ColorService);
+    colorService.setSecondaryColor(newColor);
+    colorService.assignSecondaryColor();
+    const initialSecondaryColor = colorService.getSecondaryColor();
+
+    // Create the pencil path with the initial color
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    const xInitial = 100;
+    const yInitial = 100;
+
+    let mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: xInitial,
+      clientY: yInitial,
+    });
+    // Also change the positions on the mouse position service
+    mousePositionService._canvasMousePositionX = xInitial;
+    mousePositionService._canvasMousePositionY = yInitial;
+    component.workZoneComponent.onMouseDown(mouseEvent);
+
+    // Make the path cover a space so we can click it
+    let newX = 200;
+    let newY = 200;
+    mouseEvent = new MouseEvent('mousemove', {
+      clientX: newX,
+      clientY: newY,
+    });
+    // update mouse position on the service
+    mousePositionService._canvasMousePositionX = newX;
+    mousePositionService._canvasMousePositionY = newY;
+    component.workZoneComponent.onMouseMove(mouseEvent);
+    component.workZoneComponent.onMouseUp();
+    // Expect a <path>
+    // Since the pencil path was just created it should be the last element
+    const pencilPath = getLastSvgElement(svgHandle, 1);
+    expect(pencilPath.tagName).toEqual('path');
+
+    // Now change the color, the pipette should bring it back to the initial value, since the path was made with it
+    newColor = 'rgba(100,0,0,1)';
+    colorService.setSecondaryColor(newColor);
+    colorService.assignSecondaryColor();
+    const secondSecondaryColor = colorService.getSecondaryColor();
+    expect(initialSecondaryColor).not.toBe(secondSecondaryColor);
+
+    // Select the eyedropper (pipette)
+    toolManagerService._activeTool = Tools.Eyedropper;
+
+    // Click on the line (links 100,100 and 200,200)
+    newX = 150;
+    newY = 150;
+    mouseEvent = new MouseEvent('contextmenu', {
+      button: 2,
+      clientX: newX,
+      clientY: newY,
+      bubbles: true,
+    });
+    // update mouse position on the service
+    mousePositionService._canvasMousePositionX = newX;
+    mousePositionService._canvasMousePositionY = newY;
+    // click the pencil path
+    const spy = spyOn(component.workZoneComponent, 'onRightClick').and.callThrough();
+    const eyedropperService = fixture.debugElement.injector.get(EyedropperService);
+    const deepSpy = spyOn(eyedropperService, 'changeSecondaryColor').and.callThrough();
+    pencilPath.dispatchEvent(mouseEvent);
+    expect(spy).toHaveBeenCalled();
+    expect(deepSpy).toHaveBeenCalled();
+    // Look at the new secondary color
+    const lastSecondaryColor = colorService.getSecondaryColor();
+
+    // Step 3. compare values
+    // The color should be equal to the initial value and different from the modified one
+    expect(lastSecondaryColor).toBe(initialSecondaryColor);
+    expect(lastSecondaryColor).not.toBe(secondSecondaryColor);
+  });
 });
