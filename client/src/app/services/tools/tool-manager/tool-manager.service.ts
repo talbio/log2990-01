@@ -396,8 +396,7 @@ export class ToolManagerService {
       }
     }
     // Always remove 1 from rect since the grid is a rectangle
-    // grid not in master yet
-    // rectangleCount -= 1;
+    rectangleCount -= 1;
     this.rectangleGenerator._currentRectNumber = rectangleCount;
     this.ellipseGenerator._currentEllipseNumber = ellipseCount;
     this.lineGenerator._currentPolylineNumber = polylineCount;
