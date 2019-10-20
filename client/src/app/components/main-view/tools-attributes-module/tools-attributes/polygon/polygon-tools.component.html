@@ -1,0 +1,37 @@
+<p mat-card-title>Paramètres du Polygone</p>
+
+<mat-label>
+  Épaisseur du polygone: {{this.polygonGenerator._strokeWidth}}
+</mat-label>
+<mat-slider [(ngModel)]="this.polygonGenerator._strokeWidth"
+            min="1"
+            max="10"
+            step="0.5"
+            value="1.5"
+            thumbLabel
+            tickInterval="1">
+
+</mat-slider>
+
+<mat-form-field>
+  <mat-label>
+    Type de tracé:
+  </mat-label>
+  <mat-select [(ngModel)]="this.polygonGenerator._plotType">
+    <mat-option [value]="PlotType.Contour">Contour</mat-option>
+    <mat-option [value]="PlotType.Full">Plein</mat-option>
+    <mat-option [value]="PlotType.FullWithContour">Plein avec contour</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-label>
+  Nombre de cotes:
+</mat-label>
+<mat-slider [(ngModel)]="this.polygonGenerator._nbOfApex"
+          min="3"
+          max="12"
+          step="1"
+          thumbLabel
+          tickInterval="1">
+
+</mat-slider>

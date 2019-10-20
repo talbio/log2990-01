@@ -11,6 +11,7 @@ import { MousePositionService } from './../../mouse-position/mouse-position.serv
 import { EllipseGeneratorService } from './../ellipse-generator/ellipse-generator.service';
 import { EyedropperService } from './../eyedropper/eyedropper.service';
 import { LineGeneratorService } from './../line-generator/line-generator.service';
+import { PolygonGeneratorService } from './../polygon-generator/polygon-generator.service';
 
 @Injectable()
 export class ToolManagerService {
@@ -38,6 +39,7 @@ export class ToolManagerService {
               private colorApplicator: ColorApplicatorService,
               private objectSelector: ObjectSelectorService,
               private lineGenerator: LineGeneratorService,
+              private polygonGenerator: PolygonGeneratorService,
               private eyedropper: EyedropperService,
               protected colorService: ColorService,
               protected mousePosition: MousePositionService) {
@@ -49,6 +51,7 @@ export class ToolManagerService {
   loadRenderer(renderer: Renderer2) {
     this.renderer = renderer;
     // Give it to the tools who also need it
+    this.polygonGenerator._renderer = renderer;
     this.ellipseGenerator._renderer = renderer;
     this.colorApplicator._renderer = renderer;
     this.eyedropper._renderer = renderer;
@@ -78,6 +81,10 @@ export class ToolManagerService {
         break;
       case Tools.Stamp:
         this.emojiGenerator.addEmoji(mouseEvent, canvas);
+        break;
+      case Tools.Polygon:
+        this.polygonGenerator.createPolygon(mouseEvent, canvas, this.colorService.getSecondaryColor(),
+          this.colorService.getPrimaryColor());
         break;
       default:
         return;
@@ -119,6 +126,10 @@ export class ToolManagerService {
             this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         }
         break;
+      case Tools.Polygon:
+        this.polygonGenerator.updatePolygon(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+        break;
       default:
         return;
     }
@@ -141,6 +152,9 @@ export class ToolManagerService {
         break;
       case Tools.Ellipse:
         this.ellipseGenerator.finishEllipse();
+        break;
+      case Tools.Polygon:
+        this.polygonGenerator.finishPolygon();
         break;
       default:
         return;

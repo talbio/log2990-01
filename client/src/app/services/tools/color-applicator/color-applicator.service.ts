@@ -39,6 +39,9 @@ export class ColorApplicatorService {
       case 'ellipse':
         targetObject.setAttribute('fill', newColor);
         break;
+      case 'polygon':
+        targetObject.setAttribute('fill', newColor);
+        break;
       case 'polyline':
         targetObject.setAttribute('stroke', newColor);
         // find the markers
@@ -83,8 +86,11 @@ export class ColorApplicatorService {
         }
         break;
       case 'ellipse':
-          targetObject.setAttribute('stroke', newColor);
-          break;
+        targetObject.setAttribute('stroke', newColor);
+        break;
+      case 'polygon':
+        targetObject.setAttribute('stroke', newColor);
+        break;
       case 'polyline':
         break;
       case 'image':

@@ -28,6 +28,7 @@ export class DrawingViewComponent implements AfterViewInit {
   private readonly PAINTBRUSH_KEY = 'w';
   private readonly RECTANGLE_KEY = '1';
   private readonly ELLIPSE_KEY = '2';
+  private readonly POLYGON_KEY = '3';
   private readonly COLOR_APPLICATOR_KEY = 'r';
   private readonly NEW_DRAWING_KEY = 'o';
   private readonly LINE_KEY = 'l';
@@ -70,6 +71,8 @@ export class DrawingViewComponent implements AfterViewInit {
         this.toolManager._activeTool = Tools.Rectangle;
       } else if (keyboardEvent.key === this.ELLIPSE_KEY) {
         this.toolManager._activeTool = Tools.Ellipse;
+      }  else if (keyboardEvent.key === this.POLYGON_KEY) {
+        this.toolManager._activeTool = Tools.Polygon;
       } else if (keyboardEvent.key === this.LINE_KEY) {
         this.toolManager._activeTool = Tools.Line;
       } else if (keyboardEvent.key === this.EYEDROPPER_KEY) {

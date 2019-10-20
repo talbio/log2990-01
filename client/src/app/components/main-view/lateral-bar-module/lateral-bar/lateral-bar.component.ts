@@ -82,6 +82,8 @@ export class LateralBarComponent {
     this.toolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Brush, 'Pinceau', 'brush', false));
     this.toolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Polygon, 'Polygone', 'star', false));
+    this.toolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Rectangle, 'Rectangle', 'rectangle', true));
     this.toolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Line, 'Ligne', 'timeline', false));
@@ -97,6 +99,7 @@ export class LateralBarComponent {
       this.toolPropertiesFactory(Tools.Selector, 'Outil de sélection', 'select_all', false));
     this.toolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Eyedropper, 'Pipette', 'colorize', false));
+
   }
 
   private initializeDialogsButtons() {

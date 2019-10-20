@@ -46,33 +46,33 @@ export class RectangleGeneratorService {
     switch (this.plotType) {
       case PlotType.Contour:
         canvas.innerHTML +=
-        `<rect id=\'rect${this.currentRectNumber}\'
-        x=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        y=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        width = \'0\' height = \'0\' stroke=\'${secondaryColor}\' stroke-width=\'${this.strokeWidth}\'
-        fill=\'transparent\'></rect>`;
+        `<rect id="rect${this.currentRectNumber}"
+        x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
+        data-start-x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
+        y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+        data-start-y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+        width="0" height="0" stroke="${secondaryColor}" stroke-width="${this.strokeWidth}"
+        fill="transparent"></rect>`;
         break;
       case PlotType.Full:
         canvas.innerHTML +=
-        `<rect id=\'rect${this.currentRectNumber}\'
-        x=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        y=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        width = \'0\' height = \'0\' stroke=\'transparent\' stroke-width= \'${this.strokeWidth}\'
-        fill=\'${primaryColor}\'></rect>`;
+        `<rect id="rect${this.currentRectNumber}"
+        x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
+        data-start-x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
+        y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+        data-start-y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+        width = "0" height = "0" stroke="transparent" stroke-width="${this.strokeWidth}"
+        fill="${primaryColor}"></rect>`;
         break;
       case PlotType.FullWithContour:
         canvas.innerHTML +=
-        `<rect id=\'rect${this.currentRectNumber}\'
-        x=\'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        data-start-x = \'${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}\'
-        y=\'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        data-start-y = \'${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-        width = \'0\' height = \'0\' stroke=\'${secondaryColor}\' stroke-width=\'${this.strokeWidth}\'
-        fill=\'${primaryColor}\'></rect>`;
+        `<rect id="rect${this.currentRectNumber}"
+        x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
+        data-start-x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
+        y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+        data-start-y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+        width="0" height="0" stroke="${secondaryColor}" stroke-width="${this.strokeWidth}"
+        fill="${primaryColor}"></rect>`;
         break;
     }
     this.mouseDown = true;
