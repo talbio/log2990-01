@@ -1,4 +1,4 @@
-import {ComponentPortal} from '@angular/cdk/portal';
+import { ComponentPortal } from '@angular/cdk/portal';
 import {AfterViewInit, ChangeDetectorRef, Component, HostListener, Renderer2, ViewChild} from '@angular/core';
 import {MatCardContent} from '@angular/material/card';
 import {MatSidenavModule} from '@angular/material/sidenav';
@@ -16,9 +16,9 @@ import {WorkZoneComponent} from '../work-zone/work-zone.component';
   styleUrls: ['./drawing-view.component.scss'],
 })
 export class DrawingViewComponent implements AfterViewInit {
-  @ViewChild('workZoneComponent', {static: false}) workZoneComponent: WorkZoneComponent;
-  @ViewChild('attributesSideNav', {static: false}) attributesSideNav: MatSidenavModule;
-  @ViewChild('toolsAttributes', {static: false}) toolsAttributes: MatCardContent;
+  @ViewChild('workZoneComponent', { static: false }) workZoneComponent: WorkZoneComponent;
+  @ViewChild('attributesSideNav', { static: false }) attributesSideNav: MatSidenavModule;
+  @ViewChild('toolsAttributes', { static: false }) toolsAttributes: MatCardContent;
 
   protected toolAttributesComponent: ComponentPortal<ToolsAttributesBarComponent>;
 
@@ -73,6 +73,11 @@ export class DrawingViewComponent implements AfterViewInit {
       } else if (keyboardEvent.key === this.DELETE_LAST_ELEMENT_KEY) {
         this.toolManager.backSpacePress();
       }
+    } else {
+      // Still prevent shorcuts we use to be replaced with common browser shortcuts
+      if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
+        keyboardEvent.preventDefault();
+      }
     }
   }
   @HostListener('document:mousemove', ['$event'])
@@ -85,4 +90,5 @@ export class DrawingViewComponent implements AfterViewInit {
     this.mousePosition._canvasMousePositionX = (mouseEvent.pageX - OFFSET_CANVAS_X);
     this.mousePosition._canvasMousePositionY = (mouseEvent.pageY - OFFSET_CANVAS_Y);
   }
+
 }

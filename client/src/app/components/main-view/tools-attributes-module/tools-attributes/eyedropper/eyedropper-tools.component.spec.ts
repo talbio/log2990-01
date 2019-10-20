@@ -1,0 +1,26 @@
+/* tslint:disable:no-unused-variable */
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { EyedropperToolsComponent } from './eyedropper-tools.component';
+
+describe('EyedropperToolsComponent', () => {
+  let component: EyedropperToolsComponent;
+  let fixture: ComponentFixture<EyedropperToolsComponent>;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [ EyedropperToolsComponent ]
+    })
+    .compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(EyedropperToolsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

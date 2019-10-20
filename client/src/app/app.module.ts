@@ -16,6 +16,7 @@ import { BrushToolsComponent } from './components/main-view/tools-attributes-mod
 import { ColorApplicatorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/color-applicator/color-applicator-tools.component';
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
+import { EyedropperToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eyedropper/eyedropper-tools.component';
 import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
 import { PencilToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pencil/pencil-tools.component';
@@ -38,8 +39,10 @@ import { ColorApplicatorService } from './services/tools/color-applicator/color-
 import { ColorService } from './services/tools/color/color.service';
 import { EllipseGeneratorService } from './services/tools/ellipse-generator/ellipse-generator.service';
 import { EmojiGeneratorService } from './services/tools/emoji-generator/emoji-generator.service';
+import { EyedropperService } from './services/tools/eyedropper/eyedropper.service';
 import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
+import { ObjectSelectorService } from './services/tools/object-selector/object-selector.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
@@ -109,6 +112,7 @@ const customNotifierOptions: NotifierOptions = {
     EllipseToolsComponent,
     EmojiToolsComponent,
     BrushToolsComponent,
+    EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
     GridComponent,
   ],
@@ -135,10 +139,12 @@ const customNotifierOptions: NotifierOptions = {
     ColorApplicatorService,
     ColorService,
     GridTogglerService,
+    ObjectSelectorService,
     SaveDrawingService,
     NotifierService,
     LineGeneratorService,
     MousePositionService,
+    EyedropperService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [
@@ -154,6 +160,7 @@ const customNotifierOptions: NotifierOptions = {
     EllipseToolsComponent,
     EmojiToolsComponent,
     BrushToolsComponent,
+    EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
     GridComponent,
   ],

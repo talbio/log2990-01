@@ -13,7 +13,7 @@ export enum Tools {
   PaintBucket,
   Eraser,
   Stamp,
-  Pipette,
+  Eyedropper,
   Selector,
   Grid,
   // non exhaustive list

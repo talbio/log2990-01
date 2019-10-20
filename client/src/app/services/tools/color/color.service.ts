@@ -16,8 +16,6 @@ export class ColorService {
     primaryColor: string;
     secondaryColor: string;
     topTenColors: string[];
-    primaryTransparency: number;
-    secondaryTransparency: number;
 
     constructor(private storage: StorageService) {
         this.assignTopTenColors();
@@ -53,18 +51,20 @@ export class ColorService {
         const color = this.storage.getPrimaryColor();
         if (color !== this.empty) {
             this.primaryColor = this.storage.getPrimaryColor();
+        } else {
+            this.storage.setPrimaryColor(Colors.WHITE);
+            this.primaryColor = Colors.WHITE;
         }
-        this.storage.setPrimaryColor(Colors.BLACK);
-        this.primaryColor = Colors.BLACK;
     }
 
     assignSecondaryColor(): void {
         const color = this.storage.getSecondaryColor();
         if (color !== this.empty) {
             this.secondaryColor = this.storage.getSecondaryColor();
+        } else {
+            this.storage.setSecondaryColor(Colors.BLACK);
+            this.secondaryColor = Colors.BLACK;
         }
-        this.storage.setSecondaryColor(Colors.WHITE);
-        this.secondaryColor = Colors.WHITE;
     }
 
     addToTopTenColors(color: string): void {

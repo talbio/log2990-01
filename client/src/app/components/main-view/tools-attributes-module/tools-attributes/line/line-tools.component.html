@@ -3,11 +3,41 @@
 <mat-label>
   Épaisseur de la ligne: {{this.lineGenerator._strokeWidth}}
 </mat-label>
-<mat-slider [(ngModel)]="this.lineGenerator._strokeWidth"
+<mat-slider name="stroke-width-slider" [(ngModel)]="this.lineGenerator._strokeWidth"
             min="1"
             max="30"
             step="0.5"
-            value="1.5"
+            thumbLabel
+            tickInterval="1">
+</mat-slider>
+<mat-form-field>
+  <mat-label>
+    Style de la ligne:
+  </mat-label>
+  <mat-select name="line-dash-style-select" [(ngModel)]='this.lineGenerator._lineDashStyle'>
+    <mat-option [value]="LineDashStyle.Continuous">Continu</mat-option>
+    <mat-option [value]="LineDashStyle.Dashed">Pointillé (trait)</mat-option>
+    <mat-option [value]="LineDashStyle.Dotted">Pointillé (point)</mat-option>
+  </mat-select>
+</mat-form-field>
+<mat-form-field>
+  <mat-label>
+    Style des jointures:
+  </mat-label>
+  <mat-select name="line-join-style-select" [(ngModel)]='this.lineGenerator._lineJoinStyle'>
+    <mat-option [value]="LineJoinStyle.Angled">En angle</mat-option>
+    <mat-option [value]="LineJoinStyle.Round">Arrondi</mat-option>
+    <mat-option [value]="LineJoinStyle.WithPoints">Avec points</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-label>
+  Épaisseur du marqueur en fonction de la ligne: {{this.lineGenerator._markerDiameter}}
+</mat-label>
+<mat-slider name="marker-diameter-slider" [(ngModel)]="this.lineGenerator._markerDiameter"
+            min="2"
+            max="30"
+            step="0.5"
             thumbLabel
             tickInterval="1">
 </mat-slider>

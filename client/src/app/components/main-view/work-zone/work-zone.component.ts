@@ -1,6 +1,7 @@
-import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
-import { Tools } from '../../../data-structures/Tools';
-import { SaveDrawingService } from '../../../services/back-end/save-drawing/save-drawing.service';
+import { AfterViewInit, Component, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
+import { Colors } from 'src/app/data-structures/Colors';
+import { Tools } from 'src/app/data-structures/Tools';
+import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 
@@ -14,14 +15,13 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   private readonly DEFAULT_WIDTH = 1080;
   private readonly DEFAULT_HEIGHT = 500;
   private readonly SHIFT_KEY = 'Shift';
-  private readonly DEFAULT_WHITE_COLOR = '#FFFFFF';
-
+  private readonly ALT_KEY = 'Alt';
   @Input() width: number;
   @Input() height: number;
   @Input() color: string;
   @Input() gridSize: number;
 
-  private canvasElement: HTMLElement;
+  private canvasElement: SVGElement;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
@@ -29,8 +29,8 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
               private saveDrawing: SaveDrawingService) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
-    this.color = this.DEFAULT_WHITE_COLOR;
     this.gridSize = this.gridService._gridSize;
+    this.color = Colors.WHITE;
   }
 
   ngOnInit(): void {
@@ -49,37 +49,57 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     if (keyboardEvent.key === this.SHIFT_KEY) {
       this.toolManager.changeElementShiftDown();
     }
+    if (keyboardEvent.key === this.ALT_KEY)  {
+      this.toolManager.changeElementAltDown();
+      keyboardEvent.preventDefault();
+    }
+
   }
   @HostListener('document:keyup', ['$event'])
   keyUpEvent(keyboardEvent: KeyboardEvent) {
     if (keyboardEvent.key === this.SHIFT_KEY) {
       this.toolManager.changeElementShiftUp();
     }
+    if (keyboardEvent.key === this.ALT_KEY) {
+      this.toolManager.changeElementAltUp();
+      keyboardEvent.preventDefault();
+    }
   }
 
   onMouseDown(mouseEvent: MouseEvent) {
-    this.toolManager.createElement(mouseEvent, this.canvasElement);
+    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
+      this.toolManager.selectorMouseDown();
+    } else { this.toolManager.createElement(mouseEvent, this.canvasElement); }
+  }
+
+  hasActiveSelector(): boolean {
+    let hasSelector = false;
+    const groupElement = this.canvasElement.querySelector('#selected');
+    if (groupElement) {
+      hasSelector = true;
+    }
+    return hasSelector;
   }
 
   onMouseMove(mouseEvent: MouseEvent) {
-    this.toolManager.updateElement(mouseEvent, this.canvasElement);
+    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
+      this.toolManager.translate(mouseEvent);
+    } else {this.toolManager.updateElement(mouseEvent, this.canvasElement); }
   }
 
   onMouseUp() {
-    this.toolManager.finishElement();
+    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
+      this.toolManager.finishTranslation();
+    } else {this.toolManager.finishElement(); }
   }
 
   onLeftClick(mouseEvent: MouseEvent) {
-    if (this.toolManager._activeTool === Tools.ColorApplicator) {
-      this.toolManager.changeElementLeftClick(mouseEvent.target as HTMLElement);
-    } else if (this.toolManager._activeTool === Tools.Line) {
-      this.toolManager.createElementOnClick(mouseEvent, this.canvasElement);
-    }
+    this.toolManager.changeElementLeftClick(mouseEvent.target as SVGElement, this.canvasElement);
     return true;
   }
 
   onRightClick(mouseEvent: Event) {
-    this.toolManager.changeElementRightClick(mouseEvent.target as HTMLElement);
+    this.toolManager.changeElementRightClick(mouseEvent.target as SVGElement);
     // deactivate context menu on right click
     return false;
   }
@@ -92,7 +112,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.toolManager.rotateEmoji(mouseEvent);
   }
 
-  protected setBackGroundColor(): {'background-color': string} {
+  protected setBackGroundColor(): { 'background-color': string } {
     return {
       'background-color': this.color,
     };
