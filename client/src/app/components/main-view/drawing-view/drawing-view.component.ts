@@ -1,4 +1,5 @@
-import {ComponentPortal} from '@angular/cdk/portal';
+import { ObjectSelectorService } from './../../../services/tools/object-selector/object-selector.service';
+import { ComponentPortal } from '@angular/cdk/portal';
 import {AfterViewInit, ChangeDetectorRef, Component, HostListener, Renderer2, ViewChild} from '@angular/core';
 import {MatCardContent} from '@angular/material/card';
 import {MatSidenavModule} from '@angular/material/sidenav';
@@ -9,6 +10,7 @@ import {ToolManagerService} from '../../../services/tools/tool-manager/tool-mana
 import {ModalManagerSingleton} from '../../modals/modal-manager-singleton';
 import {ToolsAttributesBarComponent} from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
+import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 
 @Component({
   selector: 'app-drawing-view',
@@ -16,9 +18,9 @@ import {WorkZoneComponent} from '../work-zone/work-zone.component';
   styleUrls: ['./drawing-view.component.scss'],
 })
 export class DrawingViewComponent implements AfterViewInit {
-  @ViewChild('workZoneComponent', {static: false}) workZoneComponent: WorkZoneComponent;
-  @ViewChild('attributesSideNav', {static: false}) attributesSideNav: MatSidenavModule;
-  @ViewChild('toolsAttributes', {static: false}) toolsAttributes: MatCardContent;
+  @ViewChild('workZoneComponent', { static: false }) workZoneComponent: WorkZoneComponent;
+  @ViewChild('attributesSideNav', { static: false }) attributesSideNav: MatSidenavModule;
+  @ViewChild('toolsAttributes', { static: false }) toolsAttributes: MatCardContent;
 
   protected toolAttributesComponent: ComponentPortal<ToolsAttributesBarComponent>;
 
@@ -32,14 +34,19 @@ export class DrawingViewComponent implements AfterViewInit {
   private readonly LINE_KEY = 'l';
   private readonly DELETE_FULL_ELEMENT_KEY = 'Escape';
   private readonly DELETE_LAST_ELEMENT_KEY = 'Backspace';
+  private readonly EYEDROPPER_KEY = 'i';
+  private readonly GRID_KEY = 'g';
+  private readonly SELECT_ALL_KEY = 'a';
 
   private canvas: HTMLElement;
 
   constructor(private cd: ChangeDetectorRef,
               private toolManager: ToolManagerService,
+              private gridToggler: GridTogglerService,
               private renderer: Renderer2,
               private mousePosition: MousePositionService,
-              private modalManagerService: ModalManagerService) {
+              private modalManagerService: ModalManagerService,
+              private objectSelector: ObjectSelectorService) {
     this.toolAttributesComponent = new ComponentPortal(ToolsAttributesBarComponent);
   }
 
@@ -68,6 +75,15 @@ export class DrawingViewComponent implements AfterViewInit {
         this.toolManager._activeTool = Tools.Polygon;
       } else if (keyboardEvent.key === this.LINE_KEY) {
         this.toolManager._activeTool = Tools.Line;
+      } else if (keyboardEvent.key === this.EYEDROPPER_KEY) {
+        this.toolManager._activeTool = Tools.Eyedropper;
+      } else if (keyboardEvent.key === this.GRID_KEY) {
+        this.gridToggler.toggleGrid();
+      } else if (keyboardEvent.key === this.SELECT_ALL_KEY && keyboardEvent.ctrlKey) {
+        keyboardEvent.preventDefault();
+        this.toolManager._activeTool = Tools.Selector;
+        const canvas = this.renderer.selectRootElement('#canvas', true);
+        this.objectSelector.selectAll(canvas);
       } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
         keyboardEvent.preventDefault();
         this.modalManagerService.showCreateDrawingDialog();
@@ -75,6 +91,13 @@ export class DrawingViewComponent implements AfterViewInit {
         this.toolManager.escapePress();
       } else if (keyboardEvent.key === this.DELETE_LAST_ELEMENT_KEY) {
         this.toolManager.backSpacePress();
+      }
+    } else {
+      // Still prevent shorcuts we use to be replaced with common browser shortcuts
+      if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
+        keyboardEvent.preventDefault();
+      } else if (keyboardEvent.key === this.SELECT_ALL_KEY && keyboardEvent.ctrlKey) {
+        keyboardEvent.preventDefault();
       }
     }
   }
@@ -88,4 +111,5 @@ export class DrawingViewComponent implements AfterViewInit {
     this.mousePosition._canvasMousePositionX = (mouseEvent.pageX - OFFSET_CANVAS_X);
     this.mousePosition._canvasMousePositionY = (mouseEvent.pageY - OFFSET_CANVAS_Y);
   }
+
 }

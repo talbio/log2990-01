@@ -17,6 +17,7 @@ import { ColorApplicatorToolsComponent } from './components/main-view/tools-attr
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
 import { EyedropperToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eyedropper/eyedropper-tools.component';
+import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
 import { PencilToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pencil/pencil-tools.component';
 import { PolygonToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/polygon/polygon-tools.component';
@@ -40,7 +41,9 @@ import { ColorService } from './services/tools/color/color.service';
 import { EllipseGeneratorService } from './services/tools/ellipse-generator/ellipse-generator.service';
 import { EmojiGeneratorService } from './services/tools/emoji-generator/emoji-generator.service';
 import { EyedropperService } from './services/tools/eyedropper/eyedropper.service';
+import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
+import { ObjectSelectorService } from './services/tools/object-selector/object-selector.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from './services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
@@ -114,6 +117,7 @@ const customNotifierOptions: NotifierOptions = {
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
     PolygonToolsComponent,
+    GridComponent,
   ],
   imports: [
     BrowserModule,
@@ -138,6 +142,8 @@ const customNotifierOptions: NotifierOptions = {
     BrushGeneratorService,
     ColorApplicatorService,
     ColorService,
+    GridTogglerService,
+    ObjectSelectorService,
     SaveDrawingService,
     NotifierService,
     LineGeneratorService,
@@ -161,6 +167,7 @@ const customNotifierOptions: NotifierOptions = {
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
     PolygonToolsComponent,
+    GridComponent,
   ],
 })
 export class AppModule {

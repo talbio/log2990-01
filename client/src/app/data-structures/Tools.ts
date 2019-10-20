@@ -15,5 +15,6 @@ export enum Tools {
   Stamp,
   Eyedropper,
   Selector,
+  Grid,
   // non exhaustive list
 }

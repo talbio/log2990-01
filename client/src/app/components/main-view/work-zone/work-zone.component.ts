@@ -1,6 +1,9 @@
-import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
+import { AfterViewInit, Component, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
+import { Colors } from 'src/app/data-structures/Colors';
+import { Tools } from 'src/app/data-structures/Tools';
 import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
+import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 
 @Component({
   selector: 'app-work-zone',
@@ -13,24 +16,27 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   private readonly DEFAULT_HEIGHT = 500;
   private readonly SHIFT_KEY = 'Shift';
   private readonly ALT_KEY = 'Alt';
-  private readonly DEFAULT_WHITE_COLOR = '#FFFFFF';
-
   @Input() width: number;
   @Input() height: number;
   @Input() color: string;
+  @Input() gridSize: number;
 
-  private canvasElement: any;
+  private canvasElement: SVGElement;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
+              protected gridService: GridTogglerService,
               private saveDrawing: SaveDrawingService) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
-    this.color = this.DEFAULT_WHITE_COLOR;
+    this.gridSize = this.gridService._gridSize;
+    this.color = Colors.WHITE;
   }
 
   ngOnInit(): void {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+    this.gridService._grid = this.renderer.selectRootElement('#backgroundGrid', true);
+    this.gridService._gridPattern = this.renderer.selectRootElement('#backgroundGridPattern', true);
     this.saveDrawing._renderer = this.renderer;
   }
 
@@ -61,15 +67,30 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
   }
 
   onMouseDown(mouseEvent: MouseEvent) {
-    this.toolManager.createElement(mouseEvent, this.canvasElement);
+    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
+      this.toolManager.selectorMouseDown();
+    } else { this.toolManager.createElement(mouseEvent, this.canvasElement); }
+  }
+
+  hasActiveSelector(): boolean {
+    let hasSelector = false;
+    const groupElement = this.canvasElement.querySelector('#selected');
+    if (groupElement) {
+      hasSelector = true;
+    }
+    return hasSelector;
   }
 
   onMouseMove(mouseEvent: MouseEvent) {
-    this.toolManager.updateElement(mouseEvent, this.canvasElement);
+    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
+      this.toolManager.translate(mouseEvent);
+    } else {this.toolManager.updateElement(mouseEvent, this.canvasElement); }
   }
 
   onMouseUp() {
-    this.toolManager.finishElement();
+    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
+      this.toolManager.finishTranslation();
+    } else {this.toolManager.finishElement(); }
   }
 
   onLeftClick(mouseEvent: MouseEvent) {

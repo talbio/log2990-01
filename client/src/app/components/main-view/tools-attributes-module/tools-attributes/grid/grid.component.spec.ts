@@ -1,21 +1,21 @@
 /* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EyedropperToolsComponent } from './eyedropper-tools.component';
+import { GridComponent } from './grid.component';
 
-describe('EyedropperToolsComponent', () => {
-  let component: EyedropperToolsComponent;
-  let fixture: ComponentFixture<EyedropperToolsComponent>;
+describe('GridComponent', () => {
+  let component: GridComponent;
+  let fixture: ComponentFixture<GridComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EyedropperToolsComponent ]
+      declarations: [ GridComponent ],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EyedropperToolsComponent);
+    fixture = TestBed.createComponent(GridComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
