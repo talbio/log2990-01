@@ -148,16 +148,13 @@ export class PolygonGeneratorService {
     const w: number = parseFloat(tempRect.getAttribute('width') as string);
     const x: number = parseFloat(tempRect.getAttribute('x') as string);
     const y: number = parseFloat(tempRect.getAttribute('y') as string);
-    console.log(h + ' is height');
-    console.log(w + ' is width');
-    console.log(this.adjustment + ' is adjustment');
-    console.log(this.aspectRatio + ' is ratio');
-    let center: number[] = [(x + w / 2), (y + h / 2)];
+    const center: number[] = [(x + w / 2), (y + h / 2)];
     if (this.nbOfApex % 2 === 1) {
       if ((w / h) > this.aspectRatio ) {
         center[1] = y + radius;
       } else {
-        center[1] = y + h / 2 + radius / 2 * this.adjustment[1];
+        // center[1] = y + h / 2 + radius / 2 * this.adjustment[0];
+        center[1] = y + h * this.adjustment[0];
       }
     }
     return center;
@@ -193,7 +190,11 @@ export class PolygonGeneratorService {
       this.aspectRatio = xAspect / yAspect;
     } else {
       // If r = 1...
-      const i = Math.round((this.nbOfApex - 1) / 3);
+      let i = Math.round((this.nbOfApex - 1) / 3);
+      // exception for 9 sides
+      if (this.nbOfApex === 9) {
+        i -= 1;
+      }
       const cosMax = Math.cos((Math.PI / 2) + (i * this.angleBetweenVertex));
       const xAspect = Math.abs(cosMax) * 2;
       const sinFlat = Math.sin((Math.PI / 2) + this.angleBetweenVertex / 2);
