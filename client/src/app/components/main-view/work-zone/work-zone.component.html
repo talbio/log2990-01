@@ -9,14 +9,13 @@
      (contextmenu)='onRightClick($event)'
      (dblclick)='onDoubleClick($event)'
      (mousewheel)='onMouseWheel($event)'>
-    <defs>
+    <defs id="definitions">
         <!-- Pattern for grid -->
         <pattern id="backgroundGridPattern" patternUnits="userSpaceOnUse" [attr.width]="gridSize" [attr.height]="gridSize">
             <line [attr.x1]="0" [attr.y1]="0" [attr.x2]="gridSize" [attr.y2]="0" stroke="black" stroke-width="1"/>
             <line [attr.x1]="gridSize" [attr.y1]="0" [attr.x2]="gridSize" [attr.y2]="gridSize" stroke="black" stroke-width="1"/>
         </pattern>
         <!-- Patterns for brush -->
-    <defs id="definitions">
         <pattern id="brushPattern1" patternUnits="userSpaceOnUse" width="3" height="3">
             <rect x="0" y="0" width="100%" height="100%" fill="white"></rect>
             <rect x="0" y="0" width="1" height="1" stroke="black"></rect>
