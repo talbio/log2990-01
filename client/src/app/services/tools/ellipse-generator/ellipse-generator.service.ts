@@ -10,16 +10,18 @@ enum Axis {
 @Injectable()
 export class EllipseGeneratorService {
 
+  private readonly TEMP_RECT_ID = '#tempRect';
+
   private OFFSET_CANVAS_Y: number;
   private OFFSET_CANVAS_X: number;
   private currentEllipseNumber: number;
+  private canvasElement: SVGElement;
   private renderer: Renderer2;
   private mouseDown: boolean;
 
   // attributes of rectangle
   private strokeWidth: number;
   private plotType: PlotType;
-  private tempRect: SVGElement;
 
   constructor(private rectangleGenerator: RectangleGeneratorService) {
     this.strokeWidth = 1;
@@ -38,106 +40,75 @@ export class EllipseGeneratorService {
   set _plotType(plotType: PlotType) { this.plotType = plotType; }
 
   set _currentEllipseNumber(count: number) { this.currentEllipseNumber = count; }
-  createEllipse(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
 
+  // Primary methods
+  createEllipse(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
+    this.canvasElement = canvas;
     const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
     const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
-    canvas.innerHTML +=
-      this.generateEllipseElement(this.currentEllipseNumber, xPos, yPos, primaryColor, secondaryColor);
-    this.rectangleGenerator.createRectangle(mouseEvent, canvas, primaryColor, secondaryColor);
-    const rectID = '#rect' + this.rectangleGenerator._currentRectNumber;
-    this.tempRect = this.renderer.selectRootElement(rectID, true) as SVGElement;
-    this.tempRect.id = 'tempRect';
-    if (this.tempRect.id === 'tempRect') {
-      console.log('found and renamed the rectangle');
-    }
+    canvas.innerHTML += this.generateEllipseElement(this.currentEllipseNumber, xPos, yPos, primaryColor, secondaryColor);
+    this.createTemporaryRectangle(mouseEvent, canvas);
     this.mouseDown = true;
     return true;
   }
 
   updateCircle(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
     if (this.mouseDown) {
-      const currentEllipse = canvas.children[currentChildPosition - 1];
-      if (currentEllipse != null) {
-        const startEllipseX: number = Number(currentEllipse.getAttribute('data-start-x'));
-        const startEllipseY: number = Number(currentEllipse.getAttribute('data-start-y'));
-        const radiusWidth: number = (canvasPosX - startEllipseX) / 2;
-        const radiusHeight: number = (canvasPosY - startEllipseY) / 2;
-        this.updateAxisAttributes(currentEllipse, radiusWidth, radiusHeight, startEllipseX);
-        this.updateAxisAttributes(currentEllipse, radiusHeight, radiusWidth, startEllipseY);
-      }
+      this.rectangleGenerator.updateSquare(canvasPosX, canvasPosY, canvas, currentChildPosition);
+      const tempRect = this.renderer.selectRootElement(this.TEMP_RECT_ID, true);
+      const x: number = parseFloat(tempRect.getAttribute('x') as string);
+      const y: number = parseFloat(tempRect.getAttribute('y') as string);
+      const h: number = parseFloat(tempRect.getAttribute('height') as string);
+      const currentEllipse = canvas.children[currentChildPosition - 2] as SVGElement;
+      const radius: number = h / 2;
+      this.setAxisAttributes(currentEllipse, Axis.x, radius, x + radius);
+      this.setAxisAttributes(currentEllipse, Axis.y, radius, y + radius);
     }
   }
 
   updateEllipse(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
-    this.rectangleGenerator.updateRectangle(canvasPosX, canvasPosY, canvas, currentChildPosition);
     if (this.mouseDown) {
-      const currentEllipse = canvas.children[currentChildPosition - 2];
-      if (currentEllipse != null) {
-        const startEllipseX: number = Number(currentEllipse.getAttribute('data-start-x'));
-        const startEllipseY: number = Number(currentEllipse.getAttribute('data-start-y'));
-        const radiusWidth: number = (canvasPosX - startEllipseX) / 2;
-        const radiusHeight: number = (canvasPosY - startEllipseY) / 2;
-        if (radiusWidth >= 0) {
-          this.setAxisAttributes(currentEllipse, Axis.x, radiusWidth, startEllipseX + radiusWidth);
-        } else {
-          this.setAxisAttributes(currentEllipse, Axis.x, Math.abs(radiusWidth), startEllipseX + radiusWidth);
-        }
-        if (radiusHeight >= 0) {
-          this.setAxisAttributes(currentEllipse, Axis.y, radiusHeight, startEllipseY + radiusHeight);
-        } else {
-          this.setAxisAttributes(currentEllipse, Axis.y, Math.abs(radiusHeight), startEllipseY + radiusHeight);
-        }
+      this.rectangleGenerator.updateRectangle(canvasPosX, canvasPosY, canvas, currentChildPosition);
+      const tempRect = this.renderer.selectRootElement(this.TEMP_RECT_ID, true);
+      const x: number = parseFloat(tempRect.getAttribute('x') as string);
+      const y: number = parseFloat(tempRect.getAttribute('y') as string);
+      const w: number = parseFloat(tempRect.getAttribute('width') as string);
+      const h: number = parseFloat(tempRect.getAttribute('height') as string);
+      const currentEllipse = canvas.children[currentChildPosition - 2] as SVGElement;
+      const radiusWidth: number = w / 2;
+      const radiusHeight: number = h / 2;
+      // Setting
+      if (radiusWidth >= 0) {
+        this.setAxisAttributes(currentEllipse, Axis.x, radiusWidth, x + radiusWidth);
+      } else {
+        this.setAxisAttributes(currentEllipse, Axis.x, radiusWidth, x + radiusWidth);
+      }
+      if (radiusHeight >= 0) {
+        this.setAxisAttributes(currentEllipse, Axis.y, radiusHeight, y + radiusHeight);
+      } else {
+        this.setAxisAttributes(currentEllipse, Axis.y, radiusHeight, y + radiusHeight);
       }
     }
   }
 
   finishEllipse() {
     if (this.mouseDown) {
-      this.renderer.selectRootElement('#canvas', true).removeChild(this.tempRect);
+      this.canvasElement.removeChild(this.renderer.selectRootElement(this.TEMP_RECT_ID, true));
       this.currentEllipseNumber += 1;
       this.mouseDown = false;
     }
   }
 
-  private updateAxisAttributes(currentEllipse: Element, firstRadius: number, secondRadius: number, startAxisPosition: number): void {
-    if (firstRadius >= 0) {
-      if (Math.abs(secondRadius) > Math.abs(firstRadius)) {
-        // width is bigger
-        this.setAxisAttributes(currentEllipse, Axis.y, Math.abs(secondRadius), startAxisPosition + Math.abs(secondRadius));
-      } else {
-        // height is bigger, act normal
-        this.setAxisAttributes(currentEllipse, Axis.y, firstRadius, startAxisPosition + firstRadius);
-      }
+  private setAxisAttributes(currentEllipse: SVGElement, axis: Axis, radiusValue: number, positionValue: number): void {
+    if (axis === Axis.x) {
+      currentEllipse.setAttribute('rx', radiusValue.toString());
+      currentEllipse.setAttribute('cx', positionValue.toString());
     } else {
-      if (Math.abs(secondRadius) > Math.abs(firstRadius)) {
-        // width is bigger
-        this.setAxisAttributes(currentEllipse, Axis.y, Math.abs(secondRadius), startAxisPosition - Math.abs(secondRadius));
-      } else {
-        // height is bigger, act normal
-        this.setAxisAttributes(currentEllipse, Axis.y, Math.abs(firstRadius), startAxisPosition + firstRadius);
-      }
+      currentEllipse.setAttribute('ry', radiusValue.toString());
+      currentEllipse.setAttribute('cy', positionValue.toString());
     }
-  }
-
-  private setAxisAttributes(currentEllipse: Element, axis: Axis, radiusValue: number, positionValue: number): void {
-    let positionAxis = '';
-    let radiusAxis = '';
-
-    switch (axis) {
-      case Axis.x:
-        radiusAxis = 'rx';
-        positionAxis = 'cx';
-        break;
-      case Axis.y:
-        radiusAxis = 'ry';
-        positionAxis = 'cy';
-        break;
-    }
-    currentEllipse.setAttribute(radiusAxis, radiusValue.toString());
-    currentEllipse.setAttribute(positionAxis, positionValue.toString());
   }
 
   private generateEllipseElement(id: number, xPos: number, yPos: number, primaryColor: string, secondaryColor: string): string {
@@ -162,5 +133,12 @@ export class EllipseGeneratorService {
         data-start-x = '${xPos.toString()}' data-start-y = '${yPos.toString()}'
         cx='${xPos.toString()}' cy='${yPos.toString()}' rx='0' ry='0'
         stroke='${strokeProperty}' stroke-width='${this.strokeWidth}' fill='${fillProperty}'></ellipse>`;
+  }
+
+  createTemporaryRectangle(mouseEvent: MouseEvent, canvas: SVGElement) {
+    this.rectangleGenerator._plotType = PlotType.Contour;
+    this.rectangleGenerator.createRectangle(mouseEvent, canvas, 'black', 'black');
+    canvas.children[canvas.children.length - 1].id = 'tempRect';
+    canvas.children[canvas.children.length - 1].setAttribute('stroke-dasharray', '4');
   }
 }
