@@ -9,6 +9,7 @@ import {ToolManagerService} from '../../../services/tools/tool-manager/tool-mana
 import {ModalManagerSingleton} from '../../modals/modal-manager-singleton';
 import {ToolsAttributesBarComponent} from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
+import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 
 @Component({
   selector: 'app-drawing-view',
@@ -31,11 +32,14 @@ export class DrawingViewComponent implements AfterViewInit {
   private readonly LINE_KEY = 'l';
   private readonly DELETE_FULL_ELEMENT_KEY = 'Escape';
   private readonly DELETE_LAST_ELEMENT_KEY = 'Backspace';
+  private readonly EYEDROPPER_KEY = 'i';
+  private readonly GRID_KEY = 'g';
 
   private canvas: HTMLElement;
 
   constructor(private cd: ChangeDetectorRef,
               private toolManager: ToolManagerService,
+              private gridToggler: GridTogglerService,
               private renderer: Renderer2,
               private mousePosition: MousePositionService,
               private modalManagerService: ModalManagerService) {
@@ -65,6 +69,10 @@ export class DrawingViewComponent implements AfterViewInit {
         this.toolManager._activeTool = Tools.Ellipse;
       } else if (keyboardEvent.key === this.LINE_KEY) {
         this.toolManager._activeTool = Tools.Line;
+      } else if (keyboardEvent.key === this.EYEDROPPER_KEY) {
+        this.toolManager._activeTool = Tools.Eyedropper;
+      } else if (keyboardEvent.key === this.GRID_KEY) {
+        this.gridToggler.toggleGrid();
       } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
         keyboardEvent.preventDefault();
         this.modalManagerService.showCreateDrawingDialog();
