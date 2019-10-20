@@ -28,6 +28,7 @@ import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { ModalManagerService } from './../../../services/modal-manager/modal-manager.service';
 import { EyedropperService } from './../../../services/tools/eyedropper/eyedropper.service';
 import { DrawingViewComponent } from './drawing-view.component';
+
 /* tslint:disable:max-classes-per-file for mocking classes*/
 @Component({ selector: 'app-lateral-bar', template: '' })
 class LateralBarStubComponent { }
@@ -732,7 +733,7 @@ fdescribe('DrawingViewComponent', () => {
   component.workZoneComponent.onMouseDown(mouseEvent);
   expect(children.length).toEqual(initialChildsLength);
 });
-  it('should be possible to select a drawing', () => {
+  it('should be possible to select multiple drawings. They are then added to a group and surrounded by a minimal box', () => {
   // add an emoji
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Stamp;
@@ -741,13 +742,21 @@ fdescribe('DrawingViewComponent', () => {
   const initialChildsLength = svgHandle.children.length;
   const mouseEvent = new MouseEvent('mousedown', {});
   component.workZoneComponent.onMouseDown(mouseEvent);
-  let emoji: Element = svgHandle.childNodes[children.length - 1] as Element;
-  emoji.setAttribute('x', '' + 100);
-  emoji.setAttribute('y', '' + 100);
-  emoji.setAttribute('id', 'testEmoji');
+  const emoji1: Element = svgHandle.childNodes[children.length - 1] as Element;
+  emoji1.setAttribute('x', '' + 100);
+  emoji1.setAttribute('y', '' + 100);
+  emoji1.setAttribute('id', 'testEmoji1');
   expect(children.length).toEqual(initialChildsLength + 1);
 
-  // select the emoji
+ // add another emoji
+  component.workZoneComponent.onMouseDown(mouseEvent);
+  const emoji2: Element = svgHandle.childNodes[children.length - 1] as Element;
+  emoji2.setAttribute('x', '' + 150);
+  emoji2.setAttribute('y', '' + 150);
+  emoji2.setAttribute('id', 'testEmoji2');
+  expect(children.length).toEqual(initialChildsLength + 2);
+
+  // select the emojis
   toolManagerService._activeTool = Tools.Selector;
   const mouseEvent2 = new MouseEvent('mousedown', {
     button: 0,
@@ -756,8 +765,8 @@ fdescribe('DrawingViewComponent', () => {
   });
 
   // Add new click
-  const newX = 200;
-  const newY = 200;
+  const newX = 300;
+  const newY = 300;
   const mouseMove = new MouseEvent('mousemove', {
     clientX: newX,
     clientY: newY,
@@ -766,15 +775,24 @@ fdescribe('DrawingViewComponent', () => {
   component.workZoneComponent.onMouseMove(mouseMove);
   component.workZoneComponent.onMouseUp();
 
-  // notre canvas a maintenant une boîte <svg> qui contient un groupe <g> qui contient notre emoji testEmoji
   const selectorBox = svgHandle.children[1];
-  // tslint:disable-next-line: no-non-null-assertion
+
+  // notre canvas a maintenant un enfant <svg> qui contient un groupe <g> qui contient nos deux emojis
+  expect(selectorBox.tagName).toBe('svg');
   expect(selectorBox.getAttribute('id')!).toBe('box');
+
   const group = selectorBox.children[2];
-  // tslint:disable-next-line: no-non-null-assertion
-  expect(group.getAttribute('id')!).toBe('selected');
   expect(group.tagName).toBe('g');
-  // tslint:disable-next-line: no-non-null-assertion
-  expect(group.children[0].getAttribute('id')!).toBe('testEmoji');
+  expect(group.getAttribute('id')!).toBe('selected');
+
+  const drawing1 = group.children[0];
+  expect(drawing1.getAttribute('id')!).toBe('testEmoji1');
+
+  const drawing2 = group.children[1];
+  expect(drawing2.getAttribute('id')!).toBe('testEmoji2');
+
+  // notre dessin est entouré d'une boîte minimale
+  const box = selectorBox.children[1];
+  expect(box.getBoundingClientRect()).toEqual(group.getBoundingClientRect());
 });
 });
