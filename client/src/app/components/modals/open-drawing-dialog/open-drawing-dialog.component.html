@@ -1,7 +1,5 @@
 <p mat-dialog-title>Ouvrir un dessin</p>
 <mat-dialog-content>
-
-
   <mat-form-field>
     <mat-chip-list #chipList aria-label="Tag selection">
       <mat-chip *ngFor="let tag of selectedTags"
@@ -17,26 +15,25 @@
     </mat-chip-list>
   </mat-form-field>
 
-  <mat-selection-list class="no-checkbox" *ngFor="let drawing of (drawings | filterByTags:selectedTags)">
+  <mat-selection-list class="no-checkbox" *ngFor="let drawing of (drawings|filterByTags:selectedTags); let i = index">
     <mat-list-option>
-      <mat-list-item (click)="openDrawing(drawing)">
-        <svg mat-list-avatar class="button"
-             width="50"
-             height="50">
-          <rect x="0" y="0" width="50" height="50">
-          </rect>
-        </svg>
-      <h3 matLine >{{drawing.name}}</h3>
-      <p matLine *ngIf="drawing.tags">
-        <span>Tags: </span>
-          <span *ngFor="let tag of drawing.tags">
-            <mat-icon class="icon" svgIcon="add-tag"></mat-icon>{{tag}}
-          </span>
-      </p>
+      <mat-list-item>
+        <button mat-icon-button matTooltip="supprimer le dessin" (click)="deleteDrawing(drawing)"><mat-icon>delete</mat-icon></button>
+        <img matTooltip="ouvrir le dessin" (click)="openDrawing(drawing)" mat-list-avatar id="miniature{{i}}" class="miniatures"/>
+          {{this.setMiniature(i)}}
+        <h3 matLine>{{drawing.name}}</h3>
+        <p matLine *ngIf="drawing.tags">
+          <span>Tags: </span>
+            <span *ngFor="let tag of drawing.tags">
+              <mat-icon class="icon" svgIcon="add-tag"></mat-icon>{{tag}}
+            </span>
+        </p>
       </mat-list-item>
     </mat-list-option>
   </mat-selection-list>
-  <p *ngIf="(drawings | filterByTags:selectedTags).length===0">Aucun dessin trouvé pour les tags sélectionnés</p>
+  <p *ngIf="(drawings|filterByTags:selectedTags).length === 0 && drawings.length !== 0">
+    Aucun dessin trouvé pour les tags sélectionnés
+  </p>
 </mat-dialog-content>
 
 <mat-dialog-actions>

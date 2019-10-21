@@ -4,7 +4,7 @@ import {MatChipInputEvent} from '@angular/material/chips';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
 import { Drawing } from '../../../../../../common/communication/Drawing';
-import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
+import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
 import {RendererLoaderService} from '../../../services/renderer-loader/renderer-loader.service';
 import {GiveUpChangesDialogComponent} from '../give-up-changes-dialog/give-up-changes-dialog.component';
 import { ModalManagerSingleton } from '../modal-manager-singleton';
@@ -20,20 +20,16 @@ export interface DialogData {
 })
 export class OpenDrawingDialogComponent implements OnInit {
 
+  protected readonly separatorKeysCodes: number[] = [ENTER, COMMA, SPACE];
+
+  protected selectedTags: any[];
   protected drawings: Drawing[];
+
   private modalManagerSingleton = ModalManagerSingleton.getInstance();
-
-  selectedTags: any[];
-
-  // visible = true;
-  // selectable = true;
-  // removable = true;
-  // addOnBlur = true;
-  readonly separatorKeysCodes: number[] = [ENTER, COMMA, SPACE];
 
   constructor(private dialogRef: MatDialogRef<OpenDrawingDialogComponent>,
               private toolManager: ToolManagerService,
-              private saveDrawing: SaveDrawingService,
+              private drawingsService: DrawingsService,
               private rendererLoadService: RendererLoaderService,
               private dialog: MatDialog,
               @Inject(MAT_DIALOG_DATA) private data: DialogData) {
@@ -44,7 +40,7 @@ export class OpenDrawingDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.saveDrawing.httpGetDrawing().toPromise().then( (drawings: Drawing[]) => {
+    this.drawingsService.httpGetDrawings().toPromise().then( (drawings: Drawing[]) => {
       if (drawings) {
         this.drawings = drawings;
       }
@@ -55,11 +51,10 @@ export class OpenDrawingDialogComponent implements OnInit {
     const input = event.input;
     const value = event.value;
 
-    // Add our fruit
     if ((value || '').trim()) {
       this.selectedTags.push(value.trim());
     }
-    // Reset the input value
+
     if (input) {
       input.value = '';
     }
@@ -74,7 +69,7 @@ export class OpenDrawingDialogComponent implements OnInit {
 
   async openDrawing(drawing: Drawing): Promise<void> {
     if (this.data.drawingNonEmpty) {
-      this.openGiveUpChangesDialog()
+      await this.openGiveUpChangesDialog()
         .then( (confirm: boolean) => {
           if (confirm) {
             this.loadDrawingAndCloseDialog(drawing);
@@ -85,9 +80,24 @@ export class OpenDrawingDialogComponent implements OnInit {
     }
   }
 
+  async deleteDrawing(drawing: Drawing): Promise<void> {
+    await this.drawingsService.httpDeleteDrawing(drawing.id).then( () => {
+      const index = this.drawings.indexOf(drawing);
+      if (index > -1) {
+        this.drawings.splice(index, 1);
+      }
+    });
+  }
+
   protected close(): void {
     this.dialogRef.close();
     this.modalManagerSingleton._isModalActive = false;
+  }
+
+  protected setMiniature(index: number): void {
+    const miniature = this.rendererLoadService._renderer.selectRootElement('#miniature' + index);
+    this.rendererLoadService
+      ._renderer.setAttribute(miniature, 'src', 'data:image/svg+xml;base64,' + window.btoa(this.drawings[index].miniature));
   }
 
   private loadDrawingAndCloseDialog(drawing: Drawing) {
@@ -104,5 +114,4 @@ export class OpenDrawingDialogComponent implements OnInit {
     await dialogRef.afterClosed().toPromise().then((confirmResult) => confirm = confirmResult);
     return confirm;
   }
-
 }
