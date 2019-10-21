@@ -13,7 +13,6 @@ export interface ToolProperties {
 @Component({
   selector: 'app-abstract-tool-button',
   templateUrl: './abstract-tool-button.component.html',
-  styleUrls: ['./abstract-tool-button.component.scss'],
 })
 export class AbstractToolButtonComponent {
 
