@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import * as fs from 'fs';
 import * as sinon from 'sinon';
 import {Drawing} from '../../../common/communication/Drawing';
-import {DrawingsService, DrawingWithId} from './drawings.service';
+import {DrawingsService} from './drawings.service';
 
 describe('DrawingsStockerService', () => {
 
@@ -25,10 +25,9 @@ describe('DrawingsStockerService', () => {
     let i  = 0;
     sandbox.stub(fs, 'readFileSync')
         .value( (path: string, options: string) => {
-            const drawing: Drawing =  {name: '', svgElements: '', tags: [], miniature: ''};
-            const drawingWithId: DrawingWithId =  { id: i, drawing };
+            const drawing: Drawing =  {id: i, name: '', svgElements: '', tags: [], miniature: ''};
             ++i;
-            return JSON.stringify(drawingWithId);
+            return JSON.stringify(drawing);
         });
     /*-----------------------------------------------------------------------------------------------------*/
 
@@ -39,7 +38,7 @@ describe('DrawingsStockerService', () => {
     });
 
     it('getDrawings should retrieve all drawings in server', async () => {
-        await drawingsService.getDrawings().then( (drawings: DrawingWithId[]) => {
+        await drawingsService.getDrawings().then( (drawings: Drawing[]) => {
             expect(drawings).to.be.of.length(3);
         } );
     });
@@ -49,13 +48,13 @@ describe('DrawingsStockerService', () => {
     });
 
     it('storeDrawing should write json object to file', async () => {
-        const drawing: Drawing =  {name: 'fake', svgElements: '', tags: [], miniature: ''};
+        const drawing: Drawing =  {id: -1, name: 'fake', svgElements: '', tags: [], miniature: ''};
         await expect(drawingsService.storeDrawing(drawing)).to.be.equal(true);
         expect(mockedFile.pop()).to.contain('fake');
     });
 
     it('storeDrawing should not write json object to file if drawing does not contain name', async () => {
-        const drawing: Drawing =  {name: '', svgElements: '', tags: [], miniature: ''};
+        const drawing: Drawing =  {id: -1, name: '', svgElements: '', tags: [], miniature: ''};
         await expect(drawingsService.storeDrawing(drawing)).to.be.equal(false);
     });
 

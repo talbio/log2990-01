@@ -3,17 +3,13 @@ import {injectable} from 'inversify';
 import 'reflect-metadata';
 import {Drawing} from '../../../common/communication/Drawing';
 
-export interface DrawingWithId {
-    id: number;
-    drawing: Drawing;
-}
-
 @injectable()
 export class DrawingsService {
 
+    private readonly DIRECTORY_NAME  = './app/storage/';
     private currentId: number;
 
-    private storeData = (data: DrawingWithId, path: string) => {
+    private storeData = (data: Drawing, path: string) => {
         try {
             fs.writeFileSync(path, JSON.stringify(data, null, 2));
         } catch (err) {
@@ -57,15 +53,14 @@ export class DrawingsService {
         });
     }
 
-    async getDrawings(): Promise<DrawingWithId[]> {
-        const drawingsWithIds: DrawingWithId[] = [];
-        const dirname  = './app/storage/';
+    async getDrawings(): Promise<Drawing[]> {
+        const drawings: Drawing[] = [];
         return new Promise(async (resolve, reject) => {
             await this.getFiles().then( (files: string[]) => {
                 if (files.length !== 0) {
-                    files.forEach((fileName: string) => drawingsWithIds.push(this.loadFile(dirname + fileName)));
+                    files.forEach((fileName: string) => drawings.push(this.loadFile(this.DIRECTORY_NAME + fileName)));
                 }
-                resolve(drawingsWithIds);
+                resolve(drawings);
             });
         });
     }
@@ -74,14 +69,22 @@ export class DrawingsService {
         if (!drawing.name) {
             return false;
         }
-        const drawingWithId: DrawingWithId = {id: this.currentId, drawing};
-        this.storeData(drawingWithId, './app/storage/drawing' + this.currentId + '.json');
+        drawing.id = this.currentId;
+        this.storeData(drawing, this.DIRECTORY_NAME + 'drawing' + this.currentId + '.json');
         this.generateNextId();
         return true;
     }
 
-    getDrawing(id: string) {
-        return this.loadFile('/../storage/drawing' + id + '.json');
+    async deleteDrawing(id: string): Promise<void> {
+        this.getFiles().then( (files: string[]) => files.forEach( (file: string) => {
+            if (file.includes(id)) {
+                fs.unlink(this.DIRECTORY_NAME + file, (err) => {
+                    if (err) {
+                        throw err;
+                    }
+                });
+            }
+        }));
     }
 
     private generateNextId() {
