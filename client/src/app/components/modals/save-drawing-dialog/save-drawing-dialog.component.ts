@@ -7,7 +7,6 @@ import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-d
 @Component({
   selector: 'app-save-drawing-dialog',
   templateUrl: './save-drawing-dialog.component.html',
-  styleUrls: ['./save-drawing-dialog.component.scss'],
 })
 export class SaveDrawingDialogComponent {
 

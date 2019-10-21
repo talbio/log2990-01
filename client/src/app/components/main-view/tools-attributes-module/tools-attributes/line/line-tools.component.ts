@@ -5,7 +5,6 @@ import { LineDashStyle, LineJoinStyle } from './../../../../../data-structures/L
 @Component({
   selector: 'app-line-tools',
   templateUrl: './line-tools.component.html',
-  styleUrls: ['./line-tools.component.scss'],
 })
 export class LineToolsComponent {
 

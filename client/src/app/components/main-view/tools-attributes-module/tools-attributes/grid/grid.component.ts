@@ -5,7 +5,6 @@ import { GridTogglerService } from './../../../../../services/tools/grid/grid-to
 @Component({
   selector: 'app-grid-tools',
   templateUrl: './grid.component.html',
-  styleUrls: ['./grid.component.scss']
 })
 export class GridComponent {
 

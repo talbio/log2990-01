@@ -4,7 +4,6 @@ import {BrushGeneratorService} from '../../../../../services/tools/brush-generat
 @Component({
   selector: 'app-brush-tools',
   templateUrl: './brush-tools.component.html',
-  styleUrls: ['./brush-tools.component.scss'],
 })
 export class BrushToolsComponent {
 

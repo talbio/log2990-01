@@ -10,7 +10,6 @@ export interface DialogProperties {
 @Component({
   selector: 'app-abstract-dialog-button',
   templateUrl: './abstract-dialog-button.component.html',
-  styleUrls: ['./abstract-dialog-button.component.scss'],
 })
 export class AbstractDialogButtonComponent {
 
