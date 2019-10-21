@@ -1,14 +1,20 @@
+// tslint:disable:max-line-length
+import {PortalModule} from '@angular/cdk/portal';
+import {HttpClientModule} from '@angular/common/http';
+import {NgModule} from '@angular/core';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatChipsModule} from '@angular/material/chips';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
+import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NotifierModule, NotifierOptions, NotifierService} from 'angular-notifier';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
-// tslint:disable-next-line:max-line-length
 import { AbstractDialogButtonComponent } from './components/main-view/lateral-bar-module/abstract-dialog-button/abstract-dialog-button.component';
 import { AbstractToolButtonComponent } from './components/main-view/lateral-bar-module/abstract-tool-button/abstract-tool-button.component';
 import { ColorToolButtonsComponent } from './components/main-view/lateral-bar-module/color-tool-buttons/color-tool-buttons.component';
 import { LateralBarComponent } from './components/main-view/lateral-bar-module/lateral-bar/lateral-bar.component';
-// tslint:disable-next-line:max-line-length
 import { ToolsAttributesBarComponent } from './components/main-view/tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { BrushToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/brush/brush-tools.component';
-// tslint:disable-next-line:max-line-length
 import { ColorApplicatorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/color-applicator/color-applicator-tools.component';
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
