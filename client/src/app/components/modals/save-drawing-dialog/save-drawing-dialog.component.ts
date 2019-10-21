@@ -1,14 +1,15 @@
-import {Component} from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef} from '@angular/material/dialog';
 import { NotifierService } from 'angular-notifier';
-import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
+import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
+import {RendererLoaderService} from '../../../services/renderer-loader/renderer-loader.service';
 
 @Component({
   selector: 'app-save-drawing-dialog',
   templateUrl: './save-drawing-dialog.component.html',
 })
-export class SaveDrawingDialogComponent {
+export class SaveDrawingDialogComponent implements AfterViewInit {
 
   private static httpPosting: boolean;
 
@@ -26,8 +27,9 @@ export class SaveDrawingDialogComponent {
 
   constructor(private formBuilder: FormBuilder,
               private dialogRef: MatDialogRef<SaveDrawingDialogComponent>,
-              protected saveDrawing: SaveDrawingService,
-              private notifier: NotifierService) {
+              protected saveDrawing: DrawingsService,
+              private notifier: NotifierService,
+              private rendererLoader: RendererLoaderService) {
     this.formGroup = this.formBuilder.group({
       name: ['', [
         Validators.pattern(this.ALPHA_NUMERIC_AND_SPACES_REGEX),
@@ -36,6 +38,17 @@ export class SaveDrawingDialogComponent {
       tags: this.formBuilder.array([]),
     });
     this.httpPostDrawingFailed = false;
+  }
+
+  ngAfterViewInit(): void {
+    // set the miniature
+    const min = this.rendererLoader._renderer.selectRootElement('#min', true);
+    const canvas = this.rendererLoader._renderer.selectRootElement('#canvas', true);
+    const width = canvas.getAttribute('width');
+    const height = canvas.getAttribute('height');
+    const viewBox = `0 0 ${width} ${height}`;
+    this.rendererLoader._renderer.setAttribute(min, 'viewBox', viewBox);
+    min.innerHTML = canvas.innerHTML;
   }
 
   get isPostingToServer() {
@@ -94,5 +107,4 @@ export class SaveDrawingDialogComponent {
       })
       .finally(() => SaveDrawingDialogComponent.httpPosting = false);
   }
-
 }

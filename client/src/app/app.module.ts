@@ -1,18 +1,14 @@
-import { PortalModule } from '@angular/cdk/portal';
-import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NotifierModule, NotifierOptions, NotifierService } from 'angular-notifier';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
+// tslint:disable-next-line:max-line-length
 import { AbstractDialogButtonComponent } from './components/main-view/lateral-bar-module/abstract-dialog-button/abstract-dialog-button.component';
 import { AbstractToolButtonComponent } from './components/main-view/lateral-bar-module/abstract-tool-button/abstract-tool-button.component';
 import { ColorToolButtonsComponent } from './components/main-view/lateral-bar-module/color-tool-buttons/color-tool-buttons.component';
 import { LateralBarComponent } from './components/main-view/lateral-bar-module/lateral-bar/lateral-bar.component';
+// tslint:disable-next-line:max-line-length
 import { ToolsAttributesBarComponent } from './components/main-view/tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { BrushToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/brush/brush-tools.component';
+// tslint:disable-next-line:max-line-length
 import { ColorApplicatorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/color-applicator/color-applicator-tools.component';
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
@@ -29,10 +25,12 @@ import { ColorSliderComponent } from './components/modals/color-picker-module/co
 import { LastTenColorsComponent } from './components/modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
+import { FilterByTags } from './components/modals/open-drawing-dialog/filter-by-tags.pipe';
+import {OpenDrawingDialogComponent} from './components/modals/open-drawing-dialog/open-drawing-dialog.component';
 import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
-import { DemoMaterialModule } from './material.module';
-import { SaveDrawingService } from './services/back-end/save-drawing/save-drawing.service';
+import {DemoMaterialModule} from './material.module';
+import {DrawingsService} from './services/back-end/drawings/drawings.service';
 import { MousePositionService } from './services/mouse-position/mouse-position.service';
 import { StorageService } from './services/storage/storage.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
@@ -118,6 +116,8 @@ const customNotifierOptions: NotifierOptions = {
     ColorApplicatorToolsComponent,
     PolygonToolsComponent,
     GridComponent,
+    OpenDrawingDialogComponent,
+    FilterByTags,
   ],
   imports: [
     BrowserModule,
@@ -128,6 +128,7 @@ const customNotifierOptions: NotifierOptions = {
     PortalModule,
     DemoMaterialModule,
     NotifierModule.withConfig(customNotifierOptions),
+    MatChipsModule,
   ],
   providers: [
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'legacy' } },
@@ -142,9 +143,9 @@ const customNotifierOptions: NotifierOptions = {
     BrushGeneratorService,
     ColorApplicatorService,
     ColorService,
-    GridTogglerService,
+    DrawingsService,
     ObjectSelectorService,
-    SaveDrawingService,
+    GridTogglerService,
     NotifierService,
     LineGeneratorService,
     MousePositionService,
@@ -166,6 +167,7 @@ const customNotifierOptions: NotifierOptions = {
     BrushToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
+    OpenDrawingDialogComponent,
     PolygonToolsComponent,
     GridComponent,
   ],

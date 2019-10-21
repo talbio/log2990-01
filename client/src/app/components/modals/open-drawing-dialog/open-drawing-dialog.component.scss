@@ -1,0 +1,37 @@
+
+::ng-deep.mat-pseudo-checkbox{
+  display: none !important;
+}
+
+::ng-deep .mat-list .mat-list-item .mat-line{
+  word-wrap: break-word !important;
+  white-space: pre-wrap !important;
+}
+
+::ng-deep  .mat-list .mat-list-item{
+  width:initial!important;
+}
+
+#tags{
+  //word-wrap: break-word !important;
+  //white-space: pre-wrap !important;
+  white-space: nowrap;
+  overflow: auto;
+  display: none !important;
+}
+
+.icon {
+  width: 10px;
+  height: 10px;
+}
+
+.mat-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.miniatures {
+  border: 1px black !important;
+  width: 100px !important;
+  height: 100px !important;
+}

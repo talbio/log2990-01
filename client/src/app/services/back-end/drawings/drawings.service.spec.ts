@@ -3,7 +3,7 @@ import {Renderer2} from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
 import {ToolManagerService} from '../../tools/tool-manager/tool-manager.service';
-import { SaveDrawingService } from './save-drawing.service';
+import { DrawingsService } from './drawings.service';
 
 const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['post', 'get']);
@@ -23,9 +23,9 @@ const FAKE_SVG_CANVAS_INNER_HTML = `<rect></rect>`;
 
 const FAKE_SVG_MINIATURE = `<svg><path></path></svg>`;
 
-let saveDrawingService: SaveDrawingService;
+let saveDrawingService: DrawingsService;
 
-describe('SaveDrawingService', () => {
+describe('DrawingsService', () => {
   beforeEach(async () => TestBed.configureTestingModule({
     providers: [
       {provide: HttpClient, useValue: httpClientSpy},
@@ -33,7 +33,7 @@ describe('SaveDrawingService', () => {
       {provide: Renderer2, useValue: rendererSpy},
     ],
   }).compileComponents().then( () => {
-    saveDrawingService = TestBed.get(SaveDrawingService);
+    saveDrawingService = TestBed.get(DrawingsService);
     rendererSpy.selectRootElement.and.returnValue(svgCanvasSpy);
     svgCanvasSpy.innerHTML = FAKE_SVG_CANVAS;
     saveDrawingService._renderer = rendererSpy;
