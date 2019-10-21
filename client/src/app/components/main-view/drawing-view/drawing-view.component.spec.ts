@@ -98,10 +98,10 @@ fdescribe('DrawingViewComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  // This takes 2 x and y coordinates and draws an ellipse from point 1 to 2 on the canvas
-  const drawEllipseOnCanvas = (x1: number, y1: number, x2: number, y2: number) => {
+  // This takes 2 x and y coordinates and draws a shape from point 1 to 2 on the canvas
+  const drawShapeOnCanvas = (x1: number, y1: number, x2: number, y2: number, toolType: Tools) => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-    toolManagerService._activeTool = Tools.Ellipse;
+    toolManagerService._activeTool = toolType;
     let mouseEvent = new MouseEvent('mousedown', {
       button: 0,
       clientX: x1,
@@ -121,36 +121,7 @@ fdescribe('DrawingViewComponent', () => {
     component.workZoneComponent.onMouseMove(mouseEvent);
     component.workZoneComponent.onMouseUp();
   };
-  // This takes 2 x and y coordinates and draws a rectangle with plot type contour from point 1 to 2 on the canvas
-  // const drawRectangleOnCanvas = (x1: number, y1: number, x2: number, y2: number) => {
 
-  //   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-  //   toolManagerService._activeTool = Tools.Rectangle;
-
-  //   const rectangleGeneratorService = fixture.debugElement.injector.get(RectangleGeneratorService);
-  //   rectangleGeneratorService._plotType = PlotType.Contour;
-  //   const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-
-  //   let mouseEvent = new MouseEvent('mousedown', {
-  //     button: 0,
-  //     clientX: x1,
-  //     clientY: y1,
-  //   });
-  //   // Also change the positions on the mouse position service
-  //   mousePositionService._canvasMousePositionX = x1;
-  //   mousePositionService._canvasMousePositionY = y1;
-  //   component.workZoneComponent.onMouseDown(mouseEvent);
-
-  //   mouseEvent = new MouseEvent('mousemove', {
-  //     clientX: x2,
-  //     clientY: y2,
-  //   });
-  //   // update mouse position on the service
-  //   mousePositionService._canvasMousePositionX = x2;
-  //   mousePositionService._canvasMousePositionY = y2;
-  //   component.workZoneComponent.onMouseMove(mouseEvent);
-  //   component.workZoneComponent.onMouseUp();
-  // };
   // This returns the child at 'position' from the canvas's last position (1 for last)
   const getLastSvgElement = (svgHandle: SVGElement, position: number) => {
     return svgHandle.children.item(svgHandle.children.length - position) as SVGElement;
@@ -283,7 +254,7 @@ fdescribe('DrawingViewComponent', () => {
     // create the ellipse and make sure it has a plot type that allows both colors to be shown
     const ellipseGeneratorService = fixture.debugElement.injector.get(EllipseGeneratorService);
     ellipseGeneratorService._plotType = PlotType.FullWithContour;
-    drawEllipseOnCanvas(100, 100, 200, 200);
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
     // ellipse  should be created as the last child
     const ellipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
     // expect the ellipse to have fill as the primary color and stroke as the secondary color
@@ -299,7 +270,7 @@ fdescribe('DrawingViewComponent', () => {
     const ellipseGeneratorService = fixture.debugElement.injector.get(EllipseGeneratorService);
     ellipseGeneratorService._plotType = PlotType.Contour;
     ellipseGeneratorService._strokeWidth = 10;
-    drawEllipseOnCanvas(100, 100, 200, 200);
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
     // ellipse  should be created as the last child
     const firstEllipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
     // expect the ellipse to the right stroke-width as well as the stroke visible but not the fill
@@ -309,7 +280,7 @@ fdescribe('DrawingViewComponent', () => {
     // Create a second ellipse with plot type only fill and a different stroke width
     ellipseGeneratorService._plotType = PlotType.Full;
     ellipseGeneratorService._strokeWidth = 15;
-    drawEllipseOnCanvas(100, 100, 200, 200);
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
     // ellipse  should be created as the last child
     const secondEllipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
     // expect the ellipse to the right stroke-width as well as the stroke visible but not the fill
@@ -319,7 +290,7 @@ fdescribe('DrawingViewComponent', () => {
     // Create a first ellipse with plot type fill and contour and a different stroke width
     ellipseGeneratorService._plotType = PlotType.FullWithContour;
     ellipseGeneratorService._strokeWidth = 20;
-    drawEllipseOnCanvas(100, 100, 200, 200);
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
     // ellipse  should be created as the last child
     const thirdEllipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
     // expect the ellipse to the right stroke-width as well as the stroke visible but not the fill
@@ -1234,5 +1205,41 @@ fdescribe('DrawingViewComponent', () => {
     // The color should be equal to the initial value and different from the modified one
     expect(lastSecondaryColor).toBe(initialSecondaryColor);
     expect(lastSecondaryColor).not.toBe(secondSecondaryColor);
+  });
+
+  it('should have the polygon be drawn using the primary and secondary colors', () => {
+    // Step 1. Select polygon
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Polygon;
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    // Set an initial color and change it
+    const colorService = fixture.debugElement.injector.get(ColorService);
+    const firstColor = 'rgba(100,100,100,1)';
+    colorService.setPrimaryColor(firstColor);
+    colorService.assignPrimaryColor();
+    colorService.setSecondaryColor(firstColor);
+    colorService.assignSecondaryColor();
+    const initialPrimaryColor = colorService.getPrimaryColor();
+    const initialSecondaryColor = colorService.getSecondaryColor();
+    const newColor = 'rgba(200,200,200,1)';
+    colorService.setPrimaryColor(newColor);
+    colorService.assignPrimaryColor();
+    colorService.setSecondaryColor(newColor);
+    colorService.assignSecondaryColor();
+    const newPrimaryColor = colorService.getPrimaryColor();
+    const newSecondaryColor = colorService.getSecondaryColor();
+    expect(initialPrimaryColor).not.toBe(newPrimaryColor);
+    expect(initialSecondaryColor).not.toBe(newSecondaryColor);
+    // create the polygon and make sure it has a plot type that allows both colors to be shown
+    const polygonGeneratorService = fixture.debugElement.injector.get(PolygonGeneratorService);
+    polygonGeneratorService._plotType = PlotType.FullWithContour;
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Polygon);
+    // polygon should be created as the last child
+    const polygonChild = getLastSvgElement(svgHandle, 1) as SVGElement;
+    // expect the ellipse to have fill as the primary color and stroke as the secondary color
+    expect(polygonChild.getAttribute('fill')).toEqual(newPrimaryColor);
+    expect(polygonChild.getAttribute('stroke')).toEqual(newSecondaryColor);
   });
 });
