@@ -7,6 +7,7 @@ import {RendererLoaderService} from '../../../services/renderer-loader/renderer-
 
 @Component({
   selector: 'app-save-drawing-dialog',
+  styleUrls: ['./save-drawing-dialog.component.scss'],
   templateUrl: './save-drawing-dialog.component.html',
 })
 export class SaveDrawingDialogComponent implements AfterViewInit {

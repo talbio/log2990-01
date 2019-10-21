@@ -16,6 +16,7 @@ import {ToolProperties} from '../abstract-tool-button/abstract-tool-button.compo
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
 const ELLIPSE_ICON_PATH = '../../../../assets/svg-icons/ellipse.svg';
+const POLYGON_ICON_PATH = '../../../../assets/svg-icons/polygon-icon.svg';
 const ADD_TAG_ICON_PATH = '../../../../assets/svg-icons/add-tag.svg';
 const DELETE_TAG_ICON_PATH = '../../../../assets/svg-icons/delete-tag.svg';
 
@@ -67,6 +68,8 @@ export class LateralBarComponent {
   private loadSVGIcons(): void {
     this.matIconRegistry.addSvgIcon('rectangle',
       this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('polygon',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(POLYGON_ICON_PATH));
     this.matIconRegistry.addSvgIcon('ellipse',
       this.domSanitizer.bypassSecurityTrustResourceUrl(ELLIPSE_ICON_PATH));
     this.matIconRegistry.addSvgIcon('add-tag',
@@ -82,7 +85,7 @@ export class LateralBarComponent {
     this.toolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Brush, 'Pinceau', 'brush', false));
     this.toolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Polygon, 'Polygone', 'star', false));
+      this.toolPropertiesFactory(Tools.Polygon, 'Polygone', 'polygon', true));
     this.toolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Rectangle, 'Rectangle', 'rectangle', true));
     this.toolsButtonsProperties.push(

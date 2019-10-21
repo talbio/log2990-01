@@ -1,9 +1,11 @@
+import {Renderer2} from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {FormBuilder} from '@angular/forms';
 import {MatDialogRef} from '@angular/material/dialog';
 import {NotifierModule, NotifierService} from 'angular-notifier';
 import {DemoMaterialModule} from '../../../material.module';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
+import {RendererLoaderService} from '../../../services/renderer-loader/renderer-loader.service';
 import { SaveDrawingDialogComponent } from './save-drawing-dialog.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -23,11 +25,23 @@ const drawingsServiceSpy: jasmine.SpyObj<DrawingsService> =
 const notifierServiceSpy: jasmine.SpyObj<NotifierService> =
   jasmine.createSpyObj('NotifierService', ['notify']);
 
+const rendererSpy: jasmine.SpyObj<Renderer2> =
+  jasmine.createSpyObj('Renderer2', ['selectRootElement', 'setAttribute']);
+const rendererLoaderServiceSpy: jasmine.SpyObj<RendererLoaderService> =
+  jasmine.createSpyObj('RendererLoaderService', ['_renderer']);
+rendererLoaderServiceSpy._renderer = rendererSpy;
+const htmlElementSpy: jasmine.SpyObj<HTMLElement> =
+  jasmine.createSpyObj('HTMLElement', ['getAttribute', 'innerHTML']);
+rendererSpy.selectRootElement.and.returnValue(htmlElementSpy);
+htmlElementSpy.getAttribute.and.returnValue('100');
+const fakeHTML = '';
+htmlElementSpy.innerHTML = fakeHTML;
+
 const formBuilder: FormBuilder = new FormBuilder();
 
 /* ------------------------------------------------------------------------------------------ */
 
-describe('SaveDrawingDialogComponent', () => {
+fdescribe('SaveDrawingDialogComponent', () => {
   let component: SaveDrawingDialogComponent;
   let fixture: ComponentFixture<SaveDrawingDialogComponent>;
 
@@ -39,6 +53,7 @@ describe('SaveDrawingDialogComponent', () => {
         { provide: FormBuilder, useValue: formBuilder },
         { provide: DrawingsService, useValue: drawingsServiceSpy },
         { provide: NotifierService, useValue: notifierServiceSpy },
+        { provide: RendererLoaderService, useValue: rendererLoaderServiceSpy},
       ],
       imports: [NotifierModule, DemoMaterialModule],
     })
