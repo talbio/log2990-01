@@ -7,7 +7,6 @@ import {SaveDrawingDialogComponent} from '../../components/modals/save-drawing-d
 import {CreateDrawingFormValues} from '../../data-structures/CreateDrawingFormValues';
 import {ColorService} from '../tools/color/color.service';
 import {ToolManagerService} from '../tools/tool-manager/tool-manager.service';
-import {GiveUpChangesDialogComponent} from "../../components/modals/give-up-changes-dialog/give-up-changes-dialog.component";
 
 export enum Color {
   primaryColor,
