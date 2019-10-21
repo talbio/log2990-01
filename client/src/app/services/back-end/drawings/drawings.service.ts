@@ -1,12 +1,14 @@
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {Injectable, Renderer2} from '@angular/core';
-import {throwError} from 'rxjs';
+import {Injectable} from '@angular/core';
+import { Observable, of, throwError } from 'rxjs';
+import {catchError} from 'rxjs/operators';
 import {Drawing} from '../../../../../../common/communication/Drawing';
+import {RendererLoaderService} from '../../renderer-loader/renderer-loader.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class SaveDrawingService {
+export class DrawingsService {
 
   private readonly HTTP_OPTIONS = {
     headers: new HttpHeaders({
@@ -17,20 +19,13 @@ export class SaveDrawingService {
   private readonly HTTP_CODE_SUCCESS = 200;
   private readonly BASE_URL: string = 'http://localhost:3000/api/drawings/';
 
-  private svgCanvas: any;
-  private renderer: Renderer2;
-
-  constructor(private httpClient: HttpClient) {}
-
-  set _renderer(renderer: Renderer2) {
-    this.renderer = renderer;
-    this.svgCanvas = this.renderer.selectRootElement('#canvas', true);
-  }
+  constructor(private httpClient: HttpClient,
+              private rendererLoader: RendererLoaderService) {}
 
   httpPostDrawing(name: string, tags: string[]): Promise<boolean> {
     const svgElements: string = this.getSvgElements();
     const miniature: string = this.getMiniature();
-    const drawing: Drawing = {name, svgElements, tags, miniature};
+    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature};
     return this.httpClient.post<{httpCode: number}>(this.BASE_URL, {data: drawing}, this.HTTP_OPTIONS)
       .toPromise()
       .then( (response: {httpCode: number}) => {
@@ -41,23 +36,33 @@ export class SaveDrawingService {
       });
   }
 
-  getWidth(): number {
-    return this.svgCanvas.getAttribute('height');
+  httpGetDrawings(): Observable<Drawing[]> {
+    return this.httpClient.get<Drawing[]>(this.BASE_URL).pipe(
+      catchError(this.handleErrorGet<Drawing[]>('httpGetDrawings')),
+    );
   }
 
-  getHeight(): number {
-    return this.svgCanvas.getAttribute('width');
+  httpDeleteDrawing(id: number): Promise<boolean> {
+    return this.httpClient.delete<boolean>(this.BASE_URL + id, this.HTTP_OPTIONS).toPromise();
+  }
+
+  private handleErrorGet<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+    console.error(error);
+    return of(result as T);
+    };
   }
 
   getSvgElements(): string {
+    const svgCanvas: HTMLElement = this.rendererLoader._renderer.selectRootElement('#canvas', true);
     const patternsEndDef = '</defs>';
-    const startIndex = this.svgCanvas.innerHTML.search(patternsEndDef) + patternsEndDef.length;
-    return this.svgCanvas.innerHTML.substring(startIndex);
+    const startIndex = svgCanvas.innerHTML.search(patternsEndDef) + patternsEndDef.length;
+    return svgCanvas.innerHTML.substring(startIndex);
   }
 
   getMiniature(): string {
-    const miniature = this.renderer.selectRootElement('#min', true);
-    return miniature.outerHTML as string;
+    const miniature = this.rendererLoader._renderer.selectRootElement('#min', true);
+    return (new XMLSerializer()).serializeToString(miniature);
   }
 
   private handleError(error: HttpErrorResponse): Promise<never> {

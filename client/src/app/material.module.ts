@@ -14,6 +14,7 @@ import {MatSliderModule} from '@angular/material/slider';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatChipsModule} from "@angular/material/chips";
 
 @NgModule({
   exports: [
@@ -35,6 +36,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     MatFormFieldModule,
     ReactiveFormsModule,
     FormsModule,
+    MatChipsModule,
   ],
 })
 export class DemoMaterialModule { }

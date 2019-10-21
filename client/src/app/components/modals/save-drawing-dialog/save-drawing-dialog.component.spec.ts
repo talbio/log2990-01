@@ -3,7 +3,7 @@ import {FormBuilder} from '@angular/forms';
 import {MatDialogRef} from '@angular/material/dialog';
 import {NotifierModule, NotifierService} from 'angular-notifier';
 import {DemoMaterialModule} from '../../../material.module';
-import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
+import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
 import { SaveDrawingDialogComponent } from './save-drawing-dialog.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -17,7 +17,7 @@ const spyDialog: jasmine.SpyObj<MatDialogRef<SaveDrawingDialogComponent>> =
   jasmine.createSpyObj('MatDialogRef', ['close']);
 spyDialog.close.and.callThrough();
 
-const saveDrawingServiceSpy: jasmine.SpyObj<SaveDrawingService> =
+const drawingsServiceSpy: jasmine.SpyObj<DrawingsService> =
   jasmine.createSpyObj('SaveDrawingService', ['httpPostDrawing']);
 
 const notifierServiceSpy: jasmine.SpyObj<NotifierService> =
@@ -27,7 +27,7 @@ const formBuilder: FormBuilder = new FormBuilder();
 
 /* ------------------------------------------------------------------------------------------ */
 
-fdescribe('SaveDrawingDialogComponent', () => {
+describe('SaveDrawingDialogComponent', () => {
   let component: SaveDrawingDialogComponent;
   let fixture: ComponentFixture<SaveDrawingDialogComponent>;
 
@@ -37,7 +37,7 @@ fdescribe('SaveDrawingDialogComponent', () => {
       providers: [
         { provide: MatDialogRef, useValue: spyDialog },
         { provide: FormBuilder, useValue: formBuilder },
-        { provide: SaveDrawingService, useValue: saveDrawingServiceSpy },
+        { provide: DrawingsService, useValue: drawingsServiceSpy },
         { provide: NotifierService, useValue: notifierServiceSpy },
       ],
       imports: [NotifierModule, DemoMaterialModule],
@@ -51,7 +51,7 @@ fdescribe('SaveDrawingDialogComponent', () => {
     fixture.detectChanges();
   });
 
-  it('addTag should add a tag form control to the tags form array', () => {
+  it('addTag should addSelectedTag a tag form control to the tags form array', () => {
     component = fixture.componentInstance;
     expect(component.tags.controls.length).toBe(0);
     component.addTag();
@@ -73,7 +73,7 @@ fdescribe('SaveDrawingDialogComponent', () => {
 
   it('submit should close the dialog and notify user that his drawing was saved if the http post was successful', async () => {
     component = fixture.componentInstance;
-    saveDrawingServiceSpy.httpPostDrawing.and.returnValue(Promise.resolve(true));
+    drawingsServiceSpy.httpPostDrawing.and.returnValue(Promise.resolve(true));
     await component.submit();
     expect(notifierServiceSpy.notify).toHaveBeenCalledWith('success', HTTP_POST_DRAWING_SUCCEEDED_MSG);
     expect(spyDialog.close).toHaveBeenCalled();
@@ -82,7 +82,7 @@ fdescribe('SaveDrawingDialogComponent', () => {
   it('submit should not close the dialog and notify user that his drawings has not been saved if the http post failed', async () => {
     component = fixture.componentInstance;
     spyDialog.close.calls.reset();
-    saveDrawingServiceSpy.httpPostDrawing.and.returnValue(Promise.resolve(false));
+    drawingsServiceSpy.httpPostDrawing.and.returnValue(Promise.resolve(false));
     await component.submit().then( () => {
       expect(notifierServiceSpy.notify).toHaveBeenCalledWith('error', HTTP_POST_DRAWING_FAILED_MSG);
       expect(spyDialog.close).not.toHaveBeenCalled();
@@ -92,7 +92,7 @@ fdescribe('SaveDrawingDialogComponent', () => {
   it('submit should set httPosting variable to true while executing and set it back to false when done executing', async () => {
     component = fixture.componentInstance;
     // @ts-ignore changing return type of promise to void for testing purposes
-    saveDrawingServiceSpy.httpPostDrawing.and.callFake( () => Promise.resolve(expect(component.isPostingToServer).toBe(true)));
+    drawingsServiceSpy.httpPostDrawing.and.callFake( () => Promise.resolve(expect(component.isPostingToServer).toBe(true)));
     await component.submit();
     expect(component.isPostingToServer).toBe(false);
   });

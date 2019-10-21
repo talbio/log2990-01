@@ -1,9 +1,0 @@
-{
-  "id": 10,
-  "drawing": {
-    "name": "hb",
-    "svgElements": "<path id=\"pencilPath0\" d=\"M 450 215\n      L 450 215 L448 215 L454 218 L469 226 L497 241 L532 252 L563 258 L602 266 L635 280 L658 297 L667 309 L671 320 L671 327 L669 331 L644 332 L582 334 L468 354 L400 356 L339 338 L292 272 L275 89 L285 54 L296 29 L323 0 L375 1 L402 11 L432 24 L458 39 L467 47 L474 53 L476 59 L477 62 L477 63 L472 63 L466 58 L463 54\" stroke=\"rgba(0, 0, 0, 1)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"></path>",
-    "tags": "",
-    "miniature": ""
-  }
-}
