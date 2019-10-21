@@ -98,6 +98,36 @@ fdescribe('DrawingViewComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  // This takes 2 x and y coordinates and draws a rectangle with plot type contour from point 1 to 2 on the canvas
+  // const drawRectangleOnCanvas = (x1: number, y1: number, x2: number, y2: number) => {
+
+  //   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+  //   toolManagerService._activeTool = Tools.Rectangle;
+
+  //   const rectangleGeneratorService = fixture.debugElement.injector.get(RectangleGeneratorService);
+  //   rectangleGeneratorService._plotType = PlotType.Contour;
+  //   const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+
+  //   let mouseEvent = new MouseEvent('mousedown', {
+  //     button: 0,
+  //     clientX: x1,
+  //     clientY: y1,
+  //   });
+  //   // Also change the positions on the mouse position service
+  //   mousePositionService._canvasMousePositionX = x1;
+  //   mousePositionService._canvasMousePositionY = y1;
+  //   component.workZoneComponent.onMouseDown(mouseEvent);
+
+  //   mouseEvent = new MouseEvent('mousemove', {
+  //     clientX: x2,
+  //     clientY: y2,
+  //   });
+  //   // update mouse position on the service
+  //   mousePositionService._canvasMousePositionX = x2;
+  //   mousePositionService._canvasMousePositionY = y2;
+  //   component.workZoneComponent.onMouseMove(mouseEvent);
+  //   component.workZoneComponent.onMouseUp();
+  // };
   // Step 1: Arrange
   // Step 1.5: Assert that everything is ok
   // Assert that there are no elements in the SVG
@@ -108,6 +138,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Ellipse;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -142,6 +173,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -201,6 +233,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -234,6 +267,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -268,6 +302,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -315,6 +350,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -348,6 +384,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -402,6 +439,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -457,6 +495,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Setting up the event
@@ -476,6 +515,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Setting up the event
@@ -494,6 +534,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     const lineGeneratorService = fixture.debugElement.injector.get(LineGeneratorService);
@@ -551,6 +592,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     const lineGeneratorService = fixture.debugElement.injector.get(LineGeneratorService);
@@ -607,63 +649,56 @@ fdescribe('DrawingViewComponent', () => {
 
   });
 
-  // it('should be able to interact properly with the color applicator', () => {
-  //   const colorService = fixture.debugElement.injector.get(ColorService);
-  //   colorService.setPrimaryColor('red');
-  //   // Draw an ellipse..
-  //   drawEllipseOnCanvas(null, null)
-
-  //   const lastChild = getLastSvgElement(null);
-  //   expect(lastChild.getAttribute('fill')).toEqual('red');
-  // });
-
   it('should be able to add an emoji', () => {
-  // Select Stamp Tool
-  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-  toolManagerService._activeTool = Tools.Stamp;
-  // Create the work-zone
-  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-  const initialChildsLength = svgHandle.children.length;
-  const workChilds = svgHandle.children;
-  // Setting up the event
-  const spy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
-  const mouseEvent = new MouseEvent('mousedown', {});
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  expect(spy).toHaveBeenCalled();
-  // Expect an emoji
-  expect(workChilds.length).toEqual(initialChildsLength + 1);
-  const emoji = workChilds.item(workChilds.length - 1) as SVGElement;
-  expect(emoji.tagName).toEqual('image');
-});
+    // Select Stamp Tool
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Stamp;
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+    // Setting up the event
+    const spy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+    const mouseEvent = new MouseEvent('mousedown', {});
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    expect(spy).toHaveBeenCalled();
+    // Expect an emoji
+    expect(workChilds.length).toEqual(initialChildsLength + 1);
+    const emoji = workChilds.item(workChilds.length - 1) as SVGElement;
+    expect(emoji.tagName).toEqual('image');
+  });
 
   it('should be possible to modify an emoji angle with the wheel', () => {
-  // Select Stamp Tool
-  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-  toolManagerService._activeTool = Tools.Stamp;
-  // Create the work-zone
-  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-  const children = svgHandle.childNodes;
-  const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
-  const wheelEvent = new WheelEvent('mousewheel', {
-    deltaY: -500,
+    // Select Stamp Tool
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Stamp;
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const children = svgHandle.childNodes;
+    const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
+    const wheelEvent = new WheelEvent('mousewheel', {
+      deltaY: -500,
+    });
+    const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+    const mouseEvent = new MouseEvent('mousedown', {});
+    component.workZoneComponent.onMouseWheel(wheelEvent);
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    expect(wheelSpy).toHaveBeenCalled();
+    expect(mouseSpy).toHaveBeenCalled();
+    const emoji = svgHandle.childNodes[children.length - 1] as Element;
+    // tslint:disable-next-line: no-non-null-assertion
+    const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
+    expect(angle).toEqual('15');
   });
-  const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
-  const mouseEvent = new MouseEvent('mousedown', {});
-  component.workZoneComponent.onMouseWheel(wheelEvent);
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  expect(wheelSpy).toHaveBeenCalled();
-  expect(mouseSpy).toHaveBeenCalled();
-  const emoji = svgHandle.childNodes[children.length - 1] as Element;
-  // tslint:disable-next-line: no-non-null-assertion
-  const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
-  expect(angle).toEqual('15');
-});
 
   it('shouldnt be possible to enter an angle under 0 or over 360 for the rotation', () => {
   // Select Stamp Tool
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Stamp;
   // Create the work-zone
+  // tslint:disable-next-line: no-string-literal
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
@@ -703,6 +738,7 @@ fdescribe('DrawingViewComponent', () => {
   it('should be possible to modify an emoji rotation step from 15 to 1 with the ALT button', () => {
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Stamp;
+  // tslint:disable-next-line: no-string-literal
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const altSpy = spyOn(component.workZoneComponent, 'keyDownEvent').and.callThrough();
@@ -731,6 +767,7 @@ fdescribe('DrawingViewComponent', () => {
   toolManagerService._activeTool = Tools.Stamp;
   const emojiService = fixture.debugElement.injector.get(EmojiGeneratorService);
   emojiService._emoji = '';
+  // tslint:disable-next-line: no-string-literal
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const initialChildsLength = svgHandle.children.length;
@@ -742,6 +779,7 @@ fdescribe('DrawingViewComponent', () => {
   // add an emoji
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Stamp;
+  // tslint:disable-next-line: no-string-literal
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const initialChildsLength = svgHandle.children.length;
@@ -784,17 +822,17 @@ fdescribe('DrawingViewComponent', () => {
 
   // notre canvas a maintenant un enfant <svg> qui contient un groupe <g> qui contient nos deux emojis
   expect(selectorBox.tagName).toBe('svg');
-  expect(selectorBox.getAttribute('id')!).toBe('box');
+  expect(selectorBox.getAttribute('id')).toBe('box');
 
   const group = selectorBox.children[2];
   expect(group.tagName).toBe('g');
-  expect(group.getAttribute('id')!).toBe('selected');
+  expect(group.getAttribute('id')).toBe('selected');
 
   const drawing1 = group.children[0];
-  expect(drawing1.getAttribute('id')!).toBe('testEmoji1');
+  expect(drawing1.getAttribute('id')).toBe('testEmoji1');
 
   const drawing2 = group.children[1];
-  expect(drawing2.getAttribute('id')!).toBe('testEmoji2');
+  expect(drawing2.getAttribute('id')).toBe('testEmoji2');
 
   // notre dessin est entouré d'une boîte minimale
   const box = selectorBox.children[1];
@@ -807,6 +845,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Rectangle;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Set the first color
@@ -894,6 +933,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Pencil;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Set the first color
