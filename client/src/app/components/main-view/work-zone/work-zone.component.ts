@@ -1,6 +1,6 @@
 import {  AfterViewInit, Component, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import { Tools } from 'src/app/data-structures/Tools';
-import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
+import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
@@ -23,7 +23,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
-              private saveDrawing: SaveDrawingService) {
+              private saveDrawing: DrawingsService) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
     this.color = this.DEFAULT_WHITE_COLOR;

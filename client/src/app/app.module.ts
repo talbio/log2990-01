@@ -35,7 +35,7 @@ import {OpenDrawingDialogComponent} from './components/modals/open-drawing-dialo
 import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
 import {DemoMaterialModule} from './material.module';
-import {SaveDrawingService} from './services/back-end/save-drawing/save-drawing.service';
+import {DrawingsService} from './services/back-end/drawings/drawings.service';
 import { MousePositionService } from './services/mouse-position/mouse-position.service';
 import { StorageService } from './services/storage/storage.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
@@ -137,7 +137,7 @@ const customNotifierOptions: NotifierOptions = {
     BrushGeneratorService,
     ColorApplicatorService,
     ColorService,
-    SaveDrawingService,
+    DrawingsService,
     NotifierService,
     LineGeneratorService,
     MousePositionService,

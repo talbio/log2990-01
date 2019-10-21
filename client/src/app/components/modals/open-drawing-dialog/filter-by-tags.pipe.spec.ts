@@ -3,12 +3,12 @@ import { FilterByTags } from './filter-by-tags.pipe';
 
 const pipe = new FilterByTags();
 const tags = ['tag1', 'tag2'];
-const drawing1: Drawing = {name: 'drawing1', miniature: '', svgElements: '', tags: ['tag1']};
-const drawing2: Drawing = {name: 'drawing1', miniature: '', svgElements: '', tags: ['tag2']};
-const drawing3: Drawing = {name: 'drawing1', miniature: '', svgElements: '', tags: ['otherTag']};
-const drawing4: Drawing = {name: 'drawing1', miniature: '', svgElements: '', tags: ['tag1', 'tag2']};
+const drawing1: Drawing = {id: -1, name: 'drawing1', miniature: '', svgElements: '', tags: ['tag1']};
+const drawing2: Drawing = {id: -1, name: 'drawing1', miniature: '', svgElements: '', tags: ['tag2']};
+const drawing3: Drawing = {id: -1, name: 'drawing1', miniature: '', svgElements: '', tags: ['otherTag']};
+const drawing4: Drawing = {id: -1, name: 'drawing1', miniature: '', svgElements: '', tags: ['tag1', 'tag2']};
 
-fdescribe('FilterByTags', () => {
+describe('FilterByTags', () => {
   it('create an instance', () => {
 
     expect(pipe).toBeTruthy();

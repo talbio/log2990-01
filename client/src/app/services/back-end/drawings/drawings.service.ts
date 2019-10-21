@@ -7,7 +7,7 @@ import {Drawing} from '../../../../../../common/communication/Drawing';
 @Injectable({
   providedIn: 'root',
 })
-export class SaveDrawingService {
+export class DrawingsService {
 
   private readonly HTTP_OPTIONS = {
     headers: new HttpHeaders({
@@ -42,10 +42,10 @@ export class SaveDrawingService {
       });
   }
 
-  httpGetDrawing(): Observable<Drawing[]> {
+  httpGetDrawings(): Observable<Drawing[]> {
 
     return this.httpClient.get<Drawing[]>(this.BASE_URL).pipe(
-      catchError(this.handleErrorGet<Drawing[]>('httpGetDrawing')),
+      catchError(this.handleErrorGet<Drawing[]>('httpGetDrawings')),
     );
   }
 
@@ -71,8 +71,13 @@ export class SaveDrawingService {
   }
 
   getMiniature(): string {
-    const miniature = this.renderer.selectRootElement('#min', true);
-    return miniature.outerHTML as string;
+    // const miniature = this.renderer.selectRootElement('#min', true);
+    const clonedDrawing = this.svgCanvas.cloneNode(true);
+    this.renderer.removeAttribute(clonedDrawing, 'id');
+    console.log(new XMLSerializer().serializeToString(clonedDrawing));
+    return (new XMLSerializer()).serializeToString(clonedDrawing);
+    // return clonedDrawing.innerHTML;
+    // return miniature.outerHTML as string;
   }
 
   private handleError(error: HttpErrorResponse): Promise<never> {
