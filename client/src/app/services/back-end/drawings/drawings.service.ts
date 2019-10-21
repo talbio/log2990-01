@@ -31,7 +31,7 @@ export class DrawingsService {
   httpPostDrawing(name: string, tags: string[]): Promise<boolean> {
     const svgElements: string = this.getSvgElements();
     const miniature: string = this.getMiniature();
-    const drawing: Drawing = {name, svgElements, tags, miniature};
+    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature};
     return this.httpClient.post<{httpCode: number}>(this.BASE_URL, {data: drawing}, this.HTTP_OPTIONS)
       .toPromise()
       .then( (response: {httpCode: number}) => {
@@ -43,25 +43,20 @@ export class DrawingsService {
   }
 
   httpGetDrawings(): Observable<Drawing[]> {
-
     return this.httpClient.get<Drawing[]>(this.BASE_URL).pipe(
       catchError(this.handleErrorGet<Drawing[]>('httpGetDrawings')),
     );
   }
 
-  private handleErrorGet<T> (operation = 'operation', result?: T) {
+  httpDeleteDrawing(id: number): Promise<boolean> {
+    return this.httpClient.delete<boolean>(this.BASE_URL + id, this.HTTP_OPTIONS).toPromise();
+  }
+
+  private handleErrorGet<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
     console.error(error);
     return of(result as T);
     };
-  }
-
-  getWidth(): number {
-    return this.svgCanvas.getAttribute('height');
-  }
-
-  getHeight(): number {
-    return this.svgCanvas.getAttribute('width');
   }
 
   getSvgElements(): string {
@@ -71,13 +66,8 @@ export class DrawingsService {
   }
 
   getMiniature(): string {
-    // const miniature = this.renderer.selectRootElement('#min', true);
-    const clonedDrawing = this.svgCanvas.cloneNode(true);
-    this.renderer.removeAttribute(clonedDrawing, 'id');
-    console.log(new XMLSerializer().serializeToString(clonedDrawing));
-    return (new XMLSerializer()).serializeToString(clonedDrawing);
-    // return clonedDrawing.innerHTML;
-    // return miniature.outerHTML as string;
+    const miniature = this.renderer.selectRootElement('#min', true);
+    return (new XMLSerializer()).serializeToString(miniature);
   }
 
   private handleError(error: HttpErrorResponse): Promise<never> {
