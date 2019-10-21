@@ -12,6 +12,7 @@ import {FilterByTags} from './filter-by-tags.pipe';
 import {OpenDrawingDialogComponent} from './open-drawing-dialog.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
+/* tslint:disable:no-string-literal for testing purposes*/
 
 /* -------------------------------- MOCK ENVIRONMENT ----------------------------------------- */
 
@@ -44,10 +45,10 @@ class MockMatDialog {
 }
 const mockMatDialog = new MockMatDialog();
 const mockDialogData: DialogData = {drawingNonEmpty: true};
-const fakeDrawing: Drawing = {name: '', tags: [], svgElements: '<svg></svg>', miniature: ''};
+const fakeDrawing: Drawing = {id: -1, name: '', tags: [], svgElements: '<svg></svg>', miniature: ''};
 /* ------------------------------------------------------------------------------------------ */
 
-fdescribe('OpenDrawingDialogComponent', () => {
+describe('OpenDrawingDialogComponent', () => {
   let component: OpenDrawingDialogComponent;
   let fixture: ComponentFixture<OpenDrawingDialogComponent>;
 
@@ -119,7 +120,7 @@ fdescribe('OpenDrawingDialogComponent', () => {
       fakeHtmlInputElement.value = fakeTag;
       const fakeInput = {input: fakeHtmlInputElement, value: fakeTag};
       component.addSelectedTag(fakeInput);
-      expect(component.selectedTags).toContain(fakeTag);
+      expect(component['selectedTags']).toContain(fakeTag);
       expect(fakeHtmlInputElement.value).toBe('');
     });
   });
@@ -127,9 +128,9 @@ fdescribe('OpenDrawingDialogComponent', () => {
   describe('removeSelectedTag', () => {
     it('should delete tag from selectedTags list',  () => {
       const fakeTag = 'fakeTag';
-      component.selectedTags.push(fakeTag);
+      component['selectedTags'].push(fakeTag);
       component.removeSelectedTag('fakeTag');
-      expect(component.selectedTags).not.toContain(fakeTag);
+      expect(component['selectedTags']).not.toContain(fakeTag);
     });
   });
 });

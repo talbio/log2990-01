@@ -22,7 +22,7 @@ export class OpenDrawingDialogComponent implements OnInit {
 
   protected readonly separatorKeysCodes: number[] = [ENTER, COMMA, SPACE];
 
-  protected selectedTags: any[];
+  protected selectedTags: string[];
   protected drawings: Drawing[];
 
   private modalManagerSingleton = ModalManagerSingleton.getInstance();
