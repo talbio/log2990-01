@@ -344,6 +344,7 @@ export class ToolManagerService {
         break;
       case 'path':
       case 'polyline':
+      case 'polygon':
         const xforms = child.getAttribute('transform');
         if (xforms) {
           // tslint:disable-next-line: no-non-null-assertion
@@ -361,9 +362,6 @@ export class ToolManagerService {
           newY = parseFloat('' + box.getAttribute('y'));
         }
         child.setAttribute('transform', 'translate(' + newX + ' ' + newY + ')');
-        break;
-      case 'polygon':
-        // TODO
         break;
       default:
         break;

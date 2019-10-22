@@ -67,7 +67,7 @@ export class ObjectSelectorService {
   }
 
   selectItems(canvas: SVGElement): void {
-    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline');
+    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
     const tempArray = new Array();
     drawings.forEach((drawing) => {
       if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== 'selector')
@@ -79,7 +79,7 @@ export class ObjectSelectorService {
   }
 
   selectAll(canvas: SVGElement): void {
-    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline');
+    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
     const tempArray = new Array();
     drawings.forEach((drawing) => {
       if ((drawing.id !== 'selector') && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
