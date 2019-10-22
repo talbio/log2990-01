@@ -48,7 +48,7 @@ const mockDialogData: DialogData = {drawingNonEmpty: true};
 const fakeDrawing: Drawing = {id: -1, name: '', tags: [], svgElements: '<svg></svg>', miniature: ''};
 /* ------------------------------------------------------------------------------------------ */
 
-describe('OpenDrawingDialogComponent', () => {
+fdescribe('OpenDrawingDialogComponent', () => {
   let component: OpenDrawingDialogComponent;
   let fixture: ComponentFixture<OpenDrawingDialogComponent>;
 

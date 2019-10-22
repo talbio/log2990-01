@@ -11,13 +11,17 @@ import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/em
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { Tools } from '../../../data-structures/Tools';
 import { DemoMaterialModule } from '../../../material.module';
+import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
 import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
 import { ColorApplicatorService } from '../../../services/tools/color-applicator/color-applicator.service';
 import { ColorService } from '../../../services/tools/color/color.service';
 import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
+import { EyedropperService } from '../../../services/tools/eyedropper/eyedropper.service';
+import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
 import { PencilGeneratorService } from '../../../services/tools/pencil-generator/pencil-generator.service';
+import { PolygonGeneratorService } from '../../../services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from '../../../services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { ColorPaletteComponent } from '../../modals/color-picker-module/color-palette/color-palette.component';
@@ -26,13 +30,10 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
-import { ModalManagerService } from './../../../services/modal-manager/modal-manager.service';
-import { EyedropperService } from './../../../services/tools/eyedropper/eyedropper.service';
-import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
-import { PolygonGeneratorService } from './../../../services/tools/polygon-generator/polygon-generator.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
+/* tslint:disable:no-string-literal for testing purposes*/
 @Component({ selector: 'app-lateral-bar', template: '' })
 class LateralBarStubComponent { }
 @Component({ selector: 'app-welcome-modal', template: '' })

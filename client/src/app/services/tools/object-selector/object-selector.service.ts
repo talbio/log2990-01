@@ -41,8 +41,7 @@ export class ObjectSelectorService {
   updateSelectorRectangle(mouseEvent: MouseEvent, canvas: SVGElement) {
 
     if (this.mouseDownSelector) {
-      // tslint:disable-next-line: no-non-null-assertion
-      this.currentRect = canvas.querySelector('#selector')!;
+      this.currentRect = canvas.querySelector('#selector') as Element;
       if (this.currentRect != null) {
         this.isSelectorVisible = true;
         const startRectX: number = Number(this.currentRect.getAttribute('data-start-x'));
@@ -67,7 +66,7 @@ export class ObjectSelectorService {
   }
 
   selectItems(canvas: SVGElement): void {
-    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline');
+    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
     const tempArray = new Array();
     drawings.forEach((drawing) => {
       if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== 'selector')
@@ -79,7 +78,7 @@ export class ObjectSelectorService {
   }
 
   selectAll(canvas: SVGElement): void {
-    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline');
+    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
     const tempArray = new Array();
     drawings.forEach((drawing) => {
       if ((drawing.id !== 'selector') && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
@@ -119,8 +118,7 @@ export class ObjectSelectorService {
       group.append(drawing);
     });
     canvas.append(group);
-    // tslint:disable-next-line: no-non-null-assertion
-    const boxGroup = group!.getBBox();
+    const boxGroup = (group as SVGGElement).getBBox();
     canvas.innerHTML +=
       `<svg id="box">
         <defs><marker id="dot" viewBox="0 0 10 10" refX="5" refY="5"
@@ -144,8 +142,7 @@ export class ObjectSelectorService {
   startTranslation(): void {
     this.mouseDownTranslation = true;
     const group = document.querySelector('#box');
-    // tslint:disable-next-line: no-non-null-assertion
-    const box = group!.getBoundingClientRect();
+    const box = (group as Element).getBoundingClientRect();
     this.initialX = box.left;
     this.initialY = box.top;
   }
@@ -153,12 +150,9 @@ export class ObjectSelectorService {
   translate(mouseEvent: MouseEvent): void {
     if (this.mouseDownTranslation) {
       const group = document.querySelector('#box');
-      // tslint:disable-next-line: no-non-null-assertion
-      const box = group!.getBoundingClientRect();
-      // tslint:disable-next-line: no-non-null-assertion
-      group!.setAttribute('x', '' + (mouseEvent.x - this.initialX - (box.width / 2)));
-      // tslint:disable-next-line: no-non-null-assertion
-      group!.setAttribute('y', '' + (mouseEvent.y - this.initialY - (box.height / 2)));
+      const box = (group as Element).getBoundingClientRect();
+      (group as Element).setAttribute('x', '' + (mouseEvent.x - this.initialX - (box.width / 2)));
+      (group as Element).setAttribute('y', '' + (mouseEvent.y - this.initialY - (box.height / 2)));
     }
   }
 
