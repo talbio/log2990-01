@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2 } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { MatSliderChange } from '@angular/material';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
 import { PlotType } from 'src/app/data-structures/PlotType';
@@ -1206,6 +1207,453 @@ fdescribe('DrawingViewComponent', () => {
     // The color should be equal to the initial value and different from the modified one
     expect(lastSecondaryColor).toBe(initialSecondaryColor);
     expect(lastSecondaryColor).not.toBe(secondSecondaryColor);
+  });
+
+  ////////////////////////////
+  // Test regarding the grid
+  ////////////////////////////
+  it('should be alternating between hidden and visible when toggled', () => {
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const gridRect = svgHandle.children[1];
+    expect(gridRect.id).toBe('backgroundGrid');
+    let currentState = gridRect.getAttribute('visibility');
+    expect(currentState).toBe('hidden');
+
+    const gridToggler = fixture.debugElement.injector.get(GridTogglerService);
+    gridToggler.toggleGrid();
+    currentState = gridRect.getAttribute('visibility');
+    expect(currentState).toBe('visible');
+    gridToggler.toggleGrid();
+    currentState = gridRect.getAttribute('visibility');
+    expect(currentState).toBe('hidden');
+  });
+
+  it('should change its opacity and size with setters', () => {
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const gridRect = svgHandle.children[1];
+    const gridToggler = fixture.debugElement.injector.get(GridTogglerService);
+    const gridPattern = fixture.debugElement.nativeElement.querySelector('#backgroundGridPattern');
+
+    const initialHTMLSize = parseFloat(gridPattern.getAttribute('width'));
+    expect(initialHTMLSize).toBe(gridToggler._gridSize);
+    const initialHTMLOpacity = parseFloat(gridRect.getAttribute('fill-opacity') as string);
+    const gridSize = gridToggler._gridOpacity as unknown as number;
+    expect(initialHTMLOpacity).toBe(gridSize);
+
+    const sizeSlider = new MatSliderChange();
+    sizeSlider.value = 75;
+    gridToggler.adjustGridSize(sizeSlider);
+    // const htmlGridSize: number = parseFloat(gridPattern.getAttribute('width'));
+    const htmlGridSize = gridPattern.getAttribute('width');
+    expect(htmlGridSize).toBe('75');
+
+    const opacitySlider = new MatSliderChange();
+    opacitySlider.value = 0.2;
+    gridToggler.adjustGridOpacity(opacitySlider);
+    fixture.detectChanges();
+    const currentHTMLOpacity = gridRect.getAttribute('fill-opacity');
+    expect(currentHTMLOpacity).toEqual('0.2');
+  });
+
+  it('should have the upper right corner of canvas as its origin', () => {
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const gridRect = svgHandle.children[1];
+
+    // the grid rectangle is a child of the canvas, with x=y=0, so anchored at origin
+    expect(gridRect.getAttribute('y')).toEqual('0');
+    expect(gridRect.getAttribute('x')).toEqual('0');
+  });
+
+  ////////////////////////////
+  // Test regarding the polygon
+  ////////////////////////////
+  it('should produce a temporary rectangular perimeter and a permanent polygon', () => {
+    // Step 1. Select polygon
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Polygon;
+
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+
+    // Setting up the event
+    const spy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+    const xInitial = 100;
+    const yInitial = 100;
+    // Step 2. First click avec xInitial , yInitial
+    // Step 2.1 Last click (release) -> save coordinates
+    const mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: xInitial,
+      clientY: yInitial,
+    });
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    const currentNumberOfChildren = svgHandle.children.length;
+    expect(spy).toHaveBeenCalled();
+    // Step 3. Expect a <polygon>
+    // +2 since tempRect exists
+    expect(workChilds.length).toEqual(initialChildsLength + 2);
+    const tempRect = workChilds.item(workChilds.length - 1) as SVGElement;
+    expect(tempRect.tagName).toEqual('rect');
+    const expectedPolygon = getLastSvgElement(svgHandle, 2);
+    expect(expectedPolygon.tagName).toEqual('polygon');
+
+    component.workZoneComponent.onMouseUp();
+
+    // Verify if tempRect disapeared
+    expect(workChilds.length).toEqual(currentNumberOfChildren - 1);
+  });
+
+  it('should let the user choose plotType, strokeWidth and number of apex', () => {
+    // Step 1. Select polygon
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Polygon;
+    const polygonGenerator = fixture.debugElement.injector.get(PolygonGeneratorService);
+    const mousePosition = fixture.debugElement.injector.get(MousePositionService);
+    const colorService = fixture.debugElement.injector.get(ColorService);
+
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const workChilds = svgHandle.children;
+
+    const spy = spyOn(component.workZoneComponent, 'onMouseMove').and.callThrough();
+    const xInitial = 100;
+    const yInitial = 100;
+    // Step 2. First click avec xInitial , yInitial
+    // Step 2.1 Last click (release) -> save coordinates
+    const mouseDownEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: xInitial,
+      clientY: yInitial,
+    });
+
+    const movedX = 200;
+    const movedY = 200;
+
+    const mouseMoveEvent = new MouseEvent('mousemove', {
+      button: 0,
+      clientX: movedX,
+      clientY: movedY,
+    });
+
+    mousePosition._canvasMousePositionX = movedX;
+    mousePosition._canvasMousePositionY = movedY;
+
+    // Setting up the event
+    polygonGenerator._plotType = PlotType.Contour;
+    polygonGenerator._nbOfApex = 3;
+    polygonGenerator._strokeWidth = 1;
+    component.workZoneComponent.onMouseDown(mouseDownEvent);
+    const defaultPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
+    component.workZoneComponent.onMouseMove(mouseMoveEvent);
+    expect(spy).toHaveBeenCalled();
+
+    // Getting the number of vertex
+    const pointsHTML = defaultPolygon.getAttribute('points') as string;
+    const points = pointsHTML.split(' ', 12);
+    console.log(points);
+
+    // If next 2 pass, plotType is really Contour
+    expect(defaultPolygon.getAttribute('fill')).toEqual('transparent');
+    expect(defaultPolygon.getAttribute('stroke')).toEqual(colorService.secondaryColor);
+    expect(points.length).toEqual(3);
+    expect(defaultPolygon.getAttribute('stroke-width')).toEqual('1');
+
+    component.workZoneComponent.onMouseUp();
+
+    polygonGenerator._plotType = PlotType.Full;
+    polygonGenerator._nbOfApex = 11;
+    polygonGenerator._strokeWidth = 5;
+
+    component.workZoneComponent.onMouseDown(mouseDownEvent);
+    const changedPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
+    component.workZoneComponent.onMouseMove(mouseMoveEvent);
+
+    // Getting number of apex
+    const changedPointsHTML = changedPolygon.getAttribute('points') as string;
+    console.log(changedPointsHTML);
+    const changedPoints = changedPointsHTML.split(' ', 11);
+    console.log(changedPoints);
+    console.log(polygonGenerator._nbOfApex);
+
+    expect(changedPolygon.getAttribute('fill')).toEqual(colorService.primaryColor);
+    expect(changedPolygon.getAttribute('stroke')).toEqual('transparent');
+    expect(changedPoints.length).toEqual(11);
+    expect(changedPolygon.getAttribute('stroke-width')).toEqual('5');
+  });
+
+  it('should let the user choose plotType, strokeWidth and number of apex', () => {
+    // Step 1. Select polygon
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Polygon;
+    const polygonGenerator = fixture.debugElement.injector.get(PolygonGeneratorService);
+    const mousePosition = fixture.debugElement.injector.get(MousePositionService);
+    const colorService = fixture.debugElement.injector.get(ColorService);
+
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const workChilds = svgHandle.children;
+
+    const spy = spyOn(component.workZoneComponent, 'onMouseMove').and.callThrough();
+    const xInitial = 100;
+    const yInitial = 100;
+    // Step 2. First click avec xInitial , yInitial
+    // Step 2.1 Last click (release) -> save coordinates
+    const mouseDownEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: xInitial,
+      clientY: yInitial,
+    });
+
+    const movedX = 200;
+    const movedY = 200;
+
+    const mouseMoveEvent = new MouseEvent('mousemove', {
+      button: 0,
+      clientX: movedX,
+      clientY: movedY,
+    });
+
+    mousePosition._canvasMousePositionX = movedX;
+    mousePosition._canvasMousePositionY = movedY;
+
+    // Setting up the event
+    polygonGenerator._plotType = PlotType.Contour;
+    polygonGenerator._nbOfApex = 3;
+    polygonGenerator._strokeWidth = 1;
+    component.workZoneComponent.onMouseDown(mouseDownEvent);
+    const defaultPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
+    component.workZoneComponent.onMouseMove(mouseMoveEvent);
+    expect(spy).toHaveBeenCalled();
+
+    // Getting the number of vertex
+    const pointsHTML = defaultPolygon.getAttribute('points') as string;
+    const points = pointsHTML.split(' ', 12);
+    console.log(points);
+
+    // If next 2 pass, plotType is really Contour
+    expect(defaultPolygon.getAttribute('fill')).toEqual('transparent');
+    expect(defaultPolygon.getAttribute('stroke')).toEqual(colorService.secondaryColor);
+    expect(points.length).toEqual(3);
+    expect(defaultPolygon.getAttribute('stroke-width')).toEqual('1');
+
+    component.workZoneComponent.onMouseUp();
+
+    polygonGenerator._plotType = PlotType.Full;
+    polygonGenerator._nbOfApex = 11;
+    polygonGenerator._strokeWidth = 5;
+
+    component.workZoneComponent.onMouseDown(mouseDownEvent);
+    const changedPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
+    component.workZoneComponent.onMouseMove(mouseMoveEvent);
+
+    // Getting number of apex
+    const changedPointsHTML = changedPolygon.getAttribute('points') as string;
+    console.log(changedPointsHTML);
+    const changedPoints = changedPointsHTML.split(' ', 11);
+    console.log(changedPoints);
+    console.log(polygonGenerator._nbOfApex);
+
+    expect(changedPolygon.getAttribute('fill')).toEqual(colorService.primaryColor);
+    expect(changedPolygon.getAttribute('stroke')).toEqual('transparent');
+    expect(changedPoints.length).toEqual(11);
+    expect(changedPolygon.getAttribute('stroke-width')).toEqual('5');
+  });
+
+  const verifiePolygonIsRegular = (polygon: SVGElement, apex: number ) => {
+    const pointsHTML = polygon.getAttribute('points') as string;
+    const points = pointsHTML.split(' ', 12);
+
+    // Finding length of a side
+    const pointsXY: string[][] = [['']];
+    for (let i = 0 ; i < apex ; i++) {
+      console.log(i);
+      pointsXY[i] = points[i].split(',', 2);
+    }
+
+    const sideLengths: number[] = [0];
+    for (let j = 0 ; j < apex - 1 ; j++) {
+      sideLengths[j] = Math.sqrt(Math.pow(parseFloat(pointsXY[j][0]) - parseFloat(pointsXY[j + 1][0]), 2)
+        + Math.pow(parseFloat(pointsXY[j][1]) - parseFloat(pointsXY[j + 1][1]), 2));
+    }
+    sideLengths[apex - 1] = Math.sqrt(Math.pow(
+      parseFloat(pointsXY[apex - 1][0]) - parseFloat(pointsXY[0][0]), 2)
+      + Math.pow(parseFloat(pointsXY[apex - 1][1]) - parseFloat(pointsXY[0][1]), 2));
+
+    // Expect all sides to be of equal length
+    for (let j = 0 ; j < apex - 1; j++) {
+      // The multiplications/divisions are to round the number to 4 decimals
+      expect(Math.round(sideLengths[j] * 10000) / 10000).toEqual(Math.round(sideLengths[j + 1] * 10000) / 10000);
+    }
+    expect(Math.round(sideLengths[apex - 1] * 10000) / 10000).toEqual(Math.round(sideLengths[0] * 10000) / 10000);
+    return pointsXY;
+  };
+
+  const verifiePolygonIsBiggest = (points: string[][], tempRect: SVGElement, aspectRatio: number) => {
+
+    const h: number = parseFloat(tempRect.getAttribute('height') as string);
+    const w: number = parseFloat(tempRect.getAttribute('width') as string);
+    const x: number = parseFloat(tempRect.getAttribute('x') as string);
+    const y: number = parseFloat(tempRect.getAttribute('y') as string);
+    console.log(x);
+    console.log(y);
+    console.log(x+w);
+
+    let widestLeftPoint = points[0];
+    let widestRightPoint = points[0];
+    let highestPoint = points[0];
+    let lowestPoint = points[0];
+
+    for (let i = 1 ; i < points.length ; i++) {
+      if (parseFloat(points[i][0]) < parseFloat(widestLeftPoint[0])) { widestLeftPoint = points[i]; }
+      if (parseFloat(points[i][0]) > parseFloat(widestRightPoint[0])) { widestRightPoint = points[i]; }
+      if (parseFloat(points[i][1]) > parseFloat(lowestPoint[1])) { lowestPoint = points[i]; }
+      if (parseFloat(points[i][1]) < parseFloat(highestPoint[1])) { highestPoint = points[i]; }
+    }
+
+    const touchCounter: boolean[] = [false, false, false, false];
+    if (Math.round(parseFloat(widestLeftPoint[0])) === x) { touchCounter[0] = true; }
+    if (Math.round(parseFloat(widestRightPoint[0])) === (x + w)) { touchCounter[1] = true; }
+    if (Math.round(parseFloat(highestPoint[1])) === y) { touchCounter[2] = true; }
+    if (Math.round(parseFloat(lowestPoint[1])) === (y + h)) { touchCounter[3] = true; }
+
+    console.log(Math.round(parseFloat(widestLeftPoint[0])));
+    console.log(Math.round(parseFloat(highestPoint[1])));
+    console.log(Math.round(parseFloat(lowestPoint[1])));
+
+    if (points.length % 2 === 0) {
+      if (w / h < aspectRatio) {
+        expect(touchCounter[0]).toBeTruthy();
+        expect(touchCounter[1]).toBeTruthy();
+      } else {
+        expect(touchCounter[2]).toBeTruthy();
+        expect(touchCounter[3]).toBeTruthy();
+      }
+    } else if (points.length % 2 === 1) {
+      if (w / h < aspectRatio) {
+        expect(touchCounter[0]).toBeTruthy();
+        expect(touchCounter[1]).toBeTruthy();
+      } else {
+        expect(touchCounter[2]).toBeTruthy();
+        expect(touchCounter[3]).toBeTruthy();
+      }
+    }
+  };
+
+  const verifiePointsInRectangle = (points: string[][], tempRect: SVGElement, aspectRatio: number) => {
+    const h: number = parseFloat(tempRect.getAttribute('height') as string);
+    const w: number = parseFloat(tempRect.getAttribute('width') as string);
+    const x: number = parseFloat(tempRect.getAttribute('x') as string);
+    const y: number = parseFloat(tempRect.getAttribute('y') as string);
+
+    let widestLeftPoint = points[0];
+    let widestRightPoint = points[0];
+    let highestPoint = points[0];
+    let lowestPoint = points[0];
+
+    for (let i = 1 ; i < points.length ; i++) {
+      if (parseFloat(points[i][0]) < parseFloat(widestLeftPoint[0])) { widestLeftPoint = points[i]; }
+      if (parseFloat(points[i][0]) > parseFloat(widestLeftPoint[0])) { widestRightPoint = points[i]; }
+      if (parseFloat(points[i][1]) > parseFloat(widestLeftPoint[1])) { lowestPoint = points[i]; }
+      if (parseFloat(points[i][1]) < parseFloat(widestLeftPoint[1])) { highestPoint = points[i]; }
+    }
+
+    let outside = false;
+    if (parseFloat(widestLeftPoint[0]) < x) { outside = true; }
+    if (parseFloat(widestRightPoint[0]) > x + w) { outside = true; }
+    if (parseFloat(highestPoint[1]) < y) { outside = true; }
+    if (parseFloat(lowestPoint[1]) > y + h) { outside = true; }
+
+    expect(outside).toBeFalsy();
+  };
+
+  it('should draw the biggest possible regular polygon inside the perimeter', () => {
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Polygon;
+    const polygonGenerator = fixture.debugElement.injector.get(PolygonGeneratorService);
+    const mousePosition = fixture.debugElement.injector.get(MousePositionService);
+
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const workChilds = svgHandle.children;
+
+    // Step 2. First click avec xInitial , yInitial
+    // Step 2.1 Last click (release) -> save coordinates
+    const xInitial = 100;
+    const yInitial = 100;
+
+    const mouseDownEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: xInitial,
+      clientY: yInitial,
+    });
+
+    const movedX = 200;
+    const movedY = 200;
+
+    const mouseMoveEvent = new MouseEvent('mousemove', {
+      button: 0,
+      clientX: movedX,
+      clientY: movedY,
+    });
+
+    mousePosition._canvasMousePositionX = movedX;
+    mousePosition._canvasMousePositionY = movedY;
+
+    // Setting up the event
+    // Case 1 => (NbOfApex) % 2 === 1
+    polygonGenerator._nbOfApex = 3;
+    const canvas = fixture.debugElement.nativeElement.querySelector(`#canvas`);
+    // component.workZoneComponent.onMouseDown(mouseDownEvent);
+    canvas.dispatchEvent(mouseDownEvent);
+    const triangle = workChilds.item(workChilds.length - 2) as SVGElement;
+    const tempRect1 = workChilds.item(workChilds.length - 1) as SVGElement;
+    // component.workZoneComponent.onMouseMove(mouseMoveEvent);
+    canvas.dispatchEvent(mouseMoveEvent);
+
+    const pointsTriangle = verifiePolygonIsRegular(triangle, polygonGenerator._nbOfApex);
+    verifiePolygonIsBiggest(pointsTriangle, tempRect1, polygonGenerator._aspectRatio);
+    verifiePointsInRectangle(pointsTriangle, tempRect1, polygonGenerator._aspectRatio);
+
+    component.workZoneComponent.onMouseUp();
+
+    // Case 2 => (NbOfApex) % 4 === 0
+    polygonGenerator._nbOfApex = 8;
+    // component.workZoneComponent.onMouseDown(mouseDownEvent);
+    canvas.dispatchEvent(mouseDownEvent);
+    const octogon = workChilds.item(workChilds.length - 2) as SVGElement;
+    const tempRect2 = workChilds.item(workChilds.length - 1) as SVGElement;
+    // component.workZoneComponent.onMouseMove(mouseMoveEvent);
+    canvas.dispatchEvent(mouseMoveEvent);
+
+    const pointsOctogon = verifiePolygonIsRegular(octogon, polygonGenerator._nbOfApex);
+    verifiePolygonIsBiggest(pointsOctogon, tempRect2, polygonGenerator._aspectRatio);
+    verifiePointsInRectangle(pointsOctogon, tempRect2, polygonGenerator._aspectRatio);
+
+    component.workZoneComponent.onMouseUp();
+
+    // Case 3 => (NbOfApex) % 2 === 0 && (NbOfApex) % 4 !== 0
+    polygonGenerator._nbOfApex = 6;
+    // component.workZoneComponent.onMouseDown(mouseDownEvent);
+    canvas.dispatchEvent(mouseDownEvent);
+    const hexagon = workChilds.item(workChilds.length - 2) as SVGElement;
+    const tempRect3 = workChilds.item(workChilds.length - 1) as SVGElement;
+    // component.workZoneComponent.onMouseMove(mouseMoveEvent);
+    canvas.dispatchEvent(mouseMoveEvent);
+
+    const pointsHexagon = verifiePolygonIsRegular(hexagon, polygonGenerator._nbOfApex);
+    verifiePolygonIsBiggest(pointsHexagon, tempRect3, polygonGenerator._aspectRatio);
+    verifiePointsInRectangle(pointsHexagon, tempRect3, polygonGenerator._aspectRatio);
+
+    component.workZoneComponent.onMouseUp();
   });
 
   it('should have the polygon be drawn using the primary and secondary colors', () => {
