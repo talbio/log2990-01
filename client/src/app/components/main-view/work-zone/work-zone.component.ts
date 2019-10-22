@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
 import { Colors } from 'src/app/data-structures/Colors';
 import { Tools } from 'src/app/data-structures/Tools';
-import {SaveDrawingService} from '../../../services/back-end/save-drawing/save-drawing.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 
@@ -25,8 +24,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
-              protected gridService: GridTogglerService,
-              private saveDrawing: SaveDrawingService) {
+              protected gridService: GridTogglerService) {
     this.width = this.DEFAULT_WIDTH;
     this.height = this.DEFAULT_HEIGHT;
     this.gridSize = this.gridService._gridSize;
@@ -37,7 +35,6 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
     this.canvasElement = this.renderer.selectRootElement('#canvas', true);
     this.gridService._grid = this.renderer.selectRootElement('#backgroundGrid', true);
     this.gridService._gridPattern = this.renderer.selectRootElement('#backgroundGridPattern', true);
-    this.saveDrawing._renderer = this.renderer;
   }
 
   ngAfterViewInit(): void {

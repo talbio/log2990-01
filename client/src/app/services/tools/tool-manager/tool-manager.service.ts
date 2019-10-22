@@ -282,7 +282,6 @@ export class ToolManagerService {
     if (this.mousePosition._canvasMousePositionX < box.x || this.mousePosition._canvasMousePositionX > (box.x + box.width)
       || this.mousePosition._canvasMousePositionY < box.y || this.mousePosition._canvasMousePositionY > (box.y + box.height)) {
         this.removeSelector();
-      // si il y a objet présent, inverser
     } else { this.objectSelector.startTranslation(); }
   }
 
@@ -299,8 +298,7 @@ export class ToolManagerService {
     const box = this.canvasElement.querySelector('#box') as SVGElement;
     const boxrect = this.canvasElement.querySelector('#boxrect') as SVGElement;
     const selected = this.canvasElement.querySelector('#selected') as SVGGElement;
-    // tslint:disable-next-line: no-non-null-assertion
-    const childArray = Array.from(selected!.children);
+    const childArray = Array.from(selected.children);
     childArray.forEach((child) => {
       if (this.hasBeenTranslated) {
       this.changeChildPosition(child, box);
@@ -344,26 +342,19 @@ export class ToolManagerService {
         break;
       case 'path':
       case 'polyline':
+      case 'polygon':
         const xforms = child.getAttribute('transform');
         if (xforms) {
-          // tslint:disable-next-line: no-non-null-assertion
-          const parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms!);
-          // tslint:disable-next-line: no-non-null-assertion
-          const firstX = parseFloat(parts![1]);
-          // tslint:disable-next-line: no-non-null-assertion
-          const firstY = parseFloat(parts![2]);
-          // tslint:disable-next-line: no-non-null-assertion
-          newX = parseFloat('' + (firstX + parseFloat(box.getAttribute('x')!)));
-          // tslint:disable-next-line: no-non-null-assertion
-          newY = parseFloat('' + (firstY + parseFloat(box.getAttribute('y')!)));
+          const parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms as string) as unknown as string;
+          const firstX = parseFloat(parts[1]);
+          const firstY = parseFloat(parts[2] );
+          newX = parseFloat('' + (firstX + parseFloat(box.getAttribute('x') as string)));
+          newY = parseFloat('' + (firstY + parseFloat(box.getAttribute('y') as string)));
         } else {
           newX = parseFloat('' + box.getAttribute('x'));
           newY = parseFloat('' + box.getAttribute('y'));
         }
         child.setAttribute('transform', 'translate(' + newX + ' ' + newY + ')');
-        break;
-      case 'polygon':
-        // TODO
         break;
       default:
         break;

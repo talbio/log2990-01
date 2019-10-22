@@ -1,10 +1,17 @@
-<mat-list>
+<mat-list dense>
 
   <!-- Tools Buttons -->
-  <mat-list-item *ngFor="let toolButtonProperties of toolsButtonsProperties">
+  <mat-list-item *ngFor="let pencilToolButtonProperties of pencilToolsButtonsProperties">
     <app-abstract-tool-button
       [attributesSideNav]="attributesSideNav"
-      [toolProperties]="toolButtonProperties">
+      [toolProperties]="pencilToolButtonProperties">
+    </app-abstract-tool-button>
+  </mat-list-item>
+  
+  <mat-list-item *ngFor="let shapeToolButtonProperties of shapeToolsButtonsProperties">
+    <app-abstract-tool-button
+      [attributesSideNav]="attributesSideNav"
+      [toolProperties]="shapeToolButtonProperties">
     </app-abstract-tool-button>
   </mat-list-item>
 

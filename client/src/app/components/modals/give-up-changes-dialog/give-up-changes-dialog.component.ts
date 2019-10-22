@@ -4,7 +4,6 @@ import {MatDialogRef} from '@angular/material/dialog';
 @Component({
   selector: 'app-give-up-changes-dialog',
   templateUrl: './give-up-changes-dialog.component.html',
-  styleUrls: ['./give-up-changes-dialog.component.scss'],
 })
 export class GiveUpChangesDialogComponent {
 

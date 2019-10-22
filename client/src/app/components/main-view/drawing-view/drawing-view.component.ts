@@ -1,4 +1,3 @@
-import { ObjectSelectorService } from './../../../services/tools/object-selector/object-selector.service';
 import { ComponentPortal } from '@angular/cdk/portal';
 import {AfterViewInit, ChangeDetectorRef, Component, HostListener, Renderer2, ViewChild} from '@angular/core';
 import {MatCardContent} from '@angular/material/card';
@@ -6,11 +5,13 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {Tools} from '../../../data-structures/Tools';
 import {ModalManagerService} from '../../../services/modal-manager/modal-manager.service';
 import {MousePositionService} from '../../../services/mouse-position/mouse-position.service';
+import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
+import { ObjectSelectorService } from '../../../services/tools/object-selector/object-selector.service';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {ModalManagerSingleton} from '../../modals/modal-manager-singleton';
 import {ToolsAttributesBarComponent} from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
-import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
+import {RendererLoaderService} from "../../../services/renderer-loader/renderer-loader.service";
 
 @Component({
   selector: 'app-drawing-view',
@@ -46,7 +47,8 @@ export class DrawingViewComponent implements AfterViewInit {
               private renderer: Renderer2,
               private mousePosition: MousePositionService,
               private modalManagerService: ModalManagerService,
-              private objectSelector: ObjectSelectorService) {
+              private objectSelector: ObjectSelectorService,
+              private rendererLoader: RendererLoaderService) {
     this.toolAttributesComponent = new ComponentPortal(ToolsAttributesBarComponent);
   }
 
@@ -54,6 +56,7 @@ export class DrawingViewComponent implements AfterViewInit {
     this.cd.detectChanges();
     this.canvas = this.renderer.selectRootElement('#canvas', true);
     this.modalManagerService.loadRenderer(this.renderer);
+    this.rendererLoader._renderer = this.renderer;
   }
 
   @HostListener('document:keydown', ['$event'])

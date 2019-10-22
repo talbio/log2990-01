@@ -16,6 +16,7 @@ import {ToolProperties} from '../abstract-tool-button/abstract-tool-button.compo
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
 const ELLIPSE_ICON_PATH = '../../../../assets/svg-icons/ellipse.svg';
+const POLYGON_ICON_PATH = '../../../../assets/svg-icons/polygon-icon.svg';
 const ADD_TAG_ICON_PATH = '../../../../assets/svg-icons/add-tag.svg';
 const DELETE_TAG_ICON_PATH = '../../../../assets/svg-icons/delete-tag.svg';
 
@@ -34,7 +35,8 @@ export class LateralBarComponent {
 
   private readonly HEIGHT_THRESHOLD = 412;
 
-  toolsButtonsProperties: ToolProperties[];
+  pencilToolsButtonsProperties: ToolProperties[];
+  shapeToolsButtonsProperties: ToolProperties[];
   dialogsButtonsProperties: DialogProperties[];
 
   constructor(private matIconRegistry: MatIconRegistry,
@@ -42,7 +44,8 @@ export class LateralBarComponent {
               private modalManagerService: ModalManagerService) {
     this.loadSVGIcons();
     this.setAppropriateIconsClass();
-    this.initializeToolsButtons();
+    this.initializePencilToolsButtons();
+    this.initializeShapeToolsButtons();
     this.initializeDialogsButtons();
   }
 
@@ -67,6 +70,8 @@ export class LateralBarComponent {
   private loadSVGIcons(): void {
     this.matIconRegistry.addSvgIcon('rectangle',
       this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('polygon',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(POLYGON_ICON_PATH));
     this.matIconRegistry.addSvgIcon('ellipse',
       this.domSanitizer.bypassSecurityTrustResourceUrl(ELLIPSE_ICON_PATH));
     this.matIconRegistry.addSvgIcon('add-tag',
@@ -75,31 +80,34 @@ export class LateralBarComponent {
       this.domSanitizer.bypassSecurityTrustResourceUrl(DELETE_TAG_ICON_PATH));
   }
 
-  private initializeToolsButtons() {
-    this.toolsButtonsProperties = [];
-    this.toolsButtonsProperties.push(
+  private initializePencilToolsButtons() {
+    this.pencilToolsButtonsProperties = [];
+    this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Pencil, 'Crayon', 'create', false));
-    this.toolsButtonsProperties.push(
+    this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Brush, 'Pinceau', 'brush', false));
-    this.toolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Polygon, 'Polygone', 'star', false));
-    this.toolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Rectangle, 'Rectangle', 'rectangle', true));
-    this.toolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Line, 'Ligne', 'timeline', false));
-    this.toolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Ellipse, 'Ellipse', 'ellipse', true));
-    this.toolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Stamp, 'Étampe', 'sentiment_satisfied_alt', false));
-    this.toolsButtonsProperties.push(
+    this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.ColorApplicator, 'Applicateur de couleur', 'format_paint', false));
-    this.toolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Grid, 'Grille', 'grid_on', false));
-    this.toolsButtonsProperties.push(
+    this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Selector, 'Outil de sélection', 'select_all', false));
-    this.toolsButtonsProperties.push(
+    this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Eyedropper, 'Pipette', 'colorize', false));
+  }
 
+  private initializeShapeToolsButtons() {
+    this.shapeToolsButtonsProperties = [];
+    this.shapeToolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Polygon, 'Polygone', 'polygon', true));
+    this.shapeToolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Rectangle, 'Rectangle', 'rectangle', true));
+    this.shapeToolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Line, 'Ligne', 'timeline', false));
+    this.shapeToolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Ellipse, 'Ellipse', 'ellipse', true));
+    this.shapeToolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Stamp, 'Étampe', 'sentiment_satisfied_alt', false));
+    this.shapeToolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Grid, 'Grille', 'grid_on', false));
   }
 
   private initializeDialogsButtons() {

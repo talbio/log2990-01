@@ -5,7 +5,6 @@ import { ToolManagerService } from '../../../../services/tools/tool-manager/tool
 @Component({
   selector: 'app-tools-attributes',
   templateUrl: './tools-attributes-bar.component.html',
-  styleUrls: ['./tools-attributes-bar.component.scss'],
 })
 export class ToolsAttributesBarComponent {
 

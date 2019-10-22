@@ -12,13 +12,17 @@ import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/em
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { Tools } from '../../../data-structures/Tools';
 import { DemoMaterialModule } from '../../../material.module';
+import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
 import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
 import { ColorApplicatorService } from '../../../services/tools/color-applicator/color-applicator.service';
 import { ColorService } from '../../../services/tools/color/color.service';
 import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
+import { EyedropperService } from '../../../services/tools/eyedropper/eyedropper.service';
+import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
 import { PencilGeneratorService } from '../../../services/tools/pencil-generator/pencil-generator.service';
+import { PolygonGeneratorService } from '../../../services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from '../../../services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { ColorPaletteComponent } from '../../modals/color-picker-module/color-palette/color-palette.component';
@@ -27,13 +31,10 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
-import { ModalManagerService } from './../../../services/modal-manager/modal-manager.service';
-import { EyedropperService } from './../../../services/tools/eyedropper/eyedropper.service';
-import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
-import { PolygonGeneratorService } from './../../../services/tools/polygon-generator/polygon-generator.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
+/* tslint:disable:no-string-literal for testing purposes*/
 @Component({ selector: 'app-lateral-bar', template: '' })
 class LateralBarStubComponent { }
 @Component({ selector: 'app-welcome-modal', template: '' })
@@ -99,6 +100,34 @@ fdescribe('DrawingViewComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  // This takes 2 x and y coordinates and draws a shape from point 1 to 2 on the canvas
+  const drawShapeOnCanvas = (x1: number, y1: number, x2: number, y2: number, toolType: Tools) => {
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = toolType;
+    let mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: x1,
+      clientY: y1,
+    });
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService._canvasMousePositionX = x1;
+    mousePositionService._canvasMousePositionY = y1;
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    mouseEvent = new MouseEvent('mousemove', {
+    clientX: x2,
+    clientY: y2,
+    });
+    // update mouse position on the service
+    mousePositionService._canvasMousePositionX = x2;
+    mousePositionService._canvasMousePositionY = y2;
+    component.workZoneComponent.onMouseMove(mouseEvent);
+    component.workZoneComponent.onMouseUp();
+  };
+
+  // This returns the child at 'position' from the canvas's last position (1 for last)
+  const getLastSvgElement = (svgHandle: SVGElement, position: number) => {
+    return svgHandle.children.item(svgHandle.children.length - position) as SVGElement;
+  };
   // Step 1: Arrange
   // Step 1.5: Assert that everything is ok
   // Assert that there are no elements in the SVG
@@ -109,6 +138,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Ellipse;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -129,20 +159,217 @@ fdescribe('DrawingViewComponent', () => {
     // Step 3. Expect un <ellipse>
     // Vu qu'une ellipse et un rectangle sont créés, on s'attend à une ellipse comme avant-dernier élément.
     expect(workChilds.length).toEqual(initialChildsLength + 2);
-    const ellipseChild = workChilds.item(workChilds.length - 2) as SVGElement;
+    const ellipseChild = getLastSvgElement(svgHandle, 2) as SVGElement;
     expect(ellipseChild.tagName).toEqual('ellipse');
   });
 
-  // This returns the child at 'position' from the canvas's last position (1 for last)
-  const getLastSvgElement = (svgHandle: SVGElement, position: number) => {
-    return svgHandle.children.item(svgHandle.children.length - position) as SVGElement;
-  };
+  it('should have the ellipse take the maximal space inside the rectangle created by the mouse drag and be updated in real time', () => {
+    // Step 1. Select ellipse
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Ellipse;
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+
+    // Setting up the event
+    const spy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+    const xInitial = 100;
+    const yInitial = 100;
+    // Step 2. First click avec xInitial , yInitial
+    // Step 2.1 Last click (release) -> save coordinates
+    let mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: xInitial,
+      clientY: yInitial,
+    });
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService._canvasMousePositionX = xInitial;
+    mousePositionService._canvasMousePositionY = yInitial;
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    expect(spy).toHaveBeenCalled();
+    const newX = 200;
+    const newY = 200;
+    mouseEvent = new MouseEvent('mousemove', {
+    clientX: newX,
+    clientY: newY,
+    });
+    // update mouse position on the service
+    mousePositionService._canvasMousePositionX = newX;
+    mousePositionService._canvasMousePositionY = newY;
+    component.workZoneComponent.onMouseMove(mouseEvent);
+    // Step 3. Expect a <rect> and a <ellipse>
+    // ellipse and rectangle should be created as the last children
+    expect(workChilds.length).toEqual(initialChildsLength + 2);
+    const ellipseChild = getLastSvgElement(svgHandle, 2) as SVGElement;
+    const rectangleChild = getLastSvgElement(svgHandle, 1) as SVGElement;
+    expect(ellipseChild.tagName).toEqual('ellipse');
+    expect(rectangleChild.tagName).toEqual('rect');
+    // expect the top and bottom of the ellipse to match the top and bottom of the rectangle
+    const rectangleTop = parseFloat(rectangleChild.getAttribute('y') as string);
+    const rectangleBottom = rectangleTop + parseFloat(rectangleChild.getAttribute('height') as string);
+    const ellipseTop = parseFloat(ellipseChild.getAttribute('cy') as string) - parseFloat(ellipseChild.getAttribute('ry') as string);
+    const ellipseBottom = parseFloat(ellipseChild.getAttribute('cy') as string) + parseFloat(ellipseChild.getAttribute('ry') as string);
+    expect(ellipseTop).toEqual(rectangleTop);
+    expect(ellipseBottom).toEqual(rectangleBottom);
+    // expect the left and right side of the ellipse to match those of the rectangle
+    const rectangleLeft = parseFloat(rectangleChild.getAttribute('x') as string);
+    const rectangleRight = rectangleLeft + parseFloat(rectangleChild.getAttribute('width') as string);
+    const ellipseLeft = parseFloat(ellipseChild.getAttribute('cx') as string) - parseFloat(ellipseChild.getAttribute('rx') as string);
+    const ellipseRight = parseFloat(ellipseChild.getAttribute('cx') as string) + parseFloat(ellipseChild.getAttribute('rx') as string);
+    expect(ellipseLeft).toEqual(rectangleLeft);
+    expect(ellipseRight).toEqual(rectangleRight);
+    // The shapes should be updated in real time, therefore the right and bottom side should match the mouse position of 200,200
+    expect(ellipseRight).toEqual(200);
+    expect(ellipseBottom).toEqual(200);
+    // call a mouseup event to finish the ellipse and remove the rectangle
+    component.workZoneComponent.onMouseUp();
+    expect(svgHandle.contains(rectangleChild)).toBeFalsy();
+  });
+
+  it('should have the ellipse be drawn using the primary and secondary colors', () => {
+    // Step 1. Select ellipse
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Ellipse;
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    // Set an initial color and change it
+    const colorService = fixture.debugElement.injector.get(ColorService);
+    const firstColor = 'rgba(100,100,100,1)';
+    colorService.setPrimaryColor(firstColor);
+    colorService.assignPrimaryColor();
+    colorService.setSecondaryColor(firstColor);
+    colorService.assignSecondaryColor();
+    const initialPrimaryColor = colorService.getPrimaryColor();
+    const initialSecondaryColor = colorService.getSecondaryColor();
+    const newColor = 'rgba(200,200,200,1)';
+    colorService.setPrimaryColor(newColor);
+    colorService.assignPrimaryColor();
+    colorService.setSecondaryColor(newColor);
+    colorService.assignSecondaryColor();
+    const newPrimaryColor = colorService.getPrimaryColor();
+    const newSecondaryColor = colorService.getSecondaryColor();
+    expect(initialPrimaryColor).not.toBe(newPrimaryColor);
+    expect(initialSecondaryColor).not.toBe(newSecondaryColor);
+    // create the ellipse and make sure it has a plot type that allows both colors to be shown
+    const ellipseGeneratorService = fixture.debugElement.injector.get(EllipseGeneratorService);
+    ellipseGeneratorService._plotType = PlotType.FullWithContour;
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
+    // ellipse  should be created as the last child
+    const ellipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
+    // expect the ellipse to have fill as the primary color and stroke as the secondary color
+    expect(ellipseChild.getAttribute('fill')).toEqual(newPrimaryColor);
+    expect(ellipseChild.getAttribute('stroke')).toEqual(newSecondaryColor);
+  });
+
+  it('should have the ellipse plot type and stroke width be changeable', () => {
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    // Create a first ellipse with plot type only contour and a stroke width
+    const ellipseGeneratorService = fixture.debugElement.injector.get(EllipseGeneratorService);
+    ellipseGeneratorService._plotType = PlotType.Contour;
+    ellipseGeneratorService._strokeWidth = 10;
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
+    // ellipse  should be created as the last child
+    const firstEllipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
+    // expect the ellipse to the right stroke-width as well as the stroke visible but not the fill
+    expect(firstEllipseChild.getAttribute('stroke-width')).toEqual('10');
+    expect(firstEllipseChild.getAttribute('fill')).toEqual('transparent');
+    expect(firstEllipseChild.getAttribute('stroke')).not.toEqual('transparent');
+    // Create a second ellipse with plot type only fill and a different stroke width
+    ellipseGeneratorService._plotType = PlotType.Full;
+    ellipseGeneratorService._strokeWidth = 15;
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
+    // ellipse  should be created as the last child
+    const secondEllipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
+    // expect the ellipse to the right stroke-width as well as the stroke visible but not the fill
+    expect(secondEllipseChild.getAttribute('stroke-width')).toEqual('15');
+    expect(secondEllipseChild.getAttribute('fill')).not.toEqual('transparent');
+    expect(secondEllipseChild.getAttribute('stroke')).toEqual('transparent');
+    // Create a first ellipse with plot type fill and contour and a different stroke width
+    ellipseGeneratorService._plotType = PlotType.FullWithContour;
+    ellipseGeneratorService._strokeWidth = 20;
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
+    // ellipse  should be created as the last child
+    const thirdEllipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
+    // expect the ellipse to the right stroke-width as well as the stroke visible but not the fill
+    expect(thirdEllipseChild.getAttribute('stroke-width')).toEqual('20');
+    expect(thirdEllipseChild.getAttribute('fill')).not.toEqual('transparent');
+    expect(thirdEllipseChild.getAttribute('stroke')).not.toEqual('transparent');
+  });
+
+  it('should be able to make ellipse a circle on shift press and return to ellipse on shift up', () => {
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    // Start to create an ellipse
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Ellipse;
+    const initialX = 100;
+    const initialY = 100;
+    let mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: initialX,
+      clientY: initialY,
+    });
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService._canvasMousePositionX = initialX;
+    mousePositionService._canvasMousePositionY = initialY;
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    // make the mouseMove position unequal so we can test whether the ellipse changes into a circle
+    const newX = 200;
+    const newY = 150;
+    mouseEvent = new MouseEvent('mousemove', {
+    clientX: newX,
+    clientY: newY,
+    });
+    // update mouse position on the service
+    mousePositionService._canvasMousePositionX = newX;
+    mousePositionService._canvasMousePositionY = newY;
+    component.workZoneComponent.onMouseMove(mouseEvent);
+
+    // ellipse  should be created as the last child
+    const ellipseChild = getLastSvgElement(svgHandle, 2) as SVGElement;
+    // verify that height and width are unequal
+    let ellipseLeft = parseFloat(ellipseChild.getAttribute('cx') as string) - parseFloat(ellipseChild.getAttribute('rx') as string);
+    let ellipseRight = parseFloat(ellipseChild.getAttribute('cx') as string) + parseFloat(ellipseChild.getAttribute('rx') as string);
+
+    let ellipseWidth = ellipseRight - ellipseLeft;
+    let ellipseTop = parseFloat(ellipseChild.getAttribute('cy') as string) - parseFloat(ellipseChild.getAttribute('ry') as string);
+    let ellipseBottom = parseFloat(ellipseChild.getAttribute('cy') as string) + parseFloat(ellipseChild.getAttribute('ry') as string);
+    let ellipseHeight = ellipseBottom - ellipseTop;
+    expect(ellipseHeight).not.toEqual(ellipseWidth);
+
+    // press shift to make it a circle
+    toolManagerService.changeElementShiftDown();
+    ellipseLeft = parseFloat(ellipseChild.getAttribute('cx') as string) - parseFloat(ellipseChild.getAttribute('rx') as string);
+    ellipseRight = parseFloat(ellipseChild.getAttribute('cx') as string) + parseFloat(ellipseChild.getAttribute('rx') as string);
+    ellipseWidth = ellipseRight - ellipseLeft;
+    ellipseTop = parseFloat(ellipseChild.getAttribute('cy') as string) - parseFloat(ellipseChild.getAttribute('ry') as string);
+    ellipseBottom = parseFloat(ellipseChild.getAttribute('cy') as string) + parseFloat(ellipseChild.getAttribute('ry') as string);
+    ellipseHeight = ellipseBottom - ellipseTop;
+    expect(ellipseHeight).toEqual(ellipseWidth);
+
+    // change it back to an ellipse by releasing shift
+    toolManagerService.changeElementShiftUp();
+    ellipseLeft = parseFloat(ellipseChild.getAttribute('cx') as string) - parseFloat(ellipseChild.getAttribute('rx') as string);
+    ellipseRight = parseFloat(ellipseChild.getAttribute('cx') as string) + parseFloat(ellipseChild.getAttribute('rx') as string);
+    ellipseWidth = ellipseRight - ellipseLeft;
+    ellipseTop = parseFloat(ellipseChild.getAttribute('cy') as string) - parseFloat(ellipseChild.getAttribute('ry') as string);
+    ellipseBottom = parseFloat(ellipseChild.getAttribute('cy') as string) + parseFloat(ellipseChild.getAttribute('ry') as string);
+    ellipseHeight = ellipseBottom - ellipseTop;
+    expect(ellipseHeight).not.toEqual(ellipseWidth);
+  });
 
   it('should be able to draw a polyline', () => {
     // Step 1. Select line
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -202,6 +429,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -235,6 +463,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -269,6 +498,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -316,6 +546,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -349,6 +580,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -403,6 +635,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -458,6 +691,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Setting up the event
@@ -477,6 +711,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Setting up the event
@@ -495,6 +730,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     const lineGeneratorService = fixture.debugElement.injector.get(LineGeneratorService);
@@ -552,6 +788,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     const lineGeneratorService = fixture.debugElement.injector.get(LineGeneratorService);
@@ -608,63 +845,56 @@ fdescribe('DrawingViewComponent', () => {
 
   });
 
-  // it('should be able to interact properly with the color applicator', () => {
-  //   const colorService = fixture.debugElement.injector.get(ColorService);
-  //   colorService.setPrimaryColor('red');
-  //   // Draw an ellipse..
-  //   drawEllipseOnCanvas(null, null)
-
-  //   const lastChild = getLastSvgElement(null);
-  //   expect(lastChild.getAttribute('fill')).toEqual('red');
-  // });
-
   it('should be able to add an emoji', () => {
-  // Select Stamp Tool
-  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-  toolManagerService._activeTool = Tools.Stamp;
-  // Create the work-zone
-  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-  const initialChildsLength = svgHandle.children.length;
-  const workChilds = svgHandle.children;
-  // Setting up the event
-  const spy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
-  const mouseEvent = new MouseEvent('mousedown', {});
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  expect(spy).toHaveBeenCalled();
-  // Expect an emoji
-  expect(workChilds.length).toEqual(initialChildsLength + 1);
-  const emoji = workChilds.item(workChilds.length - 1) as SVGElement;
-  expect(emoji.tagName).toEqual('image');
-});
+    // Select Stamp Tool
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Stamp;
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+    // Setting up the event
+    const spy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+    const mouseEvent = new MouseEvent('mousedown', {});
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    expect(spy).toHaveBeenCalled();
+    // Expect an emoji
+    expect(workChilds.length).toEqual(initialChildsLength + 1);
+    const emoji = workChilds.item(workChilds.length - 1) as SVGElement;
+    expect(emoji.tagName).toEqual('image');
+  });
 
   it('should be possible to modify an emoji angle with the wheel', () => {
-  // Select Stamp Tool
-  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-  toolManagerService._activeTool = Tools.Stamp;
-  // Create the work-zone
-  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-  const children = svgHandle.childNodes;
-  const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
-  const wheelEvent = new WheelEvent('mousewheel', {
-    deltaY: -500,
+    // Select Stamp Tool
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Stamp;
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const children = svgHandle.childNodes;
+    const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
+    const wheelEvent = new WheelEvent('mousewheel', {
+      deltaY: -500,
+    });
+    const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
+    const mouseEvent = new MouseEvent('mousedown', {});
+    component.workZoneComponent.onMouseWheel(wheelEvent);
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    expect(wheelSpy).toHaveBeenCalled();
+    expect(mouseSpy).toHaveBeenCalled();
+    const emoji = svgHandle.childNodes[children.length - 1] as Element;
+    // tslint:disable-next-line: no-non-null-assertion
+    const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
+    expect(angle).toEqual('15');
   });
-  const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
-  const mouseEvent = new MouseEvent('mousedown', {});
-  component.workZoneComponent.onMouseWheel(wheelEvent);
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  expect(wheelSpy).toHaveBeenCalled();
-  expect(mouseSpy).toHaveBeenCalled();
-  const emoji = svgHandle.childNodes[children.length - 1] as Element;
-  // tslint:disable-next-line: no-non-null-assertion
-  const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
-  expect(angle).toEqual('15');
-});
 
   it('shouldnt be possible to enter an angle under 0 or over 360 for the rotation', () => {
   // Select Stamp Tool
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Stamp;
   // Create the work-zone
+  // tslint:disable-next-line: no-string-literal
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
@@ -704,6 +934,7 @@ fdescribe('DrawingViewComponent', () => {
   it('should be possible to modify an emoji rotation step from 15 to 1 with the ALT button', () => {
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Stamp;
+  // tslint:disable-next-line: no-string-literal
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const altSpy = spyOn(component.workZoneComponent, 'keyDownEvent').and.callThrough();
@@ -732,6 +963,7 @@ fdescribe('DrawingViewComponent', () => {
   toolManagerService._activeTool = Tools.Stamp;
   const emojiService = fixture.debugElement.injector.get(EmojiGeneratorService);
   emojiService._emoji = '';
+  // tslint:disable-next-line: no-string-literal
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const initialChildsLength = svgHandle.children.length;
@@ -743,6 +975,7 @@ fdescribe('DrawingViewComponent', () => {
   // add an emoji
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Stamp;
+  // tslint:disable-next-line: no-string-literal
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const initialChildsLength = svgHandle.children.length;
@@ -785,17 +1018,17 @@ fdescribe('DrawingViewComponent', () => {
 
   // notre canvas a maintenant un enfant <svg> qui contient un groupe <g> qui contient nos deux emojis
   expect(selectorBox.tagName).toBe('svg');
-  expect(selectorBox.getAttribute('id')!).toBe('box');
+  expect(selectorBox.getAttribute('id')).toBe('box');
 
   const group = selectorBox.children[2];
   expect(group.tagName).toBe('g');
-  expect(group.getAttribute('id')!).toBe('selected');
+  expect(group.getAttribute('id')).toBe('selected');
 
   const drawing1 = group.children[0];
-  expect(drawing1.getAttribute('id')!).toBe('testEmoji1');
+  expect(drawing1.getAttribute('id')).toBe('testEmoji1');
 
   const drawing2 = group.children[1];
-  expect(drawing2.getAttribute('id')!).toBe('testEmoji2');
+  expect(drawing2.getAttribute('id')).toBe('testEmoji2');
 
   // notre dessin est entouré d'une boîte minimale
   const box = selectorBox.children[1];
@@ -808,6 +1041,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Rectangle;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Set the first color
@@ -895,6 +1129,7 @@ fdescribe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Pencil;
     // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Set the first color
@@ -1419,5 +1654,41 @@ fdescribe('DrawingViewComponent', () => {
     verifiePointsInRectangle(pointsHexagon, tempRect3, polygonGenerator._aspectRatio);
 
     component.workZoneComponent.onMouseUp();
+  });
+
+  it('should have the polygon be drawn using the primary and secondary colors', () => {
+    // Step 1. Select polygon
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Polygon;
+    // Create the work-zone
+    // tslint:disable-next-line: no-string-literal
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    // Set an initial color and change it
+    const colorService = fixture.debugElement.injector.get(ColorService);
+    const firstColor = 'rgba(100,100,100,1)';
+    colorService.setPrimaryColor(firstColor);
+    colorService.assignPrimaryColor();
+    colorService.setSecondaryColor(firstColor);
+    colorService.assignSecondaryColor();
+    const initialPrimaryColor = colorService.getPrimaryColor();
+    const initialSecondaryColor = colorService.getSecondaryColor();
+    const newColor = 'rgba(200,200,200,1)';
+    colorService.setPrimaryColor(newColor);
+    colorService.assignPrimaryColor();
+    colorService.setSecondaryColor(newColor);
+    colorService.assignSecondaryColor();
+    const newPrimaryColor = colorService.getPrimaryColor();
+    const newSecondaryColor = colorService.getSecondaryColor();
+    expect(initialPrimaryColor).not.toBe(newPrimaryColor);
+    expect(initialSecondaryColor).not.toBe(newSecondaryColor);
+    // create the polygon and make sure it has a plot type that allows both colors to be shown
+    const polygonGeneratorService = fixture.debugElement.injector.get(PolygonGeneratorService);
+    polygonGeneratorService._plotType = PlotType.FullWithContour;
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Polygon);
+    // polygon should be created as the last child
+    const polygonChild = getLastSvgElement(svgHandle, 1) as SVGElement;
+    // expect the ellipse to have fill as the primary color and stroke as the secondary color
+    expect(polygonChild.getAttribute('fill')).toEqual(newPrimaryColor);
+    expect(polygonChild.getAttribute('stroke')).toEqual(newSecondaryColor);
   });
 });

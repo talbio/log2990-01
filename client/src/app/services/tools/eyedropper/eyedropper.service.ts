@@ -58,6 +58,9 @@ export class EyedropperService {
         foundColor = `rgba(${pixData.data[0]},${pixData.data[1]},${pixData.data[2]},${pixData.data[3]})`;
         this.renderer.removeChild(appworkzone, canvElem);
         break;
+      case 'polygon':
+        foundColor = object.getAttribute('fill') as string;
+        break;
       case 'svg':
         // Canvas
         foundColor = object.style.backgroundColor as string;

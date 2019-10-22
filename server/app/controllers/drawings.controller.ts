@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response, Router} from 'express';
 import {inject, injectable} from 'inversify';
 import {Drawing} from '../../../common/communication/Drawing';
-import {DrawingsService, DrawingWithId} from '../services/drawings.service';
+import {DrawingsService} from '../services/drawings.service';
 import Types from '../types';
 
 @injectable()
@@ -27,11 +27,14 @@ export class DrawingsController {
         });
 
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-            const drawings: Drawing[] = [];
-            await this.drawingsService.getDrawings().then( (drawingsWithIds: DrawingWithId[]) => {
-                drawingsWithIds.forEach( (drawingWithId: DrawingWithId) => drawings.push(drawingWithId.drawing));
+            await this.drawingsService.getDrawings().then( (drawings: Drawing[]) => {
+                res.send(drawings);
             });
-            res.send(drawings);
+        });
+
+        this.router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
+            await this.drawingsService.deleteDrawing(req.params.id);
+            res.send(true);
         });
     }
 }

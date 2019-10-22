@@ -5,7 +5,6 @@ import { RectangleGeneratorService } from '../../../../../services/tools/rectang
 @Component({
   selector: 'app-rectangle-tools',
   templateUrl: './rectangle-tools.component.html',
-  styleUrls: ['./rectangle-tools.component.scss'],
 })
 export class RectangleToolsComponent  {
 
