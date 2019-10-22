@@ -37,6 +37,8 @@ export class PolygonGeneratorService {
   // Getters/Setters
   set _renderer(renderer: Renderer2) { this.renderer = renderer; }
 
+  get _aspectRatio() { return this.aspectRatio; }
+
   get _strokeWidth() { return this.strokeWidth; }
   set _strokeWidth(width: number) { this.strokeWidth = width; }
 
@@ -172,6 +174,8 @@ export class PolygonGeneratorService {
       const yPos = center[1] - (radius * Math.sin((angleBetweenVertex * i - ((Math.PI / 2) + angleBetweenVertex / 2))));
       pointsAttribute += ' ' + xPos + ',' + yPos;
     }
+    // Remove the initial space
+    pointsAttribute = pointsAttribute.substr(1);
     return pointsAttribute;
   }
 
