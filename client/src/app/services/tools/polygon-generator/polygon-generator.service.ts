@@ -48,6 +48,8 @@ export class PolygonGeneratorService {
   get _nbOfApex() { return this.nbOfApex; }
   set _nbOfApex(nb: number) { this.nbOfApex = nb; }
 
+  set _currentPolygonNumber(polygonNumber: number) { this.currentPolygonNumber = polygonNumber; }
+
   // First layer functions
   createPolygon(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
 

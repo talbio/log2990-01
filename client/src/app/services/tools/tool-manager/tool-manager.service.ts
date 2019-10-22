@@ -371,6 +371,7 @@ export class ToolManagerService {
     let polylineCount = 0;
     let pencilCount = 0;
     let rectangleCount = 0;
+    let polygonCount = 0;
     const canvas = this.renderer.selectRootElement('#canvas', true);
     for (const child of [].slice.call(canvas.children)) {
       const childCast = child as SVGElement;
@@ -382,6 +383,9 @@ export class ToolManagerService {
           break;
         case 'ellipse':
           ellipseCount += 1;
+          break;
+        case 'polygon':
+          polygonCount += 1;
           break;
         case 'path':
           if (childCast.id.startsWith('pencil')) {
@@ -407,6 +411,7 @@ export class ToolManagerService {
     this.lineGenerator._currentPolylineNumber = polylineCount;
     this.brushGenerator._currentBrushPathNumber = brushCount;
     this.pencilGenerator._currentPencilPathNumber = pencilCount;
+    this.polygonGenerator._currentPolygonNumber = polygonCount;
   }
   resetCounters() {
     this.rectangleGenerator._currentRectNumber = 0;
@@ -414,5 +419,6 @@ export class ToolManagerService {
     this.lineGenerator._currentPolylineNumber = 0;
     this.brushGenerator._currentBrushPathNumber = 0;
     this.pencilGenerator._currentPencilPathNumber = 0;
+    this.polygonGenerator._currentPolygonNumber = 0;
   }
 }
