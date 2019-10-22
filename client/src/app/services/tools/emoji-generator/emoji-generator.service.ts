@@ -1,3 +1,13 @@
+
+export enum Emojis {
+    NONE = '',
+    SMILEY = '../../../../assets/svg-icons/happy.svg',
+    CATPAW =  '../../../../assets/svg-icons/pawprint.svg',
+    LEAF = '../../../../assets/svg-icons/leaf.svg',
+    TURKEY = '../../../../assets/svg-icons/turkey.svg',
+    PUMPKIN = '../../../../assets/svg-icons/pumpkin.svg',
+}
+
 import { Injectable } from '@angular/core';
 const MIN_ROTATION_STEP = 1;
 const MAX_ROTATION_STEP = 15;
@@ -8,12 +18,12 @@ const DEFAULT_SCALING_FACTOR = 1;
 @Injectable()
 export class EmojiGeneratorService {
     private emoji: string;
-    protected emojis: string[] = ['',
-        '../../../../assets/svg-icons/happy.svg',
-        '../../../../assets/svg-icons/pawprint.svg',
-        '../../../../assets/svg-icons/leaf.svg',
-        '../../../../assets/svg-icons/turkey.svg',
-        '../../../../assets/svg-icons/pumpkin.svg'];
+    protected emojis: string[] = [Emojis.NONE,
+        Emojis.SMILEY,
+        Emojis.CATPAW,
+        Emojis.LEAF,
+        Emojis.TURKEY,
+        Emojis.PUMPKIN];
     private currentEmojiNumber: number;
     private OFFSET_CANVAS_X: number;
     private width = 100;
@@ -23,7 +33,7 @@ export class EmojiGeneratorService {
     private rotationStep: number;
 
     constructor() {
-        this.emoji = '../../../../assets/svg-icons/happy.svg';
+        this.emoji = Emojis.SMILEY;
         this.angle = MIN_ROTATION_ANGLE;
         this.scalingFactor = DEFAULT_SCALING_FACTOR;
         this.rotationStep = MAX_ROTATION_STEP;
