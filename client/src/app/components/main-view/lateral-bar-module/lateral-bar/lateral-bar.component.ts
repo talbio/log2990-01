@@ -97,7 +97,7 @@ export class LateralBarComponent {
   private initializeShapeToolsButtons() {
     this.shapeToolsButtonsProperties = [];
     this.shapeToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Polygon, 'Polygone', 'star', false));
+      this.toolPropertiesFactory(Tools.Polygon, 'Polygone', 'polygon', true));
     this.shapeToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Rectangle, 'Rectangle', 'rectangle', true));
     this.shapeToolsButtonsProperties.push(
