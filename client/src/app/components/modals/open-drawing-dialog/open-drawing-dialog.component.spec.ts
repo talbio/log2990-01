@@ -21,7 +21,7 @@ const spyDialog: jasmine.SpyObj<MatDialogRef<OpenDrawingDialogComponent>> =
 spyDialog.close.and.callThrough();
 
 const toolManagerServiceSpy: jasmine.SpyObj<ToolManagerService> =
-  jasmine.createSpyObj('ToolManagerService', ['deleteAllDrawings']);
+  jasmine.createSpyObj('ToolManagerService', ['deleteAllDrawings', 'synchronizeAllCounters']);
 toolManagerServiceSpy.deleteAllDrawings.and.callThrough();
 
 const drawingsServiceSpy: jasmine.SpyObj<DrawingsService> =
