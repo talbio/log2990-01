@@ -1,10 +1,11 @@
-import {Injectable, Renderer2} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import { OpenDrawingDialogComponent } from 'src/app/components/modals/open-drawing-dialog/open-drawing-dialog.component';
 import {ColorPickerDialogComponent} from '../../components/modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 import {CreateDrawingDialogComponent} from '../../components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import {SaveDrawingDialogComponent} from '../../components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import {CreateDrawingFormValues} from '../../data-structures/CreateDrawingFormValues';
+import {RendererSingleton} from '../renderer-singleton';
 import {ColorService} from '../tools/color/color.service';
 import {ToolManagerService} from '../tools/tool-manager/tool-manager.service';
 
@@ -18,15 +19,9 @@ export enum Color {
 })
 export class ModalManagerService {
 
-  private renderer: Renderer2;
-
   constructor(private dialog: MatDialog,
               private toolManager: ToolManagerService,
               protected colorService: ColorService) {
-  }
-
-  loadRenderer(renderer: Renderer2) {
-    this.renderer = renderer;
   }
 
   showCreateDrawingDialog(): void {
@@ -37,10 +32,10 @@ export class ModalManagerService {
       });
       dialogRef.afterClosed().subscribe((formValues: CreateDrawingFormValues) => {
         if (formValues) {
-          const svgCanvas = this.renderer.selectRootElement('#canvas', true);
-          this.renderer.setAttribute(svgCanvas, 'width', formValues.width.toString());
-          this.renderer.setAttribute(svgCanvas, 'height', formValues.height.toString());
-          this.renderer.setStyle(svgCanvas, 'background-color', formValues.color.toString());
+          const svgCanvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
+          RendererSingleton.renderer.setAttribute(svgCanvas, 'width', formValues.width.toString());
+          RendererSingleton.renderer.setAttribute(svgCanvas, 'height', formValues.height.toString());
+          RendererSingleton.renderer.setStyle(svgCanvas, 'background-color', formValues.color.toString());
         }
       });
   }
