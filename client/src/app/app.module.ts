@@ -5,6 +5,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatChipsModule} from '@angular/material/chips';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
+import {MatMenuModule} from '@angular/material/menu';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NotifierModule, NotifierOptions, NotifierService} from 'angular-notifier';
@@ -135,6 +136,7 @@ const customNotifierOptions: NotifierOptions = {
     DemoMaterialModule,
     NotifierModule.withConfig(customNotifierOptions),
     MatChipsModule,
+    MatMenuModule,
   ],
   providers: [
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'legacy' } },
