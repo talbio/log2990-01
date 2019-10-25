@@ -3,6 +3,7 @@ import {AfterViewInit, ChangeDetectorRef, Component, HostListener, Renderer2, Vi
 import {MatCardContent} from '@angular/material/card';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {Tools} from '../../../data-structures/Tools';
+import {RendererSingleton} from '../../../services/renderer-singleton';
 import {ModalManagerService} from '../../../services/modal-manager/modal-manager.service';
 import {MousePositionService} from '../../../services/mouse-position/mouse-position.service';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
@@ -11,7 +12,6 @@ import {ToolManagerService} from '../../../services/tools/tool-manager/tool-mana
 import {ModalManagerSingleton} from '../../modals/modal-manager-singleton';
 import {ToolsAttributesBarComponent} from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
-import {RendererLoaderService} from "../../../services/renderer-loader/renderer-loader.service";
 
 @Component({
   selector: 'app-drawing-view',
@@ -47,16 +47,14 @@ export class DrawingViewComponent implements AfterViewInit {
               private renderer: Renderer2,
               private mousePosition: MousePositionService,
               private modalManagerService: ModalManagerService,
-              private objectSelector: ObjectSelectorService,
-              private rendererLoader: RendererLoaderService) {
+              private objectSelector: ObjectSelectorService) {
     this.toolAttributesComponent = new ComponentPortal(ToolsAttributesBarComponent);
   }
 
   ngAfterViewInit() {
     this.cd.detectChanges();
     this.canvas = this.renderer.selectRootElement('#canvas', true);
-    this.modalManagerService.loadRenderer(this.renderer);
-    this.rendererLoader._renderer = this.renderer;
+    RendererSingleton.instantiate(this.renderer);
   }
 
   @HostListener('document:keydown', ['$event'])

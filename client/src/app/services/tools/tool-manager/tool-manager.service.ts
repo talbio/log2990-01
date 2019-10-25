@@ -1,24 +1,24 @@
-import { Injectable, Renderer2 } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Tools } from '../../../data-structures/Tools';
+import { MousePositionService } from '../../mouse-position/mouse-position.service';
+import {RendererSingleton} from '../../renderer-singleton';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
 import { ColorService } from '../color/color.service';
+import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.service';
 import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
+import { EyedropperService } from '../eyedropper/eyedropper.service';
+import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
+import { PolygonGeneratorService } from '../polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
-import { EllipseGeneratorService } from './../ellipse-generator/ellipse-generator.service';
-import { EyedropperService } from './../eyedropper/eyedropper.service';
-import { LineGeneratorService } from './../line-generator/line-generator.service';
-import { PolygonGeneratorService } from './../polygon-generator/polygon-generator.service';
 
 @Injectable()
 export class ToolManagerService {
 
   private readonly DEFAULT_NUMBER_OF_ELEMENTS: number = 2;
   private numberOfElements: number;
-  private renderer: Renderer2;
   private canvasElement: SVGElement;
   private activeTool: Tools;
   private hasBeenTranslated: boolean;
@@ -46,17 +46,6 @@ export class ToolManagerService {
     this.activeTool = Tools.Pencil;
     this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
     this.hasBeenTranslated = false;
-  }
-
-  loadRenderer(renderer: Renderer2) {
-    this.renderer = renderer;
-    // Give it to the tools who also need it
-    this.polygonGenerator._renderer = renderer;
-    this.ellipseGenerator._renderer = renderer;
-    this.colorApplicator._renderer = renderer;
-    this.eyedropper._renderer = renderer;
-    this.lineGenerator._renderer = renderer;
-    this.brushGenerator._renderer = renderer;
   }
 
   createElement(mouseEvent: MouseEvent, canvas: SVGElement) {
@@ -147,7 +136,7 @@ export class ToolManagerService {
         this.brushGenerator.finishBrushPath();
         break;
       case Tools.Selector:
-        this.objectSelector.finishSelector(this.renderer.selectRootElement('#canvas', true));
+        this.objectSelector.finishSelector(RendererSingleton.renderer.selectRootElement('#canvas', true));
         this.updateNumberOfElements();
         break;
       case Tools.Ellipse:
@@ -211,7 +200,7 @@ export class ToolManagerService {
   }
 
   changeElementShiftDown() {
-    this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+    this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
     switch (this._activeTool) {
       case Tools.Rectangle:
         // change into square
@@ -229,7 +218,7 @@ export class ToolManagerService {
   }
 
   changeElementShiftUp() {
-    this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+    this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
     switch (this._activeTool) {
       case Tools.Rectangle:
         // change into rectangle
@@ -251,7 +240,7 @@ export class ToolManagerService {
   }
 
   deleteAllDrawings(): void {
-    this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+    this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
     for (let i = this.canvasElement.children.length - 1; i >= this.DEFAULT_NUMBER_OF_ELEMENTS ; i--) {
       this.canvasElement.children[i].remove();
     }
@@ -261,14 +250,14 @@ export class ToolManagerService {
   }
 
   updateNumberOfElements(): void {
-    this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+    this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
     this.numberOfElements = this.canvasElement.childNodes.length;
   }
 
   escapePress() {
     switch (this._activeTool) {
       case Tools.Line:
-        this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+        this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
         this.lineGenerator.deleteLineBlock(this.canvasElement, this.numberOfElements);
         this.numberOfElements = this.canvasElement.children.length;
         break;
@@ -313,7 +302,7 @@ export class ToolManagerService {
   backSpacePress() {
     switch (this._activeTool) {
       case Tools.Line:
-        this.canvasElement = this.renderer.selectRootElement('#canvas', true);
+        this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
         this.lineGenerator.deleteLine(this.canvasElement, this.numberOfElements);
         this.lineGenerator.updateLine(this.mousePosition._canvasMousePositionX,
           this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
@@ -372,7 +361,7 @@ export class ToolManagerService {
     let pencilCount = 0;
     let rectangleCount = 0;
     let polygonCount = 0;
-    const canvas = this.renderer.selectRootElement('#canvas', true);
+    const canvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
     for (const child of [].slice.call(canvas.children)) {
       const childCast = child as SVGElement;
       switch (childCast.tagName) {
