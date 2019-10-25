@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {Drawing} from '../../../../../../common/communication/Drawing';
-import {RendererLoaderService} from '../../renderer-loader/renderer-loader.service';
+import {RendererSingleton} from '../../renderer-singleton';
 
 @Injectable({
   providedIn: 'root',
@@ -19,8 +19,7 @@ export class DrawingsService {
   private readonly HTTP_CODE_SUCCESS = 200;
   private readonly BASE_URL: string = 'http://localhost:3000/api/drawings/';
 
-  constructor(private httpClient: HttpClient,
-              private rendererLoader: RendererLoaderService) {}
+  constructor(private httpClient: HttpClient) {}
 
   httpPostDrawing(name: string, tags: string[]): Promise<boolean> {
     const svgElements: string = this.getSvgElements();
@@ -54,14 +53,14 @@ export class DrawingsService {
   }
 
   getSvgElements(): string {
-    const svgCanvas: HTMLElement = this.rendererLoader._renderer.selectRootElement('#canvas', true);
+    const svgCanvas: HTMLElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
     const patternsEndDef = '</defs>';
     const startIndex = svgCanvas.innerHTML.search(patternsEndDef) + patternsEndDef.length;
     return svgCanvas.innerHTML.substring(startIndex);
   }
 
   getMiniature(): string {
-    const miniature = this.rendererLoader._renderer.selectRootElement('#min', true);
+    const miniature = RendererSingleton.renderer.selectRootElement('#min', true);
     return (new XMLSerializer()).serializeToString(miniature);
   }
 

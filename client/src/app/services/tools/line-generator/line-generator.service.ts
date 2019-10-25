@@ -1,5 +1,6 @@
-import { Injectable, Renderer2 } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
+import {RendererSingleton} from '../../renderer-singleton';
 
 @Injectable()
 export class LineGeneratorService {
@@ -16,7 +17,6 @@ export class LineGeneratorService {
   private readonly DOT_SIZE = '1';
   private readonly DEFAULT_LINEJOINSTYLE = LineJoinStyle.Round;
   private readonly DEFAULT_LINEDASHSTYLE = LineDashStyle.Continuous;
-  private renderer: Renderer2;
   private strokeWidth: number;
   private markerDiameter: number;
   private currentPolylineNumber: number;
@@ -210,24 +210,24 @@ export class LineGeneratorService {
 
   // This function creates a marker tag with the color and the id of the polyline and returns a string for the URL
   createMarkers(color: string): SVGElement {
-    const marker = this.renderer.createElement('marker');
-    const circle = this.renderer.createElement('circle');
+    const marker = RendererSingleton.renderer.createElement('marker');
+    const circle = RendererSingleton.renderer.createElement('circle');
 
-    this.renderer.setAttribute(circle, 'fill', color);
-    this.renderer.setAttribute(circle, 'r', this.markerDiameter as unknown as string);
-    this.renderer.setAttribute(circle, 'cy', this.markerDiameter as unknown as string);
-    this.renderer.setAttribute(circle, 'cx', this.markerDiameter as unknown as string);
-    this.renderer.setAttribute(marker, 'markerWidth', (this.markerDiameter * 2) as unknown as string);
-    this.renderer.setAttribute(marker, 'markerHeight', (this.markerDiameter * 2) as unknown as string);
-    this.renderer.setAttribute(marker, 'refX', this.markerDiameter as unknown as string);
-    this.renderer.setAttribute(marker, 'refY', this.markerDiameter as unknown as string);
-    this.renderer.setAttribute(marker, 'markerUnits', 'userSpaceOnUse');
-    this.renderer.setProperty(marker, 'id', `line${this.currentPolylineNumber}marker`);
+    RendererSingleton.renderer.setAttribute(circle, 'fill', color);
+    RendererSingleton.renderer.setAttribute(circle, 'r', this.markerDiameter as unknown as string);
+    RendererSingleton.renderer.setAttribute(circle, 'cy', this.markerDiameter as unknown as string);
+    RendererSingleton.renderer.setAttribute(circle, 'cx', this.markerDiameter as unknown as string);
+    RendererSingleton.renderer.setAttribute(marker, 'markerWidth', (this.markerDiameter * 2) as unknown as string);
+    RendererSingleton.renderer.setAttribute(marker, 'markerHeight', (this.markerDiameter * 2) as unknown as string);
+    RendererSingleton.renderer.setAttribute(marker, 'refX', this.markerDiameter as unknown as string);
+    RendererSingleton.renderer.setAttribute(marker, 'refY', this.markerDiameter as unknown as string);
+    RendererSingleton.renderer.setAttribute(marker, 'markerUnits', 'userSpaceOnUse');
+    RendererSingleton.renderer.setProperty(marker, 'id', `line${this.currentPolylineNumber}marker`);
 
-    this.renderer.appendChild(marker, circle);
-    const defs = this.renderer.selectRootElement('#definitions', true);
-    const canvas = this.renderer.selectRootElement('#canvas', true);
-    this.renderer.appendChild(defs, marker);
+    RendererSingleton.renderer.appendChild(marker, circle);
+    const defs = RendererSingleton.renderer.selectRootElement('#definitions', true);
+    const canvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
+    RendererSingleton.renderer.appendChild(defs, marker);
     if (this.isMarkersActive) {
       this.addMarkersToNewLine(marker, canvas);
     }
@@ -253,8 +253,5 @@ export class LineGeneratorService {
     }
     // No marker was found for corresponding polyline, this should not happen as the marker is created with the polyline
     return new SVGElement();
-  }
-  set _renderer(rend: Renderer2) {
-    this.renderer = rend;
   }
 }

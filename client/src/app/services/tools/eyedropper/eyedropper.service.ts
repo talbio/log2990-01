@@ -1,15 +1,16 @@
-import { Injectable, Renderer2 } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BrushGeneratorService } from 'src/app/services/tools/brush-generator/brush-generator.service';
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
-import { ColorService } from './../color/color.service';
+import {RendererSingleton} from '../../renderer-singleton';
+import { MousePositionService } from '../../mouse-position/mouse-position.service';
+import { ColorService } from '../color/color.service';
 
 @Injectable()
 export class EyedropperService {
-  private renderer: Renderer2;
 
   constructor(private colorTool: ColorService,
               private brushGenerator: BrushGeneratorService,
-              private mousePosition: MousePositionService) {}
+              private mousePosition: MousePositionService) {
+  }
 
   // This function returns the color on the object as a string of format "rgba(rVal,gVal,bVal,aVal)"
   getColorOnObject(object: SVGElement): string {
@@ -26,7 +27,8 @@ export class EyedropperService {
           foundColor = object.getAttribute('stroke') as string;
         } else if (object.id.startsWith('brush')) {
           // PaintBrush
-          const defs = this.renderer.selectRootElement('#definitions', true);
+          const defs = RendererSingleton.renderer
+            .selectRootElement('#definitions', true);
           const pattern = this.brushGenerator.findPatternFromBrushPath(object, defs);
           for (const child of [].slice.call(pattern.children)) {
             if (child.hasAttribute('fill')) {
@@ -45,18 +47,22 @@ export class EyedropperService {
         break;
       case 'image':
         const imageObject = object as SVGImageElement;
-        const canvElem = this.renderer.createElement('canvas');
-        const appworkzone = this.renderer.selectRootElement('app-work-zone', true);
+        const canvElem = RendererSingleton.renderer
+          .createElement('canvas');
+        const appworkzone = RendererSingleton.renderer
+          .selectRootElement('app-work-zone', true);
         canvElem.height = imageObject.getAttribute('height');
         canvElem.width = imageObject.getAttribute('width');
-        this.renderer.appendChild(appworkzone, canvElem);
+        RendererSingleton.renderer
+          .appendChild(appworkzone, canvElem);
         const context = canvElem.getContext('2d');
         context.drawImage(imageObject, 0, 0);
         const pictureX = this.mousePosition._canvasMousePositionX - parseFloat(imageObject.getAttribute('x') as string);
         const pictureY = this.mousePosition._canvasMousePositionY - parseFloat(imageObject.getAttribute('y') as string);
         const pixData = context.getImageData(pictureX, pictureY, 1, 1);
         foundColor = `rgba(${pixData.data[0]},${pixData.data[1]},${pixData.data[2]},${pixData.data[3]})`;
-        this.renderer.removeChild(appworkzone, canvElem);
+        RendererSingleton.renderer
+          .removeChild(appworkzone, canvElem);
         break;
       case 'polygon':
         foundColor = object.getAttribute('fill') as string;
@@ -106,11 +112,14 @@ export class EyedropperService {
 
   //   let foundColor = '';
   //   const imageObject = object as SVGImageElement;
-  //   const canvElem = this.renderer.createElement('canvas');
-  //   const appworkzone = this.renderer.selectRootElement('app-work-zone', true);
+  //   const canvElem = RendererSingleton.renderer
+  //   .createElement('canvas');
+  //   const appworkzone = RendererSingleton.renderer
+  //   .selectRootElement('app-work-zone', true);
   //   canvElem.height = imageObject.getAttribute('height');
   //   canvElem.width = imageObject.getAttribute('width');
-  //   this.renderer.appendChild(appworkzone, canvElem);
+  //   RendererSingleton.renderer
+  //   .appendChild(appworkzone, canvElem);
   //   const context = canvElem.getContext('2d');
   //   context.drawImage(imageObject, 0, 0);
   //   const pictureX = this.mousePosition._canvasMousePositionX - parseFloat(imageObject.getAttribute('x') as string);
@@ -119,7 +128,8 @@ export class EyedropperService {
   //   foundColor = `rgba(${pixData.data[0]},${pixData.data[1]},${pixData.data[2]},${pixData.data[3]})`;
   //   console.log(foundColor);
 
-  //   // this.renderer.removeChild(appworkzone, canvElem);
+  //   // RendererSingleton.renderer
+  //   .removeChild(appworkzone, canvElem);
 
   //   if (foundColor !== '') {
   //     if (foundColor.startsWith('rgba')) {
@@ -139,8 +149,5 @@ export class EyedropperService {
   //     return this.colorTool.getPrimaryColor();
   //   }
   // }
-  set _renderer(rend: Renderer2) {
-    this.renderer = rend;
-  }
 
 }

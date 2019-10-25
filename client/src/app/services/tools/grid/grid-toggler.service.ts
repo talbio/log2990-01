@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
 import { MatSliderChange } from '@angular/material';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class GridTogglerService {
