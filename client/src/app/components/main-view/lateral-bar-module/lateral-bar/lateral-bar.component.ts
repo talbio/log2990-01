@@ -19,6 +19,7 @@ const ELLIPSE_ICON_PATH = '../../../../assets/svg-icons/ellipse.svg';
 const POLYGON_ICON_PATH = '../../../../assets/svg-icons/polygon-icon.svg';
 const ADD_TAG_ICON_PATH = '../../../../assets/svg-icons/add-tag.svg';
 const DELETE_TAG_ICON_PATH = '../../../../assets/svg-icons/delete-tag.svg';
+const ERASER_ICON_PATH = '../../../../assets/svg-icons/eraser.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -78,6 +79,8 @@ export class LateralBarComponent {
       this.domSanitizer.bypassSecurityTrustResourceUrl(ADD_TAG_ICON_PATH));
     this.matIconRegistry.addSvgIcon('delete-tag',
       this.domSanitizer.bypassSecurityTrustResourceUrl(DELETE_TAG_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('eraser',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(ERASER_ICON_PATH));
   }
 
   private initializePencilToolsButtons() {
@@ -92,6 +95,8 @@ export class LateralBarComponent {
       this.toolPropertiesFactory(Tools.Selector, 'Outil de sélection', 'select_all', false));
     this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Eyedropper, 'Pipette', 'colorize', false));
+    this.pencilToolsButtonsProperties.push(
+        this.toolPropertiesFactory(Tools.Eraser, 'Efface', 'eraser', true));
   }
 
   private initializeShapeToolsButtons() {
