@@ -7,6 +7,7 @@ import { ColorApplicatorService } from '../color-applicator/color-applicator.ser
 import { ColorService } from '../color/color.service';
 import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.service';
 import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
+import { EraserService } from '../eraser/eraser.service';
 import { EyedropperService } from '../eyedropper/eyedropper.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
@@ -41,6 +42,7 @@ export class ToolManagerService {
               private lineGenerator: LineGeneratorService,
               private polygonGenerator: PolygonGeneratorService,
               private eyedropper: EyedropperService,
+              private eraser: EraserService,
               protected colorService: ColorService,
               protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
@@ -74,6 +76,9 @@ export class ToolManagerService {
       case Tools.Polygon:
         this.polygonGenerator.createPolygon(mouseEvent, canvas, this.colorService.getSecondaryColor(),
           this.colorService.getPrimaryColor());
+        break;
+      case Tools.Eraser:
+        this.eraser.startErasing(mouseEvent, canvas);
         break;
       default:
         return;
@@ -118,6 +123,9 @@ export class ToolManagerService {
       case Tools.Polygon:
         this.polygonGenerator.updatePolygon(this.mousePosition._canvasMousePositionX,
           this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+        break;
+      case Tools.Eraser:
+        this.eraser.erase(canvas);
         break;
       default:
         return;

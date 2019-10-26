@@ -45,6 +45,7 @@ import { ColorApplicatorService } from './services/tools/color-applicator/color-
 import { ColorService } from './services/tools/color/color.service';
 import { EllipseGeneratorService } from './services/tools/ellipse-generator/ellipse-generator.service';
 import { EmojiGeneratorService } from './services/tools/emoji-generator/emoji-generator.service';
+import { EraserService } from './services/tools/eraser/eraser.service';
 import { EyedropperService } from './services/tools/eyedropper/eyedropper.service';
 import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
@@ -158,6 +159,7 @@ const customNotifierOptions: NotifierOptions = {
     LineGeneratorService,
     MousePositionService,
     EyedropperService,
+    EraserService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [
