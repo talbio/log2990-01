@@ -2,13 +2,9 @@ import { ComponentPortal } from '@angular/cdk/portal';
 import {AfterViewInit, ChangeDetectorRef, Component, HostListener, Renderer2, ViewChild} from '@angular/core';
 import {MatCardContent} from '@angular/material/card';
 import {MatSidenavModule} from '@angular/material/sidenav';
-import {Tools} from '../../../data-structures/Tools';
-import {RendererSingleton} from '../../../services/renderer-singleton';
-import {ModalManagerService} from '../../../services/modal-manager/modal-manager.service';
+import {KeyboardShortcutsService} from '../../../services/keyboard-shortcuts/keyboard-shortcuts.service';
 import {MousePositionService} from '../../../services/mouse-position/mouse-position.service';
-import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
-import { ObjectSelectorService } from '../../../services/tools/object-selector/object-selector.service';
-import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
+import {RendererSingleton} from '../../../services/renderer-singleton';
 import {ModalManagerSingleton} from '../../modals/modal-manager-singleton';
 import {ToolsAttributesBarComponent} from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
@@ -25,29 +21,12 @@ export class DrawingViewComponent implements AfterViewInit {
 
   protected toolAttributesComponent: ComponentPortal<ToolsAttributesBarComponent>;
 
-  private readonly PENCIL_KEY = 'c';
-  private readonly PAINTBRUSH_KEY = 'w';
-  private readonly RECTANGLE_KEY = '1';
-  private readonly ELLIPSE_KEY = '2';
-  private readonly POLYGON_KEY = '3';
-  private readonly COLOR_APPLICATOR_KEY = 'r';
-  private readonly NEW_DRAWING_KEY = 'o';
-  private readonly LINE_KEY = 'l';
-  private readonly DELETE_FULL_ELEMENT_KEY = 'Escape';
-  private readonly DELETE_LAST_ELEMENT_KEY = 'Backspace';
-  private readonly EYEDROPPER_KEY = 'i';
-  private readonly GRID_KEY = 'g';
-  private readonly SELECT_ALL_KEY = 'a';
-
   private canvas: HTMLElement;
 
   constructor(private cd: ChangeDetectorRef,
-              private toolManager: ToolManagerService,
-              private gridToggler: GridTogglerService,
               private renderer: Renderer2,
               private mousePosition: MousePositionService,
-              private modalManagerService: ModalManagerService,
-              private objectSelector: ObjectSelectorService) {
+              private keyBoardShortcuts: KeyboardShortcutsService) {
     this.toolAttributesComponent = new ComponentPortal(ToolsAttributesBarComponent);
   }
 
@@ -62,46 +41,15 @@ export class DrawingViewComponent implements AfterViewInit {
     // Verify that no dialog is open before checking for hotkeys
     const modalManager = ModalManagerSingleton.getInstance();
     if (!modalManager._isModalActive) {
-      if (keyboardEvent.key === this.PENCIL_KEY) {
-        this.toolManager._activeTool = Tools.Pencil;
-      } else if (keyboardEvent.key === this.COLOR_APPLICATOR_KEY) {
-        this.toolManager._activeTool = Tools.ColorApplicator;
-      } else if (keyboardEvent.key === this.PAINTBRUSH_KEY) {
-        this.toolManager._activeTool = Tools.Brush;
-      } else if (keyboardEvent.key === this.RECTANGLE_KEY) {
-        this.toolManager._activeTool = Tools.Rectangle;
-      } else if (keyboardEvent.key === this.ELLIPSE_KEY) {
-        this.toolManager._activeTool = Tools.Ellipse;
-      }  else if (keyboardEvent.key === this.POLYGON_KEY) {
-        this.toolManager._activeTool = Tools.Polygon;
-      } else if (keyboardEvent.key === this.LINE_KEY) {
-        this.toolManager._activeTool = Tools.Line;
-      } else if (keyboardEvent.key === this.EYEDROPPER_KEY) {
-        this.toolManager._activeTool = Tools.Eyedropper;
-      } else if (keyboardEvent.key === this.GRID_KEY) {
-        this.gridToggler.toggleGrid();
-      } else if (keyboardEvent.key === this.SELECT_ALL_KEY && keyboardEvent.ctrlKey) {
+      if (keyboardEvent.ctrlKey) {
         keyboardEvent.preventDefault();
-        this.toolManager._activeTool = Tools.Selector;
-        const canvas = this.renderer.selectRootElement('#canvas', true);
-        this.objectSelector.selectAll(canvas);
-      } else if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
-        keyboardEvent.preventDefault();
-        this.modalManagerService.showCreateDrawingDialog();
-      } else if (keyboardEvent.key === this.DELETE_FULL_ELEMENT_KEY) {
-        this.toolManager.escapePress();
-      } else if (keyboardEvent.key === this.DELETE_LAST_ELEMENT_KEY) {
-        this.toolManager.backSpacePress();
-      }
-    } else {
-      // Still prevent shorcuts we use to be replaced with common browser shortcuts
-      if (keyboardEvent.key === this.NEW_DRAWING_KEY && keyboardEvent.ctrlKey) {
-        keyboardEvent.preventDefault();
-      } else if (keyboardEvent.key === this.SELECT_ALL_KEY && keyboardEvent.ctrlKey) {
-        keyboardEvent.preventDefault();
+        this.executeShortcutFunction(this.keyBoardShortcuts.getControlKeyShortcuts, keyboardEvent.key);
+      } else {
+        this.executeShortcutFunction(this.keyBoardShortcuts.getOneKeyShortcuts, keyboardEvent.key);
       }
     }
   }
+
   @HostListener('document:mousemove', ['$event'])
   mouseMoveEvent(mouseEvent: MouseEvent) {
     // Listen to the mouse's position in the page and communicate it to the service so it is available to all components.
@@ -111,6 +59,13 @@ export class DrawingViewComponent implements AfterViewInit {
     this.mousePosition._pageMousePositionY = mouseEvent.pageY;
     this.mousePosition._canvasMousePositionX = (mouseEvent.pageX - OFFSET_CANVAS_X);
     this.mousePosition._canvasMousePositionY = (mouseEvent.pageY - OFFSET_CANVAS_Y);
+  }
+
+  private executeShortcutFunction(shortcutsToFunction: Map<string, () => void>, key: string): void {
+    const shortcutFunction: (() => void) | undefined = shortcutsToFunction.get(key);
+    if (shortcutFunction) {
+      shortcutFunction();
+    }
   }
 
 }
