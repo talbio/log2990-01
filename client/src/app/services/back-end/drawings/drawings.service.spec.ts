@@ -1,8 +1,8 @@
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Renderer2} from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import {async, TestBed} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
-import {RendererLoaderService} from '../../renderer-loader/renderer-loader.service';
+import {RendererSingleton} from '../../renderer-singleton';
 import {ToolManagerService} from '../../tools/tool-manager/tool-manager.service';
 import { DrawingsService } from './drawings.service';
 
@@ -18,9 +18,6 @@ ToolManagerSpy.deleteAllDrawings.and.callThrough();
 
 const rendererSpy: jasmine.SpyObj<Renderer2> =
   jasmine.createSpyObj('Renderer2', ['selectRootElement']);
-const rendererLoaderServiceSpy: jasmine.SpyObj<RendererLoaderService> =
-  jasmine.createSpyObj('RendererLoaderService', ['_renderer']);
-rendererLoaderServiceSpy._renderer = rendererSpy;
 
 const FAKE_SVG_CANVAS = `<defs></defs><rect></rect>`;
 const FAKE_SVG_CANVAS_INNER_HTML = `<rect></rect>`;
@@ -30,19 +27,20 @@ const FAKE_SVG_MINIATURE = `<svg><path></path></svg>`;
 let saveDrawingService: DrawingsService;
 
 fdescribe('DrawingsService', () => {
-  beforeEach(async () => TestBed.configureTestingModule({
-    providers: [
-      {provide: HttpClient, useValue: httpClientSpy},
-      {provide: ToolManagerService, useValue: ToolManagerSpy},
-      {provide: Renderer2, useValue: rendererSpy},
-      {provide: RendererLoaderService, useValue: rendererLoaderServiceSpy},
+
+  beforeEach(async(() =>
+    TestBed.configureTestingModule({
+      providers: [
+        {provide: HttpClient, useValue: httpClientSpy},
+        {provide: ToolManagerService, useValue: ToolManagerSpy},
     ],
-  }).compileComponents().then( () => {
-    saveDrawingService = TestBed.get(DrawingsService);
-    rendererSpy.selectRootElement.and.returnValue(svgCanvasSpy);
-    svgCanvasSpy.innerHTML = FAKE_SVG_CANVAS;
-    spyOn(saveDrawingService, 'getMiniature').and.returnValue(FAKE_SVG_MINIATURE);
-  }));
+    }).compileComponents().then( () => {
+      saveDrawingService = TestBed.get(DrawingsService);
+      rendererSpy.selectRootElement.and.returnValue(svgCanvasSpy);
+      svgCanvasSpy.innerHTML = FAKE_SVG_CANVAS;
+      spyOn(saveDrawingService, 'getMiniature').and.returnValue(FAKE_SVG_MINIATURE);
+      spyOnProperty(RendererSingleton, 'renderer').and.returnValue(rendererSpy);
+  })));
 
   it('should be created', () => {
     expect(saveDrawingService).toBeTruthy();
