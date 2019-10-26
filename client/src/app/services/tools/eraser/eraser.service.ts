@@ -33,17 +33,25 @@ export class EraserService {
             bottom: mouseEvent.pageY - this.OFFSET_CANVAS_Y + (this.eraseSize / 2),
             right: mouseEvent.pageX - this.OFFSET_CANVAS_X  + (this.eraseSize / 2),
         };
-        const drawings = canvas.querySelectorAll('image');
+        const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
+        const drawingPile = new Array();
         drawings.forEach((drawing) => {
             if ((this.intersects(drawing as SVGGElement) && (drawing.id !== 'selector')
                 && (drawing.id !== 'backgroundGrid') && (drawing.id !== ''))) {
-                canvas.removeChild(drawing);
+                    drawingPile.push(drawing);
             }
         });
+        for (let i = canvas.children.length - 1; i > 0; i--) {
+           // debugger
+            if (drawingPile.indexOf(canvas.children[i].id)) {
+                canvas.removeChild(canvas.children[i]);
+                return;
+            }
+        }
     }
 
     erase(canvas: SVGElement): void {
-        console.log("erasing")
+       // console.log("erasing")
         if (this.isMouseDown) {
         //     if (this.eraseZone != null) {
         //         const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
