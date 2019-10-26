@@ -34,6 +34,7 @@ import { GiveUpChangesDialogComponent } from './components/modals/give-up-change
 import { FilterByTags } from './components/modals/open-drawing-dialog/filter-by-tags.pipe';
 import {OpenDrawingDialogComponent} from './components/modals/open-drawing-dialog/open-drawing-dialog.component';
 import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
+import { UserManualDialogComponent } from './components/modals/user-manual-dialog/user-manual-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
 import {DemoMaterialModule} from './material.module';
 import {DrawingsService} from './services/back-end/drawings/drawings.service';
@@ -124,6 +125,7 @@ const customNotifierOptions: NotifierOptions = {
     GridComponent,
     OpenDrawingDialogComponent,
     FilterByTags,
+    UserManualDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -165,6 +167,7 @@ const customNotifierOptions: NotifierOptions = {
     ToolsAttributesBarComponent,
     ColorPickerDialogComponent,
     SaveDrawingDialogComponent,
+    UserManualDialogComponent,
     PencilToolsComponent,
     RectangleToolsComponent,
     LineToolsComponent,

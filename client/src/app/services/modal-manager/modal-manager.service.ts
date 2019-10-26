@@ -1,12 +1,16 @@
 import {Injectable, Renderer2} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import { OpenDrawingDialogComponent } from 'src/app/components/modals/open-drawing-dialog/open-drawing-dialog.component';
+import { UserManualDialogComponent } from 'src/app/components/modals/user-manual-dialog/user-manual-dialog.component';
 import {ColorPickerDialogComponent} from '../../components/modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 import {CreateDrawingDialogComponent} from '../../components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import {SaveDrawingDialogComponent} from '../../components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import {CreateDrawingFormValues} from '../../data-structures/CreateDrawingFormValues';
 import {ColorService} from '../tools/color/color.service';
 import {ToolManagerService} from '../tools/tool-manager/tool-manager.service';
+
+const USER_MANUAL_HEIGHT = '550px';
+const USER_MANUAL_WIDTH = '600px';
 
 export enum Color {
   primaryColor,
@@ -81,7 +85,11 @@ export class ModalManagerService {
   }
 
   showUserManualDialog(): void {
-    return;
+    this.dialog.open(UserManualDialogComponent, {
+      height: USER_MANUAL_HEIGHT,
+      width: USER_MANUAL_WIDTH,
+      data: {},
+    });
   }
 
 }
