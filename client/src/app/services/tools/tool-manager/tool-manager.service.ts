@@ -18,6 +18,7 @@ import { RectangleGeneratorService } from '../rectangle-generator/rectangle-gene
 export class ToolManagerService {
 
   private readonly DEFAULT_NUMBER_OF_ELEMENTS: number = 2;
+  private readonly DEFAULT_NUMBER_OF_DEFINITIONS: number = 7;
   private numberOfElements: number;
   private canvasElement: SVGElement;
   private activeTool: Tools;
@@ -240,12 +241,18 @@ export class ToolManagerService {
   }
 
   deleteAllDrawings(): void {
+    // Delete the elements
     this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
     for (let i = this.canvasElement.children.length - 1; i >= this.DEFAULT_NUMBER_OF_ELEMENTS ; i--) {
       this.canvasElement.children[i].remove();
     }
+    // Reset the definitions to its initial values
+    const defsElem = RendererSingleton.renderer.selectRootElement('#definitions', true);
+    for (let i = defsElem.children.length - 1; i >= this.DEFAULT_NUMBER_OF_DEFINITIONS ; i--) {
+      defsElem.children[i].remove();
+    }
+    // Reset the state of all counters
     this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
-    this.numberOfElements = 1;
     this.resetCounters();
   }
 
