@@ -101,7 +101,7 @@ export class OpenDrawingDialogComponent implements OnInit {
   private loadDrawingAndCloseDialog(drawing: Drawing) {
     this.toolManager.deleteAllDrawings();
     const svgCanvas = this.renderer.selectRootElement('#canvas', true);
-    svgCanvas.innerHTML += drawing.svgElements;
+    svgCanvas.innerHTML = drawing.svgElements;
     this.toolManager.synchronizeAllCounters();
     this.close();
   }

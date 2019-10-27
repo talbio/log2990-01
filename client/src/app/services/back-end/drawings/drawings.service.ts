@@ -54,9 +54,7 @@ export class DrawingsService {
 
   getSvgElements(): string {
     const svgCanvas: HTMLElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
-    const patternsEndDef = '</defs>';
-    const startIndex = svgCanvas.innerHTML.search(patternsEndDef) + patternsEndDef.length;
-    return svgCanvas.innerHTML.substring(startIndex);
+    return svgCanvas.innerHTML.substring(0);
   }
 
   getMiniature(): string {

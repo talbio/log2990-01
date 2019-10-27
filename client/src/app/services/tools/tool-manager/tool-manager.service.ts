@@ -395,6 +395,8 @@ export class ToolManagerService {
         case 'polyline':
           polylineCount += 1;
           break;
+        case 'image':
+          break;
         default:
           alert(`Untreated item ${childCast.nodeName}!`);
           break;
