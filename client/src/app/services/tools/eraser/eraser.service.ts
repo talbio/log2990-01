@@ -42,16 +42,15 @@ export class EraserService {
             }
         });
         for (let i = canvas.children.length - 1; i > 0; i--) {
-           // debugger
-            if (drawingPile.indexOf(canvas.children[i].id)) {
-                canvas.removeChild(canvas.children[i]);
+            const index = drawingPile.indexOf(canvas.children[i]);
+            if (index !== -1) {
+                canvas.removeChild(drawingPile[index]);
                 return;
             }
         }
     }
 
     erase(canvas: SVGElement): void {
-       // console.log("erasing")
         if (this.isMouseDown) {
         //     if (this.eraseZone != null) {
         //         const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
