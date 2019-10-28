@@ -1,7 +1,8 @@
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
-import { Injectable, Renderer2 } from '@angular/core';
+import { Injectable} from '@angular/core';
 import { PlotType } from '../../../data-structures/PlotType';
-import { RectangleGeneratorService } from './../rectangle-generator/rectangle-generator.service';
+import {RendererSingleton} from '../../renderer-singleton';
+import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
+import { MousePositionService } from './../../mouse-position/mouse-position.service';
 
 enum Axis {
   x,
@@ -15,7 +16,6 @@ export class EllipseGeneratorService {
 
   private currentEllipseNumber: number;
   private canvasElement: SVGElement;
-  private renderer: Renderer2;
   private mouseDown: boolean;
 
   // attributes of ellipse
@@ -31,8 +31,6 @@ export class EllipseGeneratorService {
   }
 
   // Getters/Setters
-  set _renderer(renderer: Renderer2) { this.renderer = renderer; }
-
   get _strokeWidth() { return this.strokeWidth; }
   set _strokeWidth(width: number) { this.strokeWidth = width; }
 
@@ -53,7 +51,7 @@ export class EllipseGeneratorService {
   updateCircle(canvas: SVGElement, currentChildPosition: number) {
     if (this.mouseDown) {
       this.rectangleGenerator.updateSquare(canvas, currentChildPosition);
-      const tempRect = this.renderer.selectRootElement(this.TEMP_RECT_ID, true);
+      const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
       const x: number = parseFloat(tempRect.getAttribute('x') as string);
       const y: number = parseFloat(tempRect.getAttribute('y') as string);
       const h: number = parseFloat(tempRect.getAttribute('height') as string);
@@ -67,7 +65,7 @@ export class EllipseGeneratorService {
   updateEllipse(canvas: SVGElement, currentChildPosition: number) {
     if (this.mouseDown) {
       this.rectangleGenerator.updateRectangle(canvas, currentChildPosition);
-      const tempRect = this.renderer.selectRootElement(this.TEMP_RECT_ID, true);
+      const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
       const x: number = parseFloat(tempRect.getAttribute('x') as string);
       const y: number = parseFloat(tempRect.getAttribute('y') as string);
       const w: number = parseFloat(tempRect.getAttribute('width') as string);
@@ -91,7 +89,7 @@ export class EllipseGeneratorService {
 
   finishEllipse() {
     if (this.mouseDown) {
-      this.canvasElement.removeChild(this.renderer.selectRootElement(this.TEMP_RECT_ID, true));
+      this.canvasElement.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
       this.currentEllipseNumber += 1;
       this.mouseDown = false;
     }

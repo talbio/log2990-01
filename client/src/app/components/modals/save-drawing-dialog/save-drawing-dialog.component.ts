@@ -1,9 +1,9 @@
-import {AfterViewInit, Component} from '@angular/core';
+import {AfterViewInit, Component, Renderer2} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef} from '@angular/material/dialog';
 import { NotifierService } from 'angular-notifier';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
-import {RendererLoaderService} from '../../../services/renderer-loader/renderer-loader.service';
+import {ModalManagerSingleton} from '../modal-manager-singleton';
 
 @Component({
   selector: 'app-save-drawing-dialog',
@@ -13,6 +13,7 @@ import {RendererLoaderService} from '../../../services/renderer-loader/renderer-
 export class SaveDrawingDialogComponent implements AfterViewInit {
 
   private static httpPosting: boolean;
+  private modalManagerSingleton = ModalManagerSingleton.getInstance();
 
   protected readonly NO_SPACES_REGEX = /^\S*$/;
   protected readonly ALPHA_NUMERIC_REGEX = '^[a-zA-Z0-9_]*$';
@@ -28,9 +29,9 @@ export class SaveDrawingDialogComponent implements AfterViewInit {
 
   constructor(private formBuilder: FormBuilder,
               private dialogRef: MatDialogRef<SaveDrawingDialogComponent>,
-              protected saveDrawing: DrawingsService,
+              private drawingsService: DrawingsService,
               private notifier: NotifierService,
-              private rendererLoader: RendererLoaderService) {
+              private renderer: Renderer2) {
     this.formGroup = this.formBuilder.group({
       name: ['', [
         Validators.pattern(this.ALPHA_NUMERIC_AND_SPACES_REGEX),
@@ -39,16 +40,17 @@ export class SaveDrawingDialogComponent implements AfterViewInit {
       tags: this.formBuilder.array([]),
     });
     this.httpPostDrawingFailed = false;
+    this.modalManagerSingleton._isModalActive = true;
   }
 
   ngAfterViewInit(): void {
     // set the miniature
-    const min = this.rendererLoader._renderer.selectRootElement('#min', true);
-    const canvas = this.rendererLoader._renderer.selectRootElement('#canvas', true);
+    const min = this.renderer.selectRootElement('#min', true);
+    const canvas = this.renderer.selectRootElement('#canvas', true);
     const width = canvas.getAttribute('width');
     const height = canvas.getAttribute('height');
     const viewBox = `0 0 ${width} ${height}`;
-    this.rendererLoader._renderer.setAttribute(min, 'viewBox', viewBox);
+    this.renderer.setAttribute(min, 'viewBox', viewBox);
     min.innerHTML = canvas.innerHTML;
   }
 
@@ -81,6 +83,7 @@ export class SaveDrawingDialogComponent implements AfterViewInit {
 
   close() {
     this.dialogRef.close();
+    this.modalManagerSingleton._isModalActive = false;
   }
 
   async submit() {
@@ -89,12 +92,12 @@ export class SaveDrawingDialogComponent implements AfterViewInit {
       tags.push(tagFormControl.tag);
     }
     SaveDrawingDialogComponent.httpPosting = true;
-    await this.saveDrawing.httpPostDrawing(this.name.value, tags)
+    await this.drawingsService.httpPostDrawing(this.name.value, tags)
       .then(
         (success: boolean) => {
           if (success) {
             this.notifier.notify('success', this.HTTP_POST_DRAWING_SUCCEEDED_MSG);
-            this.dialogRef.close();
+            this.close();
             return Promise.resolve();
           } else {
             return Promise.reject(success);

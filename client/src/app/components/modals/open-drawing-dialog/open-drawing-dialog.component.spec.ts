@@ -1,11 +1,10 @@
-import {Component, Renderer2} from '@angular/core';
+import {Component, Renderer2, Type} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {of} from 'rxjs';
 import {Drawing} from '../../../../../../common/communication/Drawing';
 import {DemoMaterialModule} from '../../../material.module';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
-import {RendererLoaderService} from '../../../services/renderer-loader/renderer-loader.service';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {DialogData} from '../create-drawing-dialog/create-drawing-dialog.component';
 import {FilterByTags} from './filter-by-tags.pipe';
@@ -21,20 +20,14 @@ const spyDialog: jasmine.SpyObj<MatDialogRef<OpenDrawingDialogComponent>> =
 spyDialog.close.and.callThrough();
 
 const toolManagerServiceSpy: jasmine.SpyObj<ToolManagerService> =
-  jasmine.createSpyObj('ToolManagerService', ['deleteAllDrawings']);
+  jasmine.createSpyObj('ToolManagerService', ['deleteAllDrawings', 'synchronizeAllCounters']);
 toolManagerServiceSpy.deleteAllDrawings.and.callThrough();
 
 const drawingsServiceSpy: jasmine.SpyObj<DrawingsService> =
   jasmine.createSpyObj('DrawingsService', ['httpPostDrawing', 'httpGetDrawings']);
 drawingsServiceSpy.httpGetDrawings.and.returnValue(of());
 
-const rendererSpy: jasmine.SpyObj<Renderer2> =
-  jasmine.createSpyObj('Renderer2', ['selectRootElement']);
-const rendererLoaderServiceSpy: jasmine.SpyObj<RendererLoaderService> =
-  jasmine.createSpyObj('RendererLoaderService', ['_renderer']);
-rendererLoaderServiceSpy._renderer = rendererSpy;
 const fakeCanvas = {innerHTML: ''};
-rendererSpy.selectRootElement.and.returnValue(fakeCanvas);
 
 class MockMatDialog {
   open(component: Component) {
@@ -57,18 +50,19 @@ fdescribe('OpenDrawingDialogComponent', () => {
       declarations: [OpenDrawingDialogComponent, FilterByTags],
       imports: [DemoMaterialModule],
       providers: [
+        Renderer2,
         {provide: MatDialogRef, useValue: spyDialog},
         {provide: ToolManagerService, useValue: toolManagerServiceSpy},
         {provide: DrawingsService, useValue: drawingsServiceSpy},
-        {provide: RendererLoaderService, useValue: rendererLoaderServiceSpy},
         {provide: MatDialog, useValue: mockMatDialog},
         {provide: MAT_DIALOG_DATA, useValue: mockDialogData},
       ],
-    })
-      .compileComponents().then(() => {
-      fixture = TestBed.createComponent(OpenDrawingDialogComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+    }).compileComponents().then(() => {
+        fixture = TestBed.createComponent(OpenDrawingDialogComponent);
+        const renderer = fixture.componentRef.injector.get<Renderer2>(Renderer2 as Type<Renderer2>);
+        spyOn(renderer, 'selectRootElement').and.returnValue(fakeCanvas);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
   }));
 

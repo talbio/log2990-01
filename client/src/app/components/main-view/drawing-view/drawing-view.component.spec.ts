@@ -1,8 +1,8 @@
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2 } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2} from '@angular/core';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSliderChange } from '@angular/material';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
@@ -42,8 +42,9 @@ class WelcomeModalStubComponent { }
 
 const rendererSpy: jasmine.SpyObj<Renderer2> =
   jasmine.createSpyObj('Renderer2', ['selectRootElement']);
+
 const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =
-  jasmine.createSpyObj('ModalManagerService', ['showCreateDrawingDialog', 'loadRenderer']);
+  jasmine.createSpyObj('ModalManagerService', ['showCreateDrawingDialog']);
 const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['get', 'post']);
 
@@ -1504,7 +1505,7 @@ fdescribe('DrawingViewComponent', () => {
     const y: number = parseFloat(tempRect.getAttribute('y') as string);
     console.log(x);
     console.log(y);
-    console.log(x+w);
+    console.log(x + w);
 
     let widestLeftPoint = points[0];
     let widestRightPoint = points[0];

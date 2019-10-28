@@ -1,11 +1,10 @@
 import {COMMA, ENTER, SPACE} from '@angular/cdk/keycodes';
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
 import { Drawing } from '../../../../../../common/communication/Drawing';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
-import {RendererLoaderService} from '../../../services/renderer-loader/renderer-loader.service';
 import {GiveUpChangesDialogComponent} from '../give-up-changes-dialog/give-up-changes-dialog.component';
 import { ModalManagerSingleton } from '../modal-manager-singleton';
 
@@ -30,8 +29,8 @@ export class OpenDrawingDialogComponent implements OnInit {
   constructor(private dialogRef: MatDialogRef<OpenDrawingDialogComponent>,
               private toolManager: ToolManagerService,
               private drawingsService: DrawingsService,
-              private rendererLoadService: RendererLoaderService,
               private dialog: MatDialog,
+              private renderer: Renderer2,
               @Inject(MAT_DIALOG_DATA) private data: DialogData) {
 
     this.modalManagerSingleton._isModalActive = true;
@@ -95,14 +94,13 @@ export class OpenDrawingDialogComponent implements OnInit {
   }
 
   protected setMiniature(index: number): void {
-    const miniature = this.rendererLoadService._renderer.selectRootElement('#miniature' + index);
-    this.rendererLoadService
-      ._renderer.setAttribute(miniature, 'src', 'data:image/svg+xml;base64,' + window.btoa(this.drawings[index].miniature));
+    const miniature = this.renderer.selectRootElement('#miniature' + index);
+    this.renderer.setAttribute(miniature, 'src', 'data:image/svg+xml;base64,' + window.btoa(this.drawings[index].miniature));
   }
 
   private loadDrawingAndCloseDialog(drawing: Drawing) {
     this.toolManager.deleteAllDrawings();
-    const svgCanvas = this.rendererLoadService._renderer.selectRootElement('#canvas', true);
+    const svgCanvas = this.renderer.selectRootElement('#canvas', true);
     svgCanvas.innerHTML += drawing.svgElements;
     this.toolManager.synchronizeAllCounters();
     this.close();

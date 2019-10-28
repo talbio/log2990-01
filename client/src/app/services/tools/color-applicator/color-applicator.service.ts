@@ -1,14 +1,17 @@
-import { Injectable, Renderer2 } from '@angular/core';
-import { BrushGeneratorService } from './../brush-generator/brush-generator.service';
-import { LineGeneratorService } from './../line-generator/line-generator.service';
+import { Injectable } from '@angular/core';
+import {RendererSingleton} from '../../renderer-singleton';
+import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
+import { LineGeneratorService } from '../line-generator/line-generator.service';
 
 @Injectable()
 export class ColorApplicatorService {
-  private renderer: Renderer2;
-  constructor(private lineGenerator: LineGeneratorService, private brushGenerator: BrushGeneratorService) {}
+
+  constructor(private lineGenerator: LineGeneratorService,
+              private brushGenerator: BrushGeneratorService) {
+  }
 
   changePrimaryColor(targetObject: SVGElement, newColor: string) {
-    const defs = this.renderer.selectRootElement('#definitions', true);
+    const defs = RendererSingleton.renderer.selectRootElement('#definitions', true);
     switch (targetObject.nodeName) {
 
       case 'rect':
@@ -63,7 +66,7 @@ export class ColorApplicatorService {
   }
 
   changeSecondaryColor(targetObject: SVGElement, newColor: string) {
-    const defs = this.renderer.selectRootElement('#definitions', true);
+    const defs = RendererSingleton.renderer.selectRootElement('#definitions', true);
     switch (targetObject.nodeName) {
       case 'rect':
         // Rectangle
@@ -103,8 +106,5 @@ export class ColorApplicatorService {
         alert('Object is of type ' + targetObject.nodeName + ' and this case is not treated!');
         break;
     }
-  }
-  set _renderer(rend: Renderer2) {
-    this.renderer = rend;
   }
 }

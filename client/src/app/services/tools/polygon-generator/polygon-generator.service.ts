@@ -1,6 +1,7 @@
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
-import { Injectable, Renderer2 } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { PlotType } from '../../../data-structures/PlotType';
+import { MousePositionService } from '../../mouse-position/mouse-position.service';
+import { RendererSingleton } from '../../renderer-singleton';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 
 @Injectable()
@@ -11,7 +12,7 @@ export class PolygonGeneratorService {
   private currentPolygonNumber: number;
   private mouseDown: boolean;
   private canvasElement: SVGElement;
-  private renderer: Renderer2;
+  // private RendererSingleton.renderer: RendererSingleton.renderer2;
 
   // attributes of polygon
   private strokeWidth: number;
@@ -20,7 +21,7 @@ export class PolygonGeneratorService {
   private angleBetweenVertex: number;
   private currentPolygonID: string;
   private aspectRatio: number;
-  private adjustment: number[];
+  private readonly adjustment: number[];
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private mousePosition: MousePositionService,) {
@@ -32,11 +33,10 @@ export class PolygonGeneratorService {
     this.plotType = PlotType.Contour;
     this.currentPolygonNumber = 0;
     this.mouseDown = false;
+    // RendererSingleton.renderer = RendererSingleton.rendererSingleton.RendererSingleton.renderer;
   }
 
   // Getters/Setters
-  set _renderer(renderer: Renderer2) { this.renderer = renderer; }
-
   get _aspectRatio() { return this.aspectRatio; }
 
   get _strokeWidth() { return this.strokeWidth; }
@@ -67,7 +67,7 @@ export class PolygonGeneratorService {
 
   updatePolygon(canvas: SVGElement, currentPolygonNumber: number) {
     if (this.mouseDown) {
-      const currentPolygon = this.renderer.selectRootElement(this.currentPolygonID, true);
+      const currentPolygon = RendererSingleton.renderer.selectRootElement(this.currentPolygonID, true);
       this.rectangleGenerator.updateRectangle(canvas, currentPolygonNumber);
       const radius: number = this.determineRadius();
       const center: number[] = this.determineCenter(radius);
@@ -79,7 +79,7 @@ export class PolygonGeneratorService {
   finishPolygon() {
     if (this.mouseDown) {
       // Remove the rectangle
-      this.canvasElement.removeChild(this.renderer.selectRootElement(this.TEMP_RECT_ID, true));
+      this.canvasElement.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
       this.currentPolygonNumber += 1;
       this.mouseDown = false;
     }
@@ -122,7 +122,7 @@ export class PolygonGeneratorService {
   }
 
   determineRadius(): number {
-    const tempRect = this.renderer.selectRootElement(this.TEMP_RECT_ID, true);
+    const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
     const h: number = parseFloat(tempRect.getAttribute('height') as string);
     const w: number = parseFloat(tempRect.getAttribute('width') as string);
     if ((w / h) <= this.aspectRatio) {
@@ -145,7 +145,7 @@ export class PolygonGeneratorService {
   }
 
   determineCenter(radius: number): number[] {
-    const tempRect = this.renderer.selectRootElement(this.TEMP_RECT_ID, true);
+    const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
     const h: number = parseFloat(tempRect.getAttribute('height') as string);
     const w: number = parseFloat(tempRect.getAttribute('width') as string);
     const x: number = parseFloat(tempRect.getAttribute('x') as string);
