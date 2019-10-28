@@ -8,12 +8,10 @@ const STROKE_COLOR = Colors.BLACK;
 @Injectable()
 export class ObjectSelectorService {
 
-  private OFFSET_CANVAS_Y: number;
-  private OFFSET_CANVAS_X: number;
   private mouseDownSelector: boolean;
   private mouseDownTranslation: boolean;
   private currentRect: Element;
-  private SVGArray: SVGElement[] = new Array();
+  SVGArray: SVGElement[] = new Array();
   private isSelectorVisible: boolean;
   private initialX: number;
   private initialY: number;
@@ -22,23 +20,20 @@ export class ObjectSelectorService {
     this.mouseDownSelector = false;
   }
 
-  createSelectorRectangle(mouseEvent: MouseEvent, canvas: SVGElement) {
-
-    this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
+  createSelectorRectangle(canvas: SVGElement) {
 
     canvas.innerHTML +=
       `<rect id="selector"
-            x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-            data-start-x = "${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-            y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
-            data-start-y = "${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+            x="${this.mousePosition.canvasMousePositionX}"
+            data-start-x = "${this.mousePosition.canvasMousePositionX}"
+            y="${this.mousePosition.canvasMousePositionY}"
+            data-start-y = "${this.mousePosition.canvasMousePositionY}"
             width = "0" height = "0" stroke="${STROKE_COLOR}" stroke-dasharray = "${DASHED_LINE_VALUE}"
             fill="transparent"></rect>`;
     this.mouseDownSelector = true;
   }
 
-  updateSelectorRectangle(mouseEvent: MouseEvent, canvas: SVGElement) {
+  updateSelectorRectangle(canvas: SVGElement) {
 
     if (this.mouseDownSelector) {
       this.currentRect = canvas.querySelector('#selector') as Element;
@@ -46,19 +41,19 @@ export class ObjectSelectorService {
         this.isSelectorVisible = true;
         const startRectX: number = Number(this.currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(this.currentRect.getAttribute('data-start-y'));
-        const actualWidth: number = (mouseEvent.pageX - this.OFFSET_CANVAS_X) - startRectX;
-        const actualHeight: number = (mouseEvent.pageY - this.OFFSET_CANVAS_Y) - startRectY;
+        const actualWidth: number = this.mousePosition.canvasMousePositionX - startRectX;
+        const actualHeight: number = this.mousePosition.canvasMousePositionY - startRectY;
         if (actualWidth >= 0) {
           this.currentRect.setAttribute('width', '' + actualWidth);
         } else {
           this.currentRect.setAttribute('width', '' + Math.abs(actualWidth));
-          this.currentRect.setAttribute('x', '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X));
+          this.currentRect.setAttribute('x', '' + this.mousePosition.canvasMousePositionX);
         }
         if (actualHeight >= 0) {
           this.currentRect.setAttribute('height', '' + actualHeight);
         } else {
           this.currentRect.setAttribute('height', '' + Math.abs(actualHeight));
-          this.currentRect.setAttribute('y', '' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
+          this.currentRect.setAttribute('y', '' + this.mousePosition.canvasMousePositionY);
         }
       }
       this.selectItems(canvas);
@@ -147,12 +142,12 @@ export class ObjectSelectorService {
     this.initialY = box.top;
   }
 
-  translate(mouseEvent: MouseEvent): void {
+  translate(): void {
     if (this.mouseDownTranslation) {
       const group = document.querySelector('#box');
       const box = (group as Element).getBoundingClientRect();
-      (group as Element).setAttribute('x', '' + (mouseEvent.x - this.initialX - (box.width / 2)));
-      (group as Element).setAttribute('y', '' + (mouseEvent.y - this.initialY - (box.height / 2)));
+      (group as Element).setAttribute('x', '' + (this.mousePosition.canvasMousePositionX - this.initialX - (box.width / 2)));
+      (group as Element).setAttribute('y', '' + (this.mousePosition.canvasMousePositionY - this.initialY - (box.height / 2)));
     }
   }
 

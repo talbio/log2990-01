@@ -63,27 +63,27 @@ export class ToolManagerService {
     switch (this._activeTool) {
       case Tools.Rectangle:
         this.rectangleGenerator
-          .createRectangle(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+          .createRectangle(canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Pencil:
-        this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getSecondaryColor());
+        this.pencilGenerator.createPenPath(canvas, this.colorService.getSecondaryColor());
         break;
       case Tools.Brush:
         this.brushGenerator
-          .createBrushPath(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+          .createBrushPath(canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Selector:
-        this.objectSelector.createSelectorRectangle(mouseEvent, canvas);
+        this.objectSelector.createSelectorRectangle(canvas);
         break;
       case Tools.Ellipse:
         this.ellipseGenerator
-          .createEllipse(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+          .createEllipse(canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Stamp:
-        this.emojiGenerator.addEmoji(mouseEvent, canvas);
+        this.emojiGenerator.addEmoji(canvas);
         break;
       case Tools.Polygon:
-        this.polygonGenerator.createPolygon(mouseEvent, canvas, this.colorService.getSecondaryColor(),
+        this.polygonGenerator.createPolygon(canvas, this.colorService.getSecondaryColor(),
           this.colorService.getPrimaryColor());
         break;
       default:
@@ -96,39 +96,33 @@ export class ToolManagerService {
     switch (this._activeTool) {
       case Tools.Rectangle:
         if (mouseEvent.shiftKey) {
-          this.rectangleGenerator.updateSquare(this.mousePosition._canvasMousePositionX,
-            this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+          this.rectangleGenerator.updateSquare(canvas, this.numberOfElements);
         } else {
-          this.rectangleGenerator.updateRectangle(this.mousePosition._canvasMousePositionX,
-            this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+          this.rectangleGenerator.updateRectangle(canvas, this.numberOfElements);
         }
         break;
       case Tools.Pencil:
-        this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
+        this.pencilGenerator.updatePenPath(canvas, this.numberOfElements);
         break;
       case Tools.Brush:
-        this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
+        this.brushGenerator.updateBrushPath(canvas, this.numberOfElements);
         break;
       case Tools.Selector:
-        this.objectSelector.updateSelectorRectangle(mouseEvent, canvas);
+        this.objectSelector.updateSelectorRectangle(canvas);
         this.updateNumberOfElements();
         break;
       case Tools.Line:
-        this.lineGenerator.updateLine(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+        this.lineGenerator.updateLine(canvas, this.numberOfElements);
         break;
       case Tools.Ellipse:
         if (mouseEvent.shiftKey) {
-          this.ellipseGenerator.updateCircle(this.mousePosition._canvasMousePositionX,
-            this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+          this.ellipseGenerator.updateCircle(canvas, this.numberOfElements);
         } else {
-          this.ellipseGenerator.updateEllipse(this.mousePosition._canvasMousePositionX,
-            this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+          this.ellipseGenerator.updateEllipse(canvas, this.numberOfElements);
         }
         break;
       case Tools.Polygon:
-        this.polygonGenerator.updatePolygon(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+        this.polygonGenerator.updatePolygon(canvas, this.numberOfElements);
         break;
       default:
         return;
@@ -167,8 +161,7 @@ export class ToolManagerService {
         this.colorApplicator.changePrimaryColor(clickedElement, this.colorService.getPrimaryColor());
         break;
       case Tools.Line:
-        this.lineGenerator.makeLine(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, canvas, this.colorService.getSecondaryColor(),
+        this.lineGenerator.makeLine(canvas, this.colorService.getSecondaryColor(),
             this.numberOfElements);
         break;
       case Tools.Eyedropper:
@@ -215,13 +208,11 @@ export class ToolManagerService {
     switch (this._activeTool) {
       case Tools.Rectangle:
         // change into square
-        this.rectangleGenerator.updateSquare(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
+        this.rectangleGenerator.updateSquare(this.canvasElement, this.numberOfElements);
         break;
       case Tools.Ellipse:
         // change into circle
-        this.ellipseGenerator.updateCircle(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
+        this.ellipseGenerator.updateCircle(this.canvasElement, this.numberOfElements);
         break;
       default:
         return;
@@ -233,13 +224,11 @@ export class ToolManagerService {
     switch (this._activeTool) {
       case Tools.Rectangle:
         // change into rectangle
-        this.rectangleGenerator.updateRectangle(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
+        this.rectangleGenerator.updateRectangle(this.canvasElement, this.numberOfElements);
         break;
       case Tools.Ellipse:
         // change into ellipse
-        this.ellipseGenerator.updateEllipse(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
+        this.ellipseGenerator.updateEllipse(this.canvasElement, this.numberOfElements);
         break;
       default:
         return;
@@ -279,14 +268,14 @@ export class ToolManagerService {
   selectorMouseDown(): void {
     const selectorBox = this.canvasElement.querySelector('#boxrect') as SVGGElement;
     const box = selectorBox.getBBox();
-    if (this.mousePosition._canvasMousePositionX < box.x || this.mousePosition._canvasMousePositionX > (box.x + box.width)
-      || this.mousePosition._canvasMousePositionY < box.y || this.mousePosition._canvasMousePositionY > (box.y + box.height)) {
+    if (this.mousePosition.canvasMousePositionX < box.x || this.mousePosition.canvasMousePositionX > (box.x + box.width)
+      || this.mousePosition.canvasMousePositionY < box.y || this.mousePosition.canvasMousePositionY > (box.y + box.height)) {
         this.removeSelector();
     } else { this.objectSelector.startTranslation(); }
   }
 
-  translate(mouseEvent: MouseEvent): void {
-    this.objectSelector.translate(mouseEvent);
+  translate(): void {
+    this.objectSelector.translate();
   }
 
   finishTranslation(): void {
@@ -315,8 +304,7 @@ export class ToolManagerService {
       case Tools.Line:
         this.canvasElement = this.renderer.selectRootElement('#canvas', true);
         this.lineGenerator.deleteLine(this.canvasElement, this.numberOfElements);
-        this.lineGenerator.updateLine(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
+        this.lineGenerator.updateLine(this.canvasElement, this.numberOfElements);
         break;
       default:
         return;

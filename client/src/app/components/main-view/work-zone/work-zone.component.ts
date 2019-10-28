@@ -80,7 +80,7 @@ export class WorkZoneComponent implements OnInit, AfterViewInit {
 
   onMouseMove(mouseEvent: MouseEvent) {
     if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
-      this.toolManager.translate(mouseEvent);
+      this.toolManager.translate();
     } else {this.toolManager.updateElement(mouseEvent, this.canvasElement); }
   }
 

@@ -1,11 +1,10 @@
+import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import {Injectable} from '@angular/core';
 import {PlotType} from '../../../data-structures/PlotType';
 
 @Injectable()
 export class RectangleGeneratorService {
 
-  private OFFSET_CANVAS_Y: number;
-  private OFFSET_CANVAS_X: number;
   private currentRectNumber: number;
   private mouseDown: boolean;
 
@@ -13,7 +12,7 @@ export class RectangleGeneratorService {
   private strokeWidth: number;
   private plotType: PlotType;
 
-  constructor() {
+  constructor(private mouse: MousePositionService) {
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.currentRectNumber = 0;
@@ -38,39 +37,36 @@ export class RectangleGeneratorService {
     this.plotType = plotType;
   }
 
-  createRectangle(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
-
-    this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
-
+  // createRectangle(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
+  createRectangle(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
     switch (this.plotType) {
       case PlotType.Contour:
         canvas.innerHTML +=
         `<rect id="rect${this.currentRectNumber}"
-        x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        data-start-x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
-        data-start-y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+        x="${this.mouse.canvasMousePositionX}"
+        data-start-x="${this.mouse.canvasMousePositionX}"
+        y="${this.mouse.canvasMousePositionY}"
+        data-start-y="${this.mouse.canvasMousePositionY}"
         width="0" height="0" stroke="${secondaryColor}" stroke-width="${this.strokeWidth}"
         fill="transparent"></rect>`;
         break;
       case PlotType.Full:
         canvas.innerHTML +=
         `<rect id="rect${this.currentRectNumber}"
-        x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        data-start-x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
-        data-start-y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+        x="${this.mouse.canvasMousePositionX}"
+        data-start-x="${this.mouse.canvasMousePositionX}"
+        y="${this.mouse.canvasMousePositionY}"
+        data-start-y="${this.mouse.canvasMousePositionY}"
         width = "0" height = "0" stroke="transparent" stroke-width="${this.strokeWidth}"
         fill="${primaryColor}"></rect>`;
         break;
       case PlotType.FullWithContour:
         canvas.innerHTML +=
         `<rect id="rect${this.currentRectNumber}"
-        x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        data-start-x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
-        data-start-y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
+        x="${this.mouse.canvasMousePositionX}"
+        data-start-x="${this.mouse.canvasMousePositionX}"
+        y="${this.mouse.canvasMousePositionY}"
+        data-start-y="${this.mouse.canvasMousePositionY}"
         width="0" height="0" stroke="${secondaryColor}" stroke-width="${this.strokeWidth}"
         fill="${primaryColor}"></rect>`;
         break;
@@ -78,14 +74,14 @@ export class RectangleGeneratorService {
     this.mouseDown = true;
   }
 
-  updateSquare(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
+  updateSquare(canvas: SVGElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentRect = canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
-        const actualWidth: number = canvasPosX - startRectX;
-        const actualHeight: number = canvasPosY - startRectY;
+        const actualWidth: number = this.mouse.canvasMousePositionX - startRectX;
+        const actualHeight: number = this.mouse.canvasMousePositionY - startRectY;
         if (actualWidth >= 0) {
           if (Math.abs(actualHeight) > Math.abs(actualWidth)) {
             // height is bigger
@@ -98,11 +94,11 @@ export class RectangleGeneratorService {
           if (Math.abs(actualHeight) > Math.abs(actualWidth)) {
             // height is bigger
             currentRect.setAttribute('width', '' + Math.abs(actualHeight));
-            currentRect.setAttribute('x', '' + (canvasPosX + Math.abs(actualWidth) - Math.abs(actualHeight)));
+            currentRect.setAttribute('x', '' + (this.mouse.canvasMousePositionX + Math.abs(actualWidth) - Math.abs(actualHeight)));
           } else {
             // width is bigger, act normal
             currentRect.setAttribute('width', '' + Math.abs(actualWidth));
-            currentRect.setAttribute('x', '' + canvasPosX);
+            currentRect.setAttribute('x', '' + this.mouse.canvasMousePositionX);
           }
         }
         if (actualHeight >= 0) {
@@ -117,36 +113,36 @@ export class RectangleGeneratorService {
           if (Math.abs(actualWidth) > Math.abs(actualHeight)) {
             // width is bigger
             currentRect.setAttribute('height', '' + Math.abs(actualWidth));
-            currentRect.setAttribute('y', '' + (canvasPosY + Math.abs(actualHeight) - Math.abs(actualWidth)));
+            currentRect.setAttribute('y', '' + (this.mouse.canvasMousePositionY + Math.abs(actualHeight) - Math.abs(actualWidth)));
           } else {
             // height is bigger, act normal
             currentRect.setAttribute('height', '' + Math.abs(actualHeight));
-            currentRect.setAttribute('y', '' + canvasPosY);
+            currentRect.setAttribute('y', '' + this.mouse.canvasMousePositionY);
           }
         }
       }
     }
   }
 
-  updateRectangle(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
+  updateRectangle(canvas: SVGElement, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentRect = canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
-        const actualWidth: number = canvasPosX - startRectX;
-        const actualHeight: number = canvasPosY - startRectY;
+        const actualWidth: number = this.mouse.canvasMousePositionX - startRectX;
+        const actualHeight: number = this.mouse.canvasMousePositionY - startRectY;
         if (actualWidth >= 0) {
           currentRect.setAttribute('width', '' + actualWidth);
         } else {
           currentRect.setAttribute('width', '' + Math.abs(actualWidth));
-          currentRect.setAttribute('x', '' + canvasPosX);
+          currentRect.setAttribute('x', '' + this.mouse.canvasMousePositionX);
         }
         if (actualHeight >= 0) {
           currentRect.setAttribute('height', '' + actualHeight);
         } else {
           currentRect.setAttribute('height', '' + Math.abs(actualHeight));
-          currentRect.setAttribute('y', '' + canvasPosY);
+          currentRect.setAttribute('y', '' + this.mouse.canvasMousePositionY);
         }
       }
     }
@@ -157,5 +153,23 @@ export class RectangleGeneratorService {
       this.currentRectNumber += 1;
       this.mouseDown = false;
     }
+  }
+
+  clone(item: SVGElement): string {
+    const x = parseFloat(item.getAttribute('x') as unknown as string) + 10;
+    const y = parseFloat(item.getAttribute('y') as unknown as string) + 10;
+    const h = parseFloat(item.getAttribute('height') as unknown as string);
+    const w = parseFloat(item.getAttribute('width') as unknown as string);
+    const color1 = item.getAttribute('fill');
+    const color2 = item.getAttribute('stroke');
+    const strokeWidth = item.getAttribute('stroke-width');
+    const newItem =
+        `<rect id="rect${this.currentRectNumber}"
+        x="${x}" data-start-x="${x}"
+        y="${y}" data-start-y="${y}"
+        width="${w}" height="${h}" stroke="${color2}" stroke-width="${strokeWidth}"
+        fill="${color1}"></rect>`;
+    this.currentRectNumber++;
+    return newItem;
   }
 }

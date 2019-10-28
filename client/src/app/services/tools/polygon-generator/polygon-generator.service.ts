@@ -1,3 +1,4 @@
+import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import { Injectable, Renderer2 } from '@angular/core';
 import { PlotType } from '../../../data-structures/PlotType';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
@@ -7,8 +8,6 @@ export class PolygonGeneratorService {
 
   private readonly TEMP_RECT_ID = '#tempRect';
 
-  private OFFSET_CANVAS_Y: number;
-  private OFFSET_CANVAS_X: number;
   private currentPolygonNumber: number;
   private mouseDown: boolean;
   private canvasElement: SVGElement;
@@ -23,7 +22,8 @@ export class PolygonGeneratorService {
   private aspectRatio: number;
   private adjustment: number[];
 
-  constructor(private rectangleGenerator: RectangleGeneratorService) {
+  constructor(private rectangleGenerator: RectangleGeneratorService,
+              private mousePosition: MousePositionService,) {
     this.adjustment = [0, 0];
     this.aspectRatio = 0;
     this.nbOfApex = 3;
@@ -51,26 +51,24 @@ export class PolygonGeneratorService {
   set _currentPolygonNumber(polygonNumber: number) { this.currentPolygonNumber = polygonNumber; }
 
   // First layer functions
-  createPolygon(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
+  createPolygon(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
 
     // Setup of the service's parameters
     this.canvasElement = canvas;
-    this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
     this.setUpAttributes();
 
     // Setup of the children's HTML in canvas
-    this.injectInitialHTML(mouseEvent, canvas, primaryColor, secondaryColor);
+    this.injectInitialHTML(canvas, primaryColor, secondaryColor);
     this.currentPolygonID = '#polygon' + this.currentPolygonNumber;
-    this.createTemporaryRectangle(mouseEvent, canvas, primaryColor, secondaryColor);
+    this.createTemporaryRectangle(canvas, primaryColor, secondaryColor);
     this.mouseDown = true;
     return true;
   }
 
-  updatePolygon(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentPolygonNumber: number) {
+  updatePolygon(canvas: SVGElement, currentPolygonNumber: number) {
     if (this.mouseDown) {
       const currentPolygon = this.renderer.selectRootElement(this.currentPolygonID, true);
-      this.rectangleGenerator.updateRectangle(canvasPosX, canvasPosY, canvas, currentPolygonNumber);
+      this.rectangleGenerator.updateRectangle(canvas, currentPolygonNumber);
       const radius: number = this.determineRadius();
       const center: number[] = this.determineCenter(radius);
       const newPoints = this.determinePolygonVertex(center, radius);
@@ -88,8 +86,8 @@ export class PolygonGeneratorService {
   }
 
   // Second layer functions
-  injectInitialHTML(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
-    const point = '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) + ',' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y);
+  injectInitialHTML(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
+    const point = '' + this.mousePosition.canvasMousePositionX + ',' + this.mousePosition.canvasMousePositionY;
     const points = point + ' ' + point + ' ' + point;
     switch (this.plotType) {
       case PlotType.Contour:
@@ -116,9 +114,9 @@ export class PolygonGeneratorService {
     }
   }
 
-  createTemporaryRectangle(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
+  createTemporaryRectangle(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
     this.rectangleGenerator._plotType = PlotType.Contour;
-    this.rectangleGenerator.createRectangle(mouseEvent, canvas, 'black', 'black');
+    this.rectangleGenerator.createRectangle(canvas, 'black', 'black');
     canvas.children[canvas.children.length - 1].id = 'tempRect';
     canvas.children[canvas.children.length - 1].setAttribute('stroke-dasharray', '4');
   }
@@ -187,7 +185,6 @@ export class PolygonGeneratorService {
       const cosMax = Math.cos(this.angleBetweenVertex / 2);
       this.adjustment[0] = 1 / cosMax;
       this.aspectRatio = 1;
-      // if r = 1...
     } else if (this.nbOfApex % 2 === 0) {
       const sinMax = Math.sin((Math.PI / 2) + this.angleBetweenVertex / 2);
       const xAspect = 2;
@@ -208,9 +205,34 @@ export class PolygonGeneratorService {
       this.aspectRatio = xAspect / yAspect;
       this.adjustment[0] = 1 / yAspect;
       this.adjustment[1] = 1 / xAspect;
-      // si plus grand que ratio => x est trop grand
-      // const r = 1 / yAspect;
-      // const r = this.adjustment;
+    }
+  }
+
+  clone(item: SVGElement): string {
+    const color1 = item.getAttribute('fill');
+    const color2 = item.getAttribute('stroke');
+    const strokeWidth = item.getAttribute('stroke-width');
+    const currentPolygon = item.getAttribute('points');
+    let points: string[];
+    if (currentPolygon !== null) {
+      points = currentPolygon.split(' ');
+      // Slightly displacing each point
+      for (let point of points) {
+        const xAndY = point.split(',', 2);
+        xAndY[0] = (parseFloat(xAndY[0]) + 10) as unknown as string;
+        xAndY[1] = (parseFloat(xAndY[1]) + 10) as unknown as string;
+        point = '' + xAndY[0] + ',' + xAndY[1];
+      }
+      const newItem =
+        `<polygon id="polygon${this.currentPolygonNumber}"
+        points="${points}"
+        stroke="${color2}" stroke-width="${strokeWidth}"
+        fill="${color1}"></polygon>`;
+      this.currentPolygonNumber++;
+      return newItem;
+    } else {
+      console.log('cannot recognize "points" in html of ' + item.id);
+      return 'to discard';
     }
   }
 }

@@ -1,3 +1,4 @@
+import { MousePositionService } from './../../mouse-position/mouse-position.service';
 
 export enum Emojis {
     NONE = '',
@@ -25,14 +26,13 @@ export class EmojiGeneratorService {
         Emojis.TURKEY,
         Emojis.PUMPKIN];
     private currentEmojiNumber: number;
-    private OFFSET_CANVAS_X: number;
     private width = 100;
     private height = 100;
     private angle: number;
     private scalingFactor: number;
     private rotationStep: number;
 
-    constructor() {
+    constructor(private mousePosition: MousePositionService) {
         this.emoji = Emojis.SMILEY;
         this.angle = MIN_ROTATION_ANGLE;
         this.scalingFactor = DEFAULT_SCALING_FACTOR;
@@ -76,15 +76,14 @@ export class EmojiGeneratorService {
         this.rotationStep = step;
     }
 
-    addEmoji(mouseEvent: MouseEvent, canvas: SVGElement) {
+    addEmoji(canvas: SVGElement) {
         if (this.emoji !== '') {
-            this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
             canvas.innerHTML +=
                 `<image id="emoji${this.currentEmojiNumber}"
-                x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X - (this.width * this.scalingFactor / 2))}" 
-                y="${(mouseEvent.pageY) - (this.height * this.scalingFactor / 2)}"
+                x="${(this.mousePosition.canvasMousePositionX - (this.width * this.scalingFactor / 2))}"
+                y="${this.mousePosition.canvasMousePositionY - (this.height * this.scalingFactor / 2)}"
         xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
-        transform="rotate(${this.angle} ${mouseEvent.pageX - this.OFFSET_CANVAS_X} ${(mouseEvent.pageY)})"
+        transform="rotate(${this.angle} ${this.mousePosition.canvasMousePositionX} ${this.mousePosition.canvasMousePositionY})"
         />`;
             this.currentEmojiNumber ++;
         }
@@ -107,4 +106,18 @@ export class EmojiGeneratorService {
         this.rotationStep = MAX_ROTATION_STEP;
     }
 
+    clone(item: SVGElement): string {
+      const x = parseFloat(item.getAttribute('x') as unknown as string) + 10;
+      const y = parseFloat(item.getAttribute('y') as unknown as string) + 10;
+      const h = parseFloat(item.getAttribute('height') as unknown as string);
+      const w = parseFloat(item.getAttribute('width') as unknown as string);
+      const angle = item.getAttribute('transform');
+      const newItem =
+        `<image id="emoji${this.currentEmojiNumber}"
+        x="${x}" y="${y}" xlink:href="${this.emoji}"
+        width="${w}" height="${h}"
+        transform="${angle}"/>`;
+      this.currentEmojiNumber++;
+      return newItem;
+    }
 }

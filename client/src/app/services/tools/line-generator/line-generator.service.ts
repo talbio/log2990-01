@@ -1,3 +1,4 @@
+import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import { Injectable, Renderer2 } from '@angular/core';
 import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
 
@@ -30,7 +31,7 @@ export class LineGeneratorService {
   private lineJoinStyle: LineJoinStyle;
   private lineDashStyle: LineDashStyle;
 
-  constructor() {
+  constructor(private mousePosition: MousePositionService) {
     this.strokeWidth = this.DEFAULT_WIDTH;
     this.currentPolylineNumber = 0;
     this.markerDiameter = this.DEFAULT_DIAMETER;
@@ -115,7 +116,7 @@ export class LineGeneratorService {
   set _currentPolylineNumber(count: number) { this.currentPolylineNumber = count; }
 
   // Initializes the path
-  makeLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, primaryColor: string, currentChildPosition: number) {
+  makeLine(canvas: SVGElement, primaryColor: string, currentChildPosition: number) {
     if (!this.isMakingLine) {
       // Initiate the line
       canvas.innerHTML +=
@@ -126,42 +127,42 @@ export class LineGeneratorService {
       stroke-dasharray="${this.dashArray}"
       fill="none"
       stroke-linejoin="${this.lineJoin}"
-      points="${canvasPosX},${canvasPosY}">
+      points="${this.mousePosition.canvasMousePositionX},${this.mousePosition.canvasMousePositionY}">
       </polyline>`;
 
       this.createMarkers(primaryColor);
 
       this.isMakingLine = true;
-      this.currentPolyineStartX = canvasPosX;
-      this.currentPolyineStartY = canvasPosY;
+      this.currentPolyineStartX = this.mousePosition.canvasMousePositionX;
+      this.currentPolyineStartY = this.mousePosition.canvasMousePositionY;
 
     } else {
-      this.addPointToCurrentLine(canvasPosX, canvasPosY, canvas, currentChildPosition);
+      this.addPointToCurrentLine(canvas, currentChildPosition);
     }
   }
 
-  addPointToCurrentLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
+  addPointToCurrentLine(canvas: SVGElement, currentChildPosition: number) {
     if (!this.isMakingLine) {
       return;
     }
     const currentPolyLine = canvas.children[currentChildPosition - 1];
-    const newPoint = ` ${canvasPosX},${canvasPosY}`;
+    const newPoint = ` ${this.mousePosition.canvasMousePositionX},${this.mousePosition.canvasMousePositionY}`;
     currentPolyLine.setAttribute('points', currentPolyLine.getAttribute('points') + newPoint);
   }
-  updateLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
+  updateLine(canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
       const currentPolyLine = canvas.children[currentChildPosition - 1];
       let pointsStr = currentPolyLine.getAttribute('points') as string;
       let indexLastPoint = pointsStr.lastIndexOf(' ');
       if (indexLastPoint === -1) {
         // There is only one point, add a second to enable the update
-        this.addPointToCurrentLine(canvasPosX, canvasPosY, canvas, currentChildPosition);
+        this.addPointToCurrentLine(canvas, currentChildPosition);
         // There will be a splace since we added a point
         pointsStr = currentPolyLine.getAttribute('points') as string;
         indexLastPoint = pointsStr.lastIndexOf(' ');
       }
       const pointsWithoutLastStr = pointsStr.substring(0, indexLastPoint);
-      const newPoints = `${pointsWithoutLastStr} ${canvasPosX},${canvasPosY}`;
+      const newPoints = `${pointsWithoutLastStr} ${this.mousePosition.canvasMousePositionX},${this.mousePosition.canvasMousePositionY}`;
       currentPolyLine.setAttribute('points', newPoints);
     }
   }
@@ -256,5 +257,36 @@ export class LineGeneratorService {
   }
   set _renderer(rend: Renderer2) {
     this.renderer = rend;
+  }
+
+  clone(item: SVGElement): string {
+    const linecap = item.getAttribute('stroke-linecap');
+    const color2 = item.getAttribute('stroke');
+    const strokeWidth = item.getAttribute('stroke-width');
+    const dasharray = item.getAttribute('stroke-dasharray');
+    const linejoin = item.getAttribute('stroke-linejoin');
+    const currentPath = item.getAttribute('points');
+    let points: string[];
+    if (currentPath !== null) {
+      points = currentPath.split(' ');
+      // Slightly displacing each point
+      for (let point of points) {
+        const xAndY = point.split(',', 2);
+        xAndY[0] = (parseFloat(xAndY[0]) + 10) as unknown as string;
+        xAndY[1] = (parseFloat(xAndY[1]) + 10) as unknown as string;
+        point = '' + xAndY[0] + ',' + xAndY[1];
+      }
+      const newItem =
+        `<polyline id="line${this.currentPolylineNumber}"
+        stroke-width="${strokeWidth}" stroke-linecap="${linecap}"
+        stroke="${color2}" stroke-dasharray="${dasharray}"
+        fill="none" stroke-linejoin="${linejoin}"
+        points="${points}"></polyline>`;
+      this.currentPolylineNumber++;
+      return newItem;
+    } else {
+      console.log('cannot recognize "d" in html of ' + item.id);
+      return 'to discard';
+    }
   }
 }

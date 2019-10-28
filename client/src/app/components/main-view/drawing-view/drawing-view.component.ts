@@ -5,13 +5,13 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {Tools} from '../../../data-structures/Tools';
 import {ModalManagerService} from '../../../services/modal-manager/modal-manager.service';
 import {MousePositionService} from '../../../services/mouse-position/mouse-position.service';
+import {RendererLoaderService} from '../../../services/renderer-loader/renderer-loader.service';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { ObjectSelectorService } from '../../../services/tools/object-selector/object-selector.service';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {ModalManagerSingleton} from '../../modals/modal-manager-singleton';
 import {ToolsAttributesBarComponent} from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
-import {RendererLoaderService} from "../../../services/renderer-loader/renderer-loader.service";
 
 @Component({
   selector: 'app-drawing-view',
@@ -109,10 +109,10 @@ export class DrawingViewComponent implements AfterViewInit {
     // Listen to the mouse's position in the page and communicate it to the service so it is available to all components.
     const OFFSET_CANVAS_Y = this.canvas.getBoundingClientRect().top;
     const OFFSET_CANVAS_X = this.canvas.getBoundingClientRect().left;
-    this.mousePosition._pageMousePositionX = mouseEvent.pageX;
-    this.mousePosition._pageMousePositionY = mouseEvent.pageY;
-    this.mousePosition._canvasMousePositionX = (mouseEvent.pageX - OFFSET_CANVAS_X);
-    this.mousePosition._canvasMousePositionY = (mouseEvent.pageY - OFFSET_CANVAS_Y);
+    this.mousePosition.pageMousePositionX = mouseEvent.pageX;
+    this.mousePosition.pageMousePositionY = mouseEvent.pageY;
+    this.mousePosition.canvasMousePositionX = (mouseEvent.pageX - OFFSET_CANVAS_X);
+    this.mousePosition.canvasMousePositionY = (mouseEvent.pageY - OFFSET_CANVAS_Y);
   }
 
 }
