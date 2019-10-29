@@ -26,6 +26,7 @@ export class EraserService {
         this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
         this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
         this.setEraseZone();
+        this.setEraserSquare(canvas);
         this.removeDrawings(canvas);
         this.mouseDown = true;
     }
@@ -51,15 +52,18 @@ export class EraserService {
     }
     moveEraser(canvas: SVGElement): void {
         if (this.mouseDown) {
-            this.removeDrawings(canvas);
             this.setEraseZone();
+            this.setEraserSquare(canvas);
+            const eraser = canvas.querySelector('#eraser') as SVGElement;
+            canvas.removeChild(eraser);
+            this.removeDrawings(canvas);
         }
     }
 
     stopErasing(canvas: SVGElement): void {
         if (this.mouseDown) {
-           // const eraser = canvas.querySelector('#eraser') as SVGElement;
-           // canvas.removeChild(eraser);
+            const eraser = canvas.querySelector('#eraser') as SVGElement;
+            canvas.removeChild(eraser);
             this.mouseDown = false;
         }
     }
@@ -83,13 +87,12 @@ export class EraserService {
         };
     }
 
-    setEraserSquare(): void {
-        // TODO
-        // canvas.innerHTML +=
-        // `<rect id="eraser"
-        // x="${(this.eraseZone.left)}"
-        // y="${(this.eraseZone.top)}"
-        // width="${(this.eraseSize)}" height="${(this.eraseSize)}" stroke="black"
-        // fill="transparent"></rect>`;
+    setEraserSquare(canvas: SVGElement): void {
+        canvas.innerHTML +=
+        `<rect id="eraser"
+        x="${(this.eraseZone.left)}"
+        y="${(this.eraseZone.top)}"
+        width="${(this.eraseSize)}" height="${(this.eraseSize)}" stroke="black"
+        fill="transparent"></rect>`;
     }
 }
