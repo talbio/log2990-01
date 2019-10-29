@@ -111,4 +111,7 @@ export class SaveDrawingDialogComponent implements AfterViewInit {
       })
       .finally(() => SaveDrawingDialogComponent.httpPosting = false);
   }
+  submitLocal() {
+    //
+  }
 }

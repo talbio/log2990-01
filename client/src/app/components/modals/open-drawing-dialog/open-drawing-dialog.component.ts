@@ -112,4 +112,8 @@ export class OpenDrawingDialogComponent implements OnInit {
     await dialogRef.afterClosed().toPromise().then((confirmResult) => confirm = confirmResult);
     return confirm;
   }
+
+  openLocalDrawing() {
+    //
+  }
 }

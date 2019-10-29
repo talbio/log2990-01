@@ -53,6 +53,13 @@
   <button class="mat-raised-button mat-primary"
           [disabled] ="formGroup.invalid || isPostingToServer"
           (click)="submit()">
-    Confirmer
+    Sauvegarder
+  </button>
+</mat-dialog-actions>
+<mat-dialog-actions>
+  <button class="mat-raised-button mat-primary"
+          [disabled] ="formGroup.invalid"
+          (click)="submitLocal()">
+    Sauvegarder localement
   </button>
 </mat-dialog-actions>
