@@ -19,6 +19,7 @@ import { BrushToolsComponent } from './components/main-view/tools-attributes-mod
 import { ColorApplicatorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/color-applicator/color-applicator-tools.component';
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
+import { EraserToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eraser/eraser-tools.component';
 import { EyedropperToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eyedropper/eyedropper-tools.component';
 import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
@@ -119,6 +120,7 @@ const customNotifierOptions: NotifierOptions = {
     LineToolsComponent,
     EllipseToolsComponent,
     EmojiToolsComponent,
+    EraserToolsComponent,
     BrushToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
@@ -174,6 +176,7 @@ const customNotifierOptions: NotifierOptions = {
     LineToolsComponent,
     EllipseToolsComponent,
     EmojiToolsComponent,
+    EraserToolsComponent,
     BrushToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,

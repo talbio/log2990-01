@@ -21,6 +21,10 @@ export class EraserService {
         this.eraseSize = 10;
     }
 
+    set _eraserSize(size: number) {
+        this.eraseSize = size;
+    }
+
     startErasing(canvas: SVGElement): void {
 
         this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
