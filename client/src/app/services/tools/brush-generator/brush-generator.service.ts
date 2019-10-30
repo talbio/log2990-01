@@ -126,7 +126,11 @@ export class BrushGeneratorService {
     return new SVGElement();
   }
 
-  clone(item: SVGElement): string {
+  clone(item: SVGElement): SVGElement {
+    const newItem = item.cloneNode() as SVGElement;
+    newItem.setAttribute('id', 'brushPath' + this.currentBrushPathNumber++);
+    return newItem;
+    /*
     const linecap = item.getAttribute('stroke-linecap');
     const color1 = item.getAttribute('fill');
     // const color2 = item.getAttribute('stroke');
@@ -150,6 +154,6 @@ export class BrushGeneratorService {
     } else {
       console.log('cannot recognize "d" in html of ' + item.id);
       return 'to discard';
-    }
+    }*/
   }
 }

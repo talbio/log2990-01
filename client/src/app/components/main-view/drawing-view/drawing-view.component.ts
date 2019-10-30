@@ -21,7 +21,7 @@ export class DrawingViewComponent implements AfterViewInit {
 
   protected toolAttributesComponent: ComponentPortal<ToolsAttributesBarComponent>;
 
-  private canvas: HTMLElement;
+  private canvas: SVGElement;
 
   constructor(private cd: ChangeDetectorRef,
               private renderer: Renderer2,

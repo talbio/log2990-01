@@ -68,25 +68,32 @@ export class PencilGeneratorService {
     }
   }
 
-  clone(item: SVGElement): string {
-    const linecap = item.getAttribute('stroke-linecap');
-    const color1 = item.getAttribute('fill');
+  clone(item: SVGElement): SVGElement {
+    const newItem = item.cloneNode() as SVGElement;
+    newItem.setAttribute('id', 'pencilPath' + this.currentPencilPathNumber++);
+    return newItem;
+    /*const linecap = newItem.getAttribute('stroke-linecap');
+    const color1 = newItem.getAttribute('fill');
     // const color2 = item.getAttribute('stroke');
-    const strokeWidth = item.getAttribute('stroke-width');
-    const currentPath = item.getAttribute('d');
+    const strokeWidth = newItem.getAttribute('stroke-width');
+    const currentPath = newItem.getAttribute('d');
     let points: string[];
     if (currentPath !== null) {
+      let newPath: string;
       points = currentPath.split(' ');
       // Slightly displacing each point
-      for (let point of points) {
-        if (point !== 'L' && point !== 'M' && point !== 'Z') {
-          point = (parseFloat(point) + 10) as unknown as string;
+      for (const point of points) {
+        let initialX: string;
+        if (point[0] === 'M') {
+          for (let i = 1 ; i < point.length ; i++) {
+            initialX += point[i];
+          }
         }
-        // const xAndY = point.split(',', 2);
-        // xAndY[0] = (parseFloat(xAndY[0]) + 10) as unknown as string;
-        // xAndY[1] = (parseFloat(xAndY[1]) + 10) as unknown as string;
-        // point = '' + xAndY[0] + ',' + xAndY[1];
-      }
+        if (point !== 'L' && point !== 'M' && point !== 'Z') {
+          newPath += (parseFloat(point) + 10) as unknown as string;
+          if()
+        }
+      }/*
       const newItem =
         `<path id="pencilPath${this.currentPencilPathNumber}"
         d="${points}" stroke="${color1}" stroke-width="${strokeWidth}"
@@ -96,6 +103,6 @@ export class PencilGeneratorService {
     } else {
       console.log('cannot recognize "d" in html of ' + item.id);
       return 'to discard';
-    }
+    }*/
   }
 }

@@ -11,7 +11,7 @@ export class ObjectSelectorService {
   private mouseDownSelector: boolean;
   private mouseDownTranslation: boolean;
   private currentRect: Element;
-  private SVGArray: SVGElement[] = [];
+  SVGArray: SVGElement[] = [];
   private isSelectorVisible: boolean;
   private initialX: number;
   private initialY: number;

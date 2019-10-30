@@ -155,7 +155,11 @@ export class RectangleGeneratorService {
     }
   }
 
-  clone(item: SVGElement): string {
+  clone(item: SVGElement): SVGElement {
+    const newItem = item.cloneNode() as SVGElement;
+    newItem.setAttribute('id', 'rect' + this.currentRectNumber++);
+    return newItem;
+    /*
     const x = parseFloat(item.getAttribute('x') as unknown as string) + 10;
     const y = parseFloat(item.getAttribute('y') as unknown as string) + 10;
     const h = parseFloat(item.getAttribute('height') as unknown as string);
@@ -170,6 +174,6 @@ export class RectangleGeneratorService {
         width="${w}" height="${h}" stroke="${color2}" stroke-width="${strokeWidth}"
         fill="${color1}"></rect>`;
     this.currentRectNumber++;
-    return newItem;
+    return newItem;*/
   }
 }

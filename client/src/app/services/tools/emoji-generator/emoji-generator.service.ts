@@ -106,7 +106,11 @@ export class EmojiGeneratorService {
         this.rotationStep = MAX_ROTATION_STEP;
     }
 
-    clone(item: SVGElement): string {
+    clone(item: SVGElement): SVGElement {
+      const newItem = item.cloneNode() as SVGElement;
+      newItem.setAttribute('id', 'emoji' + this.currentEmojiNumber++);
+      return newItem;
+      /*
       const x = parseFloat(item.getAttribute('x') as unknown as string) + 10;
       const y = parseFloat(item.getAttribute('y') as unknown as string) + 10;
       const h = parseFloat(item.getAttribute('height') as unknown as string);
@@ -118,6 +122,6 @@ export class EmojiGeneratorService {
         width="${w}" height="${h}"
         transform="${angle}"/>`;
       this.currentEmojiNumber++;
-      return newItem;
+      return newItem;*/
     }
 }

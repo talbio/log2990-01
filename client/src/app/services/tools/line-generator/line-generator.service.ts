@@ -256,7 +256,11 @@ export class LineGeneratorService {
     return new SVGElement();
   }
 
-  clone(item: SVGElement): string {
+  clone(item: SVGElement): SVGElement {
+    const newItem = item.cloneNode() as SVGElement;
+    newItem.setAttribute('id', 'polyline' + this.currentPolylineNumber++);
+    return newItem;
+    /*
     const linecap = item.getAttribute('stroke-linecap');
     const color2 = item.getAttribute('stroke');
     const strokeWidth = item.getAttribute('stroke-width');
@@ -284,6 +288,6 @@ export class LineGeneratorService {
     } else {
       console.log('cannot recognize "d" in html of ' + item.id);
       return 'to discard';
-    }
+    }*/
   }
 }
