@@ -6,6 +6,7 @@
     [toolProperties]="pencilToolButtonProperties">
   </app-abstract-tool-button>
 </mat-menu>
+
 <mat-menu #shapeToolButton="matMenu">
   <app-abstract-tool-button
     *ngFor="let shapeToolButtonProperties of shapeToolsButtonsProperties"
@@ -35,7 +36,23 @@
   <mat-list-item>
     <app-color-tool-buttons></app-color-tool-buttons>
   </mat-list-item>
-  
+
+  <br />
+  <br />
+  <br />
+  <mat-divider></mat-divider>
+
+  <mat-list-item>
+    <div id="undo-redo">
+      <button mat-icon-button (click)="this.undoRedoService.undo()" class="btn" matTooltip="Annuler">
+        <mat-icon class="icon" svgIcon="undo"></mat-icon>
+      </button>
+      <mat-divider [vertical]="true"></mat-divider>
+      <button mat-icon-button (click)="this.undoRedoService.redo()" class="btn" matTooltip="Refaire">
+        <mat-icon class="icon" svgIcon="redo"></mat-icon>
+      </button>
+    </div>
+  </mat-list-item>
 
   <!-- bottom elements -->
   <div [ngClass]="appropriateClass">

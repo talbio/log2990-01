@@ -8,17 +8,20 @@ import {
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {DomSanitizer} from '@angular/platform-browser';
-import {CreateDrawingFormValues} from '../../../../data-structures/CreateDrawingFormValues';
-import {Tools} from '../../../../data-structures/Tools';
+import {CreateDrawingFormValues} from '../../../../data-structures/create-drawing-form-values';
+import {Tools} from '../../../../data-structures/tools';
 import {ModalManagerService} from '../../../../services/modal-manager/modal-manager.service';
 import {DialogProperties} from '../abstract-dialog-button/abstract-dialog-button.component';
 import {ToolProperties} from '../abstract-tool-button/abstract-tool-button.component';
+import {UndoRedoService} from "../../../../services/undo-redo/undo-redo.service";
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
 const ELLIPSE_ICON_PATH = '../../../../assets/svg-icons/ellipse.svg';
 const POLYGON_ICON_PATH = '../../../../assets/svg-icons/polygon-icon.svg';
 const ADD_TAG_ICON_PATH = '../../../../assets/svg-icons/add-tag.svg';
 const DELETE_TAG_ICON_PATH = '../../../../assets/svg-icons/delete-tag.svg';
+const REDO_ICON_PATH = '../../../../assets/svg-icons/right-arrow.svg';
+const UNDO_ICON_PATH = '../../../../assets/svg-icons/left-arrow.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -41,7 +44,8 @@ export class LateralBarComponent {
 
   constructor(private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
-              private modalManagerService: ModalManagerService) {
+              private modalManagerService: ModalManagerService,
+              protected undoRedoService: UndoRedoService) {
     this.loadSVGIcons();
     this.setAppropriateIconsClass();
     this.initializePencilToolsButtons();
@@ -78,6 +82,10 @@ export class LateralBarComponent {
       this.domSanitizer.bypassSecurityTrustResourceUrl(ADD_TAG_ICON_PATH));
     this.matIconRegistry.addSvgIcon('delete-tag',
       this.domSanitizer.bypassSecurityTrustResourceUrl(DELETE_TAG_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('redo',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(REDO_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('undo',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(UNDO_ICON_PATH));
   }
 
   private initializePencilToolsButtons() {
