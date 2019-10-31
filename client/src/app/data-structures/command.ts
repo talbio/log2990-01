@@ -1,8 +1,7 @@
 
-export interface Command {
+export interface ActionGenerator {
+
   pushAction(svgElement: SVGElement): void;
-  do(svgElement: SVGElement): Action;
-  undo(): Action;
 }
 
 export interface Action {
