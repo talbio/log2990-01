@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import { PlotType } from '../../../data-structures/PlotType';
+import { PlotType } from '../../../data-structures/plot-type';
 import {RendererSingleton} from '../../renderer-singleton';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
+import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/line-styles';
 import {RendererSingleton} from '../../renderer-singleton';
 
 @Injectable()

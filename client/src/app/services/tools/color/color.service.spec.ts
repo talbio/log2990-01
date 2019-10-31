@@ -1,5 +1,5 @@
 import { inject, TestBed } from '@angular/core/testing';
-import { Colors } from 'src/app/data-structures/Colors';
+import { Colors } from 'src/app/data-structures/colors';
 import { ColorService } from './color.service';
 
 describe('Service: ColorApplicator', () => {
