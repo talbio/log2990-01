@@ -1,5 +1,7 @@
 import {Injectable} from '@angular/core';
+import {Action, ActionType} from '../../../data-structures/Command';
 import {PlotType} from '../../../data-structures/PlotType';
+import {RendererSingleton} from '../../renderer-singleton';
 
 @Injectable()
 export class RectangleGeneratorService {
@@ -20,7 +22,6 @@ export class RectangleGeneratorService {
     this.mouseDown = false;
   }
 
-  get _currentRectNumber() { return this.currentRectNumber; }
   set _currentRectNumber(count: number) { this.currentRectNumber = count; }
   get _strokeWidth() {
     return this.strokeWidth;
@@ -36,6 +37,19 @@ export class RectangleGeneratorService {
 
   set _plotType(plotType: PlotType) {
     this.plotType = plotType;
+  }
+
+  do(svgElement: SVGElement): Action {
+    return {
+      actionType: ActionType.Create,
+      svgElements: [svgElement],
+      execute(): void {
+        RendererSingleton.getCanvas().innerHTML += svgElement;
+      },
+      unexecute(): void {
+        RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), this.svgElements[0]);
+      },
+    };
   }
 
   createRectangle(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
@@ -152,10 +166,14 @@ export class RectangleGeneratorService {
     }
   }
 
-  finishRectangle() {
+  finishRectangle(currentChildPosition: number) {
     if (this.mouseDown) {
       this.currentRectNumber += 1;
       this.mouseDown = false;
+      const currentRect =
+        RendererSingleton.renderer.selectRootElement('#canvas', true).children[currentChildPosition - 1];
+      console.log(currentRect.getAttribute('id'));
     }
   }
+
 }
