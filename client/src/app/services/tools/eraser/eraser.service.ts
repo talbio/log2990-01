@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
+const DEFAULT_ERASER_SIZE = 10;
+const ERASER_WARNING_DISTANCE = 50;
 
 interface IEraseZone {
     left: number;
@@ -18,7 +20,7 @@ export class EraserService {
 
     constructor(protected mousePosition: MousePositionService) {
         this.mouseDown = false;
-        this.eraseSize = 10;
+        this.eraseSize = DEFAULT_ERASER_SIZE;
     }
 
     set _eraserSize(size: number) {
@@ -87,20 +89,24 @@ export class EraserService {
         const drawingBottom = drawingZone.bottom - this.OFFSET_CANVAS_Y;
 
         const isAlmostTouchingRightSide: boolean =
-        ((this.eraseZone.left - drawingRightSide <= 50) && (this.eraseZone.left - drawingRightSide > 0) &&
-        ((drawingTop - this.eraseZone.bottom <= 50) && ( this.eraseZone.top - drawingBottom <= 50)));
+        ((this.eraseZone.left - drawingRightSide <= ERASER_WARNING_DISTANCE) && (this.eraseZone.left - drawingRightSide > 0) &&
+        ((drawingTop - this.eraseZone.bottom <= ERASER_WARNING_DISTANCE) &&
+        ( this.eraseZone.top - drawingBottom <= ERASER_WARNING_DISTANCE)));
 
         const isAlmostTouchingLeftSide: boolean =
-        ((drawingLeftSide - this.eraseZone.right <= 50) && (drawingLeftSide - this.eraseZone.right > 0) &&
-        ((drawingTop - this.eraseZone.bottom <= 50) && ( this.eraseZone.top - drawingBottom <= 50)));
+        ((drawingLeftSide - this.eraseZone.right <= ERASER_WARNING_DISTANCE) && (drawingLeftSide - this.eraseZone.right > 0) &&
+        ((drawingTop - this.eraseZone.bottom <= ERASER_WARNING_DISTANCE) &&
+        ( this.eraseZone.top - drawingBottom <= ERASER_WARNING_DISTANCE)));
 
         const isAlmostTouchingTop: boolean =
-        ((drawingTop - this.eraseZone.bottom <= 50) && (drawingTop - this.eraseZone.bottom  > 0) &&
-        ((drawingLeftSide - this.eraseZone.right <= 50) && ( this.eraseZone.left - drawingRightSide <= 50)));
+        ((drawingTop - this.eraseZone.bottom <= ERASER_WARNING_DISTANCE) && (drawingTop - this.eraseZone.bottom  > 0) &&
+        ((drawingLeftSide - this.eraseZone.right <= ERASER_WARNING_DISTANCE) &&
+        ( this.eraseZone.left - drawingRightSide <= ERASER_WARNING_DISTANCE)));
 
         const isAlmostTouchingBottom: boolean =
-        ((this.eraseZone.top - drawingBottom <= 50) && (this.eraseZone.top - drawingBottom > 0) &&
-        ((drawingLeftSide - this.eraseZone.right <= 50) && ( this.eraseZone.left - drawingRightSide <= 50)));
+        ((this.eraseZone.top - drawingBottom <= ERASER_WARNING_DISTANCE) && (this.eraseZone.top - drawingBottom > 0) &&
+        ((drawingLeftSide - this.eraseZone.right <= ERASER_WARNING_DISTANCE) &&
+        ( this.eraseZone.left - drawingRightSide <= ERASER_WARNING_DISTANCE)));
 
         return (isAlmostTouchingLeftSide || isAlmostTouchingRightSide || isAlmostTouchingTop || isAlmostTouchingBottom);
 
