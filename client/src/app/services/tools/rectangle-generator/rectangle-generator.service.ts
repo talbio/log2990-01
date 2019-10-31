@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
-import {Action, ActionType} from '../../../data-structures/Command';
-import {PlotType} from '../../../data-structures/PlotType';
+import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
+import {Action, ActionGenerator, ActionType} from '../../../data-structures/command';
+import {PlotType} from '../../../data-structures/plot-type';
 import {RendererSingleton} from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 
 @Injectable()
-export class RectangleGeneratorService {
+export class RectangleGeneratorService extends AbstractClosedShape implements ActionGenerator  {
 
   private OFFSET_CANVAS_Y: number;
   private OFFSET_CANVAS_X: number;
@@ -13,9 +15,9 @@ export class RectangleGeneratorService {
 
   // attributes of rectangle
   private strokeWidth: number;
-  private plotType: PlotType;
 
-  constructor() {
+  constructor(private undoRedoService: UndoRedoService) {
+    super();
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.currentRectNumber = 0;
@@ -39,17 +41,18 @@ export class RectangleGeneratorService {
     this.plotType = plotType;
   }
 
-  do(svgElement: SVGElement): Action {
-    return {
+  pushAction(svgElement: SVGElement): void {
+    const action: Action = {
       actionType: ActionType.Create,
       svgElements: [svgElement],
       execute(): void {
-        RendererSingleton.getCanvas().innerHTML += svgElement;
+        RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), this.svgElements[0]);
       },
       unexecute(): void {
         RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), this.svgElements[0]);
       },
     };
+    this.undoRedoService.pushAction(action);
   }
 
   createRectangle(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
@@ -57,38 +60,20 @@ export class RectangleGeneratorService {
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
 
-    switch (this.plotType) {
-      case PlotType.Contour:
-        canvas.innerHTML +=
-        `<rect id="rect${this.currentRectNumber}"
-        x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        data-start-x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
-        data-start-y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
-        width="0" height="0" stroke="${secondaryColor}" stroke-width="${this.strokeWidth}"
-        fill="transparent"></rect>`;
-        break;
-      case PlotType.Full:
-        canvas.innerHTML +=
-        `<rect id="rect${this.currentRectNumber}"
-        x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        data-start-x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
-        data-start-y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
-        width = "0" height = "0" stroke="transparent" stroke-width="${this.strokeWidth}"
-        fill="${primaryColor}"></rect>`;
-        break;
-      case PlotType.FullWithContour:
-        canvas.innerHTML +=
-        `<rect id="rect${this.currentRectNumber}"
-        x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        data-start-x="${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}"
-        y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
-        data-start-y="${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}"
-        width="0" height="0" stroke="${secondaryColor}" stroke-width="${this.strokeWidth}"
-        fill="${primaryColor}"></rect>`;
-        break;
-    }
+    const properties: {stroke: string, fill: string} = this.getStrokeAndFillProperties(primaryColor, secondaryColor);
+
+    const rect = RendererSingleton.renderer.createElement('rect', 'svg');
+    RendererSingleton.renderer.setAttribute(rect, 'id', `rect${this.currentRectNumber}`);
+    RendererSingleton.renderer.setAttribute(rect, 'x', `${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}`);
+    RendererSingleton.renderer.setAttribute(rect, 'y', `${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}`);
+    RendererSingleton.renderer.setAttribute(rect, 'data-start-x', `${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}`);
+    RendererSingleton.renderer.setAttribute(rect, 'data-start-y', `${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}`);
+    RendererSingleton.renderer.setAttribute(rect, 'height', `0`);
+    RendererSingleton.renderer.setAttribute(rect, 'width', `0`);
+    RendererSingleton.renderer.setAttribute(rect, 'stroke', `${properties.stroke}`);
+    RendererSingleton.renderer.setAttribute(rect, 'stroke-width', `${this.strokeWidth}`);
+    RendererSingleton.renderer.setAttribute(rect, 'fill', `${properties.fill}`);
+    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), rect);
     this.mouseDown = true;
   }
 
@@ -170,9 +155,8 @@ export class RectangleGeneratorService {
     if (this.mouseDown) {
       this.currentRectNumber += 1;
       this.mouseDown = false;
-      const currentRect =
-        RendererSingleton.renderer.selectRootElement('#canvas', true).children[currentChildPosition - 1];
-      console.log(currentRect.getAttribute('id'));
+      const currentRect = RendererSingleton.getCanvas().children[currentChildPosition - 1] as SVGElement;
+      this.pushAction(currentRect);
     }
   }
 
