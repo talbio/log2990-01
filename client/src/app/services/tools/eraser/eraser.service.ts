@@ -40,6 +40,13 @@ export class EraserService {
             const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
             const drawingPile = new Array();
             drawings.forEach((drawing) => {
+
+                if ((this.isCloseToIntersecting(drawing as SVGGElement) && (drawing.id !== 'selector')
+                && (drawing.id !== 'backgroundGrid') && (drawing.id !== '') && (drawing.id !== 'eraser'))) {
+                drawing.setAttribute('stroke', 'red');
+
+            } else {drawing.setAttribute('stroke', 'black'); } // TODO remplacer par un 'undo'
+
                 if ((this.intersects(drawing as SVGGElement) && (drawing.id !== 'selector')
                     && (drawing.id !== 'backgroundGrid') && (drawing.id !== '') && (drawing.id !== 'eraser'))) {
                     drawingPile.push(drawing);
@@ -70,6 +77,33 @@ export class EraserService {
             canvas.removeChild(eraser);
             this.mouseDown = false;
         }
+    }
+
+    isCloseToIntersecting(drawing: SVGGElement): boolean {
+        const drawingZone = drawing.getBoundingClientRect();
+        const drawingRightSide = drawingZone.right - this.OFFSET_CANVAS_X;
+        const drawingLeftSide = drawingZone.left - this.OFFSET_CANVAS_X;
+        const drawingTop = drawingZone.top - this.OFFSET_CANVAS_Y;
+        const drawingBottom = drawingZone.bottom - this.OFFSET_CANVAS_Y;
+
+        const isAlmostTouchingRightSide: boolean =
+        ((this.eraseZone.left - drawingRightSide <= 50) && (this.eraseZone.left - drawingRightSide > 0) &&
+        ((drawingTop - this.eraseZone.bottom <= 50) && ( this.eraseZone.top - drawingBottom <= 50)));
+
+        const isAlmostTouchingLeftSide: boolean =
+        ((drawingLeftSide - this.eraseZone.right <= 50) && (drawingLeftSide - this.eraseZone.right > 0) &&
+        ((drawingTop - this.eraseZone.bottom <= 50) && ( this.eraseZone.top - drawingBottom <= 50)));
+
+        const isAlmostTouchingTop: boolean =
+        ((drawingTop - this.eraseZone.bottom <= 50) && (drawingTop - this.eraseZone.bottom  > 0) &&
+        ((drawingLeftSide - this.eraseZone.right <= 50) && ( this.eraseZone.left - drawingRightSide <= 50)));
+
+        const isAlmostTouchingBottom: boolean =
+        ((this.eraseZone.top - drawingBottom <= 50) && (this.eraseZone.top - drawingBottom > 0) &&
+        ((drawingLeftSide - this.eraseZone.right <= 50) && ( this.eraseZone.left - drawingRightSide <= 50)));
+
+        return (isAlmostTouchingLeftSide || isAlmostTouchingRightSide || isAlmostTouchingTop || isAlmostTouchingBottom);
+
     }
 
     intersects(drawing: SVGGElement): boolean {
