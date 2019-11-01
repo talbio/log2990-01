@@ -20,6 +20,7 @@ const POLYGON_ICON_PATH = '../../../../assets/svg-icons/polygon-icon.svg';
 const ADD_TAG_ICON_PATH = '../../../../assets/svg-icons/add-tag.svg';
 const DELETE_TAG_ICON_PATH = '../../../../assets/svg-icons/delete-tag.svg';
 const ERASER_ICON_PATH = '../../../../assets/svg-icons/eraser.svg';
+const PEN_ICON_PATH = '../../../../assets/svg-icons/pen.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -81,12 +82,16 @@ export class LateralBarComponent {
       this.domSanitizer.bypassSecurityTrustResourceUrl(DELETE_TAG_ICON_PATH));
     this.matIconRegistry.addSvgIcon('eraser',
       this.domSanitizer.bypassSecurityTrustResourceUrl(ERASER_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('pen',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(PEN_ICON_PATH));
   }
 
   private initializePencilToolsButtons() {
     this.pencilToolsButtonsProperties = [];
     this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Pencil, 'Crayon', 'create', false));
+    this.pencilToolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Pencil, 'Stylo', 'pen', true));
     this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Brush, 'Pinceau', 'brush', false));
     this.pencilToolsButtonsProperties.push(
