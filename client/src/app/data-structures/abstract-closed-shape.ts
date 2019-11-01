@@ -2,6 +2,10 @@ import {PlotType} from './plot-type';
 
 export class AbstractClosedShape {
 
+  /**
+   * @desc: the current element being rendered
+   */
+  protected currentElement: SVGElement;
   protected plotType: PlotType;
 
   getStrokeAndFillProperties(primaryColor: string, secondaryColor: string): {stroke: string, fill: string} {
