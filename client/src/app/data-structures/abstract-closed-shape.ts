@@ -1,3 +1,6 @@
+import {RendererSingleton} from '../services/renderer-singleton';
+import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
+import {Action, ActionType} from './command';
 import {PlotType} from './plot-type';
 
 export class AbstractClosedShape {
@@ -7,8 +10,25 @@ export class AbstractClosedShape {
    */
   protected currentElement: SVGElement;
   protected plotType: PlotType;
+  protected strokeWidth: number;
 
-  getStrokeAndFillProperties(primaryColor: string, secondaryColor: string): {stroke: string, fill: string} {
+  constructor(protected undoRedoService: UndoRedoService) {}
+
+  pushAction(svgElement: SVGElement): void {
+    const action: Action = {
+      actionType: ActionType.Create,
+      svgElements: [svgElement],
+      execute(): void {
+        RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), this.svgElements[0]);
+      },
+      unexecute(): void {
+        RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), this.svgElements[0]);
+      },
+    };
+    this.undoRedoService.pushAction(action);
+  }
+
+  setStrokeFillProperties(element: SVGElement, primaryColor: string, secondaryColor: string): void {
     let stroke = '';
     let fill = '';
     switch (this.plotType) {
@@ -25,6 +45,21 @@ export class AbstractClosedShape {
         fill = primaryColor;
         break;
     }
-    return {stroke, fill};
+    RendererSingleton.renderer.setAttribute(element, 'stroke', `${stroke}`);
+    RendererSingleton.renderer.setAttribute(element, 'stroke-width', `${this.strokeWidth}`);
+    RendererSingleton.renderer.setAttribute(element, 'fill', `${fill}`);
   }
+
+  setProperties(element: SVGElement, properties: [string, string][]): void {
+    for (const property of properties) {
+      RendererSingleton.renderer.setAttribute(element, property[0], property[1]);
+    }
+  }
+
+  drawElement(element: SVGElement, properties: [string, string][], primaryColor: string, secondaryColor: string): void {
+    this.setProperties(element, properties);
+    this.setStrokeFillProperties(element, primaryColor, secondaryColor);
+    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), element);
+    this.currentElement = element;
+    }
 }

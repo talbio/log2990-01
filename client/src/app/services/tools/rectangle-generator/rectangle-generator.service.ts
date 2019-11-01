@@ -13,11 +13,8 @@ export class RectangleGeneratorService extends AbstractClosedShape implements Ac
   private currentRectNumber: number;
   private mouseDown: boolean;
 
-  // attributes of rectangle
-  private strokeWidth: number;
-
-  constructor(private undoRedoService: UndoRedoService) {
-    super();
+  constructor(undoRedoService: UndoRedoService) {
+    super(undoRedoService);
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.currentRectNumber = 0;
@@ -59,22 +56,21 @@ export class RectangleGeneratorService extends AbstractClosedShape implements Ac
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
-
-    const properties: {stroke: string, fill: string} = this.getStrokeAndFillProperties(primaryColor, secondaryColor);
+    const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
+    const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
 
     const rect = RendererSingleton.renderer.createElement('rect', 'svg');
-    RendererSingleton.renderer.setAttribute(rect, 'id', `rect${this.currentRectNumber}`);
-    RendererSingleton.renderer.setAttribute(rect, 'x', `${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}`);
-    RendererSingleton.renderer.setAttribute(rect, 'y', `${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}`);
-    RendererSingleton.renderer.setAttribute(rect, 'height', `0`);
-    RendererSingleton.renderer.setAttribute(rect, 'width', `0`);
-    RendererSingleton.renderer.setAttribute(rect, 'data-start-x', `${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}`);
-    RendererSingleton.renderer.setAttribute(rect, 'data-start-y', `${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}`);
-    RendererSingleton.renderer.setAttribute(rect, 'stroke', `${properties.stroke}`);
-    RendererSingleton.renderer.setAttribute(rect, 'stroke-width', `${this.strokeWidth}`);
-    RendererSingleton.renderer.setAttribute(rect, 'fill', `${properties.fill}`);
-    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), rect);
-    this.currentElement = rect;
+    const properties: [string, string][] = [];
+    properties.push(
+      ['id', `rect${this.currentRectNumber}`],
+      ['x', `${xPos}`],
+      ['y', `${yPos}`],
+      ['height', `0`],
+      ['width', `0`],
+      ['data-start-x', `${xPos}`],
+      ['data-start-y', `${yPos}`],
+    );
+    this.drawElement(rect, properties, primaryColor, secondaryColor);
     this.mouseDown = true;
   }
 
