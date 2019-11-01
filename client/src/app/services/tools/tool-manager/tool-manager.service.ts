@@ -127,7 +127,7 @@ export class ToolManagerService {
   finishElement() {
     switch (this._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.finishRectangle(this.numberOfElements);
+        this.rectangleGenerator.finishRectangle();
         break;
       case Tools.Pencil:
         this.pencilGenerator.finishPenPath();

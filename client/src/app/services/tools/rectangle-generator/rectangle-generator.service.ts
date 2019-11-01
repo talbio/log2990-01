@@ -66,14 +66,15 @@ export class RectangleGeneratorService extends AbstractClosedShape implements Ac
     RendererSingleton.renderer.setAttribute(rect, 'id', `rect${this.currentRectNumber}`);
     RendererSingleton.renderer.setAttribute(rect, 'x', `${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}`);
     RendererSingleton.renderer.setAttribute(rect, 'y', `${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}`);
-    RendererSingleton.renderer.setAttribute(rect, 'data-start-x', `${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}`);
-    RendererSingleton.renderer.setAttribute(rect, 'data-start-y', `${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}`);
     RendererSingleton.renderer.setAttribute(rect, 'height', `0`);
     RendererSingleton.renderer.setAttribute(rect, 'width', `0`);
+    RendererSingleton.renderer.setAttribute(rect, 'data-start-x', `${(mouseEvent.pageX - this.OFFSET_CANVAS_X)}`);
+    RendererSingleton.renderer.setAttribute(rect, 'data-start-y', `${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}`);
     RendererSingleton.renderer.setAttribute(rect, 'stroke', `${properties.stroke}`);
     RendererSingleton.renderer.setAttribute(rect, 'stroke-width', `${this.strokeWidth}`);
     RendererSingleton.renderer.setAttribute(rect, 'fill', `${properties.fill}`);
     RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), rect);
+    this.currentElement = rect;
     this.mouseDown = true;
   }
 
@@ -151,12 +152,11 @@ export class RectangleGeneratorService extends AbstractClosedShape implements Ac
     }
   }
 
-  finishRectangle(currentChildPosition: number) {
+  finishRectangle() {
     if (this.mouseDown) {
       this.currentRectNumber += 1;
       this.mouseDown = false;
-      const currentRect = RendererSingleton.getCanvas().children[currentChildPosition - 1] as SVGElement;
-      this.pushAction(currentRect);
+      this.pushAction(this.currentElement);
     }
   }
 
