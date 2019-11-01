@@ -14,6 +14,7 @@ import { ObjectSelectorService } from '../object-selector/object-selector.servic
 import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from '../polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
+import { PenGeneratorService } from '../pen-generator/pen-generator.service';
 
 @Injectable()
 export class ToolManagerService {
@@ -37,6 +38,7 @@ export class ToolManagerService {
               private ellipseGenerator: EllipseGeneratorService,
               private emojiGenerator: EmojiGeneratorService,
               private pencilGenerator: PencilGeneratorService,
+              private penGenerator: PenGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
               private objectSelector: ObjectSelectorService,
@@ -59,6 +61,9 @@ export class ToolManagerService {
         break;
       case Tools.Pencil:
         this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getSecondaryColor());
+        break;
+      case Tools.Pen:
+        this.penGenerator.createPenPath(mouseEvent, canvas, this.colorService.getSecondaryColor());
         break;
       case Tools.Brush:
         this.brushGenerator
@@ -101,6 +106,9 @@ export class ToolManagerService {
       case Tools.Pencil:
         this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
         break;
+      case Tools.Pen:
+        this.penGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
+        break;
       case Tools.Brush:
         this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
         break;
@@ -140,6 +148,9 @@ export class ToolManagerService {
         break;
       case Tools.Pencil:
         this.pencilGenerator.finishPenPath();
+        break;
+      case Tools.Pen:
+        this.penGenerator.finishPenPath();
         break;
       case Tools.Brush:
         this.brushGenerator.finishBrushPath();

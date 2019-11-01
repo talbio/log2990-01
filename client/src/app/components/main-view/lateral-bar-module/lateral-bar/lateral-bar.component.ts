@@ -91,7 +91,7 @@ export class LateralBarComponent {
     this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Pencil, 'Crayon', 'create', false));
     this.pencilToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Pencil, 'Stylo', 'pen', true));
+      this.toolPropertiesFactory(Tools.Pen, 'Stylo', 'pen', true));
     this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Brush, 'Pinceau', 'brush', false));
     this.pencilToolsButtonsProperties.push(

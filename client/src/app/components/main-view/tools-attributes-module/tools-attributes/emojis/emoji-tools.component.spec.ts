@@ -26,6 +26,6 @@ fdescribe('EmojiToolsComponent', () => {
 
   it('should have atleast five emojis to choose from', () => {
     const emojiService = fixture.debugElement.injector.get(EmojiGeneratorService);
-    expect(emojiService.getEmojis().length).toBe(6);
+    expect(emojiService.getEmojis().length).toBeGreaterThanOrEqual(5);
   });
 });
