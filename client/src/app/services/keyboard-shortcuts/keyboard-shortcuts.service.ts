@@ -24,6 +24,8 @@ export class KeyboardShortcutsService {
   private readonly EYEDROPPER_KEY = 'i';
   private readonly GRID_KEY = 'g';
   private readonly SELECT_ALL_KEY = 'a';
+  private readonly SAVE_DRAWING_KEY = 's';
+  private readonly OPEN_DRAWING_KEY = 'g';
 
   private readonly oneKeyShortcuts: Map<string, () => void>;
   private readonly controlKeyShortcuts: Map<string, () => void>;
@@ -67,5 +69,7 @@ export class KeyboardShortcutsService {
       this.objectSelector.selectAll(canvas);
     });
     this.controlKeyShortcuts.set(this.NEW_DRAWING_KEY, () => this.modalManagerService.showCreateDrawingDialog());
+    this.controlKeyShortcuts.set(this.SAVE_DRAWING_KEY, () => this.modalManagerService.showSaveDrawingDialog());
+    this.controlKeyShortcuts.set(this.OPEN_DRAWING_KEY, () => this.modalManagerService.showOpenDrawingDialog());
   }
 }

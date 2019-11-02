@@ -112,8 +112,28 @@ export class OpenDrawingDialogComponent implements OnInit {
     await dialogRef.afterClosed().toPromise().then((confirmResult) => confirm = confirmResult);
     return confirm;
   }
+  // solution inspired from http://jsfiddle.net/Noitidart/zTe4j/3/
+  openLocalDrawing(fileInput: HTMLInputElement) {
+    // files is a FileList of File objects. List some properties.
+    // let json = '';
+    // const reader = new FileReader();
 
-  openLocalDrawing() {
+    // // Closure to capture the file information.
+    // reader.onload = () => {
+    //   return (e: { target: { result: string; }; }) =>  {
+    //     console.log('e readAsText = ', e);
+    //     console.log('e readAsText target = ', e.target);
+    //     try {
+    //       json = JSON.parse(e.target.result);
+    //       alert('json global var has been set to parsed json of this file here it is unevaled = \n' + JSON.stringify(json));
+    //     } catch (ex) {
+    //       alert('ex when trying to parse json = ' + ex);
+    //     }
+    //   };
+    // };
+    // reader.readAsText(json);
+  }
+  checkJSONValidity() {
     //
   }
 }
