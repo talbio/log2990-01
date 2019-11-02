@@ -15,7 +15,6 @@ export class UndoRedoService {
   }
 
   undo(): void {
-    console.log(this.undoActions);
     if (this.undoActions.length !== 0) {
       const action: Action = this.undoActions.pop() as Action;
       action.unexecute();
@@ -32,7 +31,6 @@ export class UndoRedoService {
   }
 
   pushAction(action: Action): void {
-    console.log(this.undoActions);
     this.undoActions.push(action);
   }
 
