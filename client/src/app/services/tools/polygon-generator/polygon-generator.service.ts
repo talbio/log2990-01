@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
+import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
 import { PlotType } from '../../../data-structures/plot-type';
 import {RendererSingleton} from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
-import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
-import {UndoRedoService} from "../../undo-redo/undo-redo.service";
 
 @Injectable()
 export class PolygonGeneratorService extends AbstractClosedShape {
