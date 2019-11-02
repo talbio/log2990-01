@@ -55,7 +55,7 @@ export class ToolManagerService {
           .createRectangle(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Pencil:
-        this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getSecondaryColor());
+        this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getPrimaryColor());
         break;
       case Tools.Brush:
         this.brushGenerator
@@ -72,8 +72,7 @@ export class ToolManagerService {
         this.emojiGenerator.addEmoji(mouseEvent, canvas);
         break;
       case Tools.Polygon:
-        this.polygonGenerator.createPolygon(mouseEvent, canvas, this.colorService.getSecondaryColor(),
-          this.colorService.getPrimaryColor());
+        this.polygonGenerator.createPolygon(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       default:
         return;
@@ -93,10 +92,10 @@ export class ToolManagerService {
         }
         break;
       case Tools.Pencil:
-        this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
+        this.pencilGenerator.updatePenPath(mouseEvent, this.numberOfElements);
         break;
       case Tools.Brush:
-        this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
+        this.brushGenerator.updateBrushPath(mouseEvent, this.numberOfElements);
         break;
       case Tools.Selector:
         this.objectSelector.updateSelectorRectangle(mouseEvent, canvas);
@@ -184,11 +183,7 @@ export class ToolManagerService {
 
   finishElementDoubleClick(mouseEvent: MouseEvent, canvas: SVGElement) {
     if (this._activeTool === Tools.Line) {
-      if (mouseEvent.shiftKey) {
-        this.lineGenerator.finishAndLinkLineBlock(canvas, this.numberOfElements);
-      } else {
-        this.lineGenerator.finishLineBlock(canvas, this.numberOfElements);
-      }
+      this.lineGenerator.finishElement(mouseEvent, this.numberOfElements);
     }
   }
   changeElementAltDown() {
