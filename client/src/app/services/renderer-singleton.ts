@@ -21,4 +21,8 @@ export class RendererSingleton {
   static getCanvas(): SVGElement {
     return this.renderer.selectRootElement('#canvas', true);
   }
+
+  static getDefs(): SVGElement {
+    return this.renderer.selectRootElement('#definitions', true);
+  }
 }
