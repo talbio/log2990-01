@@ -31,6 +31,7 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+import { EraserService } from './../../../services/tools/eraser/eraser.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -62,6 +63,7 @@ const DRAWING_SERVICES = [
   ObjectSelectorService,
   GridTogglerService,
   PolygonGeneratorService,
+  EraserService,
 ];
 fdescribe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
