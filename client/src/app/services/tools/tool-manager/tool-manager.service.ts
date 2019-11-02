@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Tools } from '../../../data-structures/Tools';
+import { Tools } from '../../../data-structures/tools';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
@@ -7,6 +7,7 @@ import { ColorApplicatorService } from '../color-applicator/color-applicator.ser
 import { ColorService } from '../color/color.service';
 import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.service';
 import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
+import { EraserService } from '../eraser/eraser.service';
 import { EyedropperService } from '../eyedropper/eyedropper.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
@@ -42,6 +43,7 @@ export class ToolManagerService {
               private lineGenerator: LineGeneratorService,
               private polygonGenerator: PolygonGeneratorService,
               private eyedropper: EyedropperService,
+              private eraser: EraserService,
               protected colorService: ColorService,
               protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
@@ -56,7 +58,7 @@ export class ToolManagerService {
           .createRectangle(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Pencil:
-        this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getSecondaryColor());
+        this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getPrimaryColor());
         break;
       case Tools.Brush:
         this.brushGenerator
@@ -73,8 +75,10 @@ export class ToolManagerService {
         this.emojiGenerator.addEmoji(mouseEvent, canvas);
         break;
       case Tools.Polygon:
-        this.polygonGenerator.createPolygon(mouseEvent, canvas, this.colorService.getSecondaryColor(),
-          this.colorService.getPrimaryColor());
+        this.polygonGenerator.createPolygon(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+        break;
+      case Tools.Eraser:
+        this.eraser.startErasing(canvas);
         break;
       default:
         return;
@@ -94,10 +98,10 @@ export class ToolManagerService {
         }
         break;
       case Tools.Pencil:
-        this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
+        this.pencilGenerator.updatePenPath(mouseEvent, this.numberOfElements);
         break;
       case Tools.Brush:
-        this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
+        this.brushGenerator.updateBrushPath(mouseEvent, this.numberOfElements);
         break;
       case Tools.Selector:
         this.objectSelector.updateSelectorRectangle(mouseEvent, canvas);
@@ -119,6 +123,9 @@ export class ToolManagerService {
       case Tools.Polygon:
         this.polygonGenerator.updatePolygon(this.mousePosition._canvasMousePositionX,
           this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+        break;
+      case Tools.Eraser:
+        this.eraser.moveEraser(canvas);
         break;
       default:
         return;
@@ -145,6 +152,9 @@ export class ToolManagerService {
         break;
       case Tools.Polygon:
         this.polygonGenerator.finishPolygon();
+        break;
+        case Tools.Eraser:
+        this.eraser.stopErasing(RendererSingleton.renderer.selectRootElement('#canvas', true));
         break;
       default:
         return;
@@ -185,11 +195,7 @@ export class ToolManagerService {
 
   finishElementDoubleClick(mouseEvent: MouseEvent, canvas: SVGElement) {
     if (this._activeTool === Tools.Line) {
-      if (mouseEvent.shiftKey) {
-        this.lineGenerator.finishAndLinkLineBlock(canvas, this.numberOfElements);
-      } else {
-        this.lineGenerator.finishLineBlock(canvas, this.numberOfElements);
-      }
+      this.lineGenerator.finishElement(mouseEvent, this.numberOfElements);
     }
   }
   changeElementAltDown() {

@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {FormBuilder} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {of} from 'rxjs';
-import {CreateDrawingFormValues} from '../../../data-structures/CreateDrawingFormValues';
+import {CreateDrawingFormValues} from '../../../data-structures/create-drawing-form-values';
 import {DemoMaterialModule} from '../../../material.module';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {CreateDrawingDialogComponent, DialogData} from './create-drawing-dialog.component';

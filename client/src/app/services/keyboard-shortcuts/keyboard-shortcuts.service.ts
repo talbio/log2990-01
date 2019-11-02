@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Tools} from '../../data-structures/Tools';
+import {Tools} from '../../data-structures/tools';
 import {ModalManagerService} from '../modal-manager/modal-manager.service';
 import {RendererSingleton} from '../renderer-singleton';
 import {GridTogglerService} from '../tools/grid/grid-toggler.service';

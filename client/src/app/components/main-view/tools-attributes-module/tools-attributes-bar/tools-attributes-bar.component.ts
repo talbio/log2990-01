@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Tools } from '../../../../data-structures/Tools';
+import { Tools } from '../../../../data-structures/tools';
 import { ToolManagerService } from '../../../../services/tools/tool-manager/tool-manager.service';
 
 @Component({
