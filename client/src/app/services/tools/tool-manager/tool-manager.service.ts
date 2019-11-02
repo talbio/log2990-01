@@ -107,7 +107,7 @@ export class ToolManagerService {
         this.pencilGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
         break;
       case Tools.Pen:
-        this.penGenerator.updatePenPath(mouseEvent, canvas, this.numberOfElements);
+        this.penGenerator.updatePenPath(mouseEvent, canvas);
         break;
       case Tools.Brush:
         this.brushGenerator.updateBrushPath(mouseEvent, canvas, this.numberOfElements);
