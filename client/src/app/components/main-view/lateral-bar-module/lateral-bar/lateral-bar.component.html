@@ -1,22 +1,18 @@
 <!-- Definition of tool menus -->
 <mat-menu #pencilToolButton="matMenu">
-  <app-abstract-tool-button
-    *ngFor="let pencilToolButtonProperties of pencilToolsButtonsProperties"
-    [attributesSideNav]="attributesSideNav"
-    [toolProperties]="pencilToolButtonProperties">
+  <app-abstract-tool-button *ngFor="let pencilToolButtonProperties of pencilToolsButtonsProperties"
+    [attributesSideNav]="attributesSideNav" [toolProperties]="pencilToolButtonProperties">
   </app-abstract-tool-button>
 </mat-menu>
 
 <mat-menu #shapeToolButton="matMenu">
-  <app-abstract-tool-button
-    *ngFor="let shapeToolButtonProperties of shapeToolsButtonsProperties"
-    [attributesSideNav]="attributesSideNav"
-    [toolProperties]="shapeToolButtonProperties">
+  <app-abstract-tool-button *ngFor="let shapeToolButtonProperties of shapeToolsButtonsProperties"
+    [attributesSideNav]="attributesSideNav" [toolProperties]="shapeToolButtonProperties">
   </app-abstract-tool-button>
 </mat-menu>
 
 <mat-list>
-<!-- Tools Buttons -->
+  <!-- Tools Buttons -->
   <mat-list-item>
     <button mat-icon-button [matMenuTriggerFor]="pencilToolButton">
       <mat-icon>create</mat-icon>
@@ -28,18 +24,6 @@
       <mat-icon svgIcon="rectangle"></mat-icon>
     </button>
   </mat-list-item>
-  <mat-divider></mat-divider>
-  <!-- primary & secondary colors -->
-
-  <br />
-  <br />
-  <mat-list-item>
-    <app-color-tool-buttons></app-color-tool-buttons>
-  </mat-list-item>
-
-  <br />
-  <br />
-  <br />
   <mat-divider></mat-divider>
 
   <mat-list-item>
@@ -53,13 +37,20 @@
       </button>
     </div>
   </mat-list-item>
+  <mat-divider></mat-divider>
+
+  <!-- primary & secondary colors -->
+  <div class="color-tool">
+    <mat-list-item>
+      <app-color-tool-buttons></app-color-tool-buttons>
+    </mat-list-item>
+  </div>
 
   <!-- bottom elements -->
   <div [ngClass]="appropriateClass">
     <mat-divider></mat-divider>
     <mat-list-item *ngFor="let dialogButtonProperties of dialogsButtonsProperties">
-      <app-abstract-dialog-button
-        [dialogProperties]="dialogButtonProperties">
+      <app-abstract-dialog-button [dialogProperties]="dialogButtonProperties">
       </app-abstract-dialog-button>
     </mat-list-item>
   </div>

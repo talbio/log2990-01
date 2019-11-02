@@ -22,6 +22,7 @@ const ADD_TAG_ICON_PATH = '../../../../assets/svg-icons/add-tag.svg';
 const DELETE_TAG_ICON_PATH = '../../../../assets/svg-icons/delete-tag.svg';
 const REDO_ICON_PATH = '../../../../assets/svg-icons/right-arrow.svg';
 const UNDO_ICON_PATH = '../../../../assets/svg-icons/left-arrow.svg';
+const ERASER_ICON_PATH = '../../../../assets/svg-icons/eraser.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -82,6 +83,8 @@ export class LateralBarComponent {
       this.domSanitizer.bypassSecurityTrustResourceUrl(ADD_TAG_ICON_PATH));
     this.matIconRegistry.addSvgIcon('delete-tag',
       this.domSanitizer.bypassSecurityTrustResourceUrl(DELETE_TAG_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('eraser',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(ERASER_ICON_PATH));
     this.matIconRegistry.addSvgIcon('redo',
       this.domSanitizer.bypassSecurityTrustResourceUrl(REDO_ICON_PATH));
     this.matIconRegistry.addSvgIcon('undo',
@@ -100,6 +103,8 @@ export class LateralBarComponent {
       this.toolPropertiesFactory(Tools.Selector, 'Outil de sélection', 'select_all', false));
     this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Eyedropper, 'Pipette', 'colorize', false));
+    this.pencilToolsButtonsProperties.push(
+        this.toolPropertiesFactory(Tools.Eraser, 'Efface', 'eraser', true));
   }
 
   private initializeShapeToolsButtons() {

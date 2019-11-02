@@ -7,6 +7,7 @@ import { ColorApplicatorService } from '../color-applicator/color-applicator.ser
 import { ColorService } from '../color/color.service';
 import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.service';
 import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
+import { EraserService } from '../eraser/eraser.service';
 import { EyedropperService } from '../eyedropper/eyedropper.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
@@ -18,6 +19,7 @@ import { RectangleGeneratorService } from '../rectangle-generator/rectangle-gene
 export class ToolManagerService {
 
   private readonly DEFAULT_NUMBER_OF_ELEMENTS: number = 2;
+  private readonly DEFAULT_NUMBER_OF_DEFINITIONS: number = 7;
   private numberOfElements: number;
   private canvasElement: SVGElement;
   private activeTool: Tools;
@@ -41,6 +43,7 @@ export class ToolManagerService {
               private lineGenerator: LineGeneratorService,
               private polygonGenerator: PolygonGeneratorService,
               private eyedropper: EyedropperService,
+              private eraser: EraserService,
               protected colorService: ColorService,
               protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
@@ -73,6 +76,9 @@ export class ToolManagerService {
         break;
       case Tools.Polygon:
         this.polygonGenerator.createPolygon(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+        break;
+      case Tools.Eraser:
+        this.eraser.startErasing(canvas);
         break;
       default:
         return;
@@ -118,6 +124,9 @@ export class ToolManagerService {
         this.polygonGenerator.updatePolygon(this.mousePosition._canvasMousePositionX,
           this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         break;
+      case Tools.Eraser:
+        this.eraser.moveEraser(canvas);
+        break;
       default:
         return;
     }
@@ -143,6 +152,9 @@ export class ToolManagerService {
         break;
       case Tools.Polygon:
         this.polygonGenerator.finishPolygon();
+        break;
+        case Tools.Eraser:
+        this.eraser.stopErasing(RendererSingleton.renderer.selectRootElement('#canvas', true));
         break;
       default:
         return;
@@ -235,12 +247,18 @@ export class ToolManagerService {
   }
 
   deleteAllDrawings(): void {
+    // Delete the elements
     this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
     for (let i = this.canvasElement.children.length - 1; i >= this.DEFAULT_NUMBER_OF_ELEMENTS ; i--) {
       this.canvasElement.children[i].remove();
     }
+    // Reset the definitions to its initial values
+    const defsElem = RendererSingleton.renderer.selectRootElement('#definitions', true);
+    for (let i = defsElem.children.length - 1; i >= this.DEFAULT_NUMBER_OF_DEFINITIONS ; i--) {
+      defsElem.children[i].remove();
+    }
+    // Reset the state of all counters
     this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
-    this.numberOfElements = 1;
     this.resetCounters();
   }
 
