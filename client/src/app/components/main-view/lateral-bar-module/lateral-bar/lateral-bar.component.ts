@@ -11,9 +11,9 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {CreateDrawingFormValues} from '../../../../data-structures/create-drawing-form-values';
 import {Tools} from '../../../../data-structures/tools';
 import {ModalManagerService} from '../../../../services/modal-manager/modal-manager.service';
+import {UndoRedoService} from '../../../../services/undo-redo/undo-redo.service';
 import {DialogProperties} from '../abstract-dialog-button/abstract-dialog-button.component';
 import {ToolProperties} from '../abstract-tool-button/abstract-tool-button.component';
-import {UndoRedoService} from "../../../../services/undo-redo/undo-redo.service";
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
 const ELLIPSE_ICON_PATH = '../../../../assets/svg-icons/ellipse.svg';
