@@ -28,13 +28,16 @@ export class EraserService {
     }
 
     startErasing(canvas: SVGElement): void {
+        this.initialiseData(canvas);
+        this.removeDrawings(canvas);
+        this.mouseDown = true;
+    }
 
+    initialiseData(canvas: SVGElement): void {
         this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
         this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
         this.setEraseZone();
         this.setEraserSquare(canvas);
-        this.removeDrawings(canvas);
-        this.mouseDown = true;
     }
 
     removeDrawings(canvas: SVGElement): void {
@@ -42,12 +45,7 @@ export class EraserService {
             const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
             const drawingPile = new Array();
             drawings.forEach((drawing) => {
-
-                if ((this.isCloseToIntersecting(drawing as SVGGElement) && (drawing.id !== 'selector')
-                && (drawing.id !== 'backgroundGrid') && (drawing.id !== '') && (drawing.id !== 'eraser'))) {
-                drawing.setAttribute('stroke', 'red');
-
-            } else {drawing.setAttribute('stroke', 'black'); } // TODO remplacer par un 'undo'
+                this.warnBeforeErasing(drawing);
 
                 if ((this.intersects(drawing as SVGGElement) && (drawing.id !== 'selector')
                     && (drawing.id !== 'backgroundGrid') && (drawing.id !== '') && (drawing.id !== 'eraser'))) {
@@ -63,6 +61,17 @@ export class EraserService {
             }
         }
     }
+
+    warnBeforeErasing(drawing: Element): void {
+        if ((this.isCloseToIntersecting(drawing as SVGGElement) && (drawing.id !== 'selector')
+            && (drawing.id !== 'backgroundGrid') && (drawing.id !== '') && (drawing.id !== 'eraser'))) {
+            if (drawing.tagName === 'image') {
+                // TODO
+            } else { drawing.setAttribute('stroke', 'red'); }
+
+        } else { drawing.setAttribute('stroke', 'black'); } // TODO remplacer par un 'undo'
+    }
+
     moveEraser(canvas: SVGElement): void {
         if (this.mouseDown) {
             this.setEraseZone();
@@ -89,24 +98,24 @@ export class EraserService {
         const drawingBottom = drawingZone.bottom - this.OFFSET_CANVAS_Y;
 
         const isAlmostTouchingRightSide: boolean =
-        ((this.eraseZone.left - drawingRightSide <= ERASER_WARNING_DISTANCE) && (this.eraseZone.left - drawingRightSide > 0) &&
-        ((drawingTop - this.eraseZone.bottom <= ERASER_WARNING_DISTANCE) &&
-        ( this.eraseZone.top - drawingBottom <= ERASER_WARNING_DISTANCE)));
+            ((this.eraseZone.left - drawingRightSide <= ERASER_WARNING_DISTANCE) && (this.eraseZone.left - drawingRightSide > 0) &&
+                ((drawingTop - this.eraseZone.bottom <= ERASER_WARNING_DISTANCE) &&
+                    (this.eraseZone.top - drawingBottom <= ERASER_WARNING_DISTANCE)));
 
         const isAlmostTouchingLeftSide: boolean =
-        ((drawingLeftSide - this.eraseZone.right <= ERASER_WARNING_DISTANCE) && (drawingLeftSide - this.eraseZone.right > 0) &&
-        ((drawingTop - this.eraseZone.bottom <= ERASER_WARNING_DISTANCE) &&
-        ( this.eraseZone.top - drawingBottom <= ERASER_WARNING_DISTANCE)));
+            ((drawingLeftSide - this.eraseZone.right <= ERASER_WARNING_DISTANCE) && (drawingLeftSide - this.eraseZone.right > 0) &&
+                ((drawingTop - this.eraseZone.bottom <= ERASER_WARNING_DISTANCE) &&
+                    (this.eraseZone.top - drawingBottom <= ERASER_WARNING_DISTANCE)));
 
         const isAlmostTouchingTop: boolean =
-        ((drawingTop - this.eraseZone.bottom <= ERASER_WARNING_DISTANCE) && (drawingTop - this.eraseZone.bottom  > 0) &&
-        ((drawingLeftSide - this.eraseZone.right <= ERASER_WARNING_DISTANCE) &&
-        ( this.eraseZone.left - drawingRightSide <= ERASER_WARNING_DISTANCE)));
+            ((drawingTop - this.eraseZone.bottom <= ERASER_WARNING_DISTANCE) && (drawingTop - this.eraseZone.bottom > 0) &&
+                ((drawingLeftSide - this.eraseZone.right <= ERASER_WARNING_DISTANCE) &&
+                    (this.eraseZone.left - drawingRightSide <= ERASER_WARNING_DISTANCE)));
 
         const isAlmostTouchingBottom: boolean =
-        ((this.eraseZone.top - drawingBottom <= ERASER_WARNING_DISTANCE) && (this.eraseZone.top - drawingBottom > 0) &&
-        ((drawingLeftSide - this.eraseZone.right <= ERASER_WARNING_DISTANCE) &&
-        ( this.eraseZone.left - drawingRightSide <= ERASER_WARNING_DISTANCE)));
+            ((this.eraseZone.top - drawingBottom <= ERASER_WARNING_DISTANCE) && (this.eraseZone.top - drawingBottom > 0) &&
+                ((drawingLeftSide - this.eraseZone.right <= ERASER_WARNING_DISTANCE) &&
+                    (this.eraseZone.left - drawingRightSide <= ERASER_WARNING_DISTANCE)));
 
         return (isAlmostTouchingLeftSide || isAlmostTouchingRightSide || isAlmostTouchingTop || isAlmostTouchingBottom);
 
@@ -133,7 +142,7 @@ export class EraserService {
 
     setEraserSquare(canvas: SVGElement): void {
         canvas.innerHTML +=
-        `<rect id="eraser"
+            `<rect id="eraser"
         x="${(this.eraseZone.left)}"
         y="${(this.eraseZone.top)}"
         width="${(this.eraseSize)}" height="${(this.eraseSize)}" stroke="black"
