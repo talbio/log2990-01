@@ -1,7 +1,7 @@
 
 export interface ActionGenerator {
 
-  pushAction(svgElement: SVGElement): void;
+  pushAction(svgElement: SVGElement, ...vals: string[]): void;
 }
 
 export interface Action {
