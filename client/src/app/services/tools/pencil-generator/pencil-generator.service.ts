@@ -1,20 +1,19 @@
 import { Injectable } from '@angular/core';
+import {AbstractWritingTool} from '../../../data-structures/abstract-writing-tool';
+import {RendererSingleton} from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 
 @Injectable()
-export class PencilGeneratorService {
+export class PencilGeneratorService extends AbstractWritingTool {
 
   /**
    * attributes of pencil tool :
    */
-  private readonly DEFAULT_WIDTH = 5;
-  private strokeWidth: number;
   private currentPencilPathNumber: number;
-  private OFFSET_CANVAS_X: number;
-  private OFFSET_CANVAS_Y: number;
-  private mouseDown = false;
 
-  constructor() {
-    this.strokeWidth = this.DEFAULT_WIDTH;
+  constructor(undoRedoService: UndoRedoService) {
+    super(undoRedoService);
+
     this.currentPencilPathNumber = 0;
   }
 
@@ -25,10 +24,6 @@ export class PencilGeneratorService {
   get _strokeWidth(): number {
     return this.strokeWidth;
   }
-  // Uniquely useful for tests, comment for further usage
-  set _mouseDown(state: boolean) {
-    this.mouseDown = state;
-  }
 
   set _currentPencilPathNumber(count: number) { this.currentPencilPathNumber = count; }
 
@@ -37,29 +32,29 @@ export class PencilGeneratorService {
 
     this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
     this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
+    const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
+    const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
     // let string addToHTML = generateHTML();
 
-    canvas.innerHTML +=
-      `<path id=\'pencilPath${this.currentPencilPathNumber}\'
-      d=\'M ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}
-      L ${(mouseEvent.pageX - this.OFFSET_CANVAS_X)} ${(mouseEvent.pageY - this.OFFSET_CANVAS_Y)}\'
-      stroke=\'${primaryColor}\' stroke-width=\'${this.strokeWidth}\' stroke-linecap=\'round\' fill=\'none\'></path>`;
-
+    const path = RendererSingleton.renderer.createElement('path', 'svg');
+    const properties: [string, string][] = [];
+    properties.push(
+      ['id', `pencilPath${this.currentPencilPathNumber}`],
+      ['d', `M ${xPos} ${(yPos)} L ${(xPos)} ${(yPos)}`],
+      ['stroke', `${primaryColor}`],
+      ['stroke-width', `${this.strokeWidth}`],
+      ['stroke-linecap', `round`],
+      ['fill', `none`],
+    );
+    this.drawElement(path, properties);
     this.mouseDown = true;
   }
 
   /**
    * @desc // Updates the path when the mouse is moving (mousedown)
    */
-  updatePenPath(mouseEvent: MouseEvent, canvas: SVGElement, currentChildPosition: number) {
-    if (this.mouseDown) {
-      const currentPath = canvas.children[currentChildPosition - 1];
-      if (currentPath != null) {
-        currentPath.setAttribute('d',
-          currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
-        ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
-      }
-    }
+  updatePenPath(mouseEvent: MouseEvent, currentChildPosition: number) {
+    this.updatePath(mouseEvent, currentChildPosition);
   }
 
   /**
@@ -68,6 +63,7 @@ export class PencilGeneratorService {
   finishPenPath() {
     if (this.mouseDown) {
       this.currentPencilPathNumber += 1;
+      this.pushAction(this.currentElement);
       this.mouseDown = false;
     }
   }

@@ -1,6 +1,6 @@
 import { Component, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
-import { Colors } from 'src/app/data-structures/Colors';
-import { Tools } from 'src/app/data-structures/Tools';
+import { Colors } from 'src/app/data-structures/colors';
+import { Tools } from 'src/app/data-structures/tools';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 

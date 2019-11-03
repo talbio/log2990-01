@@ -20,7 +20,7 @@ const rendererSpy: jasmine.SpyObj<Renderer2> =
   jasmine.createSpyObj('Renderer2', ['selectRootElement']);
 
 const FAKE_SVG_CANVAS = `<defs></defs><rect></rect>`;
-const FAKE_SVG_CANVAS_INNER_HTML = `<rect></rect>`;
+const FAKE_SVG_CANVAS_INNER_HTML = `<defs></defs><rect></rect>`;
 
 const FAKE_SVG_MINIATURE = `<svg><path></path></svg>`;
 
