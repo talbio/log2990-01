@@ -5,7 +5,7 @@ import { RendererSingleton } from '../../renderer-singleton';
 import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 const DEFAULT_ERASER_SIZE = 10;
 const ERASER_WARNING_DISTANCE = 50;
-
+const svgTypesNotToBeErased: string[] = ['eraser', 'backgroundGrid', 'selector', ''];
 interface IEraseZone {
     left: number;
     top: number;
@@ -21,6 +21,7 @@ export class EraserService {
     private eraseSize: number;
     private eraseZone: IEraseZone;
     private erasedDrawings: SVGElement[] = [];
+    private strokeColors = new Map<string, string>();
 
     constructor(protected mousePosition: MousePositionService, protected undoRedoService: UndoRedoService) {
         this.mouseDown = false;
@@ -51,8 +52,7 @@ export class EraserService {
             drawings.forEach((drawing) => {
                 this.warnBeforeErasing(drawing);
 
-                if ((this.intersects(drawing as SVGGElement) && (drawing.id !== 'selector')
-                    && (drawing.id !== 'backgroundGrid') && (drawing.id !== '') && (drawing.id !== 'eraser'))) {
+                if ((this.intersects(drawing as SVGGElement)) && (!svgTypesNotToBeErased.includes(drawing.id))) {
                     drawingPile.push(drawing);
                 }
             });
@@ -71,14 +71,22 @@ export class EraserService {
             && (drawing.id !== 'backgroundGrid') && (drawing.id !== '') && (drawing.id !== 'eraser'))) {
             if (drawing.tagName === 'image') {
                 // TODO
-            } else { drawing.setAttribute('stroke', 'red'); }
+            } else {
+                if (this.strokeColors.get(drawing.id) === undefined) {
+                this.strokeColors.set(drawing.id, drawing.getAttribute('stroke') as string);
+                }
+                drawing.setAttribute('stroke', 'red');
+            }
 
-        } else { drawing.setAttribute('stroke', 'black'); } // TODO remplacer par couleur initiale
+        } else {
+            if (this.strokeColors.get(drawing.id) !== undefined) {
+                drawing.setAttribute('stroke', this.strokeColors.get(drawing.id) as string);
+            }
 
+        }
     }
-
-    erase(canvas: SVGElement, drawing: SVGGElement): void {
-        if (drawing.id.substring(0, 7) === 'penPath') {
+        erase(canvas: SVGElement, drawing: SVGGElement): void {
+            if (drawing.id.substring(0, 7) === 'penPath') {
             const paths = canvas.querySelectorAll('path');
             paths.forEach((path) => {
                 if (path.id === drawing.id) {
@@ -88,7 +96,8 @@ export class EraserService {
             });
         } else {
             this.erasedDrawings.push(drawing);
-            canvas.removeChild(drawing); }
+            canvas.removeChild(drawing);
+        }
     }
 
     moveEraser(canvas: SVGElement): void {
