@@ -59,8 +59,7 @@ export class EraserService {
             for (let i = canvas.children.length - 1; i > 0; i--) {
                 const index = drawingPile.indexOf(canvas.children[i]);
                 if (index !== -1) {
-                    this.erasedDrawings.push(drawingPile[index]);
-                    canvas.removeChild(drawingPile[index]);
+                    this.erase(canvas, drawingPile[index]);
                     return;
                 }
             }
@@ -75,6 +74,21 @@ export class EraserService {
             } else { drawing.setAttribute('stroke', 'red'); }
 
         } else { drawing.setAttribute('stroke', 'black'); } // TODO remplacer par un 'undo'
+
+    }
+
+    erase(canvas: SVGElement, drawing: SVGGElement): void {
+        if (drawing.id.substring(0, 7) === 'penPath') {
+            const paths = canvas.querySelectorAll('path');
+            paths.forEach((path) => {
+                if (path.id === drawing.id) {
+                    this.erasedDrawings.push(drawing);
+                    canvas.removeChild(path);
+                }
+            });
+        } else {
+            this.erasedDrawings.push(drawing);
+            canvas.removeChild(drawing); }
     }
 
     moveEraser(canvas: SVGElement): void {
