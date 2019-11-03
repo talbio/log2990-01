@@ -10,6 +10,7 @@ import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/line-style
 import { PlotType } from 'src/app/data-structures/plot-type';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
+import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
 import { Tools } from '../../../data-structures/tools';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
@@ -64,6 +65,7 @@ const DRAWING_SERVICES = [
   GridTogglerService,
   PolygonGeneratorService,
   EraserService,
+  PenGeneratorService,
 ];
 fdescribe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
