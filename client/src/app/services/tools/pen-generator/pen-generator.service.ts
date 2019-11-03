@@ -3,15 +3,19 @@ const MIN_WIDTH = 2;
 const MAX_WIDTH = 40;
 
 import { Injectable } from '@angular/core';
+import { AbstractWritingTool } from 'src/app/data-structures/abstract-writing-tool';
+import { Action, ActionType } from 'src/app/data-structures/command';
+import { RendererSingleton } from '../../renderer-singleton';
+import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 
 @Injectable()
-export class PenGeneratorService {
-    private strokeWidth: number;
-    private strokeWidthMinimum: number;
-    private strokeWidthMaximum: number;
-    private OFFSET_CANVAS_X: number;
-    private OFFSET_CANVAS_Y: number;
-    private mouseDown = false;
+export class PenGeneratorService extends AbstractWritingTool {
+    strokeWidth: number;
+    strokeWidthMinimum: number;
+    strokeWidthMaximum: number;
+    OFFSET_CANVAS_X: number;
+    OFFSET_CANVAS_Y: number;
+    mouseDown = false;
     private dotPositionX: number;
     private dotPositionY: number;
     private date = new Date();
@@ -19,27 +23,13 @@ export class PenGeneratorService {
     private speed: number;
     private color: string;
     private currentPenPathNumber: number;
+    private pathArray: SVGElement[] = [];
 
-    constructor() {
+    constructor(undoRedoService: UndoRedoService) {
+        super(undoRedoService);
         this.strokeWidthMinimum = MIN_WIDTH;
         this.strokeWidthMaximum = MAX_WIDTH;
         this.currentPenPathNumber = 0;
-      }
-
-      set _strokeWidthMinimum(width: number) {
-          this.strokeWidthMinimum = width;
-      }
-
-      get _strokeWidthMinimum(): number {
-        return this.strokeWidthMinimum;
-    }
-
-      set _strokeWidthMaximum(width: number) {
-        this.strokeWidthMaximum = width;
-    }
-
-    get _strokeWidthMaximum(): number {
-        return this.strokeWidthMaximum;
     }
 
     createPenPath(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string) {
@@ -56,12 +46,20 @@ export class PenGeneratorService {
         this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
         this.dotPositionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
         this.dotPositionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
-        canvas.innerHTML +=
-            `<path id="pencilPath${this.currentPenPathNumber}}"
-        d="M ${(this.dotPositionX)} ${(this.dotPositionY)}
-        L ${(this.dotPositionX)} ${(this.dotPositionY)}"
-        stroke="${this.color}" stroke-width="${width}" stroke-linecap="round" fill="${this.color}"></path>`;
 
+        const path = RendererSingleton.renderer.createElement('path', 'svg');
+        const properties: [string, string][] = [];
+        properties.push(
+            ['id', `pencilPath${this.currentPenPathNumber}`],
+            ['d', `M ${(this.dotPositionX)} ${(this.dotPositionY)}
+        L ${(this.dotPositionX)} ${(this.dotPositionY)}`],
+            ['stroke', `${this.color}`],
+            ['stroke-width', `${width}`],
+            ['stroke-linecap', `round`],
+            ['fill', `${this.color}`],
+        );
+        this.drawElement(path, properties);
+        this.pathArray.push(this.currentElement);
     }
 
     updatePenPath(mouseEvent: MouseEvent, canvas: SVGElement) {
@@ -74,8 +72,8 @@ export class PenGeneratorService {
             this.updateTimeAndPosition(time, currentDotPositionX, currentDotPositionY);
             const currentPath = canvas.children[canvas.childElementCount - 1];
             currentPath.setAttribute('d',
-                    currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
-                    ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
+                currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
+                ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
             this.updateStrokeWidth(currentSpeed);
             this.addPath(mouseEvent, canvas, this.strokeWidth);
             this.speed = currentSpeed;
@@ -98,6 +96,8 @@ export class PenGeneratorService {
     finishPenPath() {
         if (this.mouseDown) {
             this.currentPenPathNumber += 1;
+            this.pushActions(this.pathArray);
+            this.pathArray = [];
             this.mouseDown = false;
         }
     }
@@ -114,6 +114,26 @@ export class PenGeneratorService {
         this.time = time;
         this.dotPositionX = currentDotPositionX;
         this.dotPositionY = currentDotPositionY;
+    }
+
+    pushActions(paths: SVGElement[]): void {
+
+        const action: Action = {
+            actionType: ActionType.Create,
+            svgElements: paths,
+            execute(): void {
+                this.svgElements.forEach((path) => {
+                    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), path);
+                });
+            },
+            unexecute(): void {
+                this.svgElements.forEach((path) => {
+                    RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), path);
+                });
+            },
+        };
+
+        this.undoRedoService.pushAction(action);
     }
 
 }

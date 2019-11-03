@@ -11,10 +11,10 @@ import { EraserService } from '../eraser/eraser.service';
 import { EyedropperService } from '../eyedropper/eyedropper.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
+import { PenGeneratorService } from '../pen-generator/pen-generator.service';
 import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from '../polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
-import { PenGeneratorService } from '../pen-generator/pen-generator.service';
 
 @Injectable()
 export class ToolManagerService {
