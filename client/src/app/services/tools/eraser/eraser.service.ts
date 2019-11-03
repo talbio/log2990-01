@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Action, ActionType } from 'src/app/data-structures/command';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
+import { RendererSingleton } from '../../renderer-singleton';
+import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 const DEFAULT_ERASER_SIZE = 10;
 const ERASER_WARNING_DISTANCE = 50;
 
@@ -17,8 +20,9 @@ export class EraserService {
     private mouseDown: boolean;
     private eraseSize: number;
     private eraseZone: IEraseZone;
+    private erasedDrawings: SVGElement[] = [];
 
-    constructor(protected mousePosition: MousePositionService) {
+    constructor(protected mousePosition: MousePositionService, protected undoRedoService: UndoRedoService) {
         this.mouseDown = false;
         this.eraseSize = DEFAULT_ERASER_SIZE;
     }
@@ -55,6 +59,7 @@ export class EraserService {
             for (let i = canvas.children.length - 1; i > 0; i--) {
                 const index = drawingPile.indexOf(canvas.children[i]);
                 if (index !== -1) {
+                    this.erasedDrawings.push(drawingPile[index]);
                     canvas.removeChild(drawingPile[index]);
                     return;
                 }
@@ -86,6 +91,8 @@ export class EraserService {
         if (this.mouseDown) {
             const eraser = canvas.querySelector('#eraser') as SVGElement;
             canvas.removeChild(eraser);
+            this.pushAction();
+            this.erasedDrawings = [];
             this.mouseDown = false;
         }
     }
@@ -147,5 +154,23 @@ export class EraserService {
         y="${(this.eraseZone.top)}"
         width="${(this.eraseSize)}" height="${(this.eraseSize)}" stroke="black"
         fill="transparent"></rect>`;
+    }
+
+    pushAction(): void {
+        const action: Action = {
+            actionType: ActionType.Create,
+            svgElements: this.erasedDrawings,
+            execute(): void {
+                this.svgElements.forEach((drawing) => {
+                    RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), drawing);
+                });
+            },
+            unexecute(): void {
+                this.svgElements.forEach((drawing) => {
+                    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), drawing);
+                });
+            },
+        };
+        this.undoRedoService.pushAction(action);
     }
 }
