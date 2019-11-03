@@ -23,6 +23,7 @@ const DELETE_TAG_ICON_PATH = '../../../../assets/svg-icons/delete-tag.svg';
 const REDO_ICON_PATH = '../../../../assets/svg-icons/right-arrow.svg';
 const UNDO_ICON_PATH = '../../../../assets/svg-icons/left-arrow.svg';
 const ERASER_ICON_PATH = '../../../../assets/svg-icons/eraser.svg';
+const PEN_ICON_PATH = '../../../../assets/svg-icons/pen.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -85,6 +86,8 @@ export class LateralBarComponent {
       this.domSanitizer.bypassSecurityTrustResourceUrl(DELETE_TAG_ICON_PATH));
     this.matIconRegistry.addSvgIcon('eraser',
       this.domSanitizer.bypassSecurityTrustResourceUrl(ERASER_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('pen',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(PEN_ICON_PATH));
     this.matIconRegistry.addSvgIcon('redo',
       this.domSanitizer.bypassSecurityTrustResourceUrl(REDO_ICON_PATH));
     this.matIconRegistry.addSvgIcon('undo',
@@ -95,6 +98,8 @@ export class LateralBarComponent {
     this.pencilToolsButtonsProperties = [];
     this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Pencil, 'Crayon', 'create', false));
+    this.pencilToolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Pen, 'Stylo', 'pen', true));
     this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Brush, 'Pinceau', 'brush', false));
     this.pencilToolsButtonsProperties.push(

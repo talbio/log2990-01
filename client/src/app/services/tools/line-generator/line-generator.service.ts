@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/line-styles';
-import {RendererSingleton} from '../../renderer-singleton';
 import {Action, ActionGenerator, ActionType} from '../../../data-structures/command';
+import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 
 @Injectable()
