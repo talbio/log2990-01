@@ -33,7 +33,7 @@ export class EraserService {
 
     startErasing(canvas: SVGElement): void {
         this.initialiseData(canvas);
-        this.removeDrawings(canvas);
+        this.evaluateWhichDrawingsToErase(canvas);
         this.mouseDown = true;
     }
 
@@ -44,7 +44,7 @@ export class EraserService {
         this.setEraserSquare(canvas);
     }
 
-    removeDrawings(canvas: SVGElement): void {
+    evaluateWhichDrawingsToErase(canvas: SVGElement): void {
         if (this.eraseZone != null) {
             const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
             const drawingPile = new Array();
@@ -73,7 +73,7 @@ export class EraserService {
                 // TODO
             } else { drawing.setAttribute('stroke', 'red'); }
 
-        } else { drawing.setAttribute('stroke', 'black'); } // TODO remplacer par un 'undo'
+        } else { drawing.setAttribute('stroke', 'black'); } // TODO remplacer par couleur initiale
 
     }
 
@@ -82,7 +82,7 @@ export class EraserService {
             const paths = canvas.querySelectorAll('path');
             paths.forEach((path) => {
                 if (path.id === drawing.id) {
-                    this.erasedDrawings.push(drawing);
+                    this.erasedDrawings.push(path);
                     canvas.removeChild(path);
                 }
             });
@@ -97,7 +97,7 @@ export class EraserService {
             this.setEraserSquare(canvas);
             const eraser = canvas.querySelector('#eraser') as SVGElement;
             canvas.removeChild(eraser);
-            this.removeDrawings(canvas);
+            this.evaluateWhichDrawingsToErase(canvas);
         }
     }
 

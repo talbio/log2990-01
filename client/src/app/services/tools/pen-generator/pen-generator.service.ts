@@ -50,7 +50,7 @@ export class PenGeneratorService extends AbstractWritingTool {
         const path = RendererSingleton.renderer.createElement('path', 'svg');
         const properties: [string, string][] = [];
         properties.push(
-            ['id', `pencilPath${this.currentPenPathNumber}`],
+            ['id', `penPath${this.currentPenPathNumber}`],
             ['d', `M ${(this.dotPositionX)} ${(this.dotPositionY)}
         L ${(this.dotPositionX)} ${(this.dotPositionY)}`],
             ['stroke', `${this.color}`],
