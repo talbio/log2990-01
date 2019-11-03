@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PlotType } from '../../../../../data-structures/PlotType';
+import { PlotType } from '../../../../../data-structures/plot-type';
 import { PolygonGeneratorService } from './../../../../../services/tools/polygon-generator/polygon-generator.service';
 
 @Component({

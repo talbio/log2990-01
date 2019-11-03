@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
+import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/line-styles';
 import {RendererSingleton} from '../../renderer-singleton';
+import {Action, ActionGenerator, ActionType} from '../../../data-structures/command';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 
 @Injectable()
-export class LineGeneratorService {
+export class LineGeneratorService implements ActionGenerator {
 
   private readonly DEFAULT_WIDTH = 5;
   private readonly DEFAULT_DIAMETER = 5;
@@ -29,8 +31,9 @@ export class LineGeneratorService {
   private lineCap: string;
   private lineJoinStyle: LineJoinStyle;
   private lineDashStyle: LineDashStyle;
+  private currentElement: SVGElement;
 
-  constructor() {
+  constructor(private undoRedoService: UndoRedoService) {
     this.strokeWidth = this.DEFAULT_WIDTH;
     this.currentPolylineNumber = 0;
     this.markerDiameter = this.DEFAULT_DIAMETER;
@@ -114,23 +117,37 @@ export class LineGeneratorService {
   }
   set _currentPolylineNumber(count: number) { this.currentPolylineNumber = count; }
 
+  pushAction(svgElement: SVGElement): void {
+    const action: Action = {
+      actionType: ActionType.Create,
+      svgElements: [svgElement],
+      execute(): void {
+        RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), this.svgElements[0]);
+      },
+      unexecute(): void {
+        RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), this.svgElements[0]);
+      },
+    };
+    this.undoRedoService.pushAction(action);
+  }
+
   // Initializes the path
   makeLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, primaryColor: string, currentChildPosition: number) {
     if (!this.isMakingLine) {
       // Initiate the line
-      canvas.innerHTML +=
-      `<polyline id="line${this.currentPolylineNumber}"
-      stroke-width="${this.strokeWidth}"
-      stroke-linecap="${this.lineCap}"
-      stroke="${primaryColor}"
-      stroke-dasharray="${this.dashArray}"
-      fill="none"
-      stroke-linejoin="${this.lineJoin}"
-      points="${canvasPosX},${canvasPosY}">
-      </polyline>`;
+      const polyline: SVGElement = RendererSingleton.renderer.createElement('polyline', 'svg');
+      RendererSingleton.renderer.setAttribute(polyline, 'id', `line${this.currentPolylineNumber}`);
+      RendererSingleton.renderer.setAttribute(polyline, 'stroke-width', `${this.strokeWidth}`);
+      RendererSingleton.renderer.setAttribute(polyline, 'stroke-linecap', `${this.lineCap}`);
+      RendererSingleton.renderer.setAttribute(polyline, 'stroke', `${primaryColor}`);
+      RendererSingleton.renderer.setAttribute(polyline, 'stroke-dasharray', `${this.dashArray}`);
+      RendererSingleton.renderer.setAttribute(polyline, 'fill', `none`);
+      RendererSingleton.renderer.setAttribute(polyline, 'stroke-linejoin', `${this.lineJoin}`);
+      RendererSingleton.renderer.setAttribute(polyline, 'points', `${canvasPosX},${canvasPosY}`);
+      RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), polyline);
 
+      this.currentElement = polyline;
       this.createMarkers(primaryColor);
-
       this.isMakingLine = true;
       this.currentPolyineStartX = canvasPosX;
       this.currentPolyineStartY = canvasPosY;
@@ -164,6 +181,15 @@ export class LineGeneratorService {
       const newPoints = `${pointsWithoutLastStr} ${canvasPosX},${canvasPosY}`;
       currentPolyLine.setAttribute('points', newPoints);
     }
+  }
+
+  finishElement(mouseEvent: MouseEvent, currentChildPosition: number) {
+    if (mouseEvent.shiftKey) {
+      this.finishAndLinkLineBlock(RendererSingleton.getCanvas(), currentChildPosition);
+    } else {
+      this.finishLineBlock(RendererSingleton.getCanvas(), currentChildPosition);
+    }
+    this.pushAction(this.currentElement);
   }
   finishLineBlock(canvas: SVGElement, currentChildPosition: number) {
     if (this.isMakingLine) {
@@ -210,8 +236,8 @@ export class LineGeneratorService {
 
   // This function creates a marker tag with the color and the id of the polyline and returns a string for the URL
   createMarkers(color: string): SVGElement {
-    const marker = RendererSingleton.renderer.createElement('marker');
-    const circle = RendererSingleton.renderer.createElement('circle');
+    const marker = RendererSingleton.renderer.createElement('marker', 'svg');
+    const circle = RendererSingleton.renderer.createElement('circle', 'svg');
 
     RendererSingleton.renderer.setAttribute(circle, 'fill', color);
     RendererSingleton.renderer.setAttribute(circle, 'r', this.markerDiameter as unknown as string);
@@ -232,7 +258,7 @@ export class LineGeneratorService {
       this.addMarkersToNewLine(marker, canvas);
     }
     // reload
-    canvas.innerHTML = canvas.innerHTML;
+    // canvas.innerHTML = canvas.innerHTML;
     return marker;
   }
 

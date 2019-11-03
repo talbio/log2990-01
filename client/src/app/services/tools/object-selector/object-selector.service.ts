@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Colors } from 'src/app/data-structures/Colors';
+import { Colors } from 'src/app/data-structures/colors';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 
 const DASHED_LINE_VALUE = 5;
