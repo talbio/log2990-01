@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import {Command, Command, ActionType} from '../../../data-structures/command';
+import {Command, CommandGenerator} from '../../../data-structures/command';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 
 @Injectable()
-export class ColorApplicatorService implements Command {
+export class ColorApplicatorService implements CommandGenerator {
 
   private readonly CLOSED_FORMS = ['rect', 'polygon', 'ellipse'];
   private readonly TREATED_ELEMENTS = ['path', 'polyline'].concat(this.CLOSED_FORMS);
@@ -16,10 +16,8 @@ export class ColorApplicatorService implements Command {
               private undoRedoService: UndoRedoService) {
   }
 
-  pushColorApplicatorAction(svgElement: SVGElement, attribute: string, newColor: string, ancientColor: string): void {
-    const action: Command = {
-      actionType: ActionType.Create,
-      svgElements: [svgElement],
+  pushColorApplicatorCommand(svgElement: SVGElement, attribute: string, newColor: string, ancientColor: string): void {
+    const command: Command = {
       execute(): void {
         RendererSingleton.renderer.setAttribute(svgElement, attribute, newColor);
       },
@@ -27,17 +25,17 @@ export class ColorApplicatorService implements Command {
         RendererSingleton.renderer.setAttribute(svgElement, attribute, ancientColor);
       },
     };
-    this.pushCommand(action);
+    this.pushCommand(command);
   }
 
-  pushCommand(action: Command): void {
-    this.undoRedoService.pushCommand(action);
+  pushCommand(command: Command): void {
+    this.undoRedoService.pushCommand(command);
   }
 
   changePrimaryColor(targetObject: SVGElement, newColor: string) {
     if (this.TREATED_ELEMENTS.includes(targetObject.nodeName)) {
       if (this.isClosedForm(targetObject.nodeName)) {
-        this.pushColorApplicatorAction(targetObject, 'fill', newColor, targetObject.getAttribute('fill') as string);
+        this.pushColorApplicatorCommand(targetObject, 'fill', newColor, targetObject.getAttribute('fill') as string);
         targetObject.setAttribute('fill', newColor);
       } else if (targetObject.nodeName === 'path') {
         this.changePathColor(targetObject, newColor);
@@ -52,7 +50,7 @@ export class ColorApplicatorService implements Command {
     if (this.TREATED_ELEMENTS.includes(targetObject.nodeName)) {
 
       if (this.isClosedForm(targetObject.nodeName)) {
-        this.pushColorApplicatorAction(targetObject, 'stroke', newColor, targetObject.getAttribute('stroke') as string);
+        this.pushColorApplicatorCommand(targetObject, 'stroke', newColor, targetObject.getAttribute('stroke') as string);
         targetObject.setAttribute('stroke', newColor);
       } else if (targetObject.nodeName === 'path') {
         if ((targetObject.getAttribute('id') as string).startsWith('brush')) {
@@ -78,7 +76,7 @@ export class ColorApplicatorService implements Command {
   private changePathColor(targetObject: SVGElement, newColor: string) {
     const id = targetObject.getAttribute('id') as string;
     if (id.startsWith('pencil')) {
-      this.pushColorApplicatorAction(targetObject, 'stroke', newColor, targetObject.getAttribute('stroke') as string);
+      this.pushColorApplicatorCommand(targetObject, 'stroke', newColor, targetObject.getAttribute('stroke') as string);
       targetObject.setAttribute('stroke', newColor);
     } else if (id.startsWith('brush')) {
       // TODO: BRUSH???

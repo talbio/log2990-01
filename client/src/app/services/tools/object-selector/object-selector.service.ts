@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Colors} from 'src/app/data-structures/colors';
-import {Command, Command, ActionType} from '../../../data-structures/command';
+import {Command, CommandGenerator} from '../../../data-structures/command';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 
@@ -18,7 +18,7 @@ interface FinalPosition {
 }
 
 @Injectable()
-export class ObjectSelectorService implements Command {
+export class ObjectSelectorService implements CommandGenerator {
 
   private OFFSET_CANVAS_Y: number;
   private OFFSET_CANVAS_X: number;
@@ -197,16 +197,14 @@ export class ObjectSelectorService implements Command {
       console.log(finalPosition);
       this.initialAndFinalPositions.set(child, [initialPosition, finalPosition]);
     });
-    this.pushTranslateAction(this.initialAndFinalPositions);
+    this.pushTranslationCommand(this.initialAndFinalPositions);
     const groupElement = document.querySelector('#box') as SVGGElement;
     groupElement.setAttributeNS(null, 'onmousemove', 'null');
     this.mouseDownTranslation = false;
   }
 
-  pushTranslateAction(initialAndFinalPositions: Map<SVGElement, [InitialPosition, FinalPosition]>): void {
-    const action: Command = {
-      actionType: ActionType.Translate,
-      svgElements: [],
+  pushTranslationCommand(initialAndFinalPositions: Map<SVGElement, [InitialPosition, FinalPosition]>): void {
+    const command: Command = {
       execute(): void {
         initialAndFinalPositions.forEach(
           ((positions: [InitialPosition, FinalPosition], element: SVGElement) => {
@@ -224,10 +222,10 @@ export class ObjectSelectorService implements Command {
           }));
       },
     };
-    this.pushCommand(action);
+    this.pushCommand(command);
   }
 
-  pushCommand(action: Command): void {
-    this.undoRedoService.pushCommand(action);
+  pushCommand(command: Command): void {
+    this.undoRedoService.pushCommand(command);
   }
 }
