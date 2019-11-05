@@ -63,7 +63,7 @@ export class PencilGeneratorService extends AbstractWritingTool {
   finishPenPath() {
     if (this.mouseDown) {
       this.currentPencilPathNumber += 1;
-      this.pushAction(this.currentElement);
+      this.pushGeneratorCommand(this.currentElement);
       this.mouseDown = false;
     }
   }

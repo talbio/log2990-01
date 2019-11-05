@@ -59,7 +59,7 @@ export class BrushGeneratorService extends AbstractWritingTool {
   finishBrushPath() {
     if (this.mouseDown) {
       this.currentBrushPathNumber += 1;
-      this.pushAction(this.currentElement);
+      this.pushGeneratorCommand(this.currentElement);
       this.mouseDown = false;
     }
   }
