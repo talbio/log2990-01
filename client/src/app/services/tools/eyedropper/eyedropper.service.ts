@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BrushGeneratorService } from 'src/app/services/tools/brush-generator/brush-generator.service';
-import {RendererSingleton} from '../../renderer-singleton';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
+import {RendererSingleton} from '../../renderer-singleton';
 import { ColorService } from '../color/color.service';
 
 @Injectable()
