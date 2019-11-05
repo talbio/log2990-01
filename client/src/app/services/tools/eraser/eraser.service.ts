@@ -151,7 +151,7 @@ export class EraserService {
 
     }
 
-    intersects(drawing: SVGGElement): boolean {
+    intersects(drawing: SVGElement): boolean {
         const drawingZone = drawing.getBoundingClientRect();
         const isEraserTouchingTheDrawing = !((this.eraseZone.left > drawingZone.right - this.OFFSET_CANVAS_X ||
             drawingZone.left - this.OFFSET_CANVAS_X > this.eraseZone.right) ||
