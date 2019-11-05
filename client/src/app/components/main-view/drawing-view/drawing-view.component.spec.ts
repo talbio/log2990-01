@@ -67,7 +67,7 @@ const DRAWING_SERVICES = [
   EraserService,
   PenGeneratorService,
 ];
-fdescribe('DrawingViewComponent', () => {
+describe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
   beforeEach(async(() => {

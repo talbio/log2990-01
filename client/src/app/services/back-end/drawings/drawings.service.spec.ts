@@ -26,7 +26,7 @@ const FAKE_SVG_MINIATURE = `<svg><path></path></svg>`;
 
 let saveDrawingService: DrawingsService;
 
-fdescribe('DrawingsService', () => {
+describe('DrawingsService', () => {
 
   beforeEach(async(() =>
     TestBed.configureTestingModule({
