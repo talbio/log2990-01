@@ -41,14 +41,6 @@ export class ObjectSelectorService {
   removeSelector(canvas: SVGElement): void {
     const box = canvas.querySelector('#box') as SVGElement;
     const boxrect = canvas.querySelector('#boxrect') as SVGElement;
-    const selected = canvas.querySelector('#selected') as SVGGElement;
-    const childArray = Array.from(selected.children);
-    childArray.forEach((child) => {
-      if (this.hasBeenTranslated) {
-        this.translateChildren(child, box);
-      }
-      canvas.appendChild(child);
-    });
     box.removeChild(boxrect);
     canvas.removeChild(box);
     this.hasBeenTranslated = false;
@@ -140,7 +132,7 @@ export class ObjectSelectorService {
   finish(canvas: SVGElement): void {
     if (!canvas.querySelector('#selected')) {
       this.finishSelection(canvas);
-    } else { this.finishTranslation(); }
+    } else { this.finishTranslation(canvas); }
   }
 
   finishSelection(canvas: SVGElement): void {
@@ -202,9 +194,18 @@ export class ObjectSelectorService {
     this.hasBeenTranslated = true;
   }
 
-  finishTranslation() {
+  finishTranslation(canvas: SVGElement) {
     const groupElement = document.querySelector('#box') as SVGGElement;
     groupElement.setAttributeNS(null, 'onmousemove', 'null');
+    const box = canvas.querySelector('#box') as SVGElement;
+    const selected = canvas.querySelector('#selected') as SVGGElement;
+    const childArray = Array.from(selected.children);
+    childArray.forEach((child) => {
+      if (this.hasBeenTranslated) {
+        this.translateChildren(child, box);
+      }
+      canvas.appendChild(child);
+    });
     this.mouseDownTranslation = false;
   }
 
