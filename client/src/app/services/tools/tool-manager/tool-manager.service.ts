@@ -58,11 +58,11 @@ export class ToolManagerService {
           .createElement(mouseEvent, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Pencil:
-        this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getPrimaryColor());
+        this.pencilGenerator.createPath(mouseEvent, this.colorService.getPrimaryColor());
         break;
       case Tools.Brush:
         this.brushGenerator
-          .createBrushPath(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+          .createPath(mouseEvent, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Selector:
         this.objectSelector.createSelectorRectangle(mouseEvent, canvas);
@@ -93,10 +93,10 @@ export class ToolManagerService {
           this.mousePosition._canvasMousePositionY, this.numberOfElements, mouseEvent);
         break;
       case Tools.Pencil:
-        this.pencilGenerator.updatePenPath(mouseEvent, this.numberOfElements);
+        this.pencilGenerator.updatePath(mouseEvent, this.numberOfElements);
         break;
       case Tools.Brush:
-        this.brushGenerator.updateBrushPath(mouseEvent, this.numberOfElements);
+        this.brushGenerator.updatePath(mouseEvent, this.numberOfElements);
         break;
       case Tools.Selector:
         this.objectSelector.updateSelectorRectangle(mouseEvent, canvas);
@@ -133,10 +133,10 @@ export class ToolManagerService {
         this.rectangleGenerator.finishElement();
         break;
       case Tools.Pencil:
-        this.pencilGenerator.finishPenPath();
+        this.pencilGenerator.finishPath();
         break;
       case Tools.Brush:
-        this.brushGenerator.finishBrushPath();
+        this.brushGenerator.finishPath();
         break;
       case Tools.Selector:
         this.objectSelector.finishSelector(RendererSingleton.renderer.selectRootElement('#canvas', true));

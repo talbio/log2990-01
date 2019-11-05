@@ -18,8 +18,10 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
     this.strokeWidth = this.DEFAULT_WIDTH;
   }
 
+  abstract createPath(mouseEvent: MouseEvent, primaryColor: string, secondaryColor?: string): void;
+
   /**
-   * @desc // Updates the path when the mouse is moving (mousedown)
+   * @desc Updates the path when the mouse is moving (mousedown)
    */
   updatePath(mouseEvent: MouseEvent, currentChildPosition: number) {
     if (this.mouseDown) {
@@ -29,6 +31,17 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
           currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
           ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
       }
+    }
+  }
+
+  /**
+   * @desc Finalizes the path, sets up the next one
+   */
+  finishPath(): void {
+    if (this.mouseDown) {
+      this.currentElementsNumber += 1;
+      this.pushGeneratorCommand(this.currentElement);
+      this.mouseDown = false;
     }
   }
 
