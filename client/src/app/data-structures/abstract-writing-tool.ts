@@ -1,8 +1,8 @@
 import {RendererSingleton} from '../services/renderer-singleton';
 import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
-import {Action, ActionType} from './command';
+import {AbstractGenerator} from './abstract-generator';
 
-export class AbstractWritingTool {
+export abstract class AbstractWritingTool extends AbstractGenerator {
 
   private readonly DEFAULT_WIDTH = 5;
 
@@ -12,23 +12,10 @@ export class AbstractWritingTool {
   protected mouseDown: boolean;
   protected currentElement: SVGElement;
 
-  constructor(protected undoRedoService: UndoRedoService) {
+  protected constructor(protected undoRedoService: UndoRedoService) {
+    super(undoRedoService);
     this.mouseDown = false;
     this.strokeWidth = this.DEFAULT_WIDTH;
-  }
-
-  pushAction(svgElement: SVGElement): void {
-    const action: Action = {
-      actionType: ActionType.Create,
-      svgElements: [svgElement],
-      execute(): void {
-        RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), this.svgElements[0]);
-      },
-      unexecute(): void {
-        RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), this.svgElements[0]);
-      },
-    };
-    this.undoRedoService.pushAction(action);
   }
 
   /**
