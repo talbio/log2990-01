@@ -1,20 +1,13 @@
 
-export interface ActionGenerator {
-
-  pushAction(svgElement: SVGElement, ...vals: string[]): void;
+export interface CommandGenerator {
+  /**
+   * @desc: this method has to do only one thing when implemented:
+   * call pushCommand method from undoRedo Service and pass the command as parameter.
+   */
+  pushCommand(command: Command): void;
 }
 
-export interface Action {
-  actionType: ActionType;
-  svgElements: SVGElement[];
+export interface Command {
   execute(): void;
   unexecute(): void;
-}
-
-export enum ActionType {
-  Create,
-  Delete,
-  Translate,
-  Rotate,
-  Resize,
 }
