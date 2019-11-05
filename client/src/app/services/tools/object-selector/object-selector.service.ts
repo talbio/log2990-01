@@ -199,7 +199,7 @@ export class ObjectSelectorService {
       (group as Element).setAttribute('x', '' + (mouseEvent.x - this.initialX - (box.width / 2)));
       (group as Element).setAttribute('y', '' + (mouseEvent.y - this.initialY - (box.height / 2)));
     }
-    this.hasBeenTranslated = true;;
+    this.hasBeenTranslated = true;
   }
 
   finishTranslation() {

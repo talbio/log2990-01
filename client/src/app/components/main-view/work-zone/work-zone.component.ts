@@ -63,7 +63,7 @@ export class WorkZoneComponent implements OnInit {
   }
 
   onMouseMove(mouseEvent: MouseEvent) {
-    this.toolManager.updateElement(mouseEvent, this.canvasElement); 
+    this.toolManager.updateElement(mouseEvent, this.canvasElement);
   }
 
   onMouseUp() {
