@@ -25,27 +25,27 @@ export class ObjectSelectorService {
   }
 
   selectorMouseDown(mouseEvent: MouseEvent, canvas: SVGElement) {
-  if (!canvas.querySelector('#selected')) {
-    this.createSelectorRectangle(mouseEvent, canvas);
-  } else {
+    if (!canvas.querySelector('#selected')) {
+      this.createSelectorRectangle(mouseEvent, canvas);
+    } else {
       const selectorBox = canvas.querySelector('#boxrect') as SVGGElement;
       const box = selectorBox.getBBox();
       if (this.mousePosition._canvasMousePositionX < box.x || this.mousePosition._canvasMousePositionX > (box.x + box.width)
         || this.mousePosition._canvasMousePositionY < box.y || this.mousePosition._canvasMousePositionY > (box.y + box.height)) {
-          this.removeSelector(canvas);
+        this.removeSelector(canvas);
       } else { this.startTranslation(); }
     }
 
-   }
+  }
 
-   removeSelector(canvas: SVGElement): void {
+  removeSelector(canvas: SVGElement): void {
     const box = canvas.querySelector('#box') as SVGElement;
     const boxrect = canvas.querySelector('#boxrect') as SVGElement;
     const selected = canvas.querySelector('#selected') as SVGGElement;
     const childArray = Array.from(selected.children);
     childArray.forEach((child) => {
       if (this.hasBeenTranslated) {
-      this.translateChildren(child, box);
+        this.translateChildren(child, box);
       }
       canvas.appendChild(child);
     });
@@ -73,7 +73,7 @@ export class ObjectSelectorService {
   updateSelector(mouseEvent: MouseEvent, canvas: SVGElement) {
     if (!canvas.querySelector('#selected')) {
       this.updateSelectorRectangle(mouseEvent, canvas);
-  } else {this.translate(mouseEvent); }
+    } else { this.translate(mouseEvent); }
 
   }
   updateSelectorRectangle(mouseEvent: MouseEvent, canvas: SVGElement) {
@@ -108,7 +108,7 @@ export class ObjectSelectorService {
     const tempArray = new Array();
     drawings.forEach((drawing) => {
       if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== 'selector')
-         && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
+        && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
         tempArray.push(drawing);
       }
     });
@@ -116,15 +116,17 @@ export class ObjectSelectorService {
   }
 
   selectAll(canvas: SVGElement): void {
-    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
-    const tempArray = new Array();
-    drawings.forEach((drawing) => {
-      if ((drawing.id !== 'selector') && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
-        tempArray.push(drawing);
-      }
-    });
-    this.SVGArray = tempArray;
-    this.addToGroup(canvas);
+    if (!canvas.querySelector('#selected')) {
+      const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
+      const tempArray = new Array();
+      drawings.forEach((drawing) => {
+        if ((drawing.id !== 'selector') && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
+          tempArray.push(drawing);
+        }
+      });
+      this.SVGArray = tempArray;
+      this.addToGroup(canvas);
+    }
   }
 
   intersects(a: DOMRect): boolean {
@@ -138,8 +140,8 @@ export class ObjectSelectorService {
   finish(canvas: SVGElement): void {
     if (!canvas.querySelector('#selected')) {
       this.finishSelection(canvas);
-  } else {this.finishTranslation(); }
-   }
+    } else { this.finishTranslation(); }
+  }
 
   finishSelection(canvas: SVGElement): void {
     if (this.mouseDownSelector) {
@@ -230,7 +232,7 @@ export class ObjectSelectorService {
         if (xforms) {
           const parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms as string) as unknown as string;
           const firstX = parseFloat(parts[1]);
-          const firstY = parseFloat(parts[2] );
+          const firstY = parseFloat(parts[2]);
           newX = parseFloat('' + (firstX + parseFloat(box.getAttribute('x') as string)));
           newY = parseFloat('' + (firstY + parseFloat(box.getAttribute('y') as string)));
         } else {
