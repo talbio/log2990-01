@@ -1,4 +1,3 @@
-
 export interface CommandGenerator {
   /**
    * @desc: this method has to do only one thing when implemented:
