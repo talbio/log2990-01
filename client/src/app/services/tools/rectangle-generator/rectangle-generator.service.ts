@@ -159,21 +159,5 @@ export class RectangleGeneratorService {
     const newItem = item.cloneNode() as SVGElement;
     newItem.setAttribute('id', 'rect' + this.currentRectNumber++);
     return newItem;
-    /*
-    const x = parseFloat(item.getAttribute('x') as unknown as string) + 10;
-    const y = parseFloat(item.getAttribute('y') as unknown as string) + 10;
-    const h = parseFloat(item.getAttribute('height') as unknown as string);
-    const w = parseFloat(item.getAttribute('width') as unknown as string);
-    const color1 = item.getAttribute('fill');
-    const color2 = item.getAttribute('stroke');
-    const strokeWidth = item.getAttribute('stroke-width');
-    const newItem =
-        `<rect id="rect${this.currentRectNumber}"
-        x="${x}" data-start-x="${x}"
-        y="${y}" data-start-y="${y}"
-        width="${w}" height="${h}" stroke="${color2}" stroke-width="${strokeWidth}"
-        fill="${color1}"></rect>`;
-    this.currentRectNumber++;
-    return newItem;*/
   }
 }

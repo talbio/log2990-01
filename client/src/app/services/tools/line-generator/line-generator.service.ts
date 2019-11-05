@@ -260,34 +260,5 @@ export class LineGeneratorService {
     const newItem = item.cloneNode() as SVGElement;
     newItem.setAttribute('id', 'polyline' + this.currentPolylineNumber++);
     return newItem;
-    /*
-    const linecap = item.getAttribute('stroke-linecap');
-    const color2 = item.getAttribute('stroke');
-    const strokeWidth = item.getAttribute('stroke-width');
-    const dasharray = item.getAttribute('stroke-dasharray');
-    const linejoin = item.getAttribute('stroke-linejoin');
-    const currentPath = item.getAttribute('points');
-    let points: string[];
-    if (currentPath !== null) {
-      points = currentPath.split(' ');
-      // Slightly displacing each point
-      for (let point of points) {
-        const xAndY = point.split(',', 2);
-        xAndY[0] = (parseFloat(xAndY[0]) + 10) as unknown as string;
-        xAndY[1] = (parseFloat(xAndY[1]) + 10) as unknown as string;
-        point = '' + xAndY[0] + ',' + xAndY[1];
-      }
-      const newItem =
-        `<polyline id="line${this.currentPolylineNumber}"
-        stroke-width="${strokeWidth}" stroke-linecap="${linecap}"
-        stroke="${color2}" stroke-dasharray="${dasharray}"
-        fill="none" stroke-linejoin="${linejoin}"
-        points="${points}"></polyline>`;
-      this.currentPolylineNumber++;
-      return newItem;
-    } else {
-      console.log('cannot recognize "d" in html of ' + item.id);
-      return 'to discard';
-    }*/
   }
 }

@@ -11,14 +11,17 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {CreateDrawingFormValues} from '../../../../data-structures/CreateDrawingFormValues';
 import {Tools} from '../../../../data-structures/Tools';
 import {ModalManagerService} from '../../../../services/modal-manager/modal-manager.service';
+import { ClipboardProperties } from '../abstract-clipboard/abstract-clipboard.component';
 import {DialogProperties} from '../abstract-dialog-button/abstract-dialog-button.component';
 import {ToolProperties} from '../abstract-tool-button/abstract-tool-button.component';
+import { ClipboardService } from './../../../../services/tools/clipboard/clipboard.service';
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
 const ELLIPSE_ICON_PATH = '../../../../assets/svg-icons/ellipse.svg';
 const POLYGON_ICON_PATH = '../../../../assets/svg-icons/polygon-icon.svg';
 const ADD_TAG_ICON_PATH = '../../../../assets/svg-icons/add-tag.svg';
 const DELETE_TAG_ICON_PATH = '../../../../assets/svg-icons/delete-tag.svg';
+const ERASER_ICON_PATH = '../../../../assets/svg-icons/eraser.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -37,13 +40,16 @@ export class LateralBarComponent {
 
   pencilToolsButtonsProperties: ToolProperties[];
   shapeToolsButtonsProperties: ToolProperties[];
+  clipboardButtonsProperties: ClipboardProperties[];
   dialogsButtonsProperties: DialogProperties[];
 
   constructor(private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
-              private modalManagerService: ModalManagerService) {
+              private modalManagerService: ModalManagerService,
+              private clipboard: ClipboardService) {
     this.loadSVGIcons();
     this.setAppropriateIconsClass();
+    this.initializeClipboardButtons();
     this.initializePencilToolsButtons();
     this.initializeShapeToolsButtons();
     this.initializeDialogsButtons();
@@ -78,6 +84,8 @@ export class LateralBarComponent {
       this.domSanitizer.bypassSecurityTrustResourceUrl(ADD_TAG_ICON_PATH));
     this.matIconRegistry.addSvgIcon('delete-tag',
       this.domSanitizer.bypassSecurityTrustResourceUrl(DELETE_TAG_ICON_PATH));
+    this.matIconRegistry.addSvgIcon('eraser',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(ERASER_ICON_PATH));
   }
 
   private initializePencilToolsButtons() {
@@ -92,6 +100,8 @@ export class LateralBarComponent {
       this.toolPropertiesFactory(Tools.Selector, 'Outil de sélection', 'select_all', false));
     this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Eyedropper, 'Pipette', 'colorize', false));
+    this.pencilToolsButtonsProperties.push(
+        this.toolPropertiesFactory(Tools.Eraser, 'Efface', 'eraser', true));
   }
 
   private initializeShapeToolsButtons() {
@@ -108,6 +118,20 @@ export class LateralBarComponent {
       this.toolPropertiesFactory(Tools.Stamp, 'Étampe', 'sentiment_satisfied_alt', false));
     this.shapeToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Grid, 'Grille', 'grid_on', false));
+  }
+
+  private initializeClipboardButtons() {
+    this.clipboardButtonsProperties = [];
+    this.clipboardButtonsProperties.push(
+      this.clipboardPropertiesFactory(() => this.clipboard.copy(), 'Copier', 'Copier', false));
+    this.clipboardButtonsProperties.push(
+      this.clipboardPropertiesFactory(() => this.clipboard.cut(), 'Couper', 'Couper', false));
+    this.clipboardButtonsProperties.push(
+      this.clipboardPropertiesFactory(() => this.clipboard.delete(), 'Supprimer', 'Supprimer', false));
+    this.clipboardButtonsProperties.push(
+      this.clipboardPropertiesFactory(() => this.clipboard.duplicate(), 'Dupliquer', 'Dupliquer', false));
+    this.clipboardButtonsProperties.push(
+      this.clipboardPropertiesFactory(() => this.clipboard.paste(), 'Coller', 'Coller', false));
   }
 
   private initializeDialogsButtons() {
@@ -132,5 +156,9 @@ export class LateralBarComponent {
 
   private dialogPropertiesFactory(onClickFunction: () => void, matToolTip: string, icon: string, isSvgIcon: boolean): DialogProperties {
     return { openDialog: onClickFunction, matToolTip, icon, isSvgIcon};
+  }
+
+  private clipboardPropertiesFactory(onClickFunction: () => void, matToolTip: string, icon: string, isSvgIcon: boolean): ClipboardProperties {
+    return { clipboardFunction: onClickFunction, matToolTip, icon, isSvgIcon};
   }
 }

@@ -72,37 +72,5 @@ export class PencilGeneratorService {
     const newItem = item.cloneNode() as SVGElement;
     newItem.setAttribute('id', 'pencilPath' + this.currentPencilPathNumber++);
     return newItem;
-    /*const linecap = newItem.getAttribute('stroke-linecap');
-    const color1 = newItem.getAttribute('fill');
-    // const color2 = item.getAttribute('stroke');
-    const strokeWidth = newItem.getAttribute('stroke-width');
-    const currentPath = newItem.getAttribute('d');
-    let points: string[];
-    if (currentPath !== null) {
-      let newPath: string;
-      points = currentPath.split(' ');
-      // Slightly displacing each point
-      for (const point of points) {
-        let initialX: string;
-        if (point[0] === 'M') {
-          for (let i = 1 ; i < point.length ; i++) {
-            initialX += point[i];
-          }
-        }
-        if (point !== 'L' && point !== 'M' && point !== 'Z') {
-          newPath += (parseFloat(point) + 10) as unknown as string;
-          if()
-        }
-      }/*
-      const newItem =
-        `<path id="pencilPath${this.currentPencilPathNumber}"
-        d="${points}" stroke="${color1}" stroke-width="${strokeWidth}"
-        stroke-linecap="${linecap}" fill="none"></path>`;
-      this.currentPencilPathNumber++;
-      return newItem;
-    } else {
-      console.log('cannot recognize "d" in html of ' + item.id);
-      return 'to discard';
-    }*/
   }
 }

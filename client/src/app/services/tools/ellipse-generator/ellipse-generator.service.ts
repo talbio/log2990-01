@@ -142,29 +142,5 @@ export class EllipseGeneratorService {
     const newItem = item.cloneNode() as SVGElement;
     newItem.setAttribute('id', 'polygon' + this.currentEllipseNumber++);
     return newItem;
-    /*
-    const x = parseFloat(item.getAttribute('cx') as unknown as string) + 10;
-    const y = parseFloat(item.getAttribute('cy') as unknown as string) + 10;
-    const h = parseFloat(item.getAttribute('ry') as unknown as string);
-    const w = parseFloat(item.getAttribute('rx') as unknown as string);
-    const color1 = item.getAttribute('fill');
-    const color2 = item.getAttribute('stroke');
-    const strokeWidth = item.getAttribute('stroke-width');
-    if ((x + w) > 1080 || (y + h) > 800) {
-      this.currentEllipseNumber++;
-      return `<rect id="rect${this.currentEllipseNumber}"
-        cx="${x - 10}" data-start-x="${x - 10}"
-        cy="${y - 10}" data-start-y="${y - 10}"
-        rx="${w}" ry="${h}" stroke="${color2}" stroke-width="${strokeWidth}"
-        fill="${color1}"></rect>`;
-    }
-    const newItem =
-        `<rect id="rect${this.currentEllipseNumber}"
-        cx="${x}" data-start-x="${x}"
-        cy="${y}" data-start-y="${y}"
-        rx="${w}" ry="${h}" stroke="${color2}" stroke-width="${strokeWidth}"
-        fill="${color1}"></rect>`;
-    this.currentEllipseNumber++;
-    return newItem;*/
   }
 }

@@ -28,7 +28,7 @@ export class KeyboardShortcutsService {
   private readonly COPY_KEY = 'c';
   private readonly CUT_KEY = 'x';
   private readonly DUPLICATE_KEY = 'd';
-  private readonly DELETE_KEY = 'delete';
+  private readonly DELETE_KEY = 'Delete';
   private readonly PASTE_KEY = 'v';
 
   private readonly oneKeyShortcuts: Map<string, () => void>;
@@ -72,11 +72,9 @@ export class KeyboardShortcutsService {
     this.oneKeyShortcuts.set(this.GRID_KEY, () => this.gridToggler.toggleGrid());
 
     // clipboard shortcuts
-    this.oneKeyShortcuts.set(this.COPY_KEY, () => this.clipboard.copy());
-    this.oneKeyShortcuts.set(this.CUT_KEY, () => this.clipboard.cut());
-    this.oneKeyShortcuts.set(this.DELETE_KEY, () => this.clipboard.delete());
-    this.oneKeyShortcuts.set(this.DUPLICATE_KEY, () => this.clipboard.duplicate());
-    this.oneKeyShortcuts.set(this.PASTE_KEY, () => this.clipboard.paste());
+    //if (this.toolManager._activeTool === Tools.Selector) {
+      this.oneKeyShortcuts.set(this.DELETE_KEY, () => this.clipboard.delete());
+    //}
   }
 
   private setControlKeyShortcuts(): void {
@@ -86,5 +84,12 @@ export class KeyboardShortcutsService {
       this.objectSelector.selectAll(canvas);
     });
     this.controlKeyShortcuts.set(this.NEW_DRAWING_KEY, () => this.modalManagerService.showCreateDrawingDialog());
+    // clipboard shortcuts
+    //if (this.toolManager._activeTool === Tools.Selector) {
+    this.controlKeyShortcuts.set(this.COPY_KEY, () => this.clipboard.copy());
+    this.controlKeyShortcuts.set(this.CUT_KEY, () => this.clipboard.cut());
+    this.controlKeyShortcuts.set(this.DUPLICATE_KEY, () => this.clipboard.duplicate());
+   //}
+    this.controlKeyShortcuts.set(this.PASTE_KEY, () => this.clipboard.paste());
   }
 }

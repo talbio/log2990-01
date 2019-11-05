@@ -1,0 +1,7 @@
+<button mat-menu-item
+          matTooltip="{{clipboardProperties.matToolTip}}"
+          matTooltipPosition="left"
+          (click)="clipboardProperties.clipboardFunction()">
+  <mat-icon *ngIf="!clipboardProperties.isSvgIcon">{{clipboardProperties.icon}}</mat-icon>
+  <mat-icon *ngIf="clipboardProperties.isSvgIcon" svgIcon="{{clipboardProperties.icon}}" ></mat-icon>
+</button>

@@ -212,34 +212,5 @@ export class PolygonGeneratorService {
     const newItem = item.cloneNode() as SVGElement;
     newItem.setAttribute('id', 'polygon' + this.currentPolygonNumber++);
     return newItem;
-    /*
-    const color1 = item.getAttribute('fill');
-    const color2 = item.getAttribute('stroke');
-    const strokeWidth = item.getAttribute('stroke-width');
-    const currentPolygon = item.getAttribute('points');
-    let points: string[];
-    if (currentPolygon !== null) {
-      points = currentPolygon.split(' ');
-      let pointsString: string;
-      // Slightly displacing each point
-      for (const point of points) {
-        const xAndY = point.split(',', 2);
-        const xyNum: number[] = [0];
-        xyNum[0] = parseFloat(xAndY[0]) + 10;
-        xyNum[1] = parseFloat(xAndY[1]) + 10;
-        if (xyNum[0] > 1080 || xyNum[1] > 800) {
-          pointsString = currentPolygon;
-        }
-        pointsString = '' + xyNum[0] + ',' + xyNum[1];
-      }
-      this.currentPolygonNumber++;
-      return `<polygon id="polygon${this.currentPolygonNumber}"
-        points="${pointsString}"
-        stroke="${color2}" stroke-width="${strokeWidth}"
-        fill="${color1}"></polygon>`;
-    } else {
-      console.log('cannot recognize "points" in html of ' + item.id);*/
-      //return 'to discard';
     }
-  // }
 }

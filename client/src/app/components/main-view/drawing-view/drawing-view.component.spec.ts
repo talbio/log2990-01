@@ -111,16 +111,16 @@ fdescribe('DrawingViewComponent', () => {
       clientY: y1,
     });
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService._canvasMousePositionX = x1;
-    mousePositionService._canvasMousePositionY = y1;
+    mousePositionService.canvasMousePositionX = x1;
+    mousePositionService.canvasMousePositionY = y1;
     component.workZoneComponent.onMouseDown(mouseEvent);
     mouseEvent = new MouseEvent('mousemove', {
     clientX: x2,
     clientY: y2,
     });
     // update mouse position on the service
-    mousePositionService._canvasMousePositionX = x2;
-    mousePositionService._canvasMousePositionY = y2;
+    mousePositionService.canvasMousePositionX = x2;
+    mousePositionService.canvasMousePositionY = y2;
     component.workZoneComponent.onMouseMove(mouseEvent);
     component.workZoneComponent.onMouseUp();
   };
@@ -186,8 +186,8 @@ fdescribe('DrawingViewComponent', () => {
       clientY: yInitial,
     });
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService._canvasMousePositionX = xInitial;
-    mousePositionService._canvasMousePositionY = yInitial;
+    mousePositionService.canvasMousePositionX = xInitial;
+    mousePositionService.canvasMousePositionY = yInitial;
     component.workZoneComponent.onMouseDown(mouseEvent);
     expect(spy).toHaveBeenCalled();
     const newX = 200;
@@ -197,8 +197,8 @@ fdescribe('DrawingViewComponent', () => {
     clientY: newY,
     });
     // update mouse position on the service
-    mousePositionService._canvasMousePositionX = newX;
-    mousePositionService._canvasMousePositionY = newY;
+    mousePositionService.canvasMousePositionX = newX;
+    mousePositionService.canvasMousePositionY = newY;
     component.workZoneComponent.onMouseMove(mouseEvent);
     // Step 3. Expect a <rect> and a <ellipse>
     // ellipse and rectangle should be created as the last children
@@ -317,8 +317,8 @@ fdescribe('DrawingViewComponent', () => {
       clientY: initialY,
     });
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService._canvasMousePositionX = initialX;
-    mousePositionService._canvasMousePositionY = initialY;
+    mousePositionService.canvasMousePositionX = initialX;
+    mousePositionService.canvasMousePositionY = initialY;
     component.workZoneComponent.onMouseDown(mouseEvent);
     // make the mouseMove position unequal so we can test whether the ellipse changes into a circle
     const newX = 200;
@@ -328,8 +328,8 @@ fdescribe('DrawingViewComponent', () => {
     clientY: newY,
     });
     // update mouse position on the service
-    mousePositionService._canvasMousePositionX = newX;
-    mousePositionService._canvasMousePositionY = newY;
+    mousePositionService.canvasMousePositionX = newX;
+    mousePositionService.canvasMousePositionY = newY;
     component.workZoneComponent.onMouseMove(mouseEvent);
 
     // ellipse  should be created as the last child
@@ -388,8 +388,8 @@ fdescribe('DrawingViewComponent', () => {
     });
     // Also change the positions on the mouse position service
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService._canvasMousePositionX = xInitial;
-    mousePositionService._canvasMousePositionY = yInitial;
+    mousePositionService.canvasMousePositionX = xInitial;
+    mousePositionService.canvasMousePositionY = yInitial;
     component.workZoneComponent.onLeftClick(mouseEvent);
     expect(spy).toHaveBeenCalled();
     // Step 3. Expect un <polyline>
@@ -411,16 +411,16 @@ fdescribe('DrawingViewComponent', () => {
       clientY: yInitial,
     });
     // Also change the positions on the mouse position service
-    mousePositionService._canvasMousePositionX = xInitial;
-    mousePositionService._canvasMousePositionY = yInitial;
+    mousePositionService.canvasMousePositionX = xInitial;
+    mousePositionService.canvasMousePositionY = yInitial;
     component.workZoneComponent.onLeftClick(mouseEvent);
   };
 
   const addClickToCanvas = (mouseEvent: MouseEvent) => {
     // Change the positions on the mouse position service
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService._canvasMousePositionX = mouseEvent.clientX;
-    mousePositionService._canvasMousePositionY = mouseEvent.clientY;
+    mousePositionService.canvasMousePositionX = mouseEvent.clientX;
+    mousePositionService.canvasMousePositionY = mouseEvent.clientY;
     // Click the canvas
     component.workZoneComponent.onLeftClick(mouseEvent);
   };
@@ -481,8 +481,8 @@ fdescribe('DrawingViewComponent', () => {
     });
     // update mouse position on the service
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService._canvasMousePositionX = newX;
-    mousePositionService._canvasMousePositionY = newY;
+    mousePositionService.canvasMousePositionX = newX;
+    mousePositionService.canvasMousePositionY = newY;
     component.workZoneComponent.onMouseMove(newMouseEvent);
     expect(spy).toHaveBeenCalled();
     // Step 3. Expect a <polyline>
@@ -530,8 +530,8 @@ fdescribe('DrawingViewComponent', () => {
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     newX = 250;
     newY = 250;
-    mousePositionService._canvasMousePositionX = newX;
-    mousePositionService._canvasMousePositionY = newY;
+    mousePositionService.canvasMousePositionX = newX;
+    mousePositionService.canvasMousePositionY = newY;
     // Now delete the last point by simulating a backspace press
     toolManagerService.backSpacePress();
     // Step 3.
@@ -1065,8 +1065,8 @@ fdescribe('DrawingViewComponent', () => {
       clientY: yInitial,
     });
     // Also change the positions on the mouse position service
-    mousePositionService._canvasMousePositionX = xInitial;
-    mousePositionService._canvasMousePositionY = yInitial;
+    mousePositionService.canvasMousePositionX = xInitial;
+    mousePositionService.canvasMousePositionY = yInitial;
     component.workZoneComponent.onMouseDown(mouseEvent);
 
     // Make the rectangle cover a space so we can click it
@@ -1077,8 +1077,8 @@ fdescribe('DrawingViewComponent', () => {
       clientY: newY,
     });
     // update mouse position on the service
-    mousePositionService._canvasMousePositionX = newX;
-    mousePositionService._canvasMousePositionY = newY;
+    mousePositionService.canvasMousePositionX = newX;
+    mousePositionService.canvasMousePositionY = newY;
     component.workZoneComponent.onMouseMove(mouseEvent);
     component.workZoneComponent.onMouseUp();
     // Expect a <rectangle>
@@ -1106,8 +1106,8 @@ fdescribe('DrawingViewComponent', () => {
       bubbles: true,
     });
     // update mouse position on the service
-    mousePositionService._canvasMousePositionX = newX;
-    mousePositionService._canvasMousePositionY = newY;
+    mousePositionService.canvasMousePositionX = newX;
+    mousePositionService.canvasMousePositionY = newY;
     // click the rectangle
     const spy = spyOn(component.workZoneComponent, 'onLeftClick').and.callThrough();
     const eyedropperService = fixture.debugElement.injector.get(EyedropperService);
@@ -1151,8 +1151,8 @@ fdescribe('DrawingViewComponent', () => {
       clientY: yInitial,
     });
     // Also change the positions on the mouse position service
-    mousePositionService._canvasMousePositionX = xInitial;
-    mousePositionService._canvasMousePositionY = yInitial;
+    mousePositionService.canvasMousePositionX = xInitial;
+    mousePositionService.canvasMousePositionY = yInitial;
     component.workZoneComponent.onMouseDown(mouseEvent);
 
     // Make the path cover a space so we can click it
@@ -1163,8 +1163,8 @@ fdescribe('DrawingViewComponent', () => {
       clientY: newY,
     });
     // update mouse position on the service
-    mousePositionService._canvasMousePositionX = newX;
-    mousePositionService._canvasMousePositionY = newY;
+    mousePositionService.canvasMousePositionX = newX;
+    mousePositionService.canvasMousePositionY = newY;
     component.workZoneComponent.onMouseMove(mouseEvent);
     component.workZoneComponent.onMouseUp();
     // Expect a <path>
@@ -1192,8 +1192,8 @@ fdescribe('DrawingViewComponent', () => {
       bubbles: true,
     });
     // update mouse position on the service
-    mousePositionService._canvasMousePositionX = newX;
-    mousePositionService._canvasMousePositionY = newY;
+    mousePositionService.canvasMousePositionX = newX;
+    mousePositionService.canvasMousePositionY = newY;
     // click the pencil path
     const spy = spyOn(component.workZoneComponent, 'onRightClick').and.callThrough();
     const eyedropperService = fixture.debugElement.injector.get(EyedropperService);
@@ -1343,8 +1343,8 @@ fdescribe('DrawingViewComponent', () => {
       clientY: movedY,
     });
 
-    mousePosition._canvasMousePositionX = movedX;
-    mousePosition._canvasMousePositionY = movedY;
+    mousePosition.canvasMousePositionX = movedX;
+    mousePosition.canvasMousePositionY = movedY;
 
     // Setting up the event
     polygonGenerator._plotType = PlotType.Contour;
@@ -1422,8 +1422,8 @@ fdescribe('DrawingViewComponent', () => {
       clientY: movedY,
     });
 
-    mousePosition._canvasMousePositionX = movedX;
-    mousePosition._canvasMousePositionY = movedY;
+    mousePosition.canvasMousePositionX = movedX;
+    mousePosition.canvasMousePositionY = movedY;
 
     // Setting up the event
     polygonGenerator._plotType = PlotType.Contour;
@@ -1606,8 +1606,8 @@ fdescribe('DrawingViewComponent', () => {
       clientY: movedY,
     });
 
-    mousePosition._canvasMousePositionX = movedX;
-    mousePosition._canvasMousePositionY = movedY;
+    mousePosition.canvasMousePositionX = movedX;
+    mousePosition.canvasMousePositionY = movedY;
 
     // Setting up the event
     // Case 1 => (NbOfApex) % 2 === 1

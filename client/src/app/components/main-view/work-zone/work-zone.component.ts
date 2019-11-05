@@ -20,7 +20,7 @@ export class WorkZoneComponent implements OnInit {
   @Input() color: string;
   @Input() gridSize: number;
 
-  private canvasElement: SVGElement;
+  canvasElement: SVGElement;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,

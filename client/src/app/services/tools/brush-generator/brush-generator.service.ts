@@ -130,30 +130,5 @@ export class BrushGeneratorService {
     const newItem = item.cloneNode() as SVGElement;
     newItem.setAttribute('id', 'brushPath' + this.currentBrushPathNumber++);
     return newItem;
-    /*
-    const linecap = item.getAttribute('stroke-linecap');
-    const color1 = item.getAttribute('fill');
-    // const color2 = item.getAttribute('stroke');
-    const strokeWidth = item.getAttribute('stroke-width');
-    const currentPath = item.getAttribute('d');
-    let points: string[];
-    if (currentPath !== null) {
-      points = currentPath.split(' ');
-      // Slightly displacing each point
-      for (let point of points) {
-        if (point !== 'L' && point !== 'M' && point !== 'Z') {
-          point = (parseFloat(point) + 10) as unknown as string;
-        }
-      }
-      const newItem =
-        `<path id="brushPath${this.currentBrushPathNumber}"
-        d="${currentPath}" stroke-width="${strokeWidth}"
-        stroke-linecap="${linecap}" fill="${color1}"></path>`;
-      this.currentBrushPathNumber++;
-      return newItem;
-    } else {
-      console.log('cannot recognize "d" in html of ' + item.id);
-      return 'to discard';
-    }*/
   }
 }

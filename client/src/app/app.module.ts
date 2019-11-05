@@ -10,6 +10,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NotifierModule, NotifierOptions, NotifierService} from 'angular-notifier';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
+import { AbstractClipboardComponent } from './components/main-view/lateral-bar-module/abstract-clipboard/abstract-clipboard.component';
 import { AbstractDialogButtonComponent } from './components/main-view/lateral-bar-module/abstract-dialog-button/abstract-dialog-button.component';
 import { AbstractToolButtonComponent } from './components/main-view/lateral-bar-module/abstract-tool-button/abstract-tool-button.component';
 import { ColorToolButtonsComponent } from './components/main-view/lateral-bar-module/color-tool-buttons/color-tool-buttons.component';
@@ -19,6 +20,7 @@ import { BrushToolsComponent } from './components/main-view/tools-attributes-mod
 import { ColorApplicatorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/color-applicator/color-applicator-tools.component';
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
+import { EraserToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eraser/eraser-tools.component';
 import { EyedropperToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eyedropper/eyedropper-tools.component';
 import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
@@ -33,11 +35,11 @@ import { LastTenColorsComponent } from './components/modals/color-picker-module/
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
 import { FilterByTags } from './components/modals/open-drawing-dialog/filter-by-tags.pipe';
-import {OpenDrawingDialogComponent} from './components/modals/open-drawing-dialog/open-drawing-dialog.component';
+import { OpenDrawingDialogComponent } from './components/modals/open-drawing-dialog/open-drawing-dialog.component';
 import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
-import {DemoMaterialModule} from './material.module';
-import {DrawingsService} from './services/back-end/drawings/drawings.service';
+import { DemoMaterialModule } from './material.module';
+import { DrawingsService } from './services/back-end/drawings/drawings.service';
 import { MousePositionService } from './services/mouse-position/mouse-position.service';
 import { RendererSingleton } from './services/renderer-singleton';
 import { StorageService } from './services/storage/storage.service';
@@ -47,6 +49,7 @@ import { ColorApplicatorService } from './services/tools/color-applicator/color-
 import { ColorService } from './services/tools/color/color.service';
 import { EllipseGeneratorService } from './services/tools/ellipse-generator/ellipse-generator.service';
 import { EmojiGeneratorService } from './services/tools/emoji-generator/emoji-generator.service';
+import { EraserService } from './services/tools/eraser/eraser.service';
 import { EyedropperService } from './services/tools/eyedropper/eyedropper.service';
 import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
@@ -115,11 +118,13 @@ const customNotifierOptions: NotifierOptions = {
     SaveDrawingDialogComponent,
     AbstractToolButtonComponent,
     AbstractDialogButtonComponent,
+    AbstractClipboardComponent,
     PencilToolsComponent,
     RectangleToolsComponent,
     LineToolsComponent,
     EllipseToolsComponent,
     EmojiToolsComponent,
+    EraserToolsComponent,
     BrushToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
@@ -162,6 +167,7 @@ const customNotifierOptions: NotifierOptions = {
     EyedropperService,
     ClipboardService,
     RendererSingleton,
+    EraserService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [
@@ -176,6 +182,7 @@ const customNotifierOptions: NotifierOptions = {
     LineToolsComponent,
     EllipseToolsComponent,
     EmojiToolsComponent,
+    EraserToolsComponent,
     BrushToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
