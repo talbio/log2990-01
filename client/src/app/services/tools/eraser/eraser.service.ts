@@ -173,8 +173,8 @@ export class EraserService {
     setEraserSquare(): void {
         RendererSingleton.getCanvas().innerHTML +=
             `<rect id="eraser"
-        x="${(this.eraseZone.left)}"
-        y="${(this.eraseZone.top)}"
+        x="${(this.mousePosition._canvasMousePositionX)}"
+        y="${(this.mousePosition._canvasMousePositionY)}"
         width="${(this.eraseSize)}" height="${(this.eraseSize)}" stroke="black"
         fill="transparent"></rect>`;
     }

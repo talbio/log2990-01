@@ -5,6 +5,7 @@ import {ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2} from '@angula
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { Tools } from 'src/app/data-structures/tools';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
@@ -15,6 +16,7 @@ import { BrushGeneratorService } from '../../../services/tools/brush-generator/b
 import { ColorApplicatorService } from '../../../services/tools/color-applicator/color-applicator.service';
 import { ColorService } from '../../../services/tools/color/color.service';
 import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
+import { EraserService } from '../../../services/tools/eraser/eraser.service';
 import { EyedropperService } from '../../../services/tools/eyedropper/eyedropper.service';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
@@ -28,9 +30,7 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
-import { EraserService } from '../../../services/tools/eraser/eraser.service';
 import { DrawingViewComponent } from './drawing-view.component';
-import { Tools } from 'src/app/data-structures/tools';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
@@ -99,11 +99,11 @@ fdescribe('EraserComponent', () => {
       fixture.detectChanges();
     });
   }));
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-// should be able to erase only the first drawing from a pile
   it('should be possible to remove only the first drawing from a pile', () => {
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Rectangle;
@@ -114,12 +114,13 @@ fdescribe('EraserComponent', () => {
   const offsetX = 64;
   const mouseEvent = new MouseEvent('mousedown', {
     button: 0,
-    clientX: -5 + offsetX,
-    clientY: -5 ,
+    clientX: 10 + offsetX,
+    clientY: 10 ,
   });
 
-  const mouseEvent2 = new MouseEvent('mousedown', {
-  });
+  const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+  mousePositionService._canvasMousePositionX = 10;
+  mousePositionService._canvasMousePositionY = 10;
 
   // Adding 3 rectangles in the same place
   component.workZoneComponent.onMouseDown(mouseEvent);
@@ -129,11 +130,59 @@ fdescribe('EraserComponent', () => {
 
   // erasing
   toolManagerService._activeTool = Tools.Eraser;
-  component.workZoneComponent.onMouseDown(mouseEvent2);
+  component.workZoneComponent.onMouseDown(mouseEvent);
   component.workZoneComponent.onMouseUp();
+  // only one drawing missing
   expect(workChilds.length).toBe(initialNumberOfChildren + 2);
 });
-// should be able to be used as a brush
+
+  it('should be possible to use eraser as a brush', () => {
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Rectangle;
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const workChilds = svgHandle.children;
+    const initialNumberOfChildren = workChilds.length;
+    // Setting up the event
+    const offsetX = 64;
+    const mouseDown1 = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: 10 + offsetX,
+      clientY: 10 ,
+    });
+    const mouseDown2 = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: 15 + offsetX,
+      clientY: 15 ,
+    });
+    const mouseDown3 = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: 20 + offsetX,
+      clientY: 20 ,
+    });
+    // Adding 3 rectangles in 3 different places
+    component.workZoneComponent.onMouseDown(mouseDown1);
+    component.workZoneComponent.onMouseDown(mouseDown2);
+    component.workZoneComponent.onMouseDown(mouseDown3);
+    expect(workChilds.length).toBe(initialNumberOfChildren + 3);
+
+// erasing
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    const mouseMove = new MouseEvent('mousemove', {});
+    toolManagerService._activeTool = Tools.Eraser;
+    mousePositionService._canvasMousePositionX = 10;
+    mousePositionService._canvasMousePositionY = 10;
+    component.workZoneComponent.onMouseDown(mouseDown1);
+    mousePositionService._canvasMousePositionX = 15;
+    mousePositionService._canvasMousePositionY = 15;
+    component.workZoneComponent.onMouseMove(mouseMove);
+    mousePositionService._canvasMousePositionX = 20;
+    mousePositionService._canvasMousePositionY = 20;
+    component.workZoneComponent.onMouseMove(mouseMove);
+    component.workZoneComponent.onMouseUp();
+
+// all three drawings have been erased
+    expect(workChilds.length).toBe(initialNumberOfChildren);
+});
 
 // should bring back all erased drawings with undo
 
