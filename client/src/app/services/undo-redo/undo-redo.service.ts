@@ -44,13 +44,4 @@ export class UndoRedoService {
     }
     this.undoCommands.push(command);
   }
-
-  /**
-   * 1 : créer rectangle
-   * 2 : push cette action dans undo
-   * 3 : l'utilisateur appuie sur annuler -> suppression du rectangle :
-   *       pop de undo le rectangle, appeler unexecute, push dans redo.
-   * 4 : l'utilisateur appuie sur refaire -> recréation du rectangle :
-   *       pop de redo le rectangle, appeler execute, push dans undo.
-   */
 }
