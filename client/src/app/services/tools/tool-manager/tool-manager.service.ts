@@ -83,7 +83,7 @@ export class ToolManagerService {
         this.polygonGenerator.createPolygon(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Eraser:
-        this.eraser.startErasing(canvas);
+        this.eraser.startErasing();
         break;
       default:
         return;
@@ -133,7 +133,7 @@ export class ToolManagerService {
           this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         break;
       case Tools.Eraser:
-        this.eraser.moveEraser(canvas);
+        this.eraser.moveEraser();
         break;
       default:
         return;
@@ -165,7 +165,7 @@ export class ToolManagerService {
         this.polygonGenerator.finishPolygon();
         break;
         case Tools.Eraser:
-        this.eraser.stopErasing(RendererSingleton.renderer.selectRootElement('#canvas', true));
+        this.eraser.stopErasing();
         break;
       default:
         return;
