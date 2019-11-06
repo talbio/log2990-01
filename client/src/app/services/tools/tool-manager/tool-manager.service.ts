@@ -55,30 +55,30 @@ export class ToolManagerService {
     switch (this._activeTool) {
       case Tools.Rectangle:
         this.rectangleGenerator
-          .createRectangle(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+          .createElement(mouseEvent, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Pencil:
-        this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getPrimaryColor());
+        this.pencilGenerator.createPath(mouseEvent, this.colorService.getPrimaryColor());
         break;
       case Tools.Pen:
-        this.penGenerator.createPenPath(mouseEvent, canvas, this.colorService.getSecondaryColor());
+        this.penGenerator.createPath(mouseEvent, this.colorService.getSecondaryColor());
         break;
       case Tools.Brush:
         this.brushGenerator
-          .createBrushPath(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+          .createPath(mouseEvent, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Selector:
         this.objectSelector.selectorMouseDown(mouseEvent, canvas);
         break;
       case Tools.Ellipse:
         this.ellipseGenerator
-          .createEllipse(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+          .createElement(mouseEvent, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Stamp:
         this.emojiGenerator.addEmoji(mouseEvent, canvas);
         break;
       case Tools.Polygon:
-        this.polygonGenerator.createPolygon(mouseEvent, canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+        this.polygonGenerator.createElement(mouseEvent, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Eraser:
         this.eraser.startErasing(canvas);
@@ -92,22 +92,17 @@ export class ToolManagerService {
   updateElement(mouseEvent: MouseEvent, canvas: SVGElement) {
     switch (this._activeTool) {
       case Tools.Rectangle:
-        if (mouseEvent.shiftKey) {
-          this.rectangleGenerator.updateSquare(this.mousePosition._canvasMousePositionX,
-            this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
-        } else {
-          this.rectangleGenerator.updateRectangle(this.mousePosition._canvasMousePositionX,
-            this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
-        }
+        this.rectangleGenerator.updateElement(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, this.numberOfElements, mouseEvent);
         break;
       case Tools.Pencil:
-        this.pencilGenerator.updatePenPath(mouseEvent, this.numberOfElements);
+        this.pencilGenerator.updatePath(mouseEvent, this.numberOfElements);
         break;
       case Tools.Pen:
         this.penGenerator.updatePenPath(mouseEvent, canvas);
         break;
       case Tools.Brush:
-        this.brushGenerator.updateBrushPath(mouseEvent, this.numberOfElements);
+        this.brushGenerator.updatePath(mouseEvent, this.numberOfElements);
         break;
       case Tools.Selector:
         this.objectSelector.updateSelector(mouseEvent, canvas);
@@ -122,13 +117,13 @@ export class ToolManagerService {
           this.ellipseGenerator.updateCircle(this.mousePosition._canvasMousePositionX,
             this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
         } else {
-          this.ellipseGenerator.updateEllipse(this.mousePosition._canvasMousePositionX,
-            this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+          this.ellipseGenerator.updateElement(this.mousePosition._canvasMousePositionX,
+            this.mousePosition._canvasMousePositionY, this.numberOfElements);
         }
         break;
       case Tools.Polygon:
-        this.polygonGenerator.updatePolygon(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, canvas, this.numberOfElements);
+        this.polygonGenerator.updateElement(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, this.numberOfElements);
         break;
       case Tools.Eraser:
         this.eraser.moveEraser(canvas);
@@ -141,26 +136,26 @@ export class ToolManagerService {
   finishElement() {
     switch (this._activeTool) {
       case Tools.Rectangle:
-        this.rectangleGenerator.finishRectangle();
+        this.rectangleGenerator.finishElement();
         break;
       case Tools.Pencil:
-        this.pencilGenerator.finishPenPath();
+        this.pencilGenerator.finishPath();
         break;
       case Tools.Pen:
         this.penGenerator.finishPenPath();
         break;
       case Tools.Brush:
-        this.brushGenerator.finishBrushPath();
+        this.brushGenerator.finishPath();
         break;
       case Tools.Selector:
         this.objectSelector.finish(RendererSingleton.renderer.selectRootElement('#canvas', true));
         this.updateNumberOfElements();
         break;
       case Tools.Ellipse:
-        this.ellipseGenerator.finishEllipse();
+        this.ellipseGenerator.finishElement();
         break;
       case Tools.Polygon:
-        this.polygonGenerator.finishPolygon();
+        this.polygonGenerator.finishElement();
         break;
         case Tools.Eraser:
         this.eraser.stopErasing(RendererSingleton.renderer.selectRootElement('#canvas', true));
@@ -221,7 +216,7 @@ export class ToolManagerService {
       case Tools.Rectangle:
         // change into square
         this.rectangleGenerator.updateSquare(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
+          this.mousePosition._canvasMousePositionY, this.numberOfElements);
         break;
       case Tools.Ellipse:
         // change into circle
@@ -234,17 +229,17 @@ export class ToolManagerService {
   }
 
   changeElementShiftUp() {
-    this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
+    this.canvasElement = RendererSingleton.getCanvas();
     switch (this._activeTool) {
       case Tools.Rectangle:
         // change into rectangle
         this.rectangleGenerator.updateRectangle(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
+          this.mousePosition._canvasMousePositionY, this.numberOfElements);
         break;
       case Tools.Ellipse:
         // change into ellipse
-        this.ellipseGenerator.updateEllipse(this.mousePosition._canvasMousePositionX,
-          this.mousePosition._canvasMousePositionY, this.canvasElement, this.numberOfElements);
+        this.ellipseGenerator.updateElement(this.mousePosition._canvasMousePositionX,
+          this.mousePosition._canvasMousePositionY, this.numberOfElements);
         break;
       default:
         return;

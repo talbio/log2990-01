@@ -4,7 +4,6 @@ const MAX_WIDTH = 40;
 
 import { Injectable } from '@angular/core';
 import { AbstractWritingTool } from 'src/app/data-structures/abstract-writing-tool';
-import { Action, ActionType } from 'src/app/data-structures/command';
 import { RendererSingleton } from '../../renderer-singleton';
 import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 
@@ -32,18 +31,18 @@ export class PenGeneratorService extends AbstractWritingTool {
         this.currentPenPathNumber = 0;
     }
 
-    createPenPath(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string) {
+    createPath(mouseEvent: MouseEvent, primaryColor: string) {
         this.strokeWidth = DEFAULT_WIDTH;
         this.color = primaryColor;
         this.time = this.date.getTime();
         this.speed = 0;
-        this.addPath(mouseEvent, canvas, DEFAULT_WIDTH);
+        this.addPath(mouseEvent, DEFAULT_WIDTH);
         this.mouseDown = true;
     }
 
-    addPath(mouseEvent: MouseEvent, canvas: SVGElement, width: number): void {
-        this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
-        this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
+    addPath(mouseEvent: MouseEvent, width: number): void {
+        this.OFFSET_CANVAS_Y = RendererSingleton.getCanvas().getBoundingClientRect().top;
+        this.OFFSET_CANVAS_X = RendererSingleton.getCanvas().getBoundingClientRect().left;
         this.dotPositionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
         this.dotPositionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
 
@@ -75,7 +74,7 @@ export class PenGeneratorService extends AbstractWritingTool {
                 currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
                 ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
             this.updateStrokeWidth(currentSpeed);
-            this.addPath(mouseEvent, canvas, this.strokeWidth);
+            this.addPath(mouseEvent, this.strokeWidth);
             this.speed = currentSpeed;
         }
     }
@@ -96,7 +95,7 @@ export class PenGeneratorService extends AbstractWritingTool {
     finishPenPath() {
         if (this.mouseDown) {
             this.currentPenPathNumber += 1;
-            this.pushActions(this.pathArray);
+           // this.pushGeneratorCommand(this.pathArray);
             this.pathArray = [];
             this.mouseDown = false;
         }
@@ -116,24 +115,24 @@ export class PenGeneratorService extends AbstractWritingTool {
         this.dotPositionY = currentDotPositionY;
     }
 
-    pushActions(paths: SVGElement[]): void {
+    // pushGeneratorCommand(paths: SVGElement[]): void {
 
-        const action: Action = {
-            actionType: ActionType.Create,
-            svgElements: paths,
-            execute(): void {
-                this.svgElements.forEach((path) => {
-                    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), path);
-                });
-            },
-            unexecute(): void {
-                this.svgElements.forEach((path) => {
-                    RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), path);
-                });
-            },
-        };
+    //     const action: Action = {
+    //         actionType: ActionType.Create,
+    //         svgElements: paths,
+    //         execute(): void {
+    //             this.svgElements.forEach((path) => {
+    //                 RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), path);
+    //             });
+    //         },
+    //         unexecute(): void {
+    //             this.svgElements.forEach((path) => {
+    //                 RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), path);
+    //             });
+    //         },
+    //     };
 
-        this.undoRedoService.pushAction(action);
-    }
+    //     this.undoRedoService.pushCommand(action);
+    // }
 
 }

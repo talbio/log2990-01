@@ -1,12 +1,25 @@
-import { Injectable } from '@angular/core';
-import { Colors } from 'src/app/data-structures/colors';
+import {Injectable} from '@angular/core';
+import {Colors} from 'src/app/data-structures/colors';
+import {Command, CommandGenerator} from '../../../data-structures/command';
+import {RendererSingleton} from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 
 const DASHED_LINE_VALUE = 5;
 const STROKE_COLOR = Colors.BLACK;
 
+interface InitialPosition {
+  xPos: string;
+  yPos: string;
+}
+
+interface FinalPosition {
+  xPos: string;
+  yPos: string;
+}
+
 @Injectable()
-export class ObjectSelectorService {
+export class ObjectSelectorService implements CommandGenerator {
 
   private OFFSET_CANVAS_Y: number;
   private OFFSET_CANVAS_X: number;
@@ -15,13 +28,17 @@ export class ObjectSelectorService {
   private currentRect: Element;
   private SVGArray: SVGElement[] = [];
   private isSelectorVisible: boolean;
-  private hasBeenTranslated: boolean;
   private initialX: number;
   private initialY: number;
 
-  constructor(protected mousePosition: MousePositionService) {
+  /**
+   * @desc: the first Position is the position of the element
+   * before the translation and the second Position is after the translation.
+   */
+  private initialAndFinalPositions: Map<SVGElement, [InitialPosition, FinalPosition]>;
+
+  constructor(private undoRedoService: UndoRedoService, private mousePosition: MousePositionService) {
     this.mouseDownSelector = false;
-    this.hasBeenTranslated = false;
   }
 
   selectorMouseDown(mouseEvent: MouseEvent, canvas: SVGElement) {
@@ -43,7 +60,7 @@ export class ObjectSelectorService {
     const boxrect = canvas.querySelector('#boxrect') as SVGElement;
     box.removeChild(boxrect);
     canvas.removeChild(box);
-    this.hasBeenTranslated = false;
+    this.initialAndFinalPositions = new Map<SVGElement, [InitialPosition, FinalPosition]>();
   }
 
   createSelectorRectangle(mouseEvent: MouseEvent, canvas: SVGElement) {
@@ -132,7 +149,7 @@ export class ObjectSelectorService {
   finish(canvas: SVGElement): void {
     if (!canvas.querySelector('#selected')) {
       this.finishSelection(canvas);
-    } else { this.finishTranslation(canvas); }
+    } else { this.finishTranslation(); }
   }
 
   finishSelection(canvas: SVGElement): void {
@@ -182,6 +199,14 @@ export class ObjectSelectorService {
     const box = (group as Element).getBoundingClientRect();
     this.initialX = box.left;
     this.initialY = box.top;
+    const selected = RendererSingleton.getCanvas().querySelector('#selected') as SVGGElement;
+    const childArray = Array.from(selected.children);
+    childArray.forEach((child: SVGElement) => {
+      const initialPosition: InitialPosition = {
+        xPos: child.getAttribute('x') as string, yPos: child.getAttribute('y') as string,
+      };
+      this.initialAndFinalPositions.set(child, [initialPosition, {xPos: '0', yPos: '0'}]);
+    });
   }
 
   translate(mouseEvent: MouseEvent): void {
@@ -191,21 +216,34 @@ export class ObjectSelectorService {
       (group as Element).setAttribute('x', '' + (mouseEvent.x - this.initialX - (box.width / 2)));
       (group as Element).setAttribute('y', '' + (mouseEvent.y - this.initialY - (box.height / 2)));
     }
-    this.hasBeenTranslated = true;
   }
 
-  finishTranslation(canvas: SVGElement) {
-    const groupElement = document.querySelector('#box') as SVGGElement;
-    groupElement.setAttributeNS(null, 'onmousemove', 'null');
-    const box = canvas.querySelector('#box') as SVGElement;
-    const selected = canvas.querySelector('#selected') as SVGGElement;
+  finishTranslation() {
+    const selected = RendererSingleton.getCanvas().querySelector('#selected') as SVGGElement;
     const childArray = Array.from(selected.children);
-    childArray.forEach((child) => {
-      if (this.hasBeenTranslated) {
-        this.translateChildren(child, box);
-      }
-      canvas.appendChild(child);
+    childArray.forEach((child: SVGElement) => {
+      const initialPosition: InitialPosition = (this.initialAndFinalPositions.get(child) as [InitialPosition, FinalPosition])[0];
+      const finalPosition: FinalPosition = {
+        xPos: child.getAttribute('x') as string,
+        yPos: child.getAttribute('y') as string,
+      };
+      console.log(child);
+      console.log(initialPosition);
+      console.log(finalPosition);
+      this.initialAndFinalPositions.set(child, [initialPosition, finalPosition]);
     });
+    this.pushTranslationCommand(this.initialAndFinalPositions);
+    // const groupElement = document.querySelector('#box') as SVGGElement;
+    // groupElement.setAttributeNS(null, 'onmousemove', 'null');
+    // const box = canvas.querySelector('#box') as SVGElement;
+    // const selected = canvas.querySelector('#selected') as SVGGElement;
+    // const childArray = Array.from(selected.children);
+    // childArray.forEach((child) => {
+    //   if (this.hasBeenTranslated) {
+    //     this.translateChildren(child, box);
+    //   }
+    //   canvas.appendChild(child);
+    // });
     this.mouseDownTranslation = false;
   }
 
@@ -245,5 +283,31 @@ export class ObjectSelectorService {
       default:
         break;
     }
+  }
+
+  pushTranslationCommand(initialAndFinalPositions: Map<SVGElement, [InitialPosition, FinalPosition]>): void {
+    const command: Command = {
+      execute(): void {
+        initialAndFinalPositions.forEach(
+          ((positions: [InitialPosition, FinalPosition], element: SVGElement) => {
+              console.log(element);
+              element.setAttribute('x', positions[1].xPos);
+              element.setAttribute('y', positions[1].yPos);
+          }));
+      },
+      unexecute(): void {
+        initialAndFinalPositions.forEach(
+          ((positions: [InitialPosition, FinalPosition], element: SVGElement) => {
+            console.log(element);
+            element.setAttribute('x', positions[0].xPos);
+            element.setAttribute('y', positions[0].yPos);
+          }));
+      },
+    };
+    this.pushCommand(command);
+  }
+
+  pushCommand(command: Command): void {
+    this.undoRedoService.pushCommand(command);
   }
 }
