@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import { Tools } from '../../../data-structures/tools';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
@@ -24,6 +25,7 @@ export class ToolManagerService {
   private canvasElement: SVGElement;
   private activeTool: Tools;
   private hasBeenTranslated: boolean;
+  private generators: AbstractGenerator[];
 
   set _activeTool(tool: Tools) {
     this.activeTool = tool;
@@ -49,6 +51,7 @@ export class ToolManagerService {
     this.activeTool = Tools.Pencil;
     this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
     this.hasBeenTranslated = false;
+    this.initializeGenerators();
   }
 
   createElement(mouseEvent: MouseEvent, canvas: SVGElement) {
@@ -220,7 +223,7 @@ export class ToolManagerService {
   }
 
   changeElementShiftUp() {
-    this.canvasElement = RendererSingleton.getCanvas();
+    this.canvasElement = RendererSingleton.canvas;
     switch (this._activeTool) {
       case Tools.Rectangle:
         // change into rectangle
@@ -371,59 +374,58 @@ export class ToolManagerService {
   }
 
   synchronizeAllCounters() {
-    let brushCount = 0;
-    let ellipseCount = 0;
-    let polylineCount = 0;
-    let pencilCount = 0;
-    let rectangleCount = 0;
-    let polygonCount = 0;
-    const canvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
-    for (const child of [].slice.call(canvas.children)) {
+    const counters: Map<AbstractGenerator, number> = new Map<AbstractGenerator, number>();
+    this.generators.forEach( (generator: AbstractGenerator) => counters.set(generator, 0));
+    for (const child of [].slice.call(RendererSingleton.canvas.children)) {
       const childCast = child as SVGElement;
       switch (childCast.tagName) {
-        case 'defs':
-          break;
         case 'rect':
-          rectangleCount += 1;
+          this.incrementCounter(counters, this.rectangleGenerator);
           break;
         case 'ellipse':
-          ellipseCount += 1;
+          this.incrementCounter(counters, this.ellipseGenerator);
           break;
         case 'polygon':
-          polygonCount += 1;
+          this.incrementCounter(counters, this.polygonGenerator);
           break;
         case 'path':
           if (childCast.id.startsWith('pencil')) {
-            pencilCount += 1;
+            this.incrementCounter(counters, this.pencilGenerator);
           } else if (childCast.id.startsWith('brush')) {
-            brushCount += 1;
-          } else {
-            alert(`Untreated case: element ${childCast.id}!`);
+            this.incrementCounter(counters, this.brushGenerator);
           }
           break;
         case 'polyline':
-          polylineCount += 1;
+          this.incrementCounter(counters, this.lineGenerator);
           break;
         default:
-          alert(`Untreated item ${childCast.nodeName}!`);
           break;
       }
     }
     // Always remove 1 from rect since the grid is a rectangle
-    rectangleCount -= 1;
-    this.rectangleGenerator._currentRectNumber = rectangleCount;
-    this.ellipseGenerator._currentEllipseNumber = ellipseCount;
-    this.lineGenerator._currentPolylineNumber = polylineCount;
-    this.brushGenerator._currentBrushPathNumber = brushCount;
-    this.pencilGenerator._currentPencilPathNumber = pencilCount;
-    this.polygonGenerator._currentPolygonNumber = polygonCount;
+    let count = counters.get(this.rectangleGenerator) as number;
+    counters.set(this.rectangleGenerator, --count);
+    this.generators.forEach( (generator: AbstractGenerator) =>
+      generator.currentElementsNumber = counters.get(generator) as number);
   }
-  resetCounters() {
-    this.rectangleGenerator._currentRectNumber = 0;
-    this.ellipseGenerator._currentEllipseNumber = 0;
-    this.lineGenerator._currentPolylineNumber = 0;
-    this.brushGenerator._currentBrushPathNumber = 0;
-    this.pencilGenerator._currentPencilPathNumber = 0;
-    this.polygonGenerator._currentPolygonNumber = 0;
+
+  private resetCounters(): void {
+    this.generators.forEach( (generator: AbstractGenerator) => generator.currentElementsNumber = 0);
+  }
+
+  private incrementCounter(counters: Map<AbstractGenerator, number>, generator: AbstractGenerator): void {
+    let count = counters.get(generator) as number;
+    counters.set(generator, ++count);
+  }
+
+  private initializeGenerators(): void {
+    this.generators.push(
+      this.rectangleGenerator,
+      this.ellipseGenerator,
+      this.emojiGenerator,
+      this.pencilGenerator,
+      this.brushGenerator,
+      this.lineGenerator,
+      this.polygonGenerator);
   }
 }
