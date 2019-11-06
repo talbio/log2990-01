@@ -31,19 +31,15 @@ export class BrushGeneratorService extends AbstractWritingTool {
     return this.currentBrushPattern;
   }
 
-  set _currentBrushPathNumber(count: number) {
-    this.currentElementsNumber = count;
-  }
-
   createPath(mouseEvent: MouseEvent, primaryColor: string, secondaryColor: string) {
 
-    this.OFFSET_CANVAS_Y = RendererSingleton.getCanvas().getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = RendererSingleton.getCanvas().getBoundingClientRect().left;
+    this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
+    this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
     const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
     const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
     const newPattern = this.createPattern(primaryColor, secondaryColor);
     this.generateBrushPath(this.currentElementsNumber, xPos, yPos, this.strokeWidth);
-    this.addPatternToNewPath(newPattern, RendererSingleton.getCanvas());
+    this.addPatternToNewPath(newPattern, RendererSingleton.canvas);
     this.mouseDown = true;
   }
 
@@ -71,8 +67,7 @@ export class BrushGeneratorService extends AbstractWritingTool {
         child.setAttribute('stroke', secondaryColor);
       }
     }
-    const defs = RendererSingleton.renderer.selectRootElement('#definitions', true);
-    RendererSingleton.renderer.appendChild(defs, newPattern);
+    RendererSingleton.renderer.appendChild(RendererSingleton.defs, newPattern);
     return newPattern;
   }
 

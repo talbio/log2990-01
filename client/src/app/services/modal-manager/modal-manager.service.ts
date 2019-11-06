@@ -32,10 +32,9 @@ export class ModalManagerService {
       });
       dialogRef.afterClosed().subscribe((formValues: CreateDrawingFormValues) => {
         if (formValues) {
-          const svgCanvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
-          RendererSingleton.renderer.setAttribute(svgCanvas, 'width', formValues.width.toString());
-          RendererSingleton.renderer.setAttribute(svgCanvas, 'height', formValues.height.toString());
-          RendererSingleton.renderer.setStyle(svgCanvas, 'background-color', formValues.color.toString());
+          RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'width', formValues.width.toString());
+          RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'height', formValues.height.toString());
+          RendererSingleton.renderer.setStyle(RendererSingleton.canvas, 'background-color', formValues.color.toString());
         }
       });
   }

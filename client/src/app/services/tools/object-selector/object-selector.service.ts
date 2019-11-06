@@ -164,7 +164,7 @@ export class ObjectSelectorService implements CommandGenerator {
     const box = (group as Element).getBoundingClientRect();
     this.initialX = box.left;
     this.initialY = box.top;
-    const selected = RendererSingleton.getCanvas().querySelector('#selected') as SVGGElement;
+    const selected = RendererSingleton.canvas.querySelector('#selected') as SVGGElement;
     const childArray = Array.from(selected.children);
     childArray.forEach((child: SVGElement) => {
       const initialPosition: InitialPosition = {
@@ -184,7 +184,7 @@ export class ObjectSelectorService implements CommandGenerator {
   }
 
   drop() {
-    const selected = RendererSingleton.getCanvas().querySelector('#selected') as SVGGElement;
+    const selected = RendererSingleton.canvas.querySelector('#selected') as SVGGElement;
     const childArray = Array.from(selected.children);
     childArray.forEach((child: SVGElement) => {
       const initialPosition: InitialPosition = (this.initialAndFinalPositions.get(child) as [InitialPosition, FinalPosition])[0];

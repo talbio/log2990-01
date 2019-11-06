@@ -28,14 +28,14 @@ export abstract class AbstractClosedShape extends AbstractGenerator {
   createTemporaryRectangle(mouseEvent: MouseEvent, rectangleGenerator: RectangleGeneratorService) {
     rectangleGenerator._plotType = PlotType.Contour;
     rectangleGenerator.createElement(mouseEvent, 'black', 'black');
-    RendererSingleton.getCanvas().children[RendererSingleton.getCanvas().children.length - 1].id = 'tempRect';
-    RendererSingleton.getCanvas().children[RendererSingleton.getCanvas().children.length - 1].setAttribute('stroke-dasharray', '4');
+    RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1].id = 'tempRect';
+    RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1].setAttribute('stroke-dasharray', '4');
   }
 
   drawElement(element: SVGElement, properties: [string, string][], primaryColor: string, secondaryColor: string): void {
     this.setProperties(element, properties);
     this.setStrokeFillProperties(element, primaryColor, secondaryColor);
-    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), element);
+    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, element);
     this.currentElement = element;
   }
 

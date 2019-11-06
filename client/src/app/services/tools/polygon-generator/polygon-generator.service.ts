@@ -43,8 +43,8 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   createElement(mouseEvent: MouseEvent, primaryColor: string, secondaryColor: string) {
 
     // Setup of the service's parameters
-    this.OFFSET_CANVAS_Y = RendererSingleton.getCanvas().getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = RendererSingleton.getCanvas().getBoundingClientRect().left;
+    this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
+    this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
     this.setUpAttributes();
 
     // Setup of the children's HTML in canvas
@@ -68,7 +68,7 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   finishElement() {
     if (this.mouseDown) {
       // Remove the rectangle
-      RendererSingleton.getCanvas().removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
+      RendererSingleton.canvas.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
       this.currentElementsNumber += 1;
       this.pushGeneratorCommand(this.currentElement);
       this.mouseDown = false;

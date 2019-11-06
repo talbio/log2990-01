@@ -30,8 +30,8 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
 
   createElement(mouseEvent: MouseEvent, primaryColor: string, secondaryColor: string) {
 
-    this.OFFSET_CANVAS_Y = RendererSingleton.getCanvas().getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = RendererSingleton.getCanvas().getBoundingClientRect().left;
+    this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
+    this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
     const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
     const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
 
@@ -68,7 +68,7 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
 
   updateSquare(canvasPosX: number, canvasPosY: number, currentChildPosition: number) {
     if (this.mouseDown) {
-      const currentRect = RendererSingleton.getCanvas().children[currentChildPosition - 1];
+      const currentRect = RendererSingleton.canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
@@ -118,7 +118,7 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
 
   updateRectangle(canvasPosX: number, canvasPosY: number, currentChildPosition: number) {
     if (this.mouseDown) {
-      const currentRect = RendererSingleton.getCanvas().children[currentChildPosition - 1];
+      const currentRect = RendererSingleton.canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));

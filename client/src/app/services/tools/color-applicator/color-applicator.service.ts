@@ -66,7 +66,7 @@ export class ColorApplicatorService implements CommandGenerator {
    */
   private changePolylineColor(targetObject: SVGElement, newColor: string) {
     targetObject.setAttribute('stroke', newColor);
-    const markers = this.lineGenerator.findMarkerFromPolyline(targetObject, RendererSingleton.getDefs());
+    const markers = this.lineGenerator.findMarkerFromPolyline(targetObject, RendererSingleton.defs);
     markers.children[0].setAttribute('fill', newColor);
   }
 
@@ -88,7 +88,7 @@ export class ColorApplicatorService implements CommandGenerator {
    * @desc: Change color of the fill attribute of all children of the pattern
    */
   private changeBrushPatternsColor(targetObject: SVGElement, newColor: string, property: string) {
-    const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, RendererSingleton.getDefs());
+    const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, RendererSingleton.defs);
     if (pattern) {
       for (const child of [].slice.call(pattern.children)) {
         if (child.hasAttribute(property)) {

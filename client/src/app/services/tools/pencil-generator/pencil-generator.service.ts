@@ -25,8 +25,8 @@ export class PencilGeneratorService extends AbstractWritingTool {
   // Initializes the path
   createPath(mouseEvent: MouseEvent, primaryColor: string) {
 
-    this.OFFSET_CANVAS_Y = RendererSingleton.getCanvas().getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = RendererSingleton.getCanvas().getBoundingClientRect().left;
+    this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
+    this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
     const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
     const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
     // let string addToHTML = generateHTML();

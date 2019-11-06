@@ -31,8 +31,8 @@ export class EllipseGeneratorService extends AbstractClosedShape {
 
   // Primary methods
   createElement(mouseEvent: MouseEvent, primaryColor: string, secondaryColor: string) {
-    this.OFFSET_CANVAS_Y = RendererSingleton.getCanvas().getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = RendererSingleton.getCanvas().getBoundingClientRect().left;
+    this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
+    this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
     const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
     const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
     this.generateEllipseElement(this.currentElementsNumber, xPos, yPos, primaryColor, secondaryColor);
@@ -48,7 +48,7 @@ export class EllipseGeneratorService extends AbstractClosedShape {
       const y: number = parseFloat(tempRect.getAttribute('y') as string);
       const w: number = parseFloat(tempRect.getAttribute('width') as string);
       const h: number = parseFloat(tempRect.getAttribute('height') as string);
-      const currentEllipse = RendererSingleton.getCanvas().children[currentChildPosition - 2] as SVGElement;
+      const currentEllipse = RendererSingleton.canvas.children[currentChildPosition - 2] as SVGElement;
       const radiusWidth: number = w / 2;
       const radiusHeight: number = h / 2;
       // Setting
@@ -67,7 +67,7 @@ export class EllipseGeneratorService extends AbstractClosedShape {
 
   finishElement() {
     if (this.mouseDown) {
-      RendererSingleton.getCanvas().removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
+      RendererSingleton.canvas.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
       this.currentElementsNumber += 1;
       this.pushGeneratorCommand(this.currentElement);
       this.mouseDown = false;

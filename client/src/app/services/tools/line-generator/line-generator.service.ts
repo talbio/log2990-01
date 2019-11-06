@@ -128,7 +128,7 @@ export class LineGeneratorService extends AbstractGenerator {
       RendererSingleton.renderer.setAttribute(polyline, 'fill', `none`);
       RendererSingleton.renderer.setAttribute(polyline, 'stroke-linejoin', `${this.lineJoin}`);
       RendererSingleton.renderer.setAttribute(polyline, 'points', `${canvasPosX},${canvasPosY}`);
-      RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), polyline);
+      RendererSingleton.renderer.appendChild(RendererSingleton.canvas, polyline);
 
       this.currentElement = polyline;
       this.createMarkers(primaryColor);
@@ -169,9 +169,9 @@ export class LineGeneratorService extends AbstractGenerator {
 
   finishElement(mouseEvent: MouseEvent, currentChildPosition: number) {
     if (mouseEvent.shiftKey) {
-      this.finishAndLinkLineBlock(RendererSingleton.getCanvas(), currentChildPosition);
+      this.finishAndLinkLineBlock(RendererSingleton.canvas, currentChildPosition);
     } else {
-      this.finishLineBlock(RendererSingleton.getCanvas(), currentChildPosition);
+      this.finishLineBlock(RendererSingleton.canvas, currentChildPosition);
     }
     this.pushGeneratorCommand(this.currentElement);
   }

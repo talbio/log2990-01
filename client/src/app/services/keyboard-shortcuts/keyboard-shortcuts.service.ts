@@ -63,8 +63,7 @@ export class KeyboardShortcutsService {
   private setControlKeyShortcuts(): void {
     this.controlKeyShortcuts.set(this.SELECT_ALL_KEY, () => {
       this.toolManager._activeTool = Tools.Selector;
-      const canvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
-      this.objectSelector.selectAll(canvas);
+      this.objectSelector.selectAll(RendererSingleton.canvas);
     });
     this.controlKeyShortcuts.set(this.NEW_DRAWING_KEY, () => this.modalManagerService.showCreateDrawingDialog());
   }

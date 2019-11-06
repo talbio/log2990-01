@@ -25,7 +25,7 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
    */
   updatePath(mouseEvent: MouseEvent, currentChildPosition: number) {
     if (this.mouseDown) {
-      const currentPath = RendererSingleton.getCanvas().children[currentChildPosition - 1];
+      const currentPath = RendererSingleton.canvas.children[currentChildPosition - 1];
       if (currentPath != null) {
         currentPath.setAttribute('d',
           currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
@@ -50,6 +50,6 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
       RendererSingleton.renderer.setAttribute(element, property[0], property[1]);
     }
     this.currentElement = element;
-    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), element);
+    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, element);
   }
 }
