@@ -7,8 +7,8 @@ import {Command, CommandGenerator} from './command';
  */
 export abstract class AbstractGenerator implements CommandGenerator {
 
+  currentElementsNumber: number;
   protected currentElement: SVGElement;
-  protected currentElementsNumber: number;
 
   protected constructor(protected undoRedoService: UndoRedoService) {
     this.currentElementsNumber = 0;
@@ -18,11 +18,11 @@ export abstract class AbstractGenerator implements CommandGenerator {
     const action: Command = {
       execute(): void {
         svgElements.forEach( (svgElement: SVGElement) =>
-          RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), svgElement));
+          RendererSingleton.renderer.appendChild(RendererSingleton.canvas, svgElement));
       },
       unexecute(): void {
         svgElements.forEach( (svgElement: SVGElement) =>
-          RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), svgElement));
+          RendererSingleton.renderer.removeChild(RendererSingleton.canvas, svgElement));
       },
     };
     this.pushCommand(action);
