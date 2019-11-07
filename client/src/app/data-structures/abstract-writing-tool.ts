@@ -6,11 +6,8 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
 
   private readonly DEFAULT_WIDTH = 5;
 
-  protected OFFSET_CANVAS_X: number;
-  protected OFFSET_CANVAS_Y: number;
   protected strokeWidth: number;
   protected mouseDown: boolean;
-  protected currentElement: SVGElement;
 
   protected constructor(protected undoRedoService: UndoRedoService) {
     super(undoRedoService);
@@ -18,18 +15,15 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
     this.strokeWidth = this.DEFAULT_WIDTH;
   }
 
-  abstract createPath(mouseEvent: MouseEvent, primaryColor: string, secondaryColor?: string): void;
-
   /**
    * @desc Updates the path when the mouse is moving (mousedown)
    */
-  updatePath(mouseEvent: MouseEvent, currentChildPosition: number) {
+  updateElement(xPosition: number, yPosition: number, currentChildPosition: number) {
     if (this.mouseDown) {
       const currentPath = RendererSingleton.canvas.children[currentChildPosition - 1];
       if (currentPath != null) {
-        currentPath.setAttribute('d',
-          currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
-          ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
+        currentPath.setAttribute(
+          'd', currentPath.getAttribute('d') + ' L' + xPosition + ' ' + yPosition);
       }
     }
   }
@@ -37,7 +31,7 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
   /**
    * @desc Finalizes the path, sets up the next one
    */
-  finishPath(): void {
+  finishElement(mouseEvent?: MouseEvent): void {
     if (this.mouseDown) {
       this.currentElementsNumber += 1;
       this.pushGeneratorCommand(this.currentElement);

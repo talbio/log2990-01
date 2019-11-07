@@ -9,9 +9,6 @@ export abstract class AbstractClosedShape extends AbstractGenerator {
   protected plotType: PlotType;
   protected strokeWidth: number;
 
-  protected OFFSET_CANVAS_Y: number;
-  protected OFFSET_CANVAS_X: number;
-
   protected mouseDown: boolean;
 
   protected constructor(protected undoRedoService: UndoRedoService) {
@@ -21,13 +18,9 @@ export abstract class AbstractClosedShape extends AbstractGenerator {
     this.mouseDown = false;
   }
 
-  abstract createElement(mouseEvent: MouseEvent, primaryColor: string, secondaryColor: string): void;
-  abstract updateElement(canvasPosX: number, canvasPosY: number, currentChildPosition: number, mouseEvent?: MouseEvent): void;
-  abstract finishElement(): void;
-
-  createTemporaryRectangle(mouseEvent: MouseEvent, rectangleGenerator: RectangleGeneratorService) {
-    rectangleGenerator._plotType = PlotType.Contour;
-    rectangleGenerator.createElement(mouseEvent, 'black', 'black');
+  createTemporaryRectangle(xPosition: number, yPosition: number, rectangleGenerator: RectangleGeneratorService) {
+    rectangleGenerator.plotType = PlotType.Contour;
+    rectangleGenerator.createElement(xPosition, yPosition, 'black', 'black');
     RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1].id = 'tempRect';
     RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1].setAttribute('stroke-dasharray', '4');
   }
