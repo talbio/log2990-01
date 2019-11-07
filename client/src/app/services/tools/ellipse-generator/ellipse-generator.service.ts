@@ -30,17 +30,30 @@ export class EllipseGeneratorService extends AbstractClosedShape {
   set _currentEllipseNumber(count: number) { this.currentElementsNumber = count; }
 
   // Primary methods
-  createElement(mouseEvent: MouseEvent, primaryColor: string, secondaryColor: string) {
-    this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
-    const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
-    const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
-    this.generateEllipseElement(this.currentElementsNumber, xPos, yPos, primaryColor, secondaryColor);
-    this.createTemporaryRectangle(mouseEvent, this.rectangleGenerator);
+  createElement(xPosition: number, yPosition: number, primaryColor: string, secondaryColor: string) {
+    this.generateEllipseElement(this.currentElementsNumber, xPosition, yPosition, primaryColor, secondaryColor);
+    this.createTemporaryRectangle(xPosition, yPosition, this.rectangleGenerator);
     this.mouseDown = true;
   }
 
-  updateElement(canvasPosX: number, canvasPosY: number, currentChildPosition: number) {
+  updateElement(xPosition: number, yPosition: number, currentChildPosition: number, mouseEvent: MouseEvent): void {
+    if (mouseEvent.shiftKey) {
+      this.updateCircle(xPosition, yPosition, currentChildPosition);
+    } else {
+      this.updateEllipse(xPosition, yPosition, currentChildPosition);
+    }
+  }
+
+  finishElement() {
+    if (this.mouseDown) {
+      RendererSingleton.canvas.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
+      this.currentElementsNumber += 1;
+      this.pushGeneratorCommand(this.currentElement);
+      this.mouseDown = false;
+    }
+  }
+
+  updateEllipse(canvasPosX: number, canvasPosY: number, currentChildPosition: number) {
     if (this.mouseDown) {
       this.rectangleGenerator.updateRectangle(canvasPosX, canvasPosY, currentChildPosition);
       const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
@@ -65,23 +78,14 @@ export class EllipseGeneratorService extends AbstractClosedShape {
     }
   }
 
-  finishElement() {
-    if (this.mouseDown) {
-      RendererSingleton.canvas.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
-      this.currentElementsNumber += 1;
-      this.pushGeneratorCommand(this.currentElement);
-      this.mouseDown = false;
-    }
-  }
-
-  updateCircle(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number): void {
+  updateCircle(canvasPosX: number, canvasPosY: number, currentChildPosition: number): void {
     if (this.mouseDown) {
       this.rectangleGenerator.updateSquare(canvasPosX, canvasPosY, currentChildPosition);
       const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
       const x: number = parseFloat(tempRect.getAttribute('x') as string);
       const y: number = parseFloat(tempRect.getAttribute('y') as string);
       const h: number = parseFloat(tempRect.getAttribute('height') as string);
-      const currentEllipse = canvas.children[currentChildPosition - 2] as SVGElement;
+      const currentEllipse = RendererSingleton.canvas.children[currentChildPosition - 2] as SVGElement;
       const radius: number = h / 2;
       this.setAxisAttributes(currentEllipse, Axis.x, radius, x + radius);
       this.setAxisAttributes(currentEllipse, Axis.y, radius, y + radius);

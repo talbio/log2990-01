@@ -110,13 +110,8 @@ export class LineGeneratorService extends AbstractGenerator {
     return this.markerDiameter;
   }
 
-  get _isMakingLine(): boolean {
-    return this.isMakingLine;
-  }
-  set _currentPolylineNumber(count: number) { this.currentElementsNumber = count; }
-
   // Initializes the path
-  makeLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, primaryColor: string, currentChildPosition: number) {
+  createElement(canvasPosX: number, canvasPosY: number, primaryColor: string) {
     if (!this.isMakingLine) {
       // Initiate the line
       const polyline: SVGElement = RendererSingleton.renderer.createElement('polyline', 'svg');
@@ -137,61 +132,59 @@ export class LineGeneratorService extends AbstractGenerator {
       this.currentPolyineStartY = canvasPosY;
 
     } else {
-      this.addPointToCurrentLine(canvasPosX, canvasPosY, canvas, currentChildPosition);
+      this.addPointToCurrentLine(canvasPosX, canvasPosY);
     }
   }
 
-  addPointToCurrentLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
+  addPointToCurrentLine(canvasPosX: number, canvasPosY: number) {
     if (!this.isMakingLine) {
       return;
     }
-    const currentPolyLine = canvas.children[currentChildPosition - 1];
     const newPoint = ` ${canvasPosX},${canvasPosY}`;
-    currentPolyLine.setAttribute('points', currentPolyLine.getAttribute('points') + newPoint);
+    this.currentElement.setAttribute('points', this.currentElement.getAttribute('points') + newPoint);
   }
-  updateLine(canvasPosX: number, canvasPosY: number, canvas: SVGElement, currentChildPosition: number) {
+  updateElement(xPosition: number, yPosition: number, currentChildPosition: number) {
     if (this.isMakingLine) {
-      const currentPolyLine = canvas.children[currentChildPosition - 1];
+      const currentPolyLine = RendererSingleton.canvas.children[currentChildPosition - 1];
       let pointsStr = currentPolyLine.getAttribute('points') as string;
       let indexLastPoint = pointsStr.lastIndexOf(' ');
       if (indexLastPoint === -1) {
         // There is only one point, add a second to enable the update
-        this.addPointToCurrentLine(canvasPosX, canvasPosY, canvas, currentChildPosition);
+        this.addPointToCurrentLine(xPosition, yPosition);
         // There will be a splace since we added a point
         pointsStr = currentPolyLine.getAttribute('points') as string;
         indexLastPoint = pointsStr.lastIndexOf(' ');
       }
       const pointsWithoutLastStr = pointsStr.substring(0, indexLastPoint);
-      const newPoints = `${pointsWithoutLastStr} ${canvasPosX},${canvasPosY}`;
+      const newPoints = `${pointsWithoutLastStr} ${xPosition},${yPosition}`;
       currentPolyLine.setAttribute('points', newPoints);
     }
   }
 
-  finishElement(mouseEvent: MouseEvent, currentChildPosition: number) {
+  finishElement(mouseEvent: MouseEvent) {
     if (mouseEvent.shiftKey) {
-      this.finishAndLinkLineBlock(RendererSingleton.canvas, currentChildPosition);
+      this.finishAndLinkLineBlock();
     } else {
-      this.finishLineBlock(RendererSingleton.canvas, currentChildPosition);
+      this.finishLineBlock();
     }
     this.pushGeneratorCommand(this.currentElement);
   }
-  finishLineBlock(canvas: SVGElement, currentChildPosition: number) {
+  finishLineBlock() {
     if (this.isMakingLine) {
       // delete the two last lines for double click
-      this.deleteLine(canvas, currentChildPosition);
-      this.deleteLine(canvas, currentChildPosition);
+      this.deleteLine();
+      this.deleteLine();
       this.currentElementsNumber += 1;
       this.isMakingLine = false;
     }
   }
-  finishAndLinkLineBlock(canvas: SVGElement, currentChildPosition: number) {
+  finishAndLinkLineBlock() {
     if (this.isMakingLine) {
       // delete the two last lines for double click
-      this.deleteLine(canvas, currentChildPosition);
-      this.deleteLine(canvas, currentChildPosition);
-      const currentPolyLine = canvas.children[currentChildPosition - 1];
+      this.deleteLine();
+      this.deleteLine();
       const newPoint = ` ${this.currentPolyineStartX},${this.currentPolyineStartY}`;
-      currentPolyLine.setAttribute('points', currentPolyLine.getAttribute('points') + newPoint);
+      this.currentElement.setAttribute('points', this.currentElement.getAttribute('points') + newPoint);
       this.currentElementsNumber += 1;
       this.isMakingLine = false;
     }
@@ -204,17 +197,16 @@ export class LineGeneratorService extends AbstractGenerator {
       this.isMakingLine = false;
     }
   }
-  deleteLine(canvas: SVGElement, currentChildPosition: number) {
+  deleteLine() {
     if (this.isMakingLine) {
-      const currentPolyLine = canvas.children[currentChildPosition - 1];
-      const pointsStr = currentPolyLine.getAttribute('points') as string;
+      const pointsStr = this.currentElement.getAttribute('points') as string;
       const indexLastPoint = pointsStr.lastIndexOf(' ');
       if (indexLastPoint === -1) {
         // Only one point, user never moved after creating the line
         return;
       }
       const pointsWithoutLastStr = pointsStr.substring(0, indexLastPoint);
-      currentPolyLine.setAttribute('points', pointsWithoutLastStr);
+      this.currentElement.setAttribute('points', pointsWithoutLastStr);
     }
   }
 

@@ -8,7 +8,6 @@ export class PencilGeneratorService extends AbstractWritingTool {
 
   constructor(undoRedoService: UndoRedoService) {
     super(undoRedoService);
-
     this.currentElementsNumber = 0;
   }
 
@@ -20,22 +19,14 @@ export class PencilGeneratorService extends AbstractWritingTool {
     return this.strokeWidth;
   }
 
-  set _currentPencilPathNumber(count: number) { this.currentElementsNumber = count; }
-
   // Initializes the path
-  createPath(mouseEvent: MouseEvent, primaryColor: string) {
-
-    this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
-    const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
-    const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
-    // let string addToHTML = generateHTML();
+  createElement(xPosition: number, yPosition: number, primaryColor: string) {
 
     const path = RendererSingleton.renderer.createElement('path', 'svg');
     const properties: [string, string][] = [];
     properties.push(
       ['id', `pencilPath${this.currentElementsNumber}`],
-      ['d', `M ${xPos} ${(yPos)} L ${(xPos)} ${(yPos)}`],
+      ['d', `M ${xPosition} ${(yPosition)} L ${(xPosition)} ${(yPosition)}`],
       ['stroke', `${primaryColor}`],
       ['stroke-width', `${this.strokeWidth}`],
       ['stroke-linecap', `round`],

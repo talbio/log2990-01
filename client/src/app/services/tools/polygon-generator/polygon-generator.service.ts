@@ -37,20 +37,15 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   get _nbOfApex() { return this.nbOfApex; }
   set _nbOfApex(nb: number) { this.nbOfApex = nb; }
 
-  set _currentPolygonNumber(polygonNumber: number) { this.currentElementsNumber = polygonNumber; }
-
   // First layer functions
-  createElement(mouseEvent: MouseEvent, primaryColor: string, secondaryColor: string) {
-
+  createElement(xPosition: number, yPosition: number, primaryColor: string, secondaryColor: string) {
     // Setup of the service's parameters
-    this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
     this.setUpAttributes();
 
     // Setup of the children's HTML in canvas
-    this.injectInitialHTML(mouseEvent, primaryColor, secondaryColor);
+    this.injectInitialHTML(xPosition, yPosition, primaryColor, secondaryColor);
     this.currentPolygonID = '#polygon' + this.currentElementsNumber;
-    this.createTemporaryRectangle(mouseEvent, this.rectangleGenerator);
+    this.createTemporaryRectangle(xPosition, yPosition, this.rectangleGenerator);
     this.mouseDown = true;
   }
 
@@ -76,8 +71,8 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   }
 
   // Second layer functions
-  private injectInitialHTML(mouseEvent: MouseEvent, primaryColor: string, secondaryColor: string) {
-    const point = '' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) + ',' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y);
+  private injectInitialHTML(xPosition: number, yPosition: number, primaryColor: string, secondaryColor: string) {
+    const point = '' + (xPosition) + ',' + (yPosition);
     const points = point + ' ' + point + ' ' + point;
     const polygon = RendererSingleton.renderer.createElement('polygon', 'svg');
     const properties: [string, string][] = [];

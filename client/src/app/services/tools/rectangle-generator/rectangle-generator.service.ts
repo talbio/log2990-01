@@ -11,7 +11,6 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
     super(undoRedoService);
   }
 
-  set _currentRectNumber(count: number) { this.currentElementsNumber = count; }
   get _strokeWidth() {
     return this.strokeWidth;
   }
@@ -28,33 +27,27 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
     this.plotType = plotType;
   }
 
-  createElement(mouseEvent: MouseEvent, primaryColor: string, secondaryColor: string) {
-
-    this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
-    const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
-    const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
-
+  createElement(xPosition: number, yPosition: number, primaryColor: string, secondaryColor: string) {
     const rect = RendererSingleton.renderer.createElement('rect', 'svg');
     const properties: [string, string][] = [];
     properties.push(
       ['id', `rect${this.currentElementsNumber}`],
-      ['x', `${xPos}`],
-      ['y', `${yPos}`],
+      ['x', `${xPosition}`],
+      ['y', `${yPosition}`],
       ['height', `0`],
       ['width', `0`],
-      ['data-start-x', `${xPos}`],
-      ['data-start-y', `${yPos}`],
+      ['data-start-x', `${xPosition}`],
+      ['data-start-y', `${yPosition}`],
     );
     this.drawElement(rect, properties, primaryColor, secondaryColor);
     this.mouseDown = true;
   }
 
-  updateElement(canvasPosX: number, canvasPosY: number, currentChildPosition: number, mouseEvent: MouseEvent): void {
+  updateElement(xPosition: number, yPosition: number, currentChildPosition: number, mouseEvent: MouseEvent): void {
     if (mouseEvent.shiftKey) {
-      this.updateSquare(canvasPosX, canvasPosY, currentChildPosition);
+      this.updateSquare(xPosition, yPosition, currentChildPosition);
     } else {
-      this.updateRectangle(canvasPosX, canvasPosY, currentChildPosition);
+      this.updateRectangle(xPosition, yPosition, currentChildPosition);
     }
   }
 
