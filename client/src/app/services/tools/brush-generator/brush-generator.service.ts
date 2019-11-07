@@ -31,14 +31,9 @@ export class BrushGeneratorService extends AbstractWritingTool {
     return this.currentBrushPattern;
   }
 
-  createPath(mouseEvent: MouseEvent, primaryColor: string, secondaryColor: string) {
-
-    this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
-    this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
-    const xPos = mouseEvent.pageX - this.OFFSET_CANVAS_X;
-    const yPos = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
+  createElement(xPosition: number, yPosition: number, primaryColor: string, secondaryColor: string) {
     const newPattern = this.createPattern(primaryColor, secondaryColor);
-    this.generateBrushPath(this.currentElementsNumber, xPos, yPos, this.strokeWidth);
+    this.generateBrushPath(this.currentElementsNumber, xPosition, yPosition, this.strokeWidth);
     this.addPatternToNewPath(newPattern, RendererSingleton.canvas);
     this.mouseDown = true;
   }
