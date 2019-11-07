@@ -1,8 +1,8 @@
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import {ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2 } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { Tools } from 'src/app/data-structures/tools';
@@ -64,7 +64,7 @@ const DRAWING_SERVICES = [
   EraserService,
   PenGeneratorService,
 ];
-fdescribe('EraserComponent', () => {
+describe('EraserComponent', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
   beforeEach(async(() => {
@@ -87,12 +87,16 @@ fdescribe('EraserComponent', () => {
         PortalModule,
       ],
       providers: [ToolManagerService, ...DRAWING_SERVICES, ColorService, ChangeDetectorRef,
-        {provide: Renderer2, useValue: rendererSpy},
-        {provide: ModalManagerService, useValue: modalManagerSpy},
-        {provide: HttpClient, useValue: httpClientSpy}, ],
-      schemas: [ NO_ERRORS_SCHEMA ],
-    }).overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [ToolsAttributesBarComponent,
-       DrawingViewComponent] } },
+        { provide: Renderer2, useValue: rendererSpy },
+        { provide: ModalManagerService, useValue: modalManagerSpy },
+        { provide: HttpClient, useValue: httpClientSpy },],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).overrideModule(BrowserDynamicTestingModule, {
+      set: {
+        entryComponents: [ToolsAttributesBarComponent,
+          DrawingViewComponent]
+      }
+    },
     ).compileComponents().then(() => {
       fixture = TestBed.createComponent(DrawingViewComponent);
       component = fixture.componentInstance;
@@ -105,36 +109,36 @@ fdescribe('EraserComponent', () => {
   });
 
   it('should be possible to remove only the first drawing from a pile', () => {
-  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-  toolManagerService._activeTool = Tools.Rectangle;
-  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-  const workChilds = svgHandle.children;
-  const initialNumberOfChildren = workChilds.length;
-  // Setting up the event
-  const offsetX = 64;
-  const mouseEvent = new MouseEvent('mousedown', {
-    button: 0,
-    clientX: 10 + offsetX,
-    clientY: 10 ,
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Rectangle;
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const workChilds = svgHandle.children;
+    const initialNumberOfChildren = workChilds.length;
+    // Setting up the event
+    const offsetX = 64;
+    const mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: 10 + offsetX,
+      clientY: 10,
+    });
+
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService._canvasMousePositionX = 10;
+    mousePositionService._canvasMousePositionY = 10;
+
+    // Adding 3 rectangles in the same place
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    expect(workChilds.length).toBe(initialNumberOfChildren + 3);
+
+    // erasing
+    toolManagerService._activeTool = Tools.Eraser;
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    component.workZoneComponent.onMouseUp();
+    // only one drawing missing
+    expect(workChilds.length).toBe(initialNumberOfChildren + 2);
   });
-
-  const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-  mousePositionService._canvasMousePositionX = 10;
-  mousePositionService._canvasMousePositionY = 10;
-
-  // Adding 3 rectangles in the same place
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  expect(workChilds.length).toBe(initialNumberOfChildren + 3);
-
-  // erasing
-  toolManagerService._activeTool = Tools.Eraser;
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  component.workZoneComponent.onMouseUp();
-  // only one drawing missing
-  expect(workChilds.length).toBe(initialNumberOfChildren + 2);
-});
 
   it('should be possible to use eraser as a brush', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
@@ -147,17 +151,17 @@ fdescribe('EraserComponent', () => {
     const mouseDown1 = new MouseEvent('mousedown', {
       button: 0,
       clientX: 10 + offsetX,
-      clientY: 10 ,
+      clientY: 10,
     });
     const mouseDown2 = new MouseEvent('mousedown', {
       button: 0,
       clientX: 15 + offsetX,
-      clientY: 15 ,
+      clientY: 15,
     });
     const mouseDown3 = new MouseEvent('mousedown', {
       button: 0,
       clientX: 20 + offsetX,
-      clientY: 20 ,
+      clientY: 20,
     });
     // Adding 3 rectangles in 3 different places
     component.workZoneComponent.onMouseDown(mouseDown1);
@@ -165,7 +169,7 @@ fdescribe('EraserComponent', () => {
     component.workZoneComponent.onMouseDown(mouseDown3);
     expect(workChilds.length).toBe(initialNumberOfChildren + 3);
 
-// erasing
+    // erasing
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     const mouseMove = new MouseEvent('mousemove', {});
     toolManagerService._activeTool = Tools.Eraser;
@@ -180,13 +184,47 @@ fdescribe('EraserComponent', () => {
     component.workZoneComponent.onMouseMove(mouseMove);
     component.workZoneComponent.onMouseUp();
 
-// all three drawings have been erased
+    // all three drawings have been erased
     expect(workChilds.length).toBe(initialNumberOfChildren);
-});
+  });
 
-// should bring back all erased drawings with undo
+  it('should show a red border when close to being erased', () => {
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Rectangle;
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const workChilds = svgHandle.children;
+    const initialNumberOfChildren = workChilds.length;
+    // Setting up the event
+    const offsetX = 64;
+    const drawingMouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: 15 + offsetX,
+      clientY: 15,
+    });
 
-// should have red border when approaching eraser
+    const eraserMouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: 5 + offsetX,
+      clientY: 5,
+    });
 
-// should be able to set eraser size
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService._canvasMousePositionX = 10;
+    mousePositionService._canvasMousePositionY = 10;
+
+    // Adding 1 rectangle
+    component.workZoneComponent.onMouseDown(drawingMouseEvent);
+    expect(workChilds.length).toBe(initialNumberOfChildren + 1);
+
+    // erasing
+    toolManagerService._activeTool = Tools.Eraser;
+    component.workZoneComponent.onMouseDown(eraserMouseEvent);
+    component.workZoneComponent.onMouseUp();
+    // drawing is not erased
+    expect(workChilds.length).toBe(initialNumberOfChildren + 1);
+    // border should be red
+    const child = workChilds[workChilds.length - 1];
+    expect((child.getAttribute('stroke') === 'red')).toBeTruthy();
+  });
+
 });

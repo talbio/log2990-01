@@ -4,7 +4,7 @@ import { MousePositionService } from 'src/app/services/mouse-position/mouse-posi
 import { EraserService } from 'src/app/services/tools/eraser/eraser.service';
 import { EraserToolsComponent } from './eraser-tools.component';
 
-fdescribe('EraserToolsComponent', () => {
+describe('EraserToolsComponent', () => {
   let component: EraserToolsComponent;
   let fixture: ComponentFixture<EraserToolsComponent>;
 

@@ -15,21 +15,17 @@ interface IEraseZone {
 
 @Injectable()
 export class EraserService {
-    private OFFSET_CANVAS_X: number;
-    private OFFSET_CANVAS_Y: number;
-    private mouseDown: boolean;
-    private eraseSize: number;
-    private eraseZone: IEraseZone;
-    private erasedDrawings: SVGElement[] = [];
-    private strokeColors = new Map<string, string>();
+    OFFSET_CANVAS_X: number;
+    OFFSET_CANVAS_Y: number;
+    mouseDown: boolean;
+    eraseSize: number;
+    eraseZone: IEraseZone;
+    erasedDrawings: SVGElement[] = [];
+    strokeColors = new Map<string, string>();
 
     constructor(protected mousePosition: MousePositionService, protected undoRedoService: UndoRedoService) {
         this.mouseDown = false;
         this.eraseSize = DEFAULT_ERASER_SIZE;
-    }
-
-    set _eraserSize(size: number) {
-        this.eraseSize = size;
     }
 
     startErasing(): void {
@@ -51,8 +47,8 @@ export class EraserService {
             const drawingPile = new Array();
             drawings.forEach((drawing) => {
                 this.warnBeforeErasing(drawing);
-
-                if ((this.intersects(drawing as SVGGElement)) && (!svgTypesNotToBeErased.includes(drawing.id))) {
+                const drawingZone = drawing.getBoundingClientRect();
+                if ((this.intersects(drawingZone as DOMRect)) && (!svgTypesNotToBeErased.includes(drawing.id))) {
                     drawingPile.push(drawing);
                 }
             });
@@ -67,7 +63,8 @@ export class EraserService {
     }
 
     warnBeforeErasing(drawing: Element): void {
-        if ((this.isCloseToIntersecting(drawing as SVGGElement) && (drawing.id !== 'selector')
+        const drawingZone = drawing.getBoundingClientRect();
+        if ((this.isCloseToIntersecting(drawingZone as DOMRect) && (drawing.id !== 'selector')
             && (drawing.id !== 'backgroundGrid') && (drawing.id !== '') && (drawing.id !== 'eraser'))) {
             if (drawing.tagName === 'image') {
                 // TODO
@@ -120,8 +117,7 @@ export class EraserService {
         }
     }
 
-    isCloseToIntersecting(drawing: SVGGElement): boolean {
-        const drawingZone = drawing.getBoundingClientRect();
+    isCloseToIntersecting(drawingZone: DOMRect): boolean {
         const drawingRightSide = drawingZone.right - this.OFFSET_CANVAS_X;
         const drawingLeftSide = drawingZone.left - this.OFFSET_CANVAS_X;
         const drawingTop = drawingZone.top - this.OFFSET_CANVAS_Y;
@@ -151,8 +147,7 @@ export class EraserService {
 
     }
 
-    intersects(drawing: SVGElement): boolean {
-        const drawingZone = drawing.getBoundingClientRect();
+    intersects(drawingZone: DOMRect): boolean {
         const isEraserTouchingTheDrawing = !((this.eraseZone.left > drawingZone.right - this.OFFSET_CANVAS_X ||
             drawingZone.left - this.OFFSET_CANVAS_X > this.eraseZone.right) ||
             (this.eraseZone.top > drawingZone.bottom - this.OFFSET_CANVAS_Y ||
