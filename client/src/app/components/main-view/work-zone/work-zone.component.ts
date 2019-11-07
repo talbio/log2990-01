@@ -80,14 +80,14 @@ export class WorkZoneComponent implements OnInit {
     } else {this.toolManager.updateElement(mouseEvent, this.canvasElement); }
   }
 
-  onMouseUp() {
+  onMouseUp(mouseEvent: MouseEvent) {
     if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
       this.toolManager.finishTranslation();
-    } else {this.toolManager.finishElement(); }
+    } else {this.toolManager.finishElement(mouseEvent); }
   }
 
   onLeftClick(mouseEvent: MouseEvent) {
-    this.toolManager.changeElementLeftClick(mouseEvent.target as SVGElement, this.canvasElement);
+    this.toolManager.changeElementLeftClick(mouseEvent.target as SVGElement);
     return true;
   }
 
@@ -98,7 +98,7 @@ export class WorkZoneComponent implements OnInit {
   }
 
   onDoubleClick(mouseEvent: MouseEvent) {
-    this.toolManager.finishElementDoubleClick(mouseEvent, this.canvasElement);
+    this.toolManager.finishElementDoubleClick(mouseEvent);
   }
 
   onMouseWheel(mouseEvent: WheelEvent) {
