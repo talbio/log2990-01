@@ -84,6 +84,7 @@ export class LateralBarComponent {
       ['eraser', ERASER_ICON_PATH],
       ['undo', UNDO_ICON_PATH],
       ['redo', REDO_ICON_PATH],
+      ['pen', PEN_ICON_PATH],
     );
     icons.forEach( (icon: [string, string]) =>
       this.matIconRegistry.addSvgIcon(icon[0], this.domSanitizer.bypassSecurityTrustResourceUrl(icon[1])));

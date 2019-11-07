@@ -31,7 +31,16 @@ export class PenGeneratorService extends AbstractWritingTool {
         this.currentPenPathNumber = 0;
     }
 
-    createPath(mouseEvent: MouseEvent, primaryColor: string) {
+    createElement(xPosition: number, yPosition: number, primaryColor?: string, secondaryColor?: string): void {
+    }
+    updateElement(xPosition: number, yPosition: number, currentChildPosition: number) {
+      super.updateElement(xPosition, yPosition, currentChildPosition);
+    }
+    finishElement(mouseEvent?: MouseEvent): void {
+      super.finishElement(mouseEvent);
+    }
+
+  createPath(mouseEvent: MouseEvent, primaryColor: string) {
         this.strokeWidth = DEFAULT_WIDTH;
         this.color = primaryColor;
         this.time = this.date.getTime();
@@ -41,8 +50,8 @@ export class PenGeneratorService extends AbstractWritingTool {
     }
 
     addPath(mouseEvent: MouseEvent, width: number): void {
-        this.OFFSET_CANVAS_Y = RendererSingleton.getCanvas().getBoundingClientRect().top;
-        this.OFFSET_CANVAS_X = RendererSingleton.getCanvas().getBoundingClientRect().left;
+        this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
+        this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
         this.dotPositionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
         this.dotPositionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
 
@@ -122,12 +131,12 @@ export class PenGeneratorService extends AbstractWritingTool {
     //         svgElements: paths,
     //         execute(): void {
     //             this.svgElements.forEach((path) => {
-    //                 RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), path);
+    //                 RendererSingleton.renderer.appendChild(RendererSingleton.canvas, path);
     //             });
     //         },
     //         unexecute(): void {
     //             this.svgElements.forEach((path) => {
-    //                 RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), path);
+    //                 RendererSingleton.renderer.removeChild(RendererSingleton.canvas, path);
     //             });
     //         },
     //     };
