@@ -14,8 +14,8 @@ describe('Service: ColorApplicator', () => {
     Colors.PINK, Colors.BLACK, Colors.GREY, Colors.BROWN, Colors.ORANGE, Colors.PURPLE];
     service.color = Colors.PINK;
     service.addToTopTenColors(service.color);
-    expect(service.topTenColors[0]).toBe(Colors.PINK);
-    expect(service.topTenColors[9]).toBe(Colors.BLUE);
+    expect(service.topTenColors[9]).toBe(Colors.PINK);
+    expect(service.topTenColors[8]).toBe(Colors.PURPLE);
   }));
 
   it('#switchMainColors should switch the primary and secondary colors', inject([ColorService], (service: ColorService) => {

@@ -10,6 +10,7 @@ import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/line-style
 import { PlotType } from 'src/app/data-structures/plot-type';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
+import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
 import { Tools } from '../../../data-structures/tools';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
@@ -31,6 +32,7 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+import { EraserService } from './../../../services/tools/eraser/eraser.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -62,8 +64,10 @@ const DRAWING_SERVICES = [
   ObjectSelectorService,
   GridTogglerService,
   PolygonGeneratorService,
+  EraserService,
+  PenGeneratorService,
 ];
-fdescribe('DrawingViewComponent', () => {
+describe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
   beforeEach(async(() => {

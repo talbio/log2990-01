@@ -3,8 +3,7 @@ import { DemoMaterialModule } from 'src/app/material.module';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { EmojiToolsComponent } from './emoji-tools.component';
 
-fdescribe('EmojiToolsComponent', () => {
-  let component: EmojiToolsComponent;
+describe('EmojiToolsComponent', () => {
   let fixture: ComponentFixture<EmojiToolsComponent>;
 
   beforeEach(async(() => {
@@ -15,17 +14,12 @@ fdescribe('EmojiToolsComponent', () => {
     })
     .compileComponents().then(() => {
       fixture = TestBed.createComponent(EmojiToolsComponent);
-      component = fixture.componentInstance;
       fixture.detectChanges();
     });
   }));
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should have atleast five emojis to choose from', () => {
     const emojiService = fixture.debugElement.injector.get(EmojiGeneratorService);
-    expect(emojiService.getEmojis().length).toBe(6);
+    expect(emojiService.getEmojis().length).toBeGreaterThanOrEqual(5);
   });
 });

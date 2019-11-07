@@ -1,18 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { GridTogglerService } from 'src/app/services/tools/grid/grid-toggler.service';
 import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
 import { WorkZoneComponent } from './work-zone.component';
 
 describe('WorkZoneComponent', () => {
   let component: WorkZoneComponent;
   let fixture: ComponentFixture<WorkZoneComponent>;
-  // tslint:disable-next-line:prefer-const
   let toolManagerServiceStub: Partial<ToolManagerService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ WorkZoneComponent ],
-      providers:    [
+      providers:    [GridTogglerService,
         {provide: ToolManagerService, useValue: toolManagerServiceStub },
       ],
     })

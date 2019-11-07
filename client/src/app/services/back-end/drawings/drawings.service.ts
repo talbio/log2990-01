@@ -54,9 +54,7 @@ export class DrawingsService {
 
   getSvgElements(): string {
     const svgCanvas: HTMLElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
-    const patternsEndDef = '</defs>';
-    const startIndex = svgCanvas.innerHTML.search(patternsEndDef) + patternsEndDef.length;
-    return svgCanvas.innerHTML.substring(startIndex);
+    return svgCanvas.innerHTML.substring(0);
   }
 
   getMiniature(): string {
@@ -77,5 +75,29 @@ export class DrawingsService {
         'The backend returned an unsuccessful response code').toPromise();
     }
   }
+  localPostDrawing(name: string, tags: string[]): Promise<boolean> {
+    const svgElements: string = this.getSvgElements();
+    const miniature: string = this.getMiniature();
+    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature};
+    return this.saveFileToLocation(drawing)
+      .then( () => {
+        return true;
+      })
+      .catch((error: Error) => {
+        console.error('An error occurred:', error.message);
+        return throwError('The file could not be saved successfully').toPromise();
+      });
+  }
 
+  saveFileToLocation(drawing: Drawing): Promise<boolean> {
+    // solution inspired from https://stackoverflow.com/questions/48499087/file-save-functionality-in-angular
+    const myBlob: Blob = new Blob([JSON.stringify(drawing, null, 2)], {type: 'application/json'});
+    const link = RendererSingleton.renderer.createElement('a');
+    link.href = URL.createObjectURL(myBlob);
+    // TODO change name maybe?
+    link.download = `${drawing.name}.json`;
+    link.click();
+    // TODO manage cases
+    return Promise.resolve(true);
+  }
 }

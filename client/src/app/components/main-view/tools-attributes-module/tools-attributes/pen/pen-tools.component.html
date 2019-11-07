@@ -1,0 +1,23 @@
+<p mat-card-title>Paramètres du Crayon</p>
+
+<mat-label>
+  Taille minimale du trait en pixels: {{this.penGenerator.strokeWidthMinimum}}
+</mat-label>
+<mat-slider [(ngModel)]="this.penGenerator.strokeWidthMinimum"
+            min="2"
+            max="10"
+            step="2"
+            value="this.penGenerator.strokeWidthMinimum"
+            thumbLabel>
+</mat-slider>
+
+<mat-label>
+    Taille maximale du trait en pixels: {{this.penGenerator.strokeWidthMaximum}}
+  </mat-label>
+  <mat-slider [(ngModel)]="this.penGenerator.strokeWidthMaximum"
+              min="30"
+              max="40"
+              step="2"
+              value="this.penGenerator.strokeWidthMaximum"
+              thumbLabel>
+  </mat-slider>
