@@ -57,8 +57,8 @@ export class EyedropperService {
           .appendChild(appworkzone, canvElem);
         const context = canvElem.getContext('2d');
         context.drawImage(imageObject, 0, 0);
-        const pictureX = this.mousePosition._canvasMousePositionX - parseFloat(imageObject.getAttribute('x') as string);
-        const pictureY = this.mousePosition._canvasMousePositionY - parseFloat(imageObject.getAttribute('y') as string);
+        const pictureX = this.mousePosition.canvasMousePositionX - parseFloat(imageObject.getAttribute('x') as string);
+        const pictureY = this.mousePosition.canvasMousePositionY - parseFloat(imageObject.getAttribute('y') as string);
         const pixData = context.getImageData(pictureX, pictureY, 1, 1);
         foundColor = `rgba(${pixData.data[0]},${pixData.data[1]},${pixData.data[2]},${pixData.data[3]})`;
         RendererSingleton.renderer
@@ -122,8 +122,8 @@ export class EyedropperService {
   //   .appendChild(appworkzone, canvElem);
   //   const context = canvElem.getContext('2d');
   //   context.drawImage(imageObject, 0, 0);
-  //   const pictureX = this.mousePosition._canvasMousePositionX - parseFloat(imageObject.getAttribute('x') as string);
-  //   const pictureY = this.mousePosition._canvasMousePositionY - parseFloat(imageObject.getAttribute('y') as string);
+  //   const pictureX = this.mousePosition.canvasMousePositionX - parseFloat(imageObject.getAttribute('x') as string);
+  //   const pictureY = this.mousePosition.canvasMousePositionY - parseFloat(imageObject.getAttribute('y') as string);
   //   const pixData = context.getImageData(pictureX, pictureY, 1, 1);
   //   foundColor = `rgba(${pixData.data[0]},${pixData.data[1]},${pixData.data[2]},${pixData.data[3]})`;
   //   console.log(foundColor);

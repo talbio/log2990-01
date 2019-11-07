@@ -84,10 +84,10 @@ export class EraserService {
 
     setEraseZone(): void {
         this.eraseZone = {
-            left: this.mousePosition._canvasMousePositionX - (this.eraseSize / 2),
-            top: this.mousePosition._canvasMousePositionY - (this.eraseSize / 2),
-            bottom: this.mousePosition._canvasMousePositionY + (this.eraseSize / 2),
-            right: this.mousePosition._canvasMousePositionX + (this.eraseSize / 2),
+            left: this.mousePosition.canvasMousePositionX - (this.eraseSize / 2),
+            top: this.mousePosition.canvasMousePositionY - (this.eraseSize / 2),
+            bottom: this.mousePosition.canvasMousePositionY + (this.eraseSize / 2),
+            right: this.mousePosition.canvasMousePositionX + (this.eraseSize / 2),
         };
     }
 
