@@ -64,13 +64,12 @@ export class EraserService {
 
     warnBeforeErasing(drawing: Element): void {
         const drawingZone = drawing.getBoundingClientRect();
-        if ((this.isCloseToIntersecting(drawingZone as DOMRect) && (drawing.id !== 'selector')
-            && (drawing.id !== 'backgroundGrid') && (drawing.id !== '') && (drawing.id !== 'eraser'))) {
+        if ((this.isCloseToIntersecting(drawingZone as DOMRect) && (!svgTypesNotToBeErased.includes(drawing.id)))) {
             if (drawing.tagName === 'image') {
-                // TODO
+                    drawing.setAttribute('filter', 'url(#dropshadow)');
             } else {
                 if (this.strokeColors.get(drawing.id) === undefined) {
-                this.strokeColors.set(drawing.id, drawing.getAttribute('stroke') as string);
+                    this.strokeColors.set(drawing.id, drawing.getAttribute('stroke') as string);
                 }
                 drawing.setAttribute('stroke', 'red');
             }
@@ -79,11 +78,14 @@ export class EraserService {
             if (this.strokeColors.get(drawing.id) !== undefined) {
                 drawing.setAttribute('stroke', this.strokeColors.get(drawing.id) as string);
             }
-
+            if (drawing.tagName === 'image') {
+                    drawing.setAttribute('filter', '');
+                }
+            }
         }
-    }
-        erase( drawing: SVGGElement): void {
-            if (drawing.id.substring(0, 7) === 'penPath') {
+
+    erase(drawing: SVGGElement): void {
+        if (drawing.id.substring(0, 7) === 'penPath') {
             const paths = RendererSingleton.getCanvas().querySelectorAll('path');
             paths.forEach((path) => {
                 if (path.id === drawing.id) {
