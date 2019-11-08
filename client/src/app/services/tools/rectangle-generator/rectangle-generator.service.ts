@@ -1,9 +1,13 @@
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import {Injectable} from '@angular/core';
-import {PlotType} from '../../../data-structures/PlotType';
+import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
+import {Action, ActionGenerator, ActionType} from '../../../data-structures/command';
+import {PlotType} from '../../../data-structures/plot-type';
+import {RendererSingleton} from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
+import { MousePositionService } from './../../mouse-position/mouse-position.service';
 
 @Injectable()
-export class RectangleGeneratorService {
+export class RectangleGeneratorService extends AbstractClosedShape implements ActionGenerator  {
 
   private currentRectNumber: number;
   private mouseDown: boolean;
@@ -12,14 +16,15 @@ export class RectangleGeneratorService {
   private strokeWidth: number;
   private plotType: PlotType;
 
-  constructor(private mouse: MousePositionService) {
+  constructor(private mouse: MousePositionService,
+              undoRedoService: UndoRedoService) {
+    super(undoRedoService);
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.currentRectNumber = 0;
     this.mouseDown = false;
   }
 
-  get _currentRectNumber() { return this.currentRectNumber; }
   set _currentRectNumber(count: number) { this.currentRectNumber = count; }
   get _strokeWidth() {
     return this.strokeWidth;
@@ -37,40 +42,33 @@ export class RectangleGeneratorService {
     this.plotType = plotType;
   }
 
-  // createRectangle(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
-  createRectangle(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
-    switch (this.plotType) {
-      case PlotType.Contour:
-        canvas.innerHTML +=
-        `<rect id="rect${this.currentRectNumber}"
-        x="${this.mouse.canvasMousePositionX}"
-        data-start-x="${this.mouse.canvasMousePositionX}"
-        y="${this.mouse.canvasMousePositionY}"
-        data-start-y="${this.mouse.canvasMousePositionY}"
-        width="0" height="0" stroke="${secondaryColor}" stroke-width="${this.strokeWidth}"
-        fill="transparent"></rect>`;
-        break;
-      case PlotType.Full:
-        canvas.innerHTML +=
-        `<rect id="rect${this.currentRectNumber}"
-        x="${this.mouse.canvasMousePositionX}"
-        data-start-x="${this.mouse.canvasMousePositionX}"
-        y="${this.mouse.canvasMousePositionY}"
-        data-start-y="${this.mouse.canvasMousePositionY}"
-        width = "0" height = "0" stroke="transparent" stroke-width="${this.strokeWidth}"
-        fill="${primaryColor}"></rect>`;
-        break;
-      case PlotType.FullWithContour:
-        canvas.innerHTML +=
-        `<rect id="rect${this.currentRectNumber}"
-        x="${this.mouse.canvasMousePositionX}"
-        data-start-x="${this.mouse.canvasMousePositionX}"
-        y="${this.mouse.canvasMousePositionY}"
-        data-start-y="${this.mouse.canvasMousePositionY}"
-        width="0" height="0" stroke="${secondaryColor}" stroke-width="${this.strokeWidth}"
-        fill="${primaryColor}"></rect>`;
-        break;
-    }
+  pushAction(svgElement: SVGElement): void {
+    const action: Action = {
+      actionType: ActionType.Create,
+      svgElements: [svgElement],
+      execute(): void {
+        RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), this.svgElements[0]);
+      },
+      unexecute(): void {
+        RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), this.svgElements[0]);
+      },
+    };
+    this.undoRedoService.pushAction(action);
+  }
+
+  createRectangle(primaryColor: string, secondaryColor: string) {
+    const rect = RendererSingleton.renderer.createElement('rect', 'svg');
+    const properties: [string, string][] = [];
+    properties.push(
+      ['id', `rect${this.currentRectNumber}`],
+      ['x', `${this.mouse.canvasMousePositionX}`],
+      ['y', `${this.mouse.canvasMousePositionY}`],
+      ['height', `0`],
+      ['width', `0`],
+      ['data-start-x', `${this.mouse.canvasMousePositionX}`],
+      ['data-start-y', `${this.mouse.canvasMousePositionY}`],
+    );
+    this.drawElement(rect, properties, primaryColor, secondaryColor);
     this.mouseDown = true;
   }
 
@@ -152,6 +150,7 @@ export class RectangleGeneratorService {
     if (this.mouseDown) {
       this.currentRectNumber += 1;
       this.mouseDown = false;
+      this.pushAction(this.currentElement);
     }
   }
 

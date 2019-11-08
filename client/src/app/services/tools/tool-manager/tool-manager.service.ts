@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Tools } from '../../../data-structures/Tools';
+import { Tools } from '../../../data-structures/tools';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
@@ -11,6 +11,7 @@ import { EraserService } from '../eraser/eraser.service';
 import { EyedropperService } from '../eyedropper/eyedropper.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
+import { PenGeneratorService } from '../pen-generator/pen-generator.service';
 import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from '../polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
@@ -23,7 +24,6 @@ export class ToolManagerService {
   private numberOfElements: number;
   private canvasElement: SVGElement;
   private activeTool: Tools;
-  private hasBeenTranslated: boolean;
 
   set _activeTool(tool: Tools) {
     this.activeTool = tool;
@@ -37,6 +37,7 @@ export class ToolManagerService {
               private ellipseGenerator: EllipseGeneratorService,
               private emojiGenerator: EmojiGeneratorService,
               private pencilGenerator: PencilGeneratorService,
+              private penGenerator: PenGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
               private objectSelector: ObjectSelectorService,
@@ -48,24 +49,26 @@ export class ToolManagerService {
               protected mousePosition: MousePositionService) {
     this.activeTool = Tools.Pencil;
     this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
-    this.hasBeenTranslated = false;
   }
 
   createElement(mouseEvent: MouseEvent, canvas: SVGElement) {
     switch (this._activeTool) {
       case Tools.Rectangle:
         this.rectangleGenerator
-          .createRectangle(canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
+          .createRectangle(this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Pencil:
-        this.pencilGenerator.createPenPath(canvas, this.colorService.getSecondaryColor());
+        this.pencilGenerator.createPenPath(canvas, this.colorService.getPrimaryColor());
+        break;
+      case Tools.Pen:
+        this.penGenerator.createPenPath(mouseEvent, canvas, this.colorService.getSecondaryColor());
         break;
       case Tools.Brush:
         this.brushGenerator
           .createBrushPath(canvas, this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor());
         break;
       case Tools.Selector:
-        this.objectSelector.createSelectorRectangle(canvas);
+        this.objectSelector.selectorMouseDown(mouseEvent, canvas);
         break;
       case Tools.Ellipse:
         this.ellipseGenerator
@@ -97,13 +100,16 @@ export class ToolManagerService {
         }
         break;
       case Tools.Pencil:
-        this.pencilGenerator.updatePenPath(canvas, this.numberOfElements);
+        this.pencilGenerator.updatePenPath(mouseEvent, this.numberOfElements);
+        break;
+      case Tools.Pen:
+        this.penGenerator.updatePenPath(mouseEvent, canvas);
         break;
       case Tools.Brush:
-        this.brushGenerator.updateBrushPath(canvas, this.numberOfElements);
+        this.brushGenerator.updateBrushPath(mouseEvent, this.numberOfElements);
         break;
       case Tools.Selector:
-        this.objectSelector.updateSelectorRectangle(canvas);
+        this.objectSelector.updateSelector(canvas);
         this.updateNumberOfElements();
         break;
       case Tools.Line:
@@ -135,11 +141,14 @@ export class ToolManagerService {
       case Tools.Pencil:
         this.pencilGenerator.finishPenPath();
         break;
+      case Tools.Pen:
+        this.penGenerator.finishPenPath();
+        break;
       case Tools.Brush:
         this.brushGenerator.finishBrushPath();
         break;
       case Tools.Selector:
-        this.objectSelector.finishSelector(RendererSingleton.renderer.selectRootElement('#canvas', true));
+        this.objectSelector.finish(RendererSingleton.renderer.selectRootElement('#canvas', true));
         this.updateNumberOfElements();
         break;
       case Tools.Ellipse:
@@ -189,11 +198,7 @@ export class ToolManagerService {
 
   finishElementDoubleClick(mouseEvent: MouseEvent, canvas: SVGElement) {
     if (this._activeTool === Tools.Line) {
-      if (mouseEvent.shiftKey) {
-        this.lineGenerator.finishAndLinkLineBlock(canvas, this.numberOfElements);
-      } else {
-        this.lineGenerator.finishLineBlock(canvas, this.numberOfElements);
-      }
+      this.lineGenerator.finishElement(mouseEvent, this.numberOfElements);
     }
   }
   changeElementAltDown() {
@@ -272,39 +277,6 @@ export class ToolManagerService {
         return;
     }
   }
-  selectorMouseDown(): void {
-    const selectorBox = this.canvasElement.querySelector('#boxrect') as SVGGElement;
-    const box = selectorBox.getBBox();
-    if (this.mousePosition.canvasMousePositionX < box.x || this.mousePosition.canvasMousePositionX > (box.x + box.width)
-      || this.mousePosition.canvasMousePositionY < box.y || this.mousePosition.canvasMousePositionY > (box.y + box.height)) {
-        this.removeSelector();
-    } else { this.objectSelector.startTranslation(); }
-  }
-
-  translate(): void {
-    this.objectSelector.translate();
-  }
-
-  finishTranslation(): void {
-    this.objectSelector.drop();
-    this.hasBeenTranslated = true;
-  }
-
-  removeSelector(): void {
-    const box = this.canvasElement.querySelector('#box') as SVGElement;
-    const boxrect = this.canvasElement.querySelector('#boxrect') as SVGElement;
-    const selected = this.canvasElement.querySelector('#selected') as SVGGElement;
-    const childArray = Array.from(selected.children);
-    childArray.forEach((child) => {
-      if (this.hasBeenTranslated) {
-      this.changeChildPosition(child, box);
-      }
-      this.canvasElement.appendChild(child);
-    });
-    box.removeChild(boxrect);
-    this.canvasElement.removeChild(box);
-    this.hasBeenTranslated = false;
-  }
 
   backSpacePress() {
     switch (this._activeTool) {
@@ -315,44 +287,6 @@ export class ToolManagerService {
         break;
       default:
         return;
-    }
-  }
-
-  changeChildPosition(child: Element, box: SVGElement): void {
-    let newX: number;
-    let newY: number;
-    switch (child.nodeName) {
-      case 'rect':
-      case 'image':
-        newX = parseFloat('' + child.getAttribute('x')) + parseFloat('' + box.getAttribute('x'));
-        newY = parseFloat('' + child.getAttribute('y')) + parseFloat('' + box.getAttribute('y'));
-        child.setAttribute('x', newX as unknown as string);
-        child.setAttribute('y', newY as unknown as string);
-        break;
-      case 'ellipse':
-        newX = parseFloat('' + child.getAttribute('cx')) + parseFloat('' + box.getAttribute('x'));
-        newY = parseFloat('' + child.getAttribute('cy')) + parseFloat('' + box.getAttribute('y'));
-        child.setAttribute('cx', newX as unknown as string);
-        child.setAttribute('cy', newY as unknown as string);
-        break;
-      case 'path':
-      case 'polyline':
-      case 'polygon':
-        const xforms = child.getAttribute('transform');
-        if (xforms) {
-          const parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms as string) as unknown as string;
-          const firstX = parseFloat(parts[1]);
-          const firstY = parseFloat(parts[2] );
-          newX = parseFloat('' + (firstX + parseFloat(box.getAttribute('x') as string)));
-          newY = parseFloat('' + (firstY + parseFloat(box.getAttribute('y') as string)));
-        } else {
-          newX = parseFloat('' + box.getAttribute('x'));
-          newY = parseFloat('' + box.getAttribute('y'));
-        }
-        child.setAttribute('transform', 'translate(' + newX + ' ' + newY + ')');
-        break;
-      default:
-        break;
     }
   }
 
@@ -393,6 +327,8 @@ export class ToolManagerService {
           break;
         case 'polyline':
           polylineCount += 1;
+          break;
+        case 'image':
           break;
         default:
           alert(`Untreated item ${childCast.nodeName}!`);

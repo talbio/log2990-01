@@ -1,22 +1,21 @@
 import { Injectable } from '@angular/core';
+import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
 import { PlotType } from '../../../data-structures/PlotType';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 
 @Injectable()
-export class PolygonGeneratorService {
+export class PolygonGeneratorService extends AbstractClosedShape {
 
   private readonly TEMP_RECT_ID = '#tempRect';
 
   private currentPolygonNumber: number;
   private mouseDown: boolean;
   private canvasElement: SVGElement;
-  // private RendererSingleton.renderer: RendererSingleton.renderer2;
 
   // attributes of polygon
-  private strokeWidth: number;
-  private plotType: PlotType;
   private nbOfApex: number;
   private angleBetweenVertex: number;
   private currentPolygonID: string;
@@ -24,7 +23,9 @@ export class PolygonGeneratorService {
   private readonly adjustment: number[];
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
-              private mousePosition: MousePositionService,) {
+              private mousePosition: MousePositionService,
+              undoRedoService: UndoRedoService) {
+    super(undoRedoService);
     this.adjustment = [0, 0];
     this.aspectRatio = 0;
     this.nbOfApex = 3;
@@ -58,9 +59,9 @@ export class PolygonGeneratorService {
     this.setUpAttributes();
 
     // Setup of the children's HTML in canvas
-    this.injectInitialHTML(canvas, primaryColor, secondaryColor);
+    this.injectInitialHTML(primaryColor, secondaryColor);
     this.currentPolygonID = '#polygon' + this.currentPolygonNumber;
-    this.createTemporaryRectangle(canvas, primaryColor, secondaryColor);
+    this.createTemporaryRectangle(canvas);
     this.mouseDown = true;
     return true;
   }
@@ -81,40 +82,25 @@ export class PolygonGeneratorService {
       // Remove the rectangle
       this.canvasElement.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
       this.currentPolygonNumber += 1;
+      this.pushAction(this.currentElement);
       this.mouseDown = false;
     }
   }
 
   // Second layer functions
-  injectInitialHTML(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
+  injectInitialHTML(primaryColor: string, secondaryColor: string) {
     const point = '' + this.mousePosition.canvasMousePositionX + ',' + this.mousePosition.canvasMousePositionY;
     const points = point + ' ' + point + ' ' + point;
-    switch (this.plotType) {
-      case PlotType.Contour:
-        canvas.innerHTML +=
-        `<polygon id="polygon${this.currentPolygonNumber}"
-        points="${points}"
-        stroke="${primaryColor}" stroke-width="${this.strokeWidth}"
-        fill="transparent"></polygon>`;
-        break;
-      case PlotType.Full:
-        canvas.innerHTML +=
-        `<polygon id="polygon${this.currentPolygonNumber}"
-        points="${points}"
-        stroke="transparent" stroke-width="${this.strokeWidth}"
-        fill="${secondaryColor}"></polygon>`;
-        break;
-      case PlotType.FullWithContour:
-        canvas.innerHTML +=
-        `<polygon id="polygon${this.currentPolygonNumber}"
-        points="${points}"
-        stroke="${primaryColor}" stroke-width="${this.strokeWidth}"
-        fill="${secondaryColor}"></polygon>`;
-        break;
-    }
+    const polygon = RendererSingleton.renderer.createElement('polygon', 'svg');
+    const properties: [string, string][] = [];
+    properties.push(
+      ['id', `polygon${this.currentPolygonNumber}`],
+      ['points', `${points}`],
+    );
+    this.drawElement(polygon, properties, primaryColor, secondaryColor);
   }
 
-  createTemporaryRectangle(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
+  createTemporaryRectangle(canvas: SVGElement) {
     this.rectangleGenerator._plotType = PlotType.Contour;
     this.rectangleGenerator.createRectangle(canvas, 'black', 'black');
     canvas.children[canvas.children.length - 1].id = 'tempRect';

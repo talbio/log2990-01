@@ -24,6 +24,7 @@ import { EraserToolsComponent } from './components/main-view/tools-attributes-mo
 import { EyedropperToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eyedropper/eyedropper-tools.component';
 import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
+import { PenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pen/pen-tools.component';
 import { PencilToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pencil/pencil-tools.component';
 import { PolygonToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/polygon/polygon-tools.component';
 import { RectangleToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/rectangle/rectangle-tools.component';
@@ -54,6 +55,7 @@ import { EyedropperService } from './services/tools/eyedropper/eyedropper.servic
 import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
 import { ObjectSelectorService } from './services/tools/object-selector/object-selector.service';
+import { PenGeneratorService } from './services/tools/pen-generator/pen-generator.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from './services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
@@ -120,6 +122,7 @@ const customNotifierOptions: NotifierOptions = {
     AbstractDialogButtonComponent,
     AbstractClipboardComponent,
     PencilToolsComponent,
+    PenToolsComponent,
     RectangleToolsComponent,
     LineToolsComponent,
     EllipseToolsComponent,
@@ -168,6 +171,7 @@ const customNotifierOptions: NotifierOptions = {
     ClipboardService,
     RendererSingleton,
     EraserService,
+    PenGeneratorService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [

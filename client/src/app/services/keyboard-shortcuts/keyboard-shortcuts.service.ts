@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Tools} from '../../data-structures/Tools';
+import {Tools} from '../../data-structures/tools';
 import {ModalManagerService} from '../modal-manager/modal-manager.service';
 import {RendererSingleton} from '../renderer-singleton';
 import {GridTogglerService} from '../tools/grid/grid-toggler.service';
@@ -30,6 +30,8 @@ export class KeyboardShortcutsService {
   private readonly DUPLICATE_KEY = 'd';
   private readonly DELETE_KEY = 'Delete';
   private readonly PASTE_KEY = 'v';
+  private readonly SAVE_DRAWING_KEY = 's';
+  private readonly OPEN_DRAWING_KEY = 'g';
 
   private readonly oneKeyShortcuts: Map<string, () => void>;
   private readonly controlKeyShortcuts: Map<string, () => void>;
@@ -91,5 +93,7 @@ export class KeyboardShortcutsService {
     this.controlKeyShortcuts.set(this.DUPLICATE_KEY, () => this.clipboard.duplicate());
    //}
     this.controlKeyShortcuts.set(this.PASTE_KEY, () => this.clipboard.paste());
+    this.controlKeyShortcuts.set(this.SAVE_DRAWING_KEY, () => this.modalManagerService.showSaveDrawingDialog());
+    this.controlKeyShortcuts.set(this.OPEN_DRAWING_KEY, () => this.modalManagerService.showOpenDrawingDialog());
   }
 }

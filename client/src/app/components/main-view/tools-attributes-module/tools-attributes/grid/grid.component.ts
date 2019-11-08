@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PlotType } from '../../../../../data-structures/PlotType';
+import { PlotType } from '../../../../../data-structures/plot-type';
 import { GridTogglerService } from './../../../../../services/tools/grid/grid-toggler.service';
 
 @Component({

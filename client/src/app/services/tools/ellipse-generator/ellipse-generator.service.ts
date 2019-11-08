@@ -1,6 +1,9 @@
 import { Injectable} from '@angular/core';
-import { PlotType } from '../../../data-structures/PlotType';
+import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
+import {ActionGenerator} from '../../../data-structures/command';
+import { PlotType } from '../../../data-structures/plot-type';
 import {RendererSingleton} from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 import { MousePositionService } from './../../mouse-position/mouse-position.service';
 
@@ -10,12 +13,11 @@ enum Axis {
 }
 
 @Injectable()
-export class EllipseGeneratorService {
+export class EllipseGeneratorService extends AbstractClosedShape implements ActionGenerator {
 
   private readonly TEMP_RECT_ID = '#tempRect';
 
   private currentEllipseNumber: number;
-  private canvasElement: SVGElement;
   private mouseDown: boolean;
 
   // attributes of ellipse
@@ -23,7 +25,9 @@ export class EllipseGeneratorService {
   private plotType: PlotType;
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
-              private mousePosition: MousePositionService) {
+              private mousePosition: MousePositionService,
+              undoRedoService: UndoRedoService) {
+    super(undoRedoService);
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.currentEllipseNumber = 0;
@@ -40,15 +44,14 @@ export class EllipseGeneratorService {
   set _currentEllipseNumber(count: number) { this.currentEllipseNumber = count; }
 
   // Primary methods
-  createEllipse(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
-    this.canvasElement = canvas;
-    canvas.innerHTML += this.generateEllipseElement(this.currentEllipseNumber, primaryColor, secondaryColor);
+  createEllipse(canvas: SVGElement, primaryColor: string, secondaryColor: string): boolean {
+    this.generateEllipseElement(primaryColor, secondaryColor);
     this.createTemporaryRectangle(canvas);
     this.mouseDown = true;
     return true;
   }
 
-  updateCircle(canvas: SVGElement, currentChildPosition: number) {
+  updateCircle(canvas: SVGElement, currentChildPosition: number): void {
     if (this.mouseDown) {
       this.rectangleGenerator.updateSquare(canvas, currentChildPosition);
       const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
@@ -89,8 +92,9 @@ export class EllipseGeneratorService {
 
   finishEllipse() {
     if (this.mouseDown) {
-      this.canvasElement.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
+      RendererSingleton.getCanvas().removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
       this.currentEllipseNumber += 1;
+      this.pushAction(this.currentElement);
       this.mouseDown = false;
     }
   }
@@ -105,30 +109,20 @@ export class EllipseGeneratorService {
     }
   }
 
-  private generateEllipseElement(id: number, primaryColor: string, secondaryColor: string): string {
-    let strokeProperty = '';
-    let fillProperty = '';
-    switch (this.plotType) {
-      case PlotType.Contour:
-        strokeProperty = secondaryColor;
-        fillProperty = 'transparent';
-        break;
-      case PlotType.Full:
-        strokeProperty = 'transparent';
-        fillProperty = primaryColor;
-        break;
-      case PlotType.FullWithContour:
-        strokeProperty = secondaryColor;
-        fillProperty = primaryColor;
-        break;
-    }
-    return `<ellipse
-        id='ellipse${id.toString()}'
-        data-start-x = '${this.mousePosition.canvasMousePositionX}'
-        data-start-y = '${this.mousePosition.canvasMousePositionY}'
-        cx='${this.mousePosition.canvasMousePositionX}'
-        cy='${this.mousePosition.canvasMousePositionY}' rx='0' ry='0'
-        stroke='${strokeProperty}' stroke-width='${this.strokeWidth}' fill='${fillProperty}'></ellipse>`;
+  private generateEllipseElement(primaryColor: string, secondaryColor: string): void {
+    const ellipse = RendererSingleton.renderer.createElement('ellipse', 'svg');
+    const properties: [string, string][] = [];
+    properties.push(
+      ['id', `ellipse${this.currentEllipseNumber}`],
+      ['cx', `${this.mousePosition.canvasMousePositionX}`],
+      ['cy', `${this.mousePosition.canvasMousePositionY}`],
+      ['rx', `0`],
+      ['ry', `0`],
+      ['data-start-x', `${this.mousePosition.canvasMousePositionX}`],
+      ['data-start-y', `${this.mousePosition.canvasMousePositionY}`],
+    );
+    this.drawElement(ellipse, properties, primaryColor, secondaryColor);
+
   }
 
   createTemporaryRectangle(canvas: SVGElement) {

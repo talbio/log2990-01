@@ -8,7 +8,7 @@ const drawing2: Drawing = {id: -1, name: 'drawing1', miniature: '', svgElements:
 const drawing3: Drawing = {id: -1, name: 'drawing1', miniature: '', svgElements: '', tags: ['otherTag']};
 const drawing4: Drawing = {id: -1, name: 'drawing1', miniature: '', svgElements: '', tags: ['tag1', 'tag2']};
 
-fdescribe('FilterByTags', () => {
+describe('FilterByTags', () => {
   it('create an instance', () => {
 
     expect(pipe).toBeTruthy();
