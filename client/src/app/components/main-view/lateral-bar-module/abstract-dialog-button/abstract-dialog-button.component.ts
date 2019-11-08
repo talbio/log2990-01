@@ -15,6 +15,4 @@ export class AbstractDialogButtonComponent {
 
   @Input() dialogProperties: DialogProperties;
 
-  constructor() {}
-
 }

@@ -6,7 +6,7 @@ import { LineToolsComponent } from './line-tools.component';
 // import { MatSliderChange } from '@angular/material';
 // import { DebugElement } from '@angular/core';
 
-fdescribe('LineToolsComponent', () => {
+describe('LineToolsComponent', () => {
   let component: LineToolsComponent;
   let fixture: ComponentFixture<LineToolsComponent>;
 
