@@ -35,7 +35,7 @@ const formBuilder: FormBuilder = new FormBuilder();
 
 /* ------------------------------------------------------------------------------------------ */
 
-fdescribe('SaveDrawingDialogComponent', () => {
+describe('SaveDrawingDialogComponent', () => {
   let component: SaveDrawingDialogComponent;
   let fixture: ComponentFixture<SaveDrawingDialogComponent>;
 

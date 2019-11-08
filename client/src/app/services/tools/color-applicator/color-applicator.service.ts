@@ -1,110 +1,151 @@
 import { Injectable } from '@angular/core';
+import {Command, CommandGenerator} from '../../../data-structures/command';
 import {RendererSingleton} from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 
 @Injectable()
-export class ColorApplicatorService {
+export class ColorApplicatorService implements CommandGenerator {
+
+  private readonly CLOSED_FORMS = ['rect', 'polygon', 'ellipse'];
+  private readonly TREATED_ELEMENTS = ['path', 'polyline'].concat(this.CLOSED_FORMS);
 
   constructor(private lineGenerator: LineGeneratorService,
-              private brushGenerator: BrushGeneratorService) {
+              private brushGenerator: BrushGeneratorService,
+              private undoRedoService: UndoRedoService) {
+  }
+
+  pushCommand(command: Command): void {
+    this.undoRedoService.pushCommand(command);
   }
 
   changePrimaryColor(targetObject: SVGElement, newColor: string) {
-    const defs = RendererSingleton.renderer.selectRootElement('#definitions', true);
-    switch (targetObject.nodeName) {
-
-      case 'rect':
-        // Rectangle
+    if (this.TREATED_ELEMENTS.includes(targetObject.nodeName)) {
+      if (this.isClosedForm(targetObject.nodeName)) {
+        this.pushColorApplicatorCommand(targetObject, 'fill', newColor, targetObject.getAttribute('fill') as string);
         targetObject.setAttribute('fill', newColor);
-        break;
-      case 'path':
-        // Check specific type of path
-        if (('' + targetObject.getAttribute('id')).startsWith('pencil')) {
-          // Pencil
-          targetObject.setAttribute('stroke', newColor);
-        } else if (('' + targetObject.getAttribute('id')).startsWith('brush')) {
-          // PaintBrush
-          // Find the pattern
-          const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, defs);
-          // Change color of the fill attribute of all children
-          if (pattern != null) {
-            for (const child of [].slice.call(pattern.children)) {
-              if (child.hasAttribute('fill')) {
-                child.setAttribute('fill', newColor);
-              }
-            }
-          }
-        } else {
-          alert('Object id is \'' + targetObject.getAttribute('id') + '\' and this case is not treated!');
-        }
-        break;
-      case 'ellipse':
-        targetObject.setAttribute('fill', newColor);
-        break;
-      case 'polygon':
-        targetObject.setAttribute('fill', newColor);
-        break;
-      case 'polyline':
-        targetObject.setAttribute('stroke', newColor);
-        // find the markers
-        const markers = this.lineGenerator.findMarkerFromPolyline(targetObject, defs);
-        // change color of the circles in the markers
-        markers.children[0].setAttribute('fill', newColor);
-        break;
-      case 'image':
-        // Image should not change color
-        break;
-      case 'svg':
-        // Canvas
-        break;
-      default:
-        alert('Object is of type ' + targetObject.nodeName + ' and this case is not treated!');
-        break;
+      } else if (targetObject.nodeName === 'path') {
+        this.changePathColor(targetObject, newColor);
+      } else if (targetObject.nodeName === 'polyline') {
+        this.changePolylineColor(targetObject, newColor);
+      }
     }
-
   }
 
   changeSecondaryColor(targetObject: SVGElement, newColor: string) {
-    const defs = RendererSingleton.renderer.selectRootElement('#definitions', true);
-    switch (targetObject.nodeName) {
-      case 'rect':
-        // Rectangle
+
+    if (this.TREATED_ELEMENTS.includes(targetObject.nodeName)) {
+
+      if (this.isClosedForm(targetObject.nodeName)) {
+        this.pushColorApplicatorCommand(targetObject, 'stroke', newColor, targetObject.getAttribute('stroke') as string);
         targetObject.setAttribute('stroke', newColor);
-        break;
-      case 'path':
-        // Paths should only be able to change the primary colorSelected, unless they are a paintbrush texture
+      } else if (targetObject.nodeName === 'path') {
         if ((targetObject.getAttribute('id') as string).startsWith('brush')) {
-          // PaintBrush
-          // Find the pattern
-          const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, defs);
-          // Change color of the stroke attribute of all children
-          if (pattern != null) {
-            for (const child of [].slice.call(pattern.children)) {
-              if (child.hasAttribute('stroke')) {
-                child.setAttribute('stroke', newColor);
-              }
-            }
+          this.changeBrushPatternsColor(targetObject, newColor, 'stroke');
+        }
+      }
+    }
+  }
+
+  /**
+   * @desc: find the markers and change color of the circles in the markers
+   */
+  private changePolylineColor(targetObject: SVGElement, newColor: string) {
+    targetObject.setAttribute('stroke', newColor);
+    const markers = this.lineGenerator.findMarkerFromPolyline(targetObject, RendererSingleton.defs);
+    const ancientColor = markers.children[0].getAttribute('fill') as string;
+    markers.children[0].setAttribute('fill', newColor);
+    this.pushPolyLineChangedColorCommand(markers, newColor, ancientColor);
+  }
+
+  /**
+   * @desc: change the color of the path element, depending whether it's a pencil path or a brush path
+   */
+  private changePathColor(targetObject: SVGElement, newColor: string) {
+    const id = targetObject.getAttribute('id') as string;
+    if (id.startsWith('pencil')) {
+      this.pushColorApplicatorCommand(targetObject, 'stroke', newColor, targetObject.getAttribute('stroke') as string);
+      targetObject.setAttribute('stroke', newColor);
+    } else if (id.startsWith('brush')) {
+      this.changeBrushPatternsColor(targetObject, newColor, 'fill');
+    }
+  }
+
+  /**
+   * @desc: Change color of the fill attribute of all children of the pattern
+   */
+  private changeBrushPatternsColor(targetObject: SVGElement, newColor: string, property: string) {
+    const ancientColor = this.getBrushPatternColor(targetObject, property);
+    const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, RendererSingleton.defs);
+    if (pattern) {
+      this.pushBrushPatternsColorChangedCommand(pattern, property, newColor, ancientColor);
+      for (const child of [].slice.call(pattern.children)) {
+        if (child.hasAttribute(property)) {
+          child.setAttribute(property, newColor);
+        }
+      }
+    }
+  }
+
+  private getBrushPatternColor(targetObject: SVGElement, property: string): string {
+    const defaultColor = 'black';
+    const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, RendererSingleton.defs);
+    if (pattern) {
+      for (const child of [].slice.call(pattern.children)) {
+        if (child.hasAttribute(property)) {
+          return child.getAttribute(property);
+        }
+      }
+    }
+    return defaultColor;
+  }
+
+  private isClosedForm(nodeName: string): boolean {
+    return this.CLOSED_FORMS.includes(nodeName);
+  }
+
+  private pushColorApplicatorCommand(svgElement: SVGElement, attribute: string, newColor: string, ancientColor: string): void {
+    const command: Command = {
+      execute(): void {
+        RendererSingleton.renderer.setAttribute(svgElement, attribute, newColor);
+      },
+      unexecute(): void {
+        RendererSingleton.renderer.setAttribute(svgElement, attribute, ancientColor);
+      },
+    };
+    this.pushCommand(command);
+  }
+
+  private pushPolyLineChangedColorCommand(markers: SVGElement, newColor: string, ancientColor: string) {
+    const command: Command = {
+      execute(): void {
+        markers.children[0].setAttribute('fill', newColor);
+      },
+      unexecute(): void {
+        markers.children[0].setAttribute('fill', ancientColor);
+      },
+    };
+    this.pushCommand(command);
+  }
+
+  private pushBrushPatternsColorChangedCommand(pattern: SVGElement, property: string, newColor: string, ancientColor: string) {
+    const command: Command = {
+      execute(): void {
+        for (const child of [].slice.call(pattern.children)) {
+          if (child.hasAttribute(property)) {
+            child.setAttribute(newColor);
           }
         }
-        break;
-      case 'ellipse':
-        targetObject.setAttribute('stroke', newColor);
-        break;
-      case 'polygon':
-        targetObject.setAttribute('stroke', newColor);
-        break;
-      case 'polyline':
-        break;
-      case 'image':
-          // Image should not change color
-          break;
-      case 'svg':
-        // Canvas
-        break;
-      default:
-        alert('Object is of type ' + targetObject.nodeName + ' and this case is not treated!');
-        break;
-    }
+      },
+      unexecute(): void {
+        for (const child of [].slice.call(pattern.children)) {
+          if (child.hasAttribute(property)) {
+            child.setAttribute(ancientColor);
+          }
+        }
+      },
+    };
+    this.pushCommand(command);
   }
 }

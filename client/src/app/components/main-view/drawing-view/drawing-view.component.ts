@@ -47,6 +47,10 @@ export class DrawingViewComponent implements AfterViewInit {
       } else {
         this.executeShortcutFunction(this.keyBoardShortcuts.getOneKeyShortcuts, keyboardEvent.key);
       }
+    } else {
+      if (keyboardEvent.ctrlKey) {
+        keyboardEvent.preventDefault();
+      }
     }
   }
 

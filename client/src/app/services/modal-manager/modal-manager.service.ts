@@ -4,7 +4,7 @@ import { OpenDrawingDialogComponent } from 'src/app/components/modals/open-drawi
 import {ColorPickerDialogComponent} from '../../components/modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 import {CreateDrawingDialogComponent} from '../../components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import {SaveDrawingDialogComponent} from '../../components/modals/save-drawing-dialog/save-drawing-dialog.component';
-import {CreateDrawingFormValues} from '../../data-structures/CreateDrawingFormValues';
+import {CreateDrawingFormValues} from '../../data-structures/create-drawing-form-values';
 import {RendererSingleton} from '../renderer-singleton';
 import {ColorService} from '../tools/color/color.service';
 import {ToolManagerService} from '../tools/tool-manager/tool-manager.service';
@@ -32,10 +32,9 @@ export class ModalManagerService {
       });
       dialogRef.afterClosed().subscribe((formValues: CreateDrawingFormValues) => {
         if (formValues) {
-          const svgCanvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
-          RendererSingleton.renderer.setAttribute(svgCanvas, 'width', formValues.width.toString());
-          RendererSingleton.renderer.setAttribute(svgCanvas, 'height', formValues.height.toString());
-          RendererSingleton.renderer.setStyle(svgCanvas, 'background-color', formValues.color.toString());
+          RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'width', formValues.width.toString());
+          RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'height', formValues.height.toString());
+          RendererSingleton.renderer.setStyle(RendererSingleton.canvas, 'background-color', formValues.color.toString());
         }
       });
   }

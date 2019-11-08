@@ -1,6 +1,5 @@
-
 import { Injectable, Input } from '@angular/core';
-import { Colors } from 'src/app/data-structures/Colors';
+import { Colors } from 'src/app/data-structures/colors';
 import { StorageService } from '../../storage/storage.service';
 
 @Injectable({

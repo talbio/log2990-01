@@ -13,6 +13,7 @@ import {ModalManagerSingleton} from '../modal-manager-singleton';
 export class SaveDrawingDialogComponent implements AfterViewInit {
 
   private static httpPosting: boolean;
+  private static localPosting: boolean;
   private modalManagerSingleton = ModalManagerSingleton.getInstance();
 
   protected readonly NO_SPACES_REGEX = /^\S*$/;
@@ -23,6 +24,8 @@ export class SaveDrawingDialogComponent implements AfterViewInit {
   protected readonly INVALID_TAG_ERR_MSG = `tag invalide`;
   protected readonly HTTP_POST_DRAWING_FAILED_MSG = 'La sauvegarde du dessin a échoué! Veuillez réessayer.';
   protected readonly HTTP_POST_DRAWING_SUCCEEDED_MSG = 'Votre dessin a bien été sauvegardé!';
+  protected readonly LOCAL_POST_DRAWING_FAILED_MSG = 'La sauvegarde du dessin a échoué! Veuillez réessayer.';
+  protected readonly LOCAL_POST_DRAWING_SUCCEEDED_MSG = `Votre dessin a bien été sauvegardé!`;
 
   protected httpPostDrawingFailed: boolean;
   protected formGroup: FormGroup;
@@ -56,6 +59,10 @@ export class SaveDrawingDialogComponent implements AfterViewInit {
 
   get isPostingToServer() {
     return SaveDrawingDialogComponent.httpPosting;
+  }
+
+  get isPostingLocally() {
+    return SaveDrawingDialogComponent.localPosting;
   }
 
   get name(): AbstractControl {
@@ -111,4 +118,29 @@ export class SaveDrawingDialogComponent implements AfterViewInit {
       })
       .finally(() => SaveDrawingDialogComponent.httpPosting = false);
   }
+  async submitLocal() {
+    const tags: string[] = [];
+    for (const tagFormControl of this.tags.value) {
+      tags.push(tagFormControl.tag);
+    }
+    SaveDrawingDialogComponent.localPosting = true;
+    await this.drawingsService.localPostDrawing(this.name.value, tags)
+      .then(
+        (success: boolean) => {
+          if (success) {
+            this.notifier.notify('success', this.LOCAL_POST_DRAWING_SUCCEEDED_MSG);
+            this.close();
+            return Promise.resolve();
+          } else {
+            return Promise.reject(success);
+          }
+        },
+        (error) => {
+          return Promise.reject(error);
+        })
+      .catch( (_) => {
+        this.notifier.notify('error', this.LOCAL_POST_DRAWING_FAILED_MSG);
+      })
+      .finally(() => SaveDrawingDialogComponent.localPosting = false);
+    }
 }

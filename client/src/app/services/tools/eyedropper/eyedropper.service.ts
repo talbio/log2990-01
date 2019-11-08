@@ -105,4 +105,49 @@ export class EyedropperService {
     this.colorTool.setSecondaryColor(objectColor);
     this.colorTool.assignSecondaryColor();
   }
+
+  // This function gets the exact color of the hovered pixel by transfering the svg to an html5 canvas element.
+  // NOT WORKING, can't transfer svg to image
+  // getColorOnPixel(object: SVGElement): string {
+
+  //   let foundColor = '';
+  //   const imageObject = object as SVGImageElement;
+  //   const canvElem = RendererSingleton.renderer
+  //   .createElement('canvas');
+  //   const appworkzone = RendererSingleton.renderer
+  //   .selectRootElement('app-work-zone', true);
+  //   canvElem.height = imageObject.getAttribute('height');
+  //   canvElem.width = imageObject.getAttribute('width');
+  //   RendererSingleton.renderer
+  //   .appendChild(appworkzone, canvElem);
+  //   const context = canvElem.getContext('2d');
+  //   context.drawImage(imageObject, 0, 0);
+  //   const pictureX = this.mousePosition.canvasMousePositionX - parseFloat(imageObject.getAttribute('x') as string);
+  //   const pictureY = this.mousePosition.canvasMousePositionY - parseFloat(imageObject.getAttribute('y') as string);
+  //   const pixData = context.getImageData(pictureX, pictureY, 1, 1);
+  //   foundColor = `rgba(${pixData.data[0]},${pixData.data[1]},${pixData.data[2]},${pixData.data[3]})`;
+  //   console.log(foundColor);
+
+  //   // RendererSingleton.renderer
+  //   .removeChild(appworkzone, canvElem);
+
+  //   if (foundColor !== '') {
+  //     if (foundColor.startsWith('rgba')) {
+  //       return foundColor;
+  //     } else if (foundColor.startsWith('rgb')) {
+  //       // Take rgb value and make it a fully opaque rgba value
+  //       foundColor = foundColor.replace(')', ', 1)').replace('rgb', 'rgba');
+  //       return foundColor;
+  //     } else if (foundColor === 'transparent') {
+  //       return `rgba(0,0,0,0)`;
+  //     } else {
+  //       // untreated case but still found a value
+  //       return foundColor;
+  //     }
+  //   } else {
+  //     // If no value is found, return the primary color (this should only happen in untreated cases during development)
+  //     return this.colorTool.getPrimaryColor();
+  //   }
+  // }
+
 }

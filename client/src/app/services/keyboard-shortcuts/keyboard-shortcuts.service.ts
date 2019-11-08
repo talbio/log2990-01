@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Tools} from '../../data-structures/Tools';
+import {Tools} from '../../data-structures/tools';
 import {ModalManagerService} from '../modal-manager/modal-manager.service';
 import {RendererSingleton} from '../renderer-singleton';
 import {GridTogglerService} from '../tools/grid/grid-toggler.service';
@@ -30,6 +30,8 @@ export class KeyboardShortcutsService {
   private readonly DUPLICATE_KEY = 'd';
   private readonly DELETE_KEY = 'Delete';
   private readonly PASTE_KEY = 'v';
+  private readonly SAVE_DRAWING_KEY = 's';
+  private readonly OPEN_DRAWING_KEY = 'g';
 
   private readonly oneKeyShortcuts: Map<string, () => void>;
   private readonly controlKeyShortcuts: Map<string, () => void>;
@@ -80,10 +82,11 @@ export class KeyboardShortcutsService {
   private setControlKeyShortcuts(): void {
     this.controlKeyShortcuts.set(this.SELECT_ALL_KEY, () => {
       this.toolManager._activeTool = Tools.Selector;
-      const canvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
-      this.objectSelector.selectAll(canvas);
+      this.objectSelector.selectAll(RendererSingleton.canvas);
     });
     this.controlKeyShortcuts.set(this.NEW_DRAWING_KEY, () => this.modalManagerService.showCreateDrawingDialog());
+    this.controlKeyShortcuts.set(this.SAVE_DRAWING_KEY, () => this.modalManagerService.showSaveDrawingDialog());
+    this.controlKeyShortcuts.set(this.OPEN_DRAWING_KEY, () => this.modalManagerService.showOpenDrawingDialog());
     // clipboard shortcuts
     //if (this.toolManager._activeTool === Tools.Selector) {
     this.controlKeyShortcuts.set(this.COPY_KEY, () => this.clipboard.copy());

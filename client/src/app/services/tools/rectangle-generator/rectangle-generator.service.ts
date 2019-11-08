@@ -1,26 +1,17 @@
 import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import {Injectable} from '@angular/core';
-import {PlotType} from '../../../data-structures/PlotType';
+import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
+import {PlotType} from '../../../data-structures/plot-type';
+import {RendererSingleton} from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 
 @Injectable()
-export class RectangleGeneratorService {
+export class RectangleGeneratorService extends AbstractClosedShape  {
 
-  private currentRectNumber: number;
-  private mouseDown: boolean;
-
-  // attributes of rectangle
-  private strokeWidth: number;
-  private plotType: PlotType;
-
-  constructor(private mouse: MousePositionService) {
-    this.strokeWidth = 1;
-    this.plotType = PlotType.Contour;
-    this.currentRectNumber = 0;
-    this.mouseDown = false;
+  constructor(protected undoRedoService: UndoRedoService) {
+    super(undoRedoService);
   }
 
-  get _currentRectNumber() { return this.currentRectNumber; }
-  set _currentRectNumber(count: number) { this.currentRectNumber = count; }
   get _strokeWidth() {
     return this.strokeWidth;
   }
@@ -37,46 +28,41 @@ export class RectangleGeneratorService {
     this.plotType = plotType;
   }
 
-  // createRectangle(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string, secondaryColor: string) {
-  createRectangle(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
-    switch (this.plotType) {
-      case PlotType.Contour:
-        canvas.innerHTML +=
-        `<rect id="rect${this.currentRectNumber}"
-        x="${this.mouse.canvasMousePositionX}"
-        data-start-x="${this.mouse.canvasMousePositionX}"
-        y="${this.mouse.canvasMousePositionY}"
-        data-start-y="${this.mouse.canvasMousePositionY}"
-        width="0" height="0" stroke="${secondaryColor}" stroke-width="${this.strokeWidth}"
-        fill="transparent"></rect>`;
-        break;
-      case PlotType.Full:
-        canvas.innerHTML +=
-        `<rect id="rect${this.currentRectNumber}"
-        x="${this.mouse.canvasMousePositionX}"
-        data-start-x="${this.mouse.canvasMousePositionX}"
-        y="${this.mouse.canvasMousePositionY}"
-        data-start-y="${this.mouse.canvasMousePositionY}"
-        width = "0" height = "0" stroke="transparent" stroke-width="${this.strokeWidth}"
-        fill="${primaryColor}"></rect>`;
-        break;
-      case PlotType.FullWithContour:
-        canvas.innerHTML +=
-        `<rect id="rect${this.currentRectNumber}"
-        x="${this.mouse.canvasMousePositionX}"
-        data-start-x="${this.mouse.canvasMousePositionX}"
-        y="${this.mouse.canvasMousePositionY}"
-        data-start-y="${this.mouse.canvasMousePositionY}"
-        width="0" height="0" stroke="${secondaryColor}" stroke-width="${this.strokeWidth}"
-        fill="${primaryColor}"></rect>`;
-        break;
-    }
+  createElement(xPosition: number, yPosition: number, primaryColor: string, secondaryColor: string) {
+    const rect = RendererSingleton.renderer.createElement('rect', 'svg');
+    const properties: [string, string][] = [];
+    properties.push(
+      ['id', `rect${this.currentElementsNumber}`],
+      ['x', `${xPosition}`],
+      ['y', `${yPosition}`],
+      ['height', `0`],
+      ['width', `0`],
+      ['data-start-x', `${xPosition}`],
+      ['data-start-y', `${yPosition}`],
+    );
+    this.drawElement(rect, properties, primaryColor, secondaryColor);
     this.mouseDown = true;
   }
 
-  updateSquare(canvas: SVGElement, currentChildPosition: number) {
+  updateElement(xPosition: number, yPosition: number, currentChildPosition: number, mouseEvent: MouseEvent): void {
+    if (mouseEvent.shiftKey) {
+      this.updateSquare(xPosition, yPosition, currentChildPosition);
+    } else {
+      this.updateRectangle(xPosition, yPosition, currentChildPosition);
+    }
+  }
+
+  finishElement() {
     if (this.mouseDown) {
-      const currentRect = canvas.children[currentChildPosition - 1];
+      this.currentElementsNumber += 1;
+      this.mouseDown = false;
+      this.pushGeneratorCommand(this.currentElement);
+    }
+  }
+
+  updateSquare(canvasPosX: number, canvasPosY: number, currentChildPosition: number) {
+    if (this.mouseDown) {
+      const currentRect = RendererSingleton.canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
@@ -124,9 +110,9 @@ export class RectangleGeneratorService {
     }
   }
 
-  updateRectangle(canvas: SVGElement, currentChildPosition: number) {
+  updateRectangle(canvasPosX: number, canvasPosY: number, currentChildPosition: number) {
     if (this.mouseDown) {
-      const currentRect = canvas.children[currentChildPosition - 1];
+      const currentRect = RendererSingleton.canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
@@ -148,16 +134,4 @@ export class RectangleGeneratorService {
     }
   }
 
-  finishRectangle() {
-    if (this.mouseDown) {
-      this.currentRectNumber += 1;
-      this.mouseDown = false;
-    }
-  }
-
-  clone(item: SVGElement): SVGElement {
-    const newItem = item.cloneNode() as SVGElement;
-    newItem.setAttribute('id', 'rect' + this.currentRectNumber++);
-    return newItem;
-  }
 }

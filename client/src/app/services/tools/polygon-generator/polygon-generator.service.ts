@@ -1,22 +1,15 @@
-import { Injectable } from '@angular/core';
-import { PlotType } from '../../../data-structures/PlotType';
-import { MousePositionService } from '../../mouse-position/mouse-position.service';
-import { RendererSingleton } from '../../renderer-singleton';
+import {Injectable} from '@angular/core';
+import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
+import { PlotType } from '../../../data-structures/plot-type';
+import {RendererSingleton} from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 
 @Injectable()
-export class PolygonGeneratorService {
+export class PolygonGeneratorService extends AbstractClosedShape {
 
   private readonly TEMP_RECT_ID = '#tempRect';
 
-  private currentPolygonNumber: number;
-  private mouseDown: boolean;
-  private canvasElement: SVGElement;
-  // private RendererSingleton.renderer: RendererSingleton.renderer2;
-
-  // attributes of polygon
-  private strokeWidth: number;
-  private plotType: PlotType;
   private nbOfApex: number;
   private angleBetweenVertex: number;
   private currentPolygonID: string;
@@ -24,16 +17,12 @@ export class PolygonGeneratorService {
   private readonly adjustment: number[];
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
-              private mousePosition: MousePositionService,) {
+              protected undoRedoService: UndoRedoService) {
+    super(undoRedoService);
     this.adjustment = [0, 0];
     this.aspectRatio = 0;
     this.nbOfApex = 3;
     this.angleBetweenVertex = (Math.PI * 2) / this.nbOfApex;
-    this.strokeWidth = 1;
-    this.plotType = PlotType.Contour;
-    this.currentPolygonNumber = 0;
-    this.mouseDown = false;
-    // RendererSingleton.renderer = RendererSingleton.rendererSingleton.RendererSingleton.renderer;
   }
 
   // Getters/Setters
@@ -48,27 +37,22 @@ export class PolygonGeneratorService {
   get _nbOfApex() { return this.nbOfApex; }
   set _nbOfApex(nb: number) { this.nbOfApex = nb; }
 
-  set _currentPolygonNumber(polygonNumber: number) { this.currentPolygonNumber = polygonNumber; }
-
   // First layer functions
-  createPolygon(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
-
+  createElement(xPosition: number, yPosition: number, primaryColor: string, secondaryColor: string) {
     // Setup of the service's parameters
-    this.canvasElement = canvas;
     this.setUpAttributes();
 
     // Setup of the children's HTML in canvas
-    this.injectInitialHTML(canvas, primaryColor, secondaryColor);
-    this.currentPolygonID = '#polygon' + this.currentPolygonNumber;
-    this.createTemporaryRectangle(canvas, primaryColor, secondaryColor);
+    this.injectInitialHTML(xPosition, yPosition, primaryColor, secondaryColor);
+    this.currentPolygonID = '#polygon' + this.currentElementsNumber;
+    this.createTemporaryRectangle(xPosition, yPosition, 'tempRect', this.rectangleGenerator);
     this.mouseDown = true;
-    return true;
   }
 
-  updatePolygon(canvas: SVGElement, currentPolygonNumber: number) {
+  updateElement(canvasPosX: number, canvasPosY: number, currentPolygonNumber: number) {
     if (this.mouseDown) {
       const currentPolygon = RendererSingleton.renderer.selectRootElement(this.currentPolygonID, true);
-      this.rectangleGenerator.updateRectangle(canvas, currentPolygonNumber);
+      this.rectangleGenerator.updateRectangle(canvasPosX, canvasPosY, currentPolygonNumber);
       const radius: number = this.determineRadius();
       const center: number[] = this.determineCenter(radius);
       const newPoints = this.determinePolygonVertex(center, radius);
@@ -76,52 +60,30 @@ export class PolygonGeneratorService {
     }
   }
 
-  finishPolygon() {
+  finishElement() {
     if (this.mouseDown) {
       // Remove the rectangle
-      this.canvasElement.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
-      this.currentPolygonNumber += 1;
+      RendererSingleton.canvas.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
+      this.currentElementsNumber += 1;
+      this.pushGeneratorCommand(this.currentElement);
       this.mouseDown = false;
     }
   }
 
   // Second layer functions
-  injectInitialHTML(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
-    const point = '' + this.mousePosition.canvasMousePositionX + ',' + this.mousePosition.canvasMousePositionY;
+  private injectInitialHTML(xPosition: number, yPosition: number, primaryColor: string, secondaryColor: string) {
+    const point = '' + (xPosition) + ',' + (yPosition);
     const points = point + ' ' + point + ' ' + point;
-    switch (this.plotType) {
-      case PlotType.Contour:
-        canvas.innerHTML +=
-        `<polygon id="polygon${this.currentPolygonNumber}"
-        points="${points}"
-        stroke="${primaryColor}" stroke-width="${this.strokeWidth}"
-        fill="transparent"></polygon>`;
-        break;
-      case PlotType.Full:
-        canvas.innerHTML +=
-        `<polygon id="polygon${this.currentPolygonNumber}"
-        points="${points}"
-        stroke="transparent" stroke-width="${this.strokeWidth}"
-        fill="${secondaryColor}"></polygon>`;
-        break;
-      case PlotType.FullWithContour:
-        canvas.innerHTML +=
-        `<polygon id="polygon${this.currentPolygonNumber}"
-        points="${points}"
-        stroke="${primaryColor}" stroke-width="${this.strokeWidth}"
-        fill="${secondaryColor}"></polygon>`;
-        break;
-    }
+    const polygon = RendererSingleton.renderer.createElement('polygon', 'svg');
+    const properties: [string, string][] = [];
+    properties.push(
+      ['id', `polygon${this.currentElementsNumber}`],
+      ['points', `${points}`],
+    );
+    this.drawElement(polygon, properties, primaryColor, secondaryColor);
   }
 
-  createTemporaryRectangle(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
-    this.rectangleGenerator._plotType = PlotType.Contour;
-    this.rectangleGenerator.createRectangle(canvas, 'black', 'black');
-    canvas.children[canvas.children.length - 1].id = 'tempRect';
-    canvas.children[canvas.children.length - 1].setAttribute('stroke-dasharray', '4');
-  }
-
-  determineRadius(): number {
+  private determineRadius(): number {
     const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
     const h: number = parseFloat(tempRect.getAttribute('height') as string);
     const w: number = parseFloat(tempRect.getAttribute('width') as string);
@@ -144,7 +106,7 @@ export class PolygonGeneratorService {
     }
   }
 
-  determineCenter(radius: number): number[] {
+  private determineCenter(radius: number): number[] {
     const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
     const h: number = parseFloat(tempRect.getAttribute('height') as string);
     const w: number = parseFloat(tempRect.getAttribute('width') as string);
@@ -162,7 +124,7 @@ export class PolygonGeneratorService {
     return center;
   }
 
-  determinePolygonVertex(center: number[], radius: number): string {
+  private determinePolygonVertex(center: number[], radius: number): string {
     let pointsAttribute = '';
     // We convert degrees to radians
     const angleBetweenVertex = (2 * Math.PI / this.nbOfApex);
@@ -179,7 +141,7 @@ export class PolygonGeneratorService {
     return pointsAttribute;
   }
 
-  setUpAttributes() {
+  private setUpAttributes() {
     this.angleBetweenVertex = (2 * Math.PI / this.nbOfApex);
     if (this.nbOfApex % 4 === 0) {
       const cosMax = Math.cos(this.angleBetweenVertex / 2);

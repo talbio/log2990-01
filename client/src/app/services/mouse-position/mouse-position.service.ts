@@ -15,28 +15,4 @@ export class MousePositionService {
     this.canvasMousePositionX = 0;
     this.canvasMousePositionY = 0;
   }
-  // get _pageMousePositionX(): number {
-  //   return this.pageMousePositionX;
-  // }
-  // set _pageMousePositionX(xPos: number) {
-  //   this.pageMousePositionX = xPos;
-  // }
-  // get _pageMousePositionY(): number {
-  //   return this.pageMousePositionY;
-  // }
-  // set _pageMousePositionY(yPos: number) {
-  //   this.pageMousePositionY = yPos;
-  // }
-  // get _canvasMousePositionX(): number {
-  //   return this.canvasMousePositionX;
-  // }
-  // set _canvasMousePositionX(xPos: number) {
-  //   this.canvasMousePositionX = xPos;
-  // }
-  // get _canvasMousePositionY(): number {
-  //   return this.canvasMousePositionY;
-  // }
-  // set _canvasMousePositionY(yPos: number) {
-  //   this.canvasMousePositionY = yPos;
-  // }
 }

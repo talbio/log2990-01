@@ -8,10 +8,11 @@ import {
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {DomSanitizer} from '@angular/platform-browser';
-import {CreateDrawingFormValues} from '../../../../data-structures/CreateDrawingFormValues';
-import {Tools} from '../../../../data-structures/Tools';
+import {CreateDrawingFormValues} from '../../../../data-structures/create-drawing-form-values';
+import {Tools} from '../../../../data-structures/tools';
 import {ModalManagerService} from '../../../../services/modal-manager/modal-manager.service';
 import { ClipboardProperties } from '../abstract-clipboard/abstract-clipboard.component';
+import {UndoRedoService} from '../../../../services/undo-redo/undo-redo.service';
 import {DialogProperties} from '../abstract-dialog-button/abstract-dialog-button.component';
 import {ToolProperties} from '../abstract-tool-button/abstract-tool-button.component';
 import { ClipboardService } from './../../../../services/tools/clipboard/clipboard.service';
@@ -21,7 +22,10 @@ const ELLIPSE_ICON_PATH = '../../../../assets/svg-icons/ellipse.svg';
 const POLYGON_ICON_PATH = '../../../../assets/svg-icons/polygon-icon.svg';
 const ADD_TAG_ICON_PATH = '../../../../assets/svg-icons/add-tag.svg';
 const DELETE_TAG_ICON_PATH = '../../../../assets/svg-icons/delete-tag.svg';
+const REDO_ICON_PATH = '../../../../assets/svg-icons/right-arrow.svg';
+const UNDO_ICON_PATH = '../../../../assets/svg-icons/left-arrow.svg';
 const ERASER_ICON_PATH = '../../../../assets/svg-icons/eraser.svg';
+const PEN_ICON_PATH = '../../../../assets/svg-icons/pen.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -46,6 +50,7 @@ export class LateralBarComponent {
   constructor(private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
               private modalManagerService: ModalManagerService,
+              protected undoRedoService: UndoRedoService) {
               private clipboard: ClipboardService) {
     this.loadSVGIcons();
     this.setAppropriateIconsClass();
@@ -74,24 +79,28 @@ export class LateralBarComponent {
   }
 
   private loadSVGIcons(): void {
-    this.matIconRegistry.addSvgIcon('rectangle',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('polygon',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(POLYGON_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('ellipse',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(ELLIPSE_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('add-tag',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(ADD_TAG_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('delete-tag',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(DELETE_TAG_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('eraser',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(ERASER_ICON_PATH));
+    const icons: [string, string][] = [];
+    icons.push(
+      ['rectangle', RECTANGLE_ICON_PATH],
+      ['polygon', POLYGON_ICON_PATH],
+      ['ellipse', ELLIPSE_ICON_PATH],
+      ['add-tag', ADD_TAG_ICON_PATH],
+      ['delete-tag', DELETE_TAG_ICON_PATH],
+      ['eraser', ERASER_ICON_PATH],
+      ['undo', UNDO_ICON_PATH],
+      ['redo', REDO_ICON_PATH],
+      ['pen', PEN_ICON_PATH],
+    );
+    icons.forEach( (icon: [string, string]) =>
+      this.matIconRegistry.addSvgIcon(icon[0], this.domSanitizer.bypassSecurityTrustResourceUrl(icon[1])));
   }
 
   private initializePencilToolsButtons() {
     this.pencilToolsButtonsProperties = [];
     this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Pencil, 'Crayon', 'create', false));
+    this.pencilToolsButtonsProperties.push(
+      this.toolPropertiesFactory(Tools.Pen, 'Stylo', 'pen', true));
     this.pencilToolsButtonsProperties.push(
       this.toolPropertiesFactory(Tools.Brush, 'Pinceau', 'brush', false));
     this.pencilToolsButtonsProperties.push(
