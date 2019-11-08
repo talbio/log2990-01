@@ -94,7 +94,6 @@ export class DrawingsService {
     const myBlob: Blob = new Blob([JSON.stringify(drawing, null, 2)], {type: 'application/json'});
     const link = RendererSingleton.renderer.createElement('a');
     link.href = URL.createObjectURL(myBlob);
-    // TODO change name maybe?
     link.download = `${drawing.name}.json`;
     link.click();
     // TODO manage cases
