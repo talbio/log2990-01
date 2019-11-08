@@ -16,14 +16,14 @@ export class PenGeneratorService extends AbstractWritingTool {
     OFFSET_CANVAS_X: number;
     OFFSET_CANVAS_Y: number;
     mouseDown = false;
-    private dotPositionX: number;
-    private dotPositionY: number;
-    private date = new Date();
-    private time: number;
-    private speed: number;
-    private color: string;
-    private currentPenPathNumber: number;
-    private pathArray: SVGElement[] = [];
+    dotPositionX: number;
+    dotPositionY: number;
+    date = new Date();
+    time: number;
+    speed: number;
+    color: string;
+    currentPenPathNumber: number;
+    pathArray: SVGElement[] = [];
 
     constructor(undoRedoService: UndoRedoService) {
         super(undoRedoService);

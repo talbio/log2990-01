@@ -22,11 +22,15 @@ export class EraserService {
     eraseZone: IEraseZone;
     erasedDrawings: SVGElement[] = [];
     strokeColors = new Map<string, string>();
+    isPenCloseToBeingErased: boolean;
 
     constructor(protected mousePosition: MousePositionService, protected undoRedoService: UndoRedoService) {
         this.mouseDown = false;
         this.eraseSize = DEFAULT_ERASER_SIZE;
+        this.isPenCloseToBeingErased = false;
     }
+
+    set _eraseSize(width: number) { this.eraseSize = width; }
 
     startErasing(): void {
         this.initialiseData();
@@ -64,6 +68,7 @@ export class EraserService {
 
     warnBeforeErasing(drawing: Element): void {
         const drawingZone = drawing.getBoundingClientRect();
+
         if ((this.isCloseToIntersecting(drawingZone as DOMRect) && (!svgTypesNotToBeErased.includes(drawing.id)))) {
             if (drawing.tagName === 'image') {
                     drawing.setAttribute('filter', 'url(#dropshadow)');
@@ -71,11 +76,16 @@ export class EraserService {
                 if (this.strokeColors.get(drawing.id) === undefined) {
                     this.strokeColors.set(drawing.id, drawing.getAttribute('stroke') as string);
                 }
+                if (drawing.id.substring(0, 7) === 'penPath') {
+                    this.isPenCloseToBeingErased = true;
+                   // const children = RendererSingleton.getCanvas().childNodes;
+                    // TODO: gerer couleur pen path
+                }
                 drawing.setAttribute('stroke', 'red');
             }
 
         } else {
-            if (this.strokeColors.get(drawing.id) !== undefined) {
+            if ((this.strokeColors.get(drawing.id) !== undefined) && !this.isPenCloseToBeingErased) {
                 drawing.setAttribute('stroke', this.strokeColors.get(drawing.id) as string);
             }
             if (drawing.tagName === 'image') {
@@ -170,8 +180,8 @@ export class EraserService {
     setEraserSquare(): void {
         RendererSingleton.getCanvas().innerHTML +=
             `<rect id="eraser"
-        x="${(this.mousePosition._canvasMousePositionX)}"
-        y="${(this.mousePosition._canvasMousePositionY)}"
+        x="${(this.mousePosition._canvasMousePositionX - this.eraseSize / 2)}"
+        y="${(this.mousePosition._canvasMousePositionY - this.eraseSize / 2)}"
         width="${(this.eraseSize)}" height="${(this.eraseSize)}" stroke="black"
         fill="transparent"></rect>`;
     }
