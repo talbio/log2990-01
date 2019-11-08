@@ -67,13 +67,11 @@ export class DrawingsService {
   getCanvasWidth(): number {
     const svgCanvas: SVGElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
     return parseFloat(svgCanvas.getAttribute('width') as string);
-    // return 10;
   }
 
   getCanvasHeight(): number {
     const svgCanvas: SVGElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
     return parseFloat(svgCanvas.getAttribute('height') as string);
-    // return 10;
   }
 
   private handleError(error: HttpErrorResponse): Promise<never> {
