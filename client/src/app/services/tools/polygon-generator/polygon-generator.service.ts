@@ -45,7 +45,7 @@ export class PolygonGeneratorService extends AbstractClosedShape {
     // Setup of the children's HTML in canvas
     this.injectInitialHTML(xPosition, yPosition, primaryColor, secondaryColor);
     this.currentPolygonID = '#polygon' + this.currentElementsNumber;
-    this.createTemporaryRectangle(xPosition, yPosition, this.rectangleGenerator);
+    this.createTemporaryRectangle(xPosition, yPosition, 'tempRect', this.rectangleGenerator);
     this.mouseDown = true;
   }
 

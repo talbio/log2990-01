@@ -66,7 +66,7 @@ export class ToolManagerService {
     } else {
       switch (this._activeTool) {
         case Tools.Selector:
-          this.objectSelector.selectorMouseDown(mouseEvent, canvas);
+          this.objectSelector.onMouseDown(this.mousePosition.canvasMousePositionX, this.mousePosition.canvasMousePositionY, mouseEvent);
           break;
         case Tools.Eraser:
           this.eraser.startErasing(canvas);
@@ -89,7 +89,11 @@ export class ToolManagerService {
     } else {
       switch (this._activeTool) {
         case Tools.Selector:
-          this.objectSelector.updateSelector(mouseEvent, canvas);
+          this.objectSelector.updateSelector(
+            this.mousePosition.canvasMousePositionX,
+            this.mousePosition.canvasMousePositionY,
+            this.numberOfElements,
+            mouseEvent);
           this.updateNumberOfElements();
           break;
         case Tools.Eraser:

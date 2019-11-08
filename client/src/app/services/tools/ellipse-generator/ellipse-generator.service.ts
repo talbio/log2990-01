@@ -32,7 +32,7 @@ export class EllipseGeneratorService extends AbstractClosedShape {
   // Primary methods
   createElement(xPosition: number, yPosition: number, primaryColor: string, secondaryColor: string) {
     this.generateEllipseElement(this.currentElementsNumber, xPosition, yPosition, primaryColor, secondaryColor);
-    this.createTemporaryRectangle(xPosition, yPosition, this.rectangleGenerator);
+    this.createTemporaryRectangle(xPosition, yPosition, 'tempRect', this.rectangleGenerator);
     this.mouseDown = true;
   }
 

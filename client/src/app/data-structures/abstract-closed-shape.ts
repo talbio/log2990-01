@@ -18,10 +18,10 @@ export abstract class AbstractClosedShape extends AbstractGenerator {
     this.mouseDown = false;
   }
 
-  createTemporaryRectangle(xPosition: number, yPosition: number, rectangleGenerator: RectangleGeneratorService) {
+  createTemporaryRectangle(xPosition: number, yPosition: number, id: string, rectangleGenerator: RectangleGeneratorService) {
     rectangleGenerator.plotType = PlotType.Contour;
     rectangleGenerator.createElement(xPosition, yPosition, 'black', 'black');
-    RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1].id = 'tempRect';
+    RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1].id = id;
     RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1].setAttribute('stroke-dasharray', '4');
   }
 
