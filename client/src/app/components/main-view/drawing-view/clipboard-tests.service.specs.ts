@@ -309,4 +309,4 @@ fdescribe('DrawingViewComponent', () => {
     expect(workChilds.length).toEqual(4);
     expect(workChilds[3]).toEqual(workChilds[2]);
   });
-};
+});
