@@ -1,4 +1,3 @@
-const DEFAULT_WIDTH = 20;
 const MIN_WIDTH = 2;
 const MAX_WIDTH = 40;
 
@@ -10,12 +9,8 @@ import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 
 @Injectable()
 export class PenGeneratorService extends AbstractWritingTool {
-    strokeWidth: number;
     strokeWidthMinimum: number;
     strokeWidthMaximum: number;
-    OFFSET_CANVAS_X: number;
-    OFFSET_CANVAS_Y: number;
-    mouseDown = false;
     positionX: number;
     positionY: number;
     date = new Date();
@@ -32,18 +27,18 @@ export class PenGeneratorService extends AbstractWritingTool {
         this.currentPenPathNumber = 0;
     }
 
-    createPenPath(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string) {
-        this.strokeWidth = DEFAULT_WIDTH;
+    createPenPath(mouseEvent: MouseEvent, primaryColor: string) {
+        this.strokeWidth = this.DEFAULT_WIDTH;
         this.color = primaryColor;
         this.time = this.date.getTime();
         this.speed = 0;
-        this.addPath(mouseEvent, canvas, DEFAULT_WIDTH);
+        this.addPath(mouseEvent, this.DEFAULT_WIDTH);
         this.mouseDown = true;
     }
 
-    addPath(mouseEvent: MouseEvent, canvas: SVGElement, width: number): void {
-        this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
-        this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
+    addPath(mouseEvent: MouseEvent, width: number): void {
+        this.OFFSET_CANVAS_Y = RendererSingleton.getCanvas().getBoundingClientRect().top;
+        this.OFFSET_CANVAS_X = RendererSingleton.getCanvas().getBoundingClientRect().left;
         this.positionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
         this.positionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
 
@@ -76,26 +71,30 @@ export class PenGeneratorService extends AbstractWritingTool {
             currentPath.setAttribute('d',
                 currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
                 ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
-            const acceleration = this.getAcceleration(currentTime, currentSpeed);
-            this.updateStrokeWidth(acceleration);
-            this.addPath(mouseEvent, canvas, this.strokeWidth);
+           // const acceleration = this.getAcceleration(currentTime, currentSpeed);
+            this.updateStrokeWidth(currentSpeed);
+            this.addPath(mouseEvent, this.strokeWidth);
             this.speed = currentSpeed;
         }
     }
 
-    updateStrokeWidth(acceleration: number): void {
-        const variationStep = 2;
-        if ((acceleration) > 0) {
-            if (this.strokeWidth > this.strokeWidthMinimum) {
-                this.strokeWidth -= variationStep;
-            }
+    // updateStrokeWidth(acceleration: number): void {
+    //     const variationStep = 2;
+    //     if ((acceleration) > 0) {
+    //         if (this.strokeWidth > this.strokeWidthMinimum) {
+    //             this.strokeWidth -= variationStep;
+    //         }
+    //     }
+    //     if ((acceleration) < 0) {
+    //         if (this.strokeWidth < this.strokeWidthMaximum) {
+    //             this.strokeWidth += variationStep;
+    //         }
+    //     }
+    // }
+
+    updateStrokeWidth(speed: number): void {
+            this.strokeWidth = 20 / (1 + speed);
         }
-        if ((acceleration) < 0) {
-            if (this.strokeWidth < this.strokeWidthMaximum) {
-                this.strokeWidth += variationStep;
-            }
-        }
-    }
 
     finishPenPath() {
         if (this.mouseDown) {

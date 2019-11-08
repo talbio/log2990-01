@@ -4,7 +4,7 @@ import {Action, ActionType} from './command';
 
 export class AbstractWritingTool {
 
-  private readonly DEFAULT_WIDTH = 5;
+  protected readonly DEFAULT_WIDTH = 5;
 
   protected OFFSET_CANVAS_X: number;
   protected OFFSET_CANVAS_Y: number;
