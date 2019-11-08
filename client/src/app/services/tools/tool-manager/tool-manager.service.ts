@@ -252,7 +252,7 @@ export class ToolManagerService {
   }
 
   drawingNonEmpty(): boolean {
-    return this.numberOfElements > 1;
+    return this.numberOfElements > this.DEFAULT_NUMBER_OF_ELEMENTS;
   }
 
   deleteAllDrawings(): void {
@@ -354,6 +354,7 @@ export class ToolManagerService {
     this.brushGenerator._currentBrushPathNumber = brushCount;
     this.pencilGenerator._currentPencilPathNumber = pencilCount;
     this.polygonGenerator._currentPolygonNumber = polygonCount;
+    this.updateNumberOfElements();
   }
   resetCounters() {
     this.rectangleGenerator._currentRectNumber = 0;
