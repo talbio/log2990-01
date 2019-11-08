@@ -24,7 +24,9 @@ export class DrawingsService {
   httpPostDrawing(name: string, tags: string[]): Promise<boolean> {
     const svgElements: string = this.getSvgElements();
     const miniature: string = this.getMiniature();
-    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature};
+    const canvasWidth: number = this.getCanvasWidth();
+    const canvasHeight: number = this.getCanvasHeight();
+    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature, canvasWidth, canvasHeight};
     return this.httpClient.post<{httpCode: number}>(this.BASE_URL, {data: drawing}, this.HTTP_OPTIONS)
       .toPromise()
       .then( (response: {httpCode: number}) => {
@@ -62,6 +64,18 @@ export class DrawingsService {
     return (new XMLSerializer()).serializeToString(miniature);
   }
 
+  getCanvasWidth(): number {
+    const svgCanvas: SVGElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
+    return parseFloat(svgCanvas.getAttribute('width') as string);
+    // return 10;
+  }
+
+  getCanvasHeight(): number {
+    const svgCanvas: SVGElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
+    return parseFloat(svgCanvas.getAttribute('height') as string);
+    // return 10;
+  }
+
   private handleError(error: HttpErrorResponse): Promise<never> {
     if (error.error instanceof ErrorEvent) {
       console.error('An error occurred:', error.error.message);
@@ -78,7 +92,9 @@ export class DrawingsService {
   localPostDrawing(name: string, tags: string[]): Promise<boolean> {
     const svgElements: string = this.getSvgElements();
     const miniature: string = this.getMiniature();
-    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature};
+    const canvasWidth: number = this.getCanvasWidth();
+    const canvasHeight: number = this.getCanvasHeight();
+    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature, canvasWidth, canvasHeight};
     return this.saveFileToLocation(drawing)
       .then( () => {
         return true;

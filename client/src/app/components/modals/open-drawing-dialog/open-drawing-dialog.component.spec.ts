@@ -1,6 +1,7 @@
 import {Component, Renderer2, Type} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import { NotifierService } from 'angular-notifier';
 import {of} from 'rxjs';
 import {Drawing} from '../../../../../../common/communication/Drawing';
 import {DemoMaterialModule} from '../../../material.module';
@@ -27,6 +28,9 @@ const drawingsServiceSpy: jasmine.SpyObj<DrawingsService> =
   jasmine.createSpyObj('DrawingsService', ['httpPostDrawing', 'httpGetDrawings']);
 drawingsServiceSpy.httpGetDrawings.and.returnValue(of());
 
+const notifierServiceSpy: jasmine.SpyObj<NotifierService> =
+  jasmine.createSpyObj('NotifierService', ['notify']);
+
 const fakeCanvas = {innerHTML: ''};
 
 class MockMatDialog {
@@ -38,7 +42,10 @@ class MockMatDialog {
 }
 const mockMatDialog = new MockMatDialog();
 const mockDialogData: DialogData = {drawingNonEmpty: true};
-const fakeDrawing: Drawing = {id: -1, name: '', tags: [], svgElements: '<svg></svg>', miniature: ''};
+const fakeWidth = 1;
+const fakeHeight = 1;
+const fakeDrawing: Drawing = {id: -1, name: '', tags: [], svgElements: '<svg></svg>', miniature: '',
+  canvasWidth: fakeWidth, canvasHeight: fakeHeight};
 /* ------------------------------------------------------------------------------------------ */
 
 describe('OpenDrawingDialogComponent', () => {
@@ -56,11 +63,15 @@ describe('OpenDrawingDialogComponent', () => {
         {provide: DrawingsService, useValue: drawingsServiceSpy},
         {provide: MatDialog, useValue: mockMatDialog},
         {provide: MAT_DIALOG_DATA, useValue: mockDialogData},
+        { provide: NotifierService, useValue: notifierServiceSpy },
       ],
     }).compileComponents().then(() => {
         fixture = TestBed.createComponent(OpenDrawingDialogComponent);
         const renderer = fixture.componentRef.injector.get<Renderer2>(Renderer2 as Type<Renderer2>);
         spyOn(renderer, 'selectRootElement').and.returnValue(fakeCanvas);
+        spyOn(renderer, 'setAttribute').and.callFake(() => {
+          // Do nothing
+         });
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

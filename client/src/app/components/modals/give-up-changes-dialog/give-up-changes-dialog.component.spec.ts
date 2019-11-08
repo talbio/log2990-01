@@ -10,7 +10,7 @@ describe('GiveUpChangesDialogComponent', () => {
     jasmine.createSpyObj('MatDialogRef', ['close']);
   spyDialog.close.and.callThrough();
 
-  beforeAll(async(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [DemoMaterialModule],
       declarations: [GiveUpChangesDialogComponent],

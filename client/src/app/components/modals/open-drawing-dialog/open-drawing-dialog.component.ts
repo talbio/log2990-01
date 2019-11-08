@@ -105,8 +105,10 @@ export class OpenDrawingDialogComponent implements OnInit {
 
   private loadDrawingAndCloseDialog(drawing: Drawing) {
     this.toolManager.deleteAllDrawings();
-    const svgCanvas = this.renderer.selectRootElement('#canvas', true);
+    const svgCanvas: SVGElement = this.renderer.selectRootElement('#canvas', true);
     svgCanvas.innerHTML = drawing.svgElements;
+    this.renderer.setAttribute(svgCanvas, 'width', drawing.canvasWidth as unknown as string);
+    this.renderer.setAttribute(svgCanvas, 'height', drawing.canvasHeight as unknown as string);
     this.toolManager.synchronizeAllCounters();
     this.close();
   }
@@ -181,6 +183,8 @@ export class OpenDrawingDialogComponent implements OnInit {
       svgElements: jsonObject.svgElements,
       tags: jsonObject.tags,
       miniature: jsonObject.miniature,
+      canvasWidth: jsonObject.canvasWidth,
+      canvasHeight: jsonObject.canvasHeight,
     };
     return jsonDrawing;
   }

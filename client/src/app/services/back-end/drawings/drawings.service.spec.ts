@@ -10,7 +10,10 @@ const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['post', 'get']);
 
 const svgCanvasSpy: jasmine.SpyObj<Element> =
-  jasmine.createSpyObj('Element', ['innerHTML', 'outerHTML']);
+  jasmine.createSpyObj('Element', ['innerHTML', 'outerHTML', 'getAttribute']);
+svgCanvasSpy.getAttribute.and.callFake(() => {
+  return '10' as string;
+});
 
 const ToolManagerSpy: jasmine.SpyObj<ToolManagerService> =
   jasmine.createSpyObj('ToolManagerService', ['deleteAllDrawings']);
