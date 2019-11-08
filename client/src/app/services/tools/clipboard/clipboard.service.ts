@@ -20,8 +20,6 @@ export class ClipboardService {
   private xSliding: number;
   private ySliding: number;
 
-  //private isSelecting: boolean;
-
   constructor(private selector: ObjectSelectorService,
               private rectangleGenerator: RectangleGeneratorService,
               private ellipseGenerator: EllipseGeneratorService,
@@ -30,9 +28,12 @@ export class ClipboardService {
               private brushGenerator: BrushGeneratorService,
               private lineGenerator: LineGeneratorService,
               private polygonGenerator: PolygonGeneratorService) {
-    //this.isSelecting = false;
     this.consecultivePastes = 1;
     this.consecultiveDuplicates = 1;
+  }
+
+  hasSelectedElements(): boolean {
+    return this.selector.SVGArray.length === 0;
   }
 
   // Removes and stores in clipboard
@@ -114,6 +115,9 @@ export class ClipboardService {
 
   assessSelection() {
     this.canvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
+    if (this.selectedItems !== this.selector.SVGArray) {
+      this.resetCounters();
+    }
     this.selectedItems = this.selector.SVGArray;
   }
 
@@ -161,6 +165,10 @@ export class ClipboardService {
     const slides = this.getSlideSide(item, consecultive);
     if (transformation === null) {
       newTransform = 'translate(' + slides[0] + ' ' + slides[1] + ')';
+    } else if (!transformation.includes('translate')) {
+      console.log('emoji found');
+      newTransform = 'translate(' + slides[0] as unknown as string + ' ' + slides[1] as unknown as string + ') ';
+      newTransform += transformation;
     } else {
       const eachTrans = transformation.split(' ');
       for (const slot of eachTrans) {

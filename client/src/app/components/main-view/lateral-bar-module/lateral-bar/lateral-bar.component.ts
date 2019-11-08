@@ -50,7 +50,7 @@ export class LateralBarComponent {
   constructor(private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
               private modalManagerService: ModalManagerService,
-              private clipboard: ClipboardService,
+              protected clipboard: ClipboardService,
               protected undoRedoService: UndoRedoService) {
     this.loadSVGIcons();
     this.setAppropriateIconsClass();
@@ -135,14 +135,16 @@ export class LateralBarComponent {
 
   private initializeClipboardButtons() {
     this.clipboardButtonsProperties = [];
-    this.clipboardButtonsProperties.push(
-      this.clipboardPropertiesFactory(() => this.clipboard.copy(), 'Copier', 'Copier', false));
-    this.clipboardButtonsProperties.push(
-      this.clipboardPropertiesFactory(() => this.clipboard.cut(), 'Couper', 'Couper', false));
-    this.clipboardButtonsProperties.push(
-      this.clipboardPropertiesFactory(() => this.clipboard.delete(), 'Supprimer', 'Supprimer', false));
-    this.clipboardButtonsProperties.push(
-      this.clipboardPropertiesFactory(() => this.clipboard.duplicate(), 'Dupliquer', 'Dupliquer', false));
+    if (this.clipboard.hasSelectedElements()) {
+      this.clipboardButtonsProperties.push(
+        this.clipboardPropertiesFactory(() => this.clipboard.copy(), 'Copier', 'Copier', false));
+      this.clipboardButtonsProperties.push(
+        this.clipboardPropertiesFactory(() => this.clipboard.cut(), 'Couper', 'Couper', false));
+      this.clipboardButtonsProperties.push(
+        this.clipboardPropertiesFactory(() => this.clipboard.delete(), 'Supprimer', 'Supprimer', false));
+      this.clipboardButtonsProperties.push(
+        this.clipboardPropertiesFactory(() => this.clipboard.duplicate(), 'Dupliquer', 'Dupliquer', false));
+    }
     this.clipboardButtonsProperties.push(
       this.clipboardPropertiesFactory(() => this.clipboard.paste(), 'Coller', 'Coller', false));
   }
@@ -171,7 +173,16 @@ export class LateralBarComponent {
     return { openDialog: onClickFunction, matToolTip, icon, isSvgIcon};
   }
 
-  private clipboardPropertiesFactory(onClickFunction: () => void, matToolTip: string, icon: string, isSvgIcon: boolean): ClipboardProperties {
+  private clipboardPropertiesFactory(onClickFunction: () => void,
+                                     matToolTip: string, icon: string, isSvgIcon: boolean): ClipboardProperties {
     return { clipboardFunction: onClickFunction, matToolTip, icon, isSvgIcon};
+  }
+
+  hasSelectedElements(): boolean {
+    return this.clipboard.hasSelectedElements();
+  }
+
+  hasElementsInClipboard(): boolean {
+    return this.clipboard.memorizedAction.length !== 0;
   }
 }
