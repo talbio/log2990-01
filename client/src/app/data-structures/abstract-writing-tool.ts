@@ -1,3 +1,4 @@
+import { MousePositionService } from './../services/mouse-position/mouse-position.service';
 import {RendererSingleton} from '../services/renderer-singleton';
 import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
 import {Action, ActionType} from './command';
@@ -6,15 +7,22 @@ export class AbstractWritingTool {
 
   private readonly DEFAULT_WIDTH = 5;
 
-  protected OFFSET_CANVAS_X: number;
-  protected OFFSET_CANVAS_Y: number;
   protected strokeWidth: number;
   protected mouseDown: boolean;
   protected currentElement: SVGElement;
 
-  constructor(protected undoRedoService: UndoRedoService) {
+  constructor(protected mouse: MousePositionService,
+              protected undoRedoService: UndoRedoService) {
     this.mouseDown = false;
     this.strokeWidth = this.DEFAULT_WIDTH;
+  }
+
+  get x(): number {
+    return this.mouse.canvasMousePositionX;
+  }
+
+  get y(): number {
+    return this.mouse.canvasMousePositionY;
   }
 
   pushAction(svgElement: SVGElement): void {
@@ -34,13 +42,13 @@ export class AbstractWritingTool {
   /**
    * @desc // Updates the path when the mouse is moving (mousedown)
    */
-  updatePath(mouseEvent: MouseEvent, currentChildPosition: number) {
+  updatePath(currentChildPosition: number) {
     if (this.mouseDown) {
       const currentPath = RendererSingleton.getCanvas().children[currentChildPosition - 1];
       if (currentPath != null) {
         currentPath.setAttribute('d',
-          currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
-          ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
+          currentPath.getAttribute('d') + ' L' + (this.mouse.canvasMousePositionX) +
+          ' ' + (this.mouse.canvasMousePositionY));
       }
     }
   }

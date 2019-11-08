@@ -10,15 +10,15 @@ import { MousePositionService } from './../../mouse-position/mouse-position.serv
 export class RectangleGeneratorService extends AbstractClosedShape implements ActionGenerator  {
 
   private currentRectNumber: number;
-  private mouseDown: boolean;
+  protected mouseDown: boolean;
 
   // attributes of rectangle
-  private strokeWidth: number;
-  private plotType: PlotType;
+  protected strokeWidth: number;
+  protected plotType: PlotType;
 
-  constructor(private mouse: MousePositionService,
+  constructor(protected mouse: MousePositionService,
               undoRedoService: UndoRedoService) {
-    super(undoRedoService);
+    super(mouse, undoRedoService);
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.currentRectNumber = 0;

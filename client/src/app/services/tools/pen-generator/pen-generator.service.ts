@@ -1,10 +1,11 @@
+import { MousePositionService } from './../../mouse-position/mouse-position.service';
 const DEFAULT_WIDTH = 20;
 const MIN_WIDTH = 2;
 const MAX_WIDTH = 40;
 
 import { Injectable } from '@angular/core';
-import { AbstractWritingTool } from 'src/app/data-structures/abstract-writing-tool';
-import { Action, ActionType } from 'src/app/data-structures/command';
+import { AbstractWritingTool } from '../../../data-structures/abstract-writing-tool';
+import { Action, ActionType } from '../../../data-structures/command';
 import { RendererSingleton } from '../../renderer-singleton';
 import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 
@@ -13,8 +14,6 @@ export class PenGeneratorService extends AbstractWritingTool {
     strokeWidth: number;
     strokeWidthMinimum: number;
     strokeWidthMaximum: number;
-    OFFSET_CANVAS_X: number;
-    OFFSET_CANVAS_Y: number;
     mouseDown = false;
     private dotPositionX: number;
     private dotPositionY: number;
@@ -25,27 +24,26 @@ export class PenGeneratorService extends AbstractWritingTool {
     private currentPenPathNumber: number;
     private pathArray: SVGElement[] = [];
 
-    constructor(undoRedoService: UndoRedoService) {
-        super(undoRedoService);
+    constructor(protected mouse: MousePositionService,
+                protected undoRedoService: UndoRedoService) {
+        super(mouse, undoRedoService);
         this.strokeWidthMinimum = MIN_WIDTH;
         this.strokeWidthMaximum = MAX_WIDTH;
         this.currentPenPathNumber = 0;
     }
 
-    createPenPath(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string) {
+    createPenPath(primaryColor: string) {
         this.strokeWidth = DEFAULT_WIDTH;
         this.color = primaryColor;
         this.time = this.date.getTime();
         this.speed = 0;
-        this.addPath(mouseEvent, canvas, DEFAULT_WIDTH);
+        this.addPath(DEFAULT_WIDTH);
         this.mouseDown = true;
     }
 
-    addPath(mouseEvent: MouseEvent, canvas: SVGElement, width: number): void {
-        this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
-        this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
-        this.dotPositionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
-        this.dotPositionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
+    addPath(width: number): void {
+        this.dotPositionX = this.mouse.canvasMousePositionX;
+        this.dotPositionY = this.mouse.canvasMousePositionY;
 
         const path = RendererSingleton.renderer.createElement('path', 'svg');
         const properties: [string, string][] = [];
@@ -64,18 +62,16 @@ export class PenGeneratorService extends AbstractWritingTool {
 
     updatePenPath(mouseEvent: MouseEvent, canvas: SVGElement) {
         if (this.mouseDown) {
-            const currentDotPositionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
-            const currentDotPositionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
             const date = new Date();
             const time = date.getTime();
-            const currentSpeed = this.getSpeed(time, currentDotPositionX, currentDotPositionY);
-            this.updateTimeAndPosition(time, currentDotPositionX, currentDotPositionY);
+            const currentSpeed = this.getSpeed(time, this.mouse.canvasMousePositionX, this.mouse.canvasMousePositionY);
+            this.updateTimeAndPosition(time, this.mouse.canvasMousePositionX, this.mouse.canvasMousePositionY);
             const currentPath = canvas.children[canvas.childElementCount - 1];
             currentPath.setAttribute('d',
-                currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
-                ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
+                currentPath.getAttribute('d') + ' L' + (this.mouse.canvasMousePositionX) +
+                ' ' + (this.mouse.canvasMousePositionY));
             this.updateStrokeWidth(currentSpeed);
-            this.addPath(mouseEvent, canvas, this.strokeWidth);
+            this.addPath(this.strokeWidth);
             this.speed = currentSpeed;
         }
     }

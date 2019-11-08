@@ -11,11 +11,10 @@ export class PencilGeneratorService extends AbstractWritingTool {
    * attributes of pencil tool :
    */
   private currentPencilPathNumber: number;
-  private mouseDown = false;
 
   constructor(private mousePosition: MousePositionService,
               undoRedoService: UndoRedoService) {
-    super(undoRedoService);
+    super(mousePosition, undoRedoService);
     this.currentPencilPathNumber = 0;
   }
 
@@ -50,7 +49,7 @@ export class PencilGeneratorService extends AbstractWritingTool {
    * @desc // Updates the path when the mouse is moving (mousedown)
    */
   updatePenPath(mouseEvent: MouseEvent, currentChildPosition: number) {
-    this.updatePath(mouseEvent, currentChildPosition);
+    this.updatePath(currentChildPosition);
   }
 
   /**

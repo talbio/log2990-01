@@ -10,12 +10,11 @@ export class BrushGeneratorService extends AbstractWritingTool {
   private readonly DEFAULT_BRUSH_PATTERN = 'url(#brushPattern1)';
 
   private currentBrushPathNumber: number;
-  private mouseDown: boolean;
   private currentBrushPattern: string;
 
   constructor(private mousePosition: MousePositionService,
               undoRedoService: UndoRedoService) {
-    super(undoRedoService);
+    super(mousePosition, undoRedoService);
     this.currentBrushPattern = this.DEFAULT_BRUSH_PATTERN;
     this.currentBrushPathNumber = 0;
   }
@@ -49,7 +48,7 @@ export class BrushGeneratorService extends AbstractWritingTool {
 
   // Updates the path when the mouse is moving (mousedown)
   updateBrushPath(mouseEvent: MouseEvent, currentChildPosition: number) {
-    this.updatePath(mouseEvent, currentChildPosition);
+    this.updatePath(currentChildPosition);
   }
 
   // Finalizes the path, sets up the next one

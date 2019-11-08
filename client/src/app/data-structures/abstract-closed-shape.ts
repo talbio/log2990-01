@@ -1,3 +1,4 @@
+import { MousePositionService } from './../services/mouse-position/mouse-position.service';
 import {RendererSingleton} from '../services/renderer-singleton';
 import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
 import {Action, ActionType} from './command';
@@ -12,7 +13,16 @@ export class AbstractClosedShape {
   protected plotType: PlotType;
   protected strokeWidth: number;
 
-  constructor(protected undoRedoService: UndoRedoService) {}
+  constructor(protected mouse: MousePositionService,
+              protected undoRedoService: UndoRedoService) {}
+
+  get x(): number {
+    return this.mouse.canvasMousePositionX;
+  }
+
+  get y(): number {
+    return this.mouse.canvasMousePositionY;
+  }
 
   pushAction(svgElement: SVGElement): void {
     const action: Action = {

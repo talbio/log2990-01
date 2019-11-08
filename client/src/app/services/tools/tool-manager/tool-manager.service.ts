@@ -61,7 +61,7 @@ export class ToolManagerService {
         this.pencilGenerator.createPenPath(canvas, this.colorService.getPrimaryColor());
         break;
       case Tools.Pen:
-        this.penGenerator.createPenPath(mouseEvent, canvas, this.colorService.getSecondaryColor());
+        this.penGenerator.createPenPath(this.colorService.getSecondaryColor());
         break;
       case Tools.Brush:
         this.brushGenerator

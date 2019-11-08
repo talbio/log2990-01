@@ -32,11 +32,6 @@
   <mat-divider></mat-divider>
 
   <mat-list-item>
-    <button mat-icon-button [matMenuTriggerFor]="clipboardButton">
-      <mat-icon>assignment</mat-icon>
-    </button>
-
-  <mat-list-item>
     <div id="undo-redo">
       <button mat-icon-button (click)="this.undoRedoService.undo()" class="btn" matTooltip="Annuler">
         <mat-icon class="icon" svgIcon="undo"></mat-icon>

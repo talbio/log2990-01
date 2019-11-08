@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
-import { PlotType } from '../../../data-structures/PlotType';
+import { PlotType } from '../../../data-structures/plot-type';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
@@ -25,7 +25,7 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private mousePosition: MousePositionService,
               undoRedoService: UndoRedoService) {
-    super(undoRedoService);
+    super(mousePosition, undoRedoService);
     this.adjustment = [0, 0];
     this.aspectRatio = 0;
     this.nbOfApex = 3;
@@ -102,7 +102,7 @@ export class PolygonGeneratorService extends AbstractClosedShape {
 
   createTemporaryRectangle(canvas: SVGElement) {
     this.rectangleGenerator._plotType = PlotType.Contour;
-    this.rectangleGenerator.createRectangle(canvas, 'black', 'black');
+    this.rectangleGenerator.createRectangle('black', 'black');
     canvas.children[canvas.children.length - 1].id = 'tempRect';
     canvas.children[canvas.children.length - 1].setAttribute('stroke-dasharray', '4');
   }

@@ -18,16 +18,12 @@ export class EllipseGeneratorService extends AbstractClosedShape implements Acti
   private readonly TEMP_RECT_ID = '#tempRect';
 
   private currentEllipseNumber: number;
-  private mouseDown: boolean;
-
-  // attributes of ellipse
-  private strokeWidth: number;
-  private plotType: PlotType;
+  protected mouseDown: boolean;
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
               private mousePosition: MousePositionService,
               undoRedoService: UndoRedoService) {
-    super(undoRedoService);
+    super(mousePosition, undoRedoService);
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.currentEllipseNumber = 0;
@@ -127,7 +123,7 @@ export class EllipseGeneratorService extends AbstractClosedShape implements Acti
 
   createTemporaryRectangle(canvas: SVGElement) {
     this.rectangleGenerator._plotType = PlotType.Contour;
-    this.rectangleGenerator.createRectangle(canvas, 'black', 'black');
+    this.rectangleGenerator.createRectangle('black', 'black');
     canvas.children[canvas.children.length - 1].id = 'tempRect';
     canvas.children[canvas.children.length - 1].setAttribute('stroke-dasharray', '4');
   }

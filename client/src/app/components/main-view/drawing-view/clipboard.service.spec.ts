@@ -1,4 +1,4 @@
-import { PortalModule } from '@angular/cdk/portal';
+/*import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2} from '@angular/core';
@@ -36,7 +36,7 @@ import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
-@Component({ selector: 'app-lateral-bar', template: '' })
+/*@Component({ selector: 'app-lateral-bar', template: '' })
 class LateralBarStubComponent { }
 @Component({ selector: 'app-welcome-modal', template: '' })
 class WelcomeModalStubComponent { }
@@ -310,3 +310,4 @@ fdescribe('DrawingViewComponent', () => {
     expect(workChilds[3]).toEqual(workChilds[2]);
   });
 });
+*/
