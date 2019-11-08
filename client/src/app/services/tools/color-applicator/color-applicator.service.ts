@@ -16,18 +16,6 @@ export class ColorApplicatorService implements CommandGenerator {
               private undoRedoService: UndoRedoService) {
   }
 
-  pushColorApplicatorCommand(svgElement: SVGElement, attribute: string, newColor: string, ancientColor: string): void {
-    const command: Command = {
-      execute(): void {
-        RendererSingleton.renderer.setAttribute(svgElement, attribute, newColor);
-      },
-      unexecute(): void {
-        RendererSingleton.renderer.setAttribute(svgElement, attribute, ancientColor);
-      },
-    };
-    this.pushCommand(command);
-  }
-
   pushCommand(command: Command): void {
     this.undoRedoService.pushCommand(command);
   }
@@ -54,7 +42,6 @@ export class ColorApplicatorService implements CommandGenerator {
         targetObject.setAttribute('stroke', newColor);
       } else if (targetObject.nodeName === 'path') {
         if ((targetObject.getAttribute('id') as string).startsWith('brush')) {
-          // TODO: BRUSH ??
           this.changeBrushPatternsColor(targetObject, newColor, 'stroke');
         }
       }
@@ -67,7 +54,9 @@ export class ColorApplicatorService implements CommandGenerator {
   private changePolylineColor(targetObject: SVGElement, newColor: string) {
     targetObject.setAttribute('stroke', newColor);
     const markers = this.lineGenerator.findMarkerFromPolyline(targetObject, RendererSingleton.defs);
+    const ancientColor = markers.children[0].getAttribute('fill') as string;
     markers.children[0].setAttribute('fill', newColor);
+    this.pushPolyLineChangedColorCommand(markers, newColor, ancientColor);
   }
 
   /**
@@ -79,7 +68,6 @@ export class ColorApplicatorService implements CommandGenerator {
       this.pushColorApplicatorCommand(targetObject, 'stroke', newColor, targetObject.getAttribute('stroke') as string);
       targetObject.setAttribute('stroke', newColor);
     } else if (id.startsWith('brush')) {
-      // TODO: BRUSH???
       this.changeBrushPatternsColor(targetObject, newColor, 'fill');
     }
   }
@@ -88,8 +76,10 @@ export class ColorApplicatorService implements CommandGenerator {
    * @desc: Change color of the fill attribute of all children of the pattern
    */
   private changeBrushPatternsColor(targetObject: SVGElement, newColor: string, property: string) {
+    const ancientColor = this.getBrushPatternColor(targetObject, property);
     const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, RendererSingleton.defs);
     if (pattern) {
+      this.pushBrushPatternsColorChangedCommand(pattern, property, newColor, ancientColor);
       for (const child of [].slice.call(pattern.children)) {
         if (child.hasAttribute(property)) {
           child.setAttribute(property, newColor);
@@ -98,7 +88,64 @@ export class ColorApplicatorService implements CommandGenerator {
     }
   }
 
+  private getBrushPatternColor(targetObject: SVGElement, property: string): string {
+    const defaultColor = 'black';
+    const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, RendererSingleton.defs);
+    if (pattern) {
+      for (const child of [].slice.call(pattern.children)) {
+        if (child.hasAttribute(property)) {
+          return child.getAttribute(property);
+        }
+      }
+    }
+    return defaultColor;
+  }
+
   private isClosedForm(nodeName: string): boolean {
     return this.CLOSED_FORMS.includes(nodeName);
+  }
+
+  private pushColorApplicatorCommand(svgElement: SVGElement, attribute: string, newColor: string, ancientColor: string): void {
+    const command: Command = {
+      execute(): void {
+        RendererSingleton.renderer.setAttribute(svgElement, attribute, newColor);
+      },
+      unexecute(): void {
+        RendererSingleton.renderer.setAttribute(svgElement, attribute, ancientColor);
+      },
+    };
+    this.pushCommand(command);
+  }
+
+  private pushPolyLineChangedColorCommand(markers: SVGElement, newColor: string, ancientColor: string) {
+    const command: Command = {
+      execute(): void {
+        markers.children[0].setAttribute('fill', newColor);
+      },
+      unexecute(): void {
+        markers.children[0].setAttribute('fill', ancientColor);
+      },
+    };
+    this.pushCommand(command);
+  }
+
+  private pushBrushPatternsColorChangedCommand(pattern: SVGElement, property: string, newColor: string, ancientColor: string) {
+    const command: Command = {
+      execute(): void {
+        for (const child of [].slice.call(pattern.children)) {
+          if (child.hasAttribute(property)) {
+            child.setAttribute(newColor);
+          }
+        }
+      },
+      unexecute(): void {
+        for (const child of [].slice.call(pattern.children)) {
+          if (child.hasAttribute(property)) {
+            child.setAttribute(ancientColor);
+          }
+        }
+      },
+    };
+    this.pushCommand(command);
   }
 }
