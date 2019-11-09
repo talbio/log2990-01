@@ -1343,7 +1343,6 @@ describe('DrawingViewComponent', () => {
     // Getting the number of vertex
     const pointsHTML = defaultPolygon.getAttribute('points') as string;
     const points = pointsHTML.split(' ', 12);
-    console.log(points);
 
     // If next 2 pass, plotType is really Contour
     expect(defaultPolygon.getAttribute('fill')).toEqual('transparent');
@@ -1363,10 +1362,7 @@ describe('DrawingViewComponent', () => {
 
     // Getting number of apex
     const changedPointsHTML = changedPolygon.getAttribute('points') as string;
-    console.log(changedPointsHTML);
     const changedPoints = changedPointsHTML.split(' ', 11);
-    console.log(changedPoints);
-    console.log(polygonGenerator._nbOfApex);
 
     expect(changedPolygon.getAttribute('fill')).toEqual(colorService.primaryColor);
     expect(changedPolygon.getAttribute('stroke')).toEqual('transparent');
@@ -1422,7 +1418,6 @@ describe('DrawingViewComponent', () => {
     // Getting the number of vertex
     const pointsHTML = defaultPolygon.getAttribute('points') as string;
     const points = pointsHTML.split(' ', 12);
-    console.log(points);
 
     // If next 2 pass, plotType is really Contour
     expect(defaultPolygon.getAttribute('fill')).toEqual('transparent');
@@ -1442,11 +1437,7 @@ describe('DrawingViewComponent', () => {
 
     // Getting number of apex
     const changedPointsHTML = changedPolygon.getAttribute('points') as string;
-    console.log(changedPointsHTML);
     const changedPoints = changedPointsHTML.split(' ', 11);
-    console.log(changedPoints);
-    console.log(polygonGenerator._nbOfApex);
-
     expect(changedPolygon.getAttribute('fill')).toEqual(colorService.primaryColor);
     expect(changedPolygon.getAttribute('stroke')).toEqual('transparent');
     expect(changedPoints.length).toEqual(11);
@@ -1460,7 +1451,6 @@ describe('DrawingViewComponent', () => {
     // Finding length of a side
     const pointsXY: string[][] = [['']];
     for (let i = 0 ; i < apex ; i++) {
-      console.log(i);
       pointsXY[i] = points[i].split(',', 2);
     }
 
@@ -1488,9 +1478,6 @@ describe('DrawingViewComponent', () => {
     const w: number = parseFloat(tempRect.getAttribute('width') as string);
     const x: number = parseFloat(tempRect.getAttribute('x') as string);
     const y: number = parseFloat(tempRect.getAttribute('y') as string);
-    console.log(x);
-    console.log(y);
-    console.log(x + w);
 
     let widestLeftPoint = points[0];
     let widestRightPoint = points[0];
@@ -1509,10 +1496,6 @@ describe('DrawingViewComponent', () => {
     if (Math.round(parseFloat(widestRightPoint[0])) === (x + w)) { touchCounter[1] = true; }
     if (Math.round(parseFloat(highestPoint[1])) === y) { touchCounter[2] = true; }
     if (Math.round(parseFloat(lowestPoint[1])) === (y + h)) { touchCounter[3] = true; }
-
-    console.log(Math.round(parseFloat(widestLeftPoint[0])));
-    console.log(Math.round(parseFloat(highestPoint[1])));
-    console.log(Math.round(parseFloat(lowestPoint[1])));
 
     if (points.length % 2 === 0) {
       if (w / h < aspectRatio) {
