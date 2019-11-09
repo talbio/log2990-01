@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/line-styles';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
+import {MousePositionService} from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 
@@ -31,8 +32,9 @@ export class LineGeneratorService extends AbstractGenerator {
   private lineJoinStyle: LineJoinStyle;
   private lineDashStyle: LineDashStyle;
 
-  constructor(protected undoRedoService: UndoRedoService) {
-    super(undoRedoService);
+  constructor(protected undoRedoService: UndoRedoService,
+              protected mousePositionService: MousePositionService) {
+    super(undoRedoService, mousePositionService);
     this.strokeWidth = this.DEFAULT_WIDTH;
     this.markerDiameter = this.DEFAULT_DIAMETER;
     this.isMarkersActive = false;

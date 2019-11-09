@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
 import { PlotType } from '../../../data-structures/plot-type';
+import {MousePositionService} from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
@@ -16,9 +17,10 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   private aspectRatio: number;
   private readonly adjustment: number[];
 
-  constructor(private rectangleGenerator: RectangleGeneratorService,
-              protected undoRedoService: UndoRedoService) {
-    super(undoRedoService);
+  constructor(protected undoRedoService: UndoRedoService,
+              protected mousePositionService: MousePositionService,
+              private rectangleGenerator: RectangleGeneratorService) {
+    super(undoRedoService, mousePositionService);
     this.adjustment = [0, 0];
     this.aspectRatio = 0;
     this.nbOfApex = 3;

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
-import {UndoRedoService} from '../../undo-redo/undo-redo.service';
+import {MousePositionService} from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 const MIN_ROTATION_STEP = 1;
 const MAX_ROTATION_STEP = 15;
 const MIN_ROTATION_ANGLE = 0;
@@ -34,8 +35,9 @@ export class EmojiGeneratorService extends AbstractGenerator {
     private scalingFactor: number;
     private rotationStep: number;
 
-    constructor(protected undoRedoService: UndoRedoService) {
-        super(undoRedoService);
+    constructor(protected undoRedoService: UndoRedoService,
+                protected mousePositionService: MousePositionService) {
+        super(undoRedoService, mousePositionService);
         this.emoji = Emojis.SMILEY;
         this.angle = MIN_ROTATION_ANGLE;
         this.scalingFactor = DEFAULT_SCALING_FACTOR;
@@ -69,13 +71,12 @@ export class EmojiGeneratorService extends AbstractGenerator {
 
     createElement(xPosition: number, yPosition: number) {
         if (this.emoji !== '') {
-            this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
             RendererSingleton.canvas.innerHTML +=
                 `<image id="emoji${this.currentEmojiNumber}"
-                x="${(xPosition - this.OFFSET_CANVAS_X - (this.width * this.scalingFactor / 2))}"
+                x="${(xPosition  - (this.width * this.scalingFactor / 2))}"
                 y="${(yPosition) - (this.height * this.scalingFactor / 2)}"
         xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
-        transform="rotate(${this.angle} ${xPosition - this.OFFSET_CANVAS_X} ${(yPosition)})"
+        transform="rotate(${this.angle} ${xPosition} ${(yPosition)})"
         />`;
             this.currentEmojiNumber ++;
         }

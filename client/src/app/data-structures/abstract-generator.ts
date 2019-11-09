@@ -12,7 +12,7 @@ export abstract class AbstractGenerator implements CommandGenerator {
   currentElement: SVGElement;
 
   protected constructor(protected undoRedoService: UndoRedoService,
-                        private mousePosition: MousePositionService) {
+                        protected mousePosition: MousePositionService) {
     this.currentElementsNumber = 0;
   }
 

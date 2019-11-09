@@ -4,7 +4,7 @@ import { PlotType } from '../../../data-structures/plot-type';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
+import {MousePositionService} from '../../mouse-position/mouse-position.service';
 
 enum Axis {
   x,
@@ -17,8 +17,9 @@ export class EllipseGeneratorService extends AbstractClosedShape {
   private readonly TEMP_RECT_ID = '#tempRect';
 
   constructor(protected undoRedoService: UndoRedoService,
+              protected mousePositionService: MousePositionService,
               private rectangleGenerator: RectangleGeneratorService) {
-    super(undoRedoService);
+    super(undoRedoService, mousePositionService);
   }
 
   // Getters/Setters

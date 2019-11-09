@@ -1,14 +1,15 @@
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import { Injectable } from '@angular/core';
 import {AbstractWritingTool} from '../../../data-structures/abstract-writing-tool';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
+import { MousePositionService } from '../../mouse-position/mouse-position.service';
 
 @Injectable()
 export class PencilGeneratorService extends AbstractWritingTool {
 
-  constructor(undoRedoService: UndoRedoService) {
-    super(undoRedoService);
+  constructor(undoRedoService: UndoRedoService,
+              mousePositionService: MousePositionService) {
+    super(undoRedoService, mousePositionService);
     this.currentElementsNumber = 0;
   }
 

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {AbstractWritingTool} from '../../../data-structures/abstract-writing-tool';
+import {MousePositionService} from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 
@@ -9,8 +10,9 @@ export class BrushGeneratorService extends AbstractWritingTool {
   private readonly DEFAULT_BRUSH_PATTERN = 'url(#brushPattern1)';
   private currentBrushPattern: string;
 
-  constructor(undoRedoService: UndoRedoService) {
-    super(undoRedoService);
+  constructor(protected undoRedoService: UndoRedoService,
+              protected mousePosition: MousePositionService) {
+    super(undoRedoService, mousePosition);
     this.currentBrushPattern = this.DEFAULT_BRUSH_PATTERN;
     this.currentElementsNumber = 0;
   }

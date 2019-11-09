@@ -1,3 +1,5 @@
+import {MousePositionService} from "../../mouse-position/mouse-position.service";
+
 const DEFAULT_WIDTH = 20;
 const MIN_WIDTH = 2;
 const MAX_WIDTH = 40;
@@ -24,8 +26,9 @@ export class PenGeneratorService extends AbstractWritingTool {
     private currentPenPathNumber: number;
     private pathArray: SVGElement[] = [];
 
-    constructor(undoRedoService: UndoRedoService) {
-        super(undoRedoService);
+    constructor(protected undoRedoService: UndoRedoService,
+                protected mousePositionService: MousePositionService) {
+        super(undoRedoService, mousePositionService);
         this.strokeWidthMinimum = MIN_WIDTH;
         this.strokeWidthMaximum = MAX_WIDTH;
         this.currentPenPathNumber = 0;
