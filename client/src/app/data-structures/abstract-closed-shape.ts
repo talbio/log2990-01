@@ -1,3 +1,4 @@
+import {MousePositionService} from '../services/mouse-position/mouse-position.service';
 import {RendererSingleton} from '../services/renderer-singleton';
 import {RectangleGeneratorService} from '../services/tools/rectangle-generator/rectangle-generator.service';
 import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
@@ -11,8 +12,9 @@ export abstract class AbstractClosedShape extends AbstractGenerator {
 
   protected mouseDown: boolean;
 
-  protected constructor(protected undoRedoService: UndoRedoService) {
-    super(undoRedoService);
+  protected constructor(protected undoRedoService: UndoRedoService,
+                        protected mousePositionService: MousePositionService) {
+    super(undoRedoService, mousePositionService);
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.mouseDown = false;

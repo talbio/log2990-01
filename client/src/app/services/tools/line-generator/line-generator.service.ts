@@ -128,8 +128,8 @@ export class LineGeneratorService extends AbstractGenerator {
       this.currentElement = polyline;
       this.createMarkers(primaryColor);
       this.isMakingLine = true;
-      this.currentPolyineStartX = canvasPosX;
-      this.currentPolyineStartY = canvasPosY;
+      this.currentPolyineStartX = this.mousePosition.canvasMousePositionX;
+      this.currentPolyineStartY = this.mousePosition.canvasMousePositionY;
 
     } else {
       this.addPointToCurrentLine(canvasPosX, canvasPosY);
@@ -255,5 +255,11 @@ export class LineGeneratorService extends AbstractGenerator {
     }
     // No marker was found for corresponding polyline, this should not happen as the marker is created with the polyline
     return new SVGElement();
+  }
+
+  clone(item: SVGElement): SVGElement {
+    const newItem = item.cloneNode() as SVGElement;
+    newItem.setAttribute('id', 'polyline' + this.currentPolylineNumber++);
+    return newItem;
   }
 }

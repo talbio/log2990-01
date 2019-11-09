@@ -28,7 +28,6 @@ export class EmojiGeneratorService extends AbstractGenerator {
         Emojis.TURKEY,
         Emojis.PUMPKIN];
     private currentEmojiNumber: number;
-    private OFFSET_CANVAS_X: number;
     private width = 100;
     private height = 100;
     private angle: number;
@@ -107,4 +106,22 @@ export class EmojiGeneratorService extends AbstractGenerator {
         this.rotationStep = MAX_ROTATION_STEP;
     }
 
+    clone(item: SVGElement): SVGElement {
+      const newItem = item.cloneNode() as SVGElement;
+      newItem.setAttribute('id', 'emoji' + this.currentEmojiNumber++);
+      return newItem;
+      /*
+      const x = parseFloat(item.getAttribute('x') as unknown as string) + 10;
+      const y = parseFloat(item.getAttribute('y') as unknown as string) + 10;
+      const h = parseFloat(item.getAttribute('height') as unknown as string);
+      const w = parseFloat(item.getAttribute('width') as unknown as string);
+      const angle = item.getAttribute('transform');
+      const newItem =
+        `<image id="emoji${this.currentEmojiNumber}"
+        x="${x}" y="${y}" xlink:href="${this.emoji}"
+        width="${w}" height="${h}"
+        transform="${angle}"/>`;
+      this.currentEmojiNumber++;
+      return newItem;*/
+    }
 }

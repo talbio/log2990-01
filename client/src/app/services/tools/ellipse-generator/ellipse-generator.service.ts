@@ -4,6 +4,7 @@ import { PlotType } from '../../../data-structures/plot-type';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
+import { MousePositionService } from './../../mouse-position/mouse-position.service';
 
 enum Axis {
   x,
@@ -116,5 +117,11 @@ export class EllipseGeneratorService extends AbstractClosedShape {
     );
     this.drawElement(ellipse, properties, primaryColor, secondaryColor);
 
+  }
+
+  clone(item: SVGElement): SVGElement {
+    const newItem = item.cloneNode() as SVGElement;
+    newItem.setAttribute('id', 'polygon' + this.currentEllipseNumber++);
+    return newItem;
   }
 }

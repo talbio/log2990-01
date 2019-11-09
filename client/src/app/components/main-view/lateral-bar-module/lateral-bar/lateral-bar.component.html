@@ -10,6 +10,11 @@
     [attributesSideNav]="attributesSideNav" [toolProperties]="shapeToolButtonProperties">
   </app-abstract-tool-button>
 </mat-menu>
+<mat-menu #clipboardButton="matMenu">
+  <app-abstract-tool-button *ngFor="let clipboardButtonsProperties of clipboardButtonsProperties"
+    [attributesSideNav]="attributesSideNav" [toolProperties]="clipboardButtonsProperties">
+  </app-abstract-tool-button>
+</mat-menu>
 
 <mat-list>
   <!-- Tools Buttons -->
@@ -42,6 +47,13 @@
         <mat-icon class="icon" svgIcon="redo"></mat-icon>
       </button>
     </div>
+  </mat-list-item>
+  <mat-divider></mat-divider>
+
+  <mat-list-item>
+    <button mat-icon-button [matMenuTriggerFor]="clipboardButton">
+      <mat-icon>assignment</mat-icon>
+    </button>
   </mat-list-item>
   <mat-divider></mat-divider>
 

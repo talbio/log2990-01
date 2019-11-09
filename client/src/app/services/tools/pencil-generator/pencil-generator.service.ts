@@ -1,3 +1,4 @@
+import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import { Injectable } from '@angular/core';
 import {AbstractWritingTool} from '../../../data-structures/abstract-writing-tool';
 import {RendererSingleton} from '../../renderer-singleton';

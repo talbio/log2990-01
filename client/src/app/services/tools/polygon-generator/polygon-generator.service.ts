@@ -147,7 +147,6 @@ export class PolygonGeneratorService extends AbstractClosedShape {
       const cosMax = Math.cos(this.angleBetweenVertex / 2);
       this.adjustment[0] = 1 / cosMax;
       this.aspectRatio = 1;
-      // if r = 1...
     } else if (this.nbOfApex % 2 === 0) {
       const sinMax = Math.sin((Math.PI / 2) + this.angleBetweenVertex / 2);
       const xAspect = 2;
@@ -168,9 +167,12 @@ export class PolygonGeneratorService extends AbstractClosedShape {
       this.aspectRatio = xAspect / yAspect;
       this.adjustment[0] = 1 / yAspect;
       this.adjustment[1] = 1 / xAspect;
-      // si plus grand que ratio => x est trop grand
-      // const r = 1 / yAspect;
-      // const r = this.adjustment;
     }
   }
+
+  clone(item: SVGElement): SVGElement {
+    const newItem = item.cloneNode() as SVGElement;
+    newItem.setAttribute('id', 'polygon' + this.currentPolygonNumber++);
+    return newItem;
+    }
 }

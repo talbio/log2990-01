@@ -10,6 +10,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NotifierModule, NotifierOptions, NotifierService} from 'angular-notifier';
 import { DrawingViewComponent } from './components/main-view/drawing-view/drawing-view.component';
+import { AbstractClipboardComponent } from './components/main-view/lateral-bar-module/abstract-clipboard/abstract-clipboard.component';
 import { AbstractDialogButtonComponent } from './components/main-view/lateral-bar-module/abstract-dialog-button/abstract-dialog-button.component';
 import { AbstractToolButtonComponent } from './components/main-view/lateral-bar-module/abstract-tool-button/abstract-tool-button.component';
 import { ColorToolButtonsComponent } from './components/main-view/lateral-bar-module/color-tool-buttons/color-tool-buttons.component';
@@ -35,14 +36,16 @@ import { LastTenColorsComponent } from './components/modals/color-picker-module/
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
 import { FilterByTags } from './components/modals/open-drawing-dialog/filter-by-tags.pipe';
-import {OpenDrawingDialogComponent} from './components/modals/open-drawing-dialog/open-drawing-dialog.component';
+import { OpenDrawingDialogComponent } from './components/modals/open-drawing-dialog/open-drawing-dialog.component';
 import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
-import {DemoMaterialModule} from './material.module';
-import {DrawingsService} from './services/back-end/drawings/drawings.service';
+import { DemoMaterialModule } from './material.module';
+import { DrawingsService } from './services/back-end/drawings/drawings.service';
 import { MousePositionService } from './services/mouse-position/mouse-position.service';
+import { RendererSingleton } from './services/renderer-singleton';
 import { StorageService } from './services/storage/storage.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
+import { ClipboardService } from './services/tools/clipboard/clipboard.service';
 import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
 import { ColorService } from './services/tools/color/color.service';
 import { EllipseGeneratorService } from './services/tools/ellipse-generator/ellipse-generator.service';
@@ -117,6 +120,7 @@ const customNotifierOptions: NotifierOptions = {
     SaveDrawingDialogComponent,
     AbstractToolButtonComponent,
     AbstractDialogButtonComponent,
+    AbstractClipboardComponent,
     PencilToolsComponent,
     PenToolsComponent,
     RectangleToolsComponent,
@@ -164,6 +168,8 @@ const customNotifierOptions: NotifierOptions = {
     LineGeneratorService,
     MousePositionService,
     EyedropperService,
+    ClipboardService,
+    RendererSingleton,
     EraserService,
     PenGeneratorService,
   ],

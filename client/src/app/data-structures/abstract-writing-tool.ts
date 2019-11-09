@@ -1,3 +1,4 @@
+import {MousePositionService} from '../services/mouse-position/mouse-position.service';
 import {RendererSingleton} from '../services/renderer-singleton';
 import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
 import {AbstractGenerator} from './abstract-generator';
@@ -9,8 +10,9 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
   protected strokeWidth: number;
   protected mouseDown: boolean;
 
-  protected constructor(protected undoRedoService: UndoRedoService) {
-    super(undoRedoService);
+  protected constructor(protected undoRedoService: UndoRedoService,
+                        protected mousePositionService: MousePositionService) {
+    super(undoRedoService, mousePositionService);
     this.mouseDown = false;
     this.strokeWidth = this.DEFAULT_WIDTH;
   }
