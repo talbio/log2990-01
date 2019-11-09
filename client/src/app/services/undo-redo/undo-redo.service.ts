@@ -39,7 +39,7 @@ export class UndoRedoService {
   }
 
   pushCommand(command: Command): void {
-    if (this.redoCommands.length !== 0) {
+    if (this.canRedo()) {
       this.redoCommands = [];
     }
     this.undoCommands.push(command);
