@@ -27,7 +27,7 @@ interface BoundingRect {
 @Injectable()
 export class ObjectSelectorService {
 
-  private TEMP_RECT_ID = 'selector';
+  private TEMP_RECT_ID = 'selectorRect';
   private selectedElements: SVGElement[];
   private hasBoundingRect: boolean;
   private currentRect: SVGElement;
@@ -48,8 +48,8 @@ export class ObjectSelectorService {
     };
   }
 
-  get selectionRectangle(): SVGElement {
-    return RendererSingleton.canvas.querySelector('#selector') as SVGElement;
+  get selectorRect(): SVGElement {
+    return RendererSingleton.canvas.querySelector('#selectorRect') as SVGElement;
   }
 
   get boundingRect(): SVGElement {
@@ -84,19 +84,18 @@ export class ObjectSelectorService {
   }
 
   onMouseUp(): void {
-    if (this.selectionRectangle) {
+    if (this.selectorRect) {
       this.finishSelection();
     } else {
-      // finishTransslation
+      // finishTranslation
     }
   }
 
   updateSelection(xPosition: number, yPosition: number, currentChildPosition: number, mouseEvent: MouseEvent) {
     if (this.mouseDown) {
       this.rectangleGenerator.updateElement(xPosition, yPosition, currentChildPosition, mouseEvent);
-      this.currentRect = RendererSingleton.canvas.querySelector('#selector') as Element as SVGElement;
+      this.currentRect = RendererSingleton.canvas.querySelector('#selectorRect') as Element as SVGElement;
     }
-
   }
 
   updateSelectedItems(): void {
@@ -118,22 +117,17 @@ export class ObjectSelectorService {
   }
 
   isSvgDrawing(element: SVGElement): boolean {
-    return (element.id !== 'selector') && (element.id !== 'backgroundGrid') && (element.id !== '');
+    return (element.id !== 'selectorRect') && (element.id !== 'backgroundGrid') && (element.id !== '');
   }
 
   finishSelection(): void {
+      console.log('remove');
       this.updateSelectedItems();
-      RendererSingleton.canvas.removeChild(this.selectionRectangle);
+      RendererSingleton.canvas.removeChild(this.selectorRect);
       if (this.selectedElements.length !== 0) {
-        this.setBoundingRect();
+        this.addBoundingRect();
       }
       this.mouseDown = false;
-  }
-
-  removeBoundingRect(): void {
-    this.hasBoundingRect = false;
-    const boundingRect: SVGElement = RendererSingleton.canvas.querySelector('#boundingRect') as SVGElement;
-    RendererSingleton.renderer.removeChild(RendererSingleton.canvas, boundingRect);
   }
 
   isMouseOutsideOfBoundingRect(): boolean {
@@ -152,15 +146,19 @@ export class ObjectSelectorService {
     return rect.top - rect.bottom;
   }
 
-  setBoundingRect(): void {
+  removeBoundingRect(): void {
+    this.hasBoundingRect = false;
+    const boundingRect: SVGElement = RendererSingleton.canvas.querySelector('#boundingRect') as SVGElement;
+    RendererSingleton.renderer.removeChild(RendererSingleton.canvas, boundingRect);
+  }
+
+  addBoundingRect(): void {
     this.hasBoundingRect = true;
-    // const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    // group.setAttribute('id', 'selected');
-    // this.selectedElements.forEach((drawing) => {
-    //   group.append(drawing);
-    // });
-    // canvas.append(group);
-    // const boxGroup = (group as SVGGElement).getBBox();
+    const boundingBox = this.getBoundingRectDimensions();
+    this.drawBoundingRect(boundingBox);
+  }
+
+  private getBoundingRectDimensions(): Box {
     const boundingRect: BoundingRect = {
       left: MAX_CANVAS_WIDTH,
       right: 0,
@@ -169,41 +167,45 @@ export class ObjectSelectorService {
     };
 
     this.selectedElements.forEach( (svgElement: SVGElement) => {
-      const elementLeft = svgElement.getBoundingClientRect().left;
-      const elementRight = svgElement.getBoundingClientRect().right;
-      const elementTop = svgElement.getBoundingClientRect().top;
-      const elementBottom = svgElement.getBoundingClientRect().bottom;
-      if (elementLeft < boundingRect.left ) {
-        boundingRect.left = elementLeft;
+      const elementClientRectLeft = svgElement.getBoundingClientRect().left;
+      const elementClientRectRight = svgElement.getBoundingClientRect().right;
+      const elementClientRectTop = svgElement.getBoundingClientRect().top;
+      const elementClientRectBottom = svgElement.getBoundingClientRect().bottom;
+      if (elementClientRectLeft < boundingRect.left ) {
+        boundingRect.left = elementClientRectLeft;
       }
-      if (elementRight > boundingRect.right) {
-        boundingRect.right = elementRight;
+      if (elementClientRectRight > boundingRect.right) {
+        boundingRect.right = elementClientRectRight;
       }
-      if (elementTop < boundingRect.top) {
-        boundingRect.top = elementTop;
+      if (elementClientRectTop < boundingRect.top) {
+        boundingRect.top = elementClientRectTop;
       }
-      if (elementBottom > boundingRect.bottom) {
-        boundingRect.bottom = elementBottom;
+      if (elementClientRectBottom > boundingRect.bottom) {
+        boundingRect.bottom = elementClientRectBottom;
       }
     });
+
     boundingRect.left -= this.canvasBoxRect.left;
     boundingRect.right -= this.canvasBoxRect.left;
 
-    console.log(this.canvasBoxRect.bottom)
-    console.log(this.canvasBoxRect.top)
+    return {
+      x: boundingRect.left,
+      y: boundingRect.top,
+      width: boundingRect.right - boundingRect.left,
+      height: boundingRect.bottom - boundingRect.top,
+    };
+  }
 
-    console.log(boundingRect.left);
-    console.log(boundingRect.bottom);
-
-    // tslint:disable-next-line:max-line-length
-    const boundingBox: Box = {x: boundingRect.left, y: boundingRect.top, width: boundingRect.right - boundingRect.left, height: boundingRect.bottom - boundingRect.top};
-    RendererSingleton.canvas.innerHTML +=
-      `<svg id='boundingRect'>
-        <defs><marker id="dot" viewBox="0 0 10 10" refX="5" refY="5"
-        markerWidth="5" markerHeight="5">
-        <circle cx="5" cy="5" r="20" fill="red" />
-        </marker></defs>
-        <polyline
+  private drawBoundingRect(boundingBox: Box) {
+    const boundingRect: SVGElement = RendererSingleton.renderer.createElement('svg', 'svg');
+    boundingRect.setAttribute('id', 'boundingRect');
+    boundingRect.innerHTML +=
+      `<defs>
+            <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5">
+                <circle cx="5" cy="5" r="20" fill="red" />
+            </marker>
+      </defs>
+      <polyline
         points="${boundingBox.x},${boundingBox.y}
         ${boundingBox.x + (boundingBox.width / 2)},${boundingBox.y}
         ${boundingBox.x + boundingBox.width},${boundingBox.y}
@@ -215,7 +217,8 @@ export class ObjectSelectorService {
         ${boundingBox.x},${boundingBox.y}"
         stroke="${STROKE_COLOR}" fill="transparent"
         marker-start="url(#dot)" marker-mid="url(#dot)">
-        </polyline></svg>`;
+      </polyline>`;
+    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, boundingRect);
   }
 
   selectAll(canvas: SVGElement): void {
