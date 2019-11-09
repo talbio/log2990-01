@@ -1,11 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
-import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
-import { LineGeneratorService } from '../line-generator/line-generator.service';
-import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
-import { PolygonGeneratorService } from '../polygon-generator/polygon-generator.service';
 import { RendererSingleton } from './../../renderer-singleton';
-import { EllipseGeneratorService } from './../ellipse-generator/ellipse-generator.service';
 import { ObjectSelectorService } from './../object-selector/object-selector.service';
 import { RectangleGeneratorService } from './../rectangle-generator/rectangle-generator.service';
 
@@ -21,13 +15,7 @@ export class ClipboardService {
   private ySliding: number;
 
   constructor(private selector: ObjectSelectorService,
-              private rectangleGenerator: RectangleGeneratorService,
-              private ellipseGenerator: EllipseGeneratorService,
-              private emojiGenerator: EmojiGeneratorService,
-              private pencilGenerator: PencilGeneratorService,
-              private brushGenerator: BrushGeneratorService,
-              private lineGenerator: LineGeneratorService,
-              private polygonGenerator: PolygonGeneratorService) {
+              private rectangleGenerator: RectangleGeneratorService) {
     this.consecultivePastes = 1;
     this.consecultiveDuplicates = 1;
   }
@@ -135,27 +123,7 @@ export class ClipboardService {
 
   duplicateElement(item: SVGElement): SVGElement {
     const type = item.tagName;
-    switch (type) {
-      case 'rect':
-        return this.rectangleGenerator.clone(item);
-        case 'ellipse':
-          return this.ellipseGenerator.clone(item);
-      case 'polygon':
-        return this.polygonGenerator.clone(item);
-        case 'path':
-        if (item.id.includes('brushPath')) {
-          return this.brushGenerator.clone(item);
-        } else {
-          return this.pencilGenerator.clone(item);
-        }
-        case 'polyline':
-          return this.lineGenerator.clone(item);
-          case 'image':
-        return this.emojiGenerator.clone(item);
-        default :
-        console.log('cannot recognize tag ' + item.tagName + ', did not duplicate');
-        return item;
-    }
+    return this.rectangleGenerator.clone(item, type);
   }
 
   slide(item: SVGElement, consecultive: number) {

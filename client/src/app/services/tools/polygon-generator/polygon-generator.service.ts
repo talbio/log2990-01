@@ -11,8 +11,6 @@ export class PolygonGeneratorService extends AbstractClosedShape {
 
   private readonly TEMP_RECT_ID = '#tempRect';
 
-  private currentPolygonNumber: number;
-
   // attributes of polygon
   private nbOfApex: number;
   private angleBetweenVertex: number;
@@ -77,7 +75,7 @@ export class PolygonGeneratorService extends AbstractClosedShape {
 
   // Second layer functions
   private injectInitialHTML(primaryColor: string, secondaryColor: string) {
-    const point = '' + this.mousePosition.canvasMousePositionX + ',' + this.mousePosition.canvasMousePositionY;
+    const point = '' + this.xPos + ',' + this.yPos;
     const points = point + ' ' + point + ' ' + point;
     const polygon = RendererSingleton.renderer.createElement('polygon', 'svg');
     const properties: [string, string][] = [];
@@ -174,10 +172,4 @@ export class PolygonGeneratorService extends AbstractClosedShape {
       this.adjustment[1] = 1 / xAspect;
     }
   }
-
-  clone(item: SVGElement): SVGElement {
-    const newItem = item.cloneNode() as SVGElement;
-    newItem.setAttribute('id', 'polygon' + this.currentPolygonNumber++);
-    return newItem;
-    }
 }

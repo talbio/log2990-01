@@ -32,8 +32,8 @@ export class PencilGeneratorService extends AbstractWritingTool {
     const properties: [string, string][] = [];
     properties.push(
       ['id', `pencilPath${this.currentPencilPathNumber}`],
-      ['d', `M ${this.mousePosition.canvasMousePositionX} ${(this.mousePosition.canvasMousePositionY)}
-        L ${(this.mousePosition.canvasMousePositionX)} ${(this.mousePosition.canvasMousePositionY)}`],
+      ['d', `M ${this.xPos} ${(this.yPos)}
+        L ${(this.xPos)} ${(this.yPos)}`],
       ['stroke', `${primaryColor}`],
       ['stroke-width', `${this.strokeWidth}`],
       ['stroke-linecap', `round`],
@@ -41,11 +41,5 @@ export class PencilGeneratorService extends AbstractWritingTool {
     );
     this.drawElement(path, properties);
     this.mouseDown = true;
-  }
-
-  clone(item: SVGElement): SVGElement {
-    const newItem = item.cloneNode() as SVGElement;
-    newItem.setAttribute('id', 'pencilPath' + this.currentPencilPathNumber++);
-    return newItem;
   }
 }

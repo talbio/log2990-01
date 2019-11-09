@@ -114,20 +114,13 @@ export class EllipseGeneratorService extends AbstractClosedShape {
     const properties: [string, string][] = [];
     properties.push(
       ['id', `ellipse${this.currentEllipseNumber}`],
-      ['cx', `${this.mousePosition.canvasMousePositionX}`],
-      ['cy', `${this.mousePosition.canvasMousePositionY}`],
+      ['cx', `${this.xPos}`],
+      ['cy', `${this.yPos}`],
       ['rx', `0`],
       ['ry', `0`],
-      ['data-start-x', `${this.mousePosition.canvasMousePositionX}`],
-      ['data-start-y', `${this.mousePosition.canvasMousePositionY}`],
+      ['data-start-x', `${this.xPos}`],
+      ['data-start-y', `${this.yPos}`],
     );
     this.drawElement(ellipse, properties, primaryColor, secondaryColor);
-
-  }
-
-  clone(item: SVGElement): SVGElement {
-    const newItem = item.cloneNode() as SVGElement;
-    newItem.setAttribute('id', 'ellipse' + this.currentEllipseNumber++);
-    return newItem;
   }
 }

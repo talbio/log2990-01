@@ -16,9 +16,23 @@ export abstract class AbstractGenerator implements CommandGenerator {
     this.currentElementsNumber = 0;
   }
 
+  get xPos(): number {
+    return this.mouse.canvasMousePositionX;
+  }
+
+  get yPos(): number {
+    return this.mouse.canvasMousePositionY;
+  }
+
   abstract createElement(primaryColor?: string, secondaryColor?: string): void;
   abstract updateElement(currentChildPosition: number, mouseEvent?: MouseEvent): void;
   abstract finishElement(mouseEvent?: MouseEvent): void;
+
+  clone(item: SVGElement, type: string): SVGElement {
+    const newItem = item.cloneNode() as SVGElement;
+    newItem.setAttribute('id', type + (this.currentElementsNumber++ as unknown as string));
+    return newItem;
+  }
 
   pushGeneratorCommand(...svgElements: SVGElement[]): void {
     const action: Command = {

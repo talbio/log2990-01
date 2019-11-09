@@ -8,18 +8,16 @@ import { MousePositionService } from './../../mouse-position/mouse-position.serv
 @Injectable()
 export class RectangleGeneratorService extends AbstractClosedShape  {
 
-  private currentRectNumber: number;
   protected mouseDown: boolean;
 
   // attributes of rectangle
   protected strokeWidth: number;
 
-  constructor(protected mouse: MousePositionService,
+  constructor(mouse: MousePositionService,
               undoRedoService: UndoRedoService) {
     super(mouse, undoRedoService);
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
-    this.currentRectNumber = 0;
     this.mouseDown = false;
   }
 
@@ -43,13 +41,13 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
     const rect = RendererSingleton.renderer.createElement('rect', 'svg');
     const properties: [string, string][] = [];
     properties.push(
-      ['id', `rect${this.currentRectNumber}`],
-      ['x', `${this.mouse.canvasMousePositionX}`],
-      ['y', `${this.mouse.canvasMousePositionY}`],
+      ['id', `rect${this.currentElementsNumber}`],
+      ['x', `${this.xPos}`],
+      ['y', `${this.yPos}`],
       ['height', `0`],
       ['width', `0`],
-      ['data-start-x', `${this.mouse.canvasMousePositionX}`],
-      ['data-start-y', `${this.mouse.canvasMousePositionY}`]);
+      ['data-start-x', `${this.xPos}`],
+      ['data-start-y', `${this.yPos}`]);
     this.drawElement(rect, properties, primaryColor, secondaryColor);
     this.mouseDown = true;
   }
@@ -142,11 +140,5 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
         }
       }
     }
-  }
-
-  clone(item: SVGElement): SVGElement {
-    const newItem = item.cloneNode() as SVGElement;
-    newItem.setAttribute('id', 'rect' + this.currentRectNumber++);
-    return newItem;
   }
 }

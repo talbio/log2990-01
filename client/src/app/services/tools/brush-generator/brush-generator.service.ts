@@ -90,18 +90,12 @@ export class BrushGeneratorService extends AbstractWritingTool {
     const properties: [string, string][] = [];
     properties.push(
       ['id', `brushPath${this.currentElementsNumber}`],
-      ['d', `M ${this.mousePosition.canvasMousePositionX} ${(this.mousePosition.canvasMousePositionY)}
-        L ${(this.mousePosition.canvasMousePositionX)} ${(this.mousePosition.canvasMousePositionY)}`],
+      ['d', `M ${this.xPos} ${this.yPos}
+        L ${this.xPos} ${this.yPos}`],
       ['stroke-width', `${strokeWidth}`],
       ['stroke-linecap', `round`],
       ['fill', `none`],
     );
     this.drawElement(path, properties);
-  }
-
-  clone(item: SVGElement): SVGElement {
-    const newItem = item.cloneNode() as SVGElement;
-    newItem.setAttribute('id', 'brushPath' + this.currentElementsNumber++);
-    return newItem;
   }
 }

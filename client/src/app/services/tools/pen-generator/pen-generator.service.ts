@@ -40,79 +40,73 @@ export class PenGeneratorService extends AbstractWritingTool {
         this.mouseDown = true;
     }
 
-    addPath(width: number): void {
-        this.dotPositionX = this.mouse.canvasMousePositionX;
-        this.dotPositionY = this.mouse.canvasMousePositionY;
+  addPath(width: number): void {
+      this.dotPositionX = this.xPos;
+      this.dotPositionY = this.yPos;
 
-        const path = RendererSingleton.renderer.createElement('path', 'svg');
-        const properties: [string, string][] = [];
-        properties.push(
-            ['id', `pencilPath${this.currentPenPathNumber}`],
-            ['d', `M ${(this.dotPositionX)} ${(this.dotPositionY)}
-        L ${(this.dotPositionX)} ${(this.dotPositionY)}`],
-            ['stroke', `${this.color}`],
-            ['stroke-width', `${width}`],
-            ['stroke-linecap', `round`],
-            ['fill', `${this.color}`],
-        );
-        this.drawElement(path, properties);
-        this.pathArray.push(this.currentElement);
-    }
+      const path = RendererSingleton.renderer.createElement('path', 'svg');
+      const properties: [string, string][] = [];
+      properties.push(
+          ['id', `pencilPath${this.currentPenPathNumber}`],
+          ['d', `M ${(this.dotPositionX)} ${(this.dotPositionY)}
+      L ${(this.dotPositionX)} ${(this.dotPositionY)}`],
+          ['stroke', `${this.color}`],
+          ['stroke-width', `${width}`],
+          ['stroke-linecap', `round`],
+          ['fill', `${this.color}`],
+      );
+      this.drawElement(path, properties);
+      this.pathArray.push(this.currentElement);
+  }
 
-    updatePenPath(canvas: SVGElement) {
-        if (this.mouseDown) {
-            const date = new Date();
-            const time = date.getTime();
-            const currentSpeed = this.getSpeed(time, this.mouse.canvasMousePositionX, this.mouse.canvasMousePositionY);
-            this.updateTimeAndPosition(time, this.mouse.canvasMousePositionX, this.mouse.canvasMousePositionY);
-            const currentPath = canvas.children[canvas.childElementCount - 1];
-            currentPath.setAttribute('d',
-                currentPath.getAttribute('d') + ' L' + (this.mouse.canvasMousePositionX) +
-                ' ' + (this.mouse.canvasMousePositionY));
-            this.updateStrokeWidth(currentSpeed);
-            this.addPath(this.strokeWidth);
-            this.speed = currentSpeed;
-        }
-    }
+  updatePenPath(canvas: SVGElement) {
+      if (this.mouseDown) {
+          const date = new Date();
+          const time = date.getTime();
+          const currentSpeed = this.getSpeed(time, this.xPos, this.yPos);
+          this.updateTimeAndPosition(time, this.xPos, this.yPos);
+          const currentPath = canvas.children[canvas.childElementCount - 1];
+          currentPath.setAttribute('d',
+              currentPath.getAttribute('d') + ' L' + (this.xPos) +
+              ' ' + (this.yPos));
+          this.updateStrokeWidth(currentSpeed);
+          this.addPath(this.strokeWidth);
+          this.speed = currentSpeed;
+      }
+  }
 
-    updateStrokeWidth(currentSpeed: number): void {
-        if ((currentSpeed - this.speed) > 0) {
-            if (this.strokeWidth > this.strokeWidthMinimum) {
-                this.strokeWidth -= 2;
-            }
-        }
-        if ((currentSpeed - this.speed) < 0) {
-            if (this.strokeWidth < this.strokeWidthMaximum) {
-                this.strokeWidth += 2;
-            }
-        }
-    }
+  updateStrokeWidth(currentSpeed: number): void {
+      if ((currentSpeed - this.speed) > 0) {
+          if (this.strokeWidth > this.strokeWidthMinimum) {
+              this.strokeWidth -= 2;
+          }
+      }
+      if ((currentSpeed - this.speed) < 0) {
+          if (this.strokeWidth < this.strokeWidthMaximum) {
+              this.strokeWidth += 2;
+          }
+      }
+  }
 
-    finishPenPath() {
-        if (this.mouseDown) {
-            this.currentPenPathNumber += 1;
-            this.pathArray = [];
-            this.mouseDown = false;
-        }
-    }
+  finishPenPath() {
+      if (this.mouseDown) {
+          this.currentPenPathNumber += 1;
+          this.pathArray = [];
+          this.mouseDown = false;
+      }
+  }
 
-    getSpeed(currentTime: number, currentDotPositionX: number, currentDotPositionY: number): number {
-        const movementInX = Math.pow((currentDotPositionX - this.dotPositionX), 2);
-        const movementInY = Math.pow((currentDotPositionY - this.dotPositionY), 2);
-        const distance = Math.sqrt(movementInX + movementInY);
-        const timePassed = currentTime - this.time;
-        return (distance / timePassed);
-    }
+  getSpeed(currentTime: number, currentDotPositionX: number, currentDotPositionY: number): number {
+      const movementInX = Math.pow((currentDotPositionX - this.dotPositionX), 2);
+      const movementInY = Math.pow((currentDotPositionY - this.dotPositionY), 2);
+      const distance = Math.sqrt(movementInX + movementInY);
+      const timePassed = currentTime - this.time;
+      return (distance / timePassed);
+  }
 
-    updateTimeAndPosition(time: number, currentDotPositionX: number, currentDotPositionY: number): void {
-        this.time = time;
-        this.dotPositionX = currentDotPositionX;
-        this.dotPositionY = currentDotPositionY;
-    }
-
-    clone(item: SVGElement): SVGElement {
-      const newItem = item.cloneNode() as SVGElement;
-      newItem.setAttribute('id', 'pencPath' + this.currentPenPathNumber++);
-      return newItem;
-    }
+  updateTimeAndPosition(time: number, currentDotPositionX: number, currentDotPositionY: number): void {
+      this.time = time;
+      this.dotPositionX = currentDotPositionX;
+      this.dotPositionY = currentDotPositionY;
+  }
 }

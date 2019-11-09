@@ -124,14 +124,14 @@ export class LineGeneratorService extends AbstractGenerator {
       RendererSingleton.renderer.setAttribute(polyline, 'stroke-dasharray', `${this.dashArray}`);
       RendererSingleton.renderer.setAttribute(polyline, 'fill', `none`);
       RendererSingleton.renderer.setAttribute(polyline, 'stroke-linejoin', `${this.lineJoin}`);
-      RendererSingleton.renderer.setAttribute(polyline, 'points', `${this.mousePosition.canvasMousePositionX},${this.mousePosition.canvasMousePositionY}`);
+      RendererSingleton.renderer.setAttribute(polyline, 'points', `${this.xPos},${this.yPos}`);
       RendererSingleton.renderer.appendChild(RendererSingleton.canvas, polyline);
 
       this.currentElement = polyline;
       this.createMarkers(primaryColor);
       this.isMakingLine = true;
-      this.currentPolyineStartX = this.mousePosition.canvasMousePositionX;
-      this.currentPolyineStartY = this.mousePosition.canvasMousePositionY;
+      this.currentPolyineStartX = this.xPos;
+      this.currentPolyineStartY = this.yPos;
 
     } else {
       this.addPointToCurrentLine();
@@ -142,7 +142,7 @@ export class LineGeneratorService extends AbstractGenerator {
     if (!this.isMakingLine) {
       return;
     }
-    const newPoint = ` ${this.mousePosition.canvasMousePositionX},${this.mousePosition.canvasMousePositionY}`;
+    const newPoint = ` ${this.xPos},${this.yPos}`;
     this.currentElement.setAttribute('points', this.currentElement.getAttribute('points') + newPoint);
   }
 
@@ -159,7 +159,7 @@ export class LineGeneratorService extends AbstractGenerator {
         indexLastPoint = pointsStr.lastIndexOf(' ');
       }
       const pointsWithoutLastStr = pointsStr.substring(0, indexLastPoint);
-      const newPoints = `${pointsWithoutLastStr} ${this.mousePosition.canvasMousePositionX},${this.mousePosition.canvasMousePositionY}`;
+      const newPoints = `${pointsWithoutLastStr} ${this.xPos},${this.yPos}`;
       currentPolyLine.setAttribute('points', newPoints);
     }
   }
@@ -258,11 +258,5 @@ export class LineGeneratorService extends AbstractGenerator {
     }
     // No marker was found for corresponding polyline, this should not happen as the marker is created with the polyline
     return new SVGElement();
-  }
-
-  clone(item: SVGElement): SVGElement {
-    const newItem = item.cloneNode() as SVGElement;
-    newItem.setAttribute('id', 'polyline' + this.currentElementsNumber++);
-    return newItem;
   }
 }

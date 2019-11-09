@@ -81,10 +81,10 @@ export class EmojiGeneratorService extends AbstractGenerator {
     if (this.emoji !== '') {
       canvas.innerHTML +=
         `<image id="emoji${this.currentEmojiNumber}"
-        x="${(this.mousePosition.canvasMousePositionX - (this.width * this.scalingFactor / 2))}"
-        y="${this.mousePosition.canvasMousePositionY - (this.height * this.scalingFactor / 2)}"
+        x="${(this.xPos - (this.width * this.scalingFactor / 2))}"
+        y="${(this.yPos - (this.height * this.scalingFactor / 2))}"
         xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
-        transform="rotate(${this.angle} ${this.mousePosition.canvasMousePositionX} ${this.mousePosition.canvasMousePositionY})"`;
+        transform="rotate(${this.angle} ${this.xPos} ${this.yPos})"`;
     }
   }
 
@@ -92,10 +92,10 @@ export class EmojiGeneratorService extends AbstractGenerator {
     if (this.emoji !== '') {
       RendererSingleton.canvas.innerHTML +=
           `<image id="emoji${this.currentEmojiNumber}"
-          x="${(this.mousePosition.canvasMousePositionX - (this.width * this.scalingFactor / 2))}"
-          y="${(this.mousePosition.canvasMousePositionY) - (this.height * this.scalingFactor / 2)}"
+          x="${(this.xPos - (this.width * this.scalingFactor / 2))}"
+          y="${(this.yPos - (this.height * this.scalingFactor / 2))}"
           xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
-          transform="rotate(${this.angle} ${this.mousePosition.canvasMousePositionX} ${(this.mousePosition.canvasMousePositionY)})"
+          transform="rotate(${this.angle} ${this.xPos} ${(this.yPos)})"
           />`;
       this.currentEmojiNumber ++;
     }
@@ -124,11 +124,5 @@ export class EmojiGeneratorService extends AbstractGenerator {
 
   higherRotationStep(): void {
       this.rotationStep = MAX_ROTATION_STEP;
-  }
-
-  clone(item: SVGElement): SVGElement {
-    const newItem = item.cloneNode() as SVGElement;
-    newItem.setAttribute('id', 'emoji' + this.currentEmojiNumber++);
-    return newItem;
   }
 }

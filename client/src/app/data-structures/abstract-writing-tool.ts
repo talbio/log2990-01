@@ -20,13 +20,12 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
   /**
    * @desc Updates the path when the mouse is moving (mousedown)
    */
-  updatePath(currentChildPosition: number) {
+  updateElement(currentChildPosition: number) {
     if (this.mouseDown) {
       const currentPath = RendererSingleton.canvas.children[currentChildPosition - 1];
       if (currentPath != null) {
-        currentPath.setAttribute('d',
-          currentPath.getAttribute('d') + ' L' + (this.mouse.canvasMousePositionX) +
-          ' ' + (this.mouse.canvasMousePositionY));
+        currentPath.setAttribute(
+          'd', currentPath.getAttribute('d') + ' L' + this.xPos + ' ' + this.yPos);
       }
     }
   }
