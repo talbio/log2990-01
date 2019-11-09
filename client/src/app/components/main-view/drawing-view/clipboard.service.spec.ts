@@ -1,15 +1,10 @@
-/*import { PortalModule } from '@angular/cdk/portal';
+import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { MatSliderChange } from '@angular/material';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
-import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
-import { PlotType } from 'src/app/data-structures/PlotType';
-import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
-import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { Tools } from '../../../data-structures/Tools';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
@@ -19,9 +14,11 @@ import { ClipboardService } from '../../../services/tools/clipboard/clipboard.se
 import { ColorApplicatorService } from '../../../services/tools/color-applicator/color-applicator.service';
 import { ColorService } from '../../../services/tools/color/color.service';
 import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
+import { EmojiGeneratorService } from '../../../services/tools/emoji-generator/emoji-generator.service';
 import { EyedropperService } from '../../../services/tools/eyedropper/eyedropper.service';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
+import { ObjectSelectorService } from '../../../services/tools/object-selector/object-selector.service';
 import { PencilGeneratorService } from '../../../services/tools/pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from '../../../services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from '../../../services/tools/rectangle-generator/rectangle-generator.service';
@@ -36,7 +33,7 @@ import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
-/*@Component({ selector: 'app-lateral-bar', template: '' })
+@Component({ selector: 'app-lateral-bar', template: '' })
 class LateralBarStubComponent { }
 @Component({ selector: 'app-welcome-modal', template: '' })
 class WelcomeModalStubComponent { }
@@ -66,42 +63,46 @@ const DRAWING_SERVICES = [
 ];
 
 fdescribe('DrawingViewComponent', () => {
-    let component: DrawingViewComponent;
-    let fixture: ComponentFixture<DrawingViewComponent>;
-    beforeEach(async(() => {
-      TestBed.configureTestingModule({
-        declarations: [
-          DrawingViewComponent,
-          WelcomeModalStubComponent,
-          WorkZoneComponent,
-          LateralBarStubComponent,
-          ColorPaletteComponent,
-          ColorSliderComponent,
-          ColorPickerDialogComponent,
-          LastTenColorsComponent,
-          ToolsAttributesBarComponent,
-        ],
-        imports: [
-          DemoMaterialModule,
-          CommonModule,
-          FormsModule,
-          PortalModule,
-        ],
-        providers: [ToolManagerService, ...DRAWING_SERVICES, ColorService, ChangeDetectorRef,
-          {provide: Renderer2, useValue: rendererSpy},
-          {provide: ModalManagerService, useValue: modalManagerSpy},
-          {provide: HttpClient, useValue: httpClientSpy}, ],
-        schemas: [ NO_ERRORS_SCHEMA ],
-      }).overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [ToolsAttributesBarComponent,
-        DrawingViewComponent] } },
-      ).compileComponents().then(() => {
-        fixture = TestBed.createComponent(DrawingViewComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-      });
+  let component: DrawingViewComponent;
+  let fixture: ComponentFixture<DrawingViewComponent>;
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [
+        DrawingViewComponent,
+        WelcomeModalStubComponent,
+        WorkZoneComponent,
+        LateralBarStubComponent,
+        ColorPaletteComponent,
+        ColorSliderComponent,
+        ColorPickerDialogComponent,
+        LastTenColorsComponent,
+        ToolsAttributesBarComponent,
+      ],
+      imports: [
+        DemoMaterialModule,
+        CommonModule,
+        FormsModule,
+        PortalModule,
+      ],
+      providers: [ToolManagerService, ...DRAWING_SERVICES, ColorService, ChangeDetectorRef,
+        { provide: Renderer2, useValue: rendererSpy },
+        { provide: ModalManagerService, useValue: modalManagerSpy },
+        { provide: HttpClient, useValue: httpClientSpy }, ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).overrideModule(BrowserDynamicTestingModule, {
+      set: {
+        entryComponents: [ToolsAttributesBarComponent,
+          DrawingViewComponent]
+      }
+    },
+    ).compileComponents().then(() => {
+      fixture = TestBed.createComponent(DrawingViewComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    });
   }));
 
-    it('should react properly to cut, copy and delete', () => {
+  it('should react properly to cut, copy and delete', () => {
     // Create the work-zone
     // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
@@ -152,7 +153,7 @@ fdescribe('DrawingViewComponent', () => {
     expect(clipboardService.memorizedAction.length).toEqual(1);
   });
 
-    it('should add slightely displaced copies of the clipboarded elements on canvas (paste)', () => {
+  it('should add slightely displaced copies of the clipboarded elements on canvas (paste)', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -189,7 +190,7 @@ fdescribe('DrawingViewComponent', () => {
     expect(workChilds[2]).toEqual(itemToBeCut);
   });
 
-    it('should add slightely displaced copies of the clipboarded elements on canvas and not affect the clipboard (paste)', () => {
+  it('should add slightely displaced copies of the clipboarded elements on canvas and not affect the clipboard (paste)', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -218,7 +219,7 @@ fdescribe('DrawingViewComponent', () => {
     expect(clipboardService.memorizedAction.length).toEqual(1);
   });
 
-    it('should add slightely displaced copies of the clipboarded elements on canvas (duplicate)', () => {
+  it('should add slightely displaced copies of the clipboarded elements on canvas (duplicate)', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -262,7 +263,7 @@ fdescribe('DrawingViewComponent', () => {
     expect(clipboardService.memorizedAction.length).toEqual(0);
   });
 
-    it('should ', () => {
+  it('should ', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -286,7 +287,7 @@ fdescribe('DrawingViewComponent', () => {
     expect(workChilds[3]).toEqual(workChilds[2]);
   });
 
-    it('should add slightely displaced copies of the clipboarded elements on canvas (duplicate)', () => {
+  it('should add slightely displaced copies of the clipboarded elements on canvas (duplicate)', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -310,4 +311,3 @@ fdescribe('DrawingViewComponent', () => {
     expect(workChilds[3]).toEqual(workChilds[2]);
   });
 });
-*/
