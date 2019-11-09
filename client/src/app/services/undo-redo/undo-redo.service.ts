@@ -6,7 +6,7 @@ import {Command} from '../../data-structures/command';
 })
 export class UndoRedoService {
 
-  private readonly undoCommands: Command[];
+  private undoCommands: Command[];
   private redoCommands: Command[];
 
   constructor() {

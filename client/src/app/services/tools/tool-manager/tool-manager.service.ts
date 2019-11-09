@@ -89,7 +89,7 @@ export class ToolManagerService {
     } else {
       switch (this._activeTool) {
         case Tools.Selector:
-          this.objectSelector.updateSelector(
+          this.objectSelector.onMouseMove(
             this.mousePosition.canvasMousePositionX,
             this.mousePosition.canvasMousePositionY,
             this.numberOfElements,
@@ -111,7 +111,7 @@ export class ToolManagerService {
     } else {
       switch (this._activeTool) {
         case Tools.Selector:
-          this.objectSelector.finish(RendererSingleton.canvas);
+          this.objectSelector.onMouseUp();
           this.updateNumberOfElements();
           break;
         case Tools.Eraser:
