@@ -2,7 +2,7 @@ import {Component, Renderer2, Type} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import { NotifierService } from 'angular-notifier';
-import {of} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {Drawing} from '../../../../../../common/communication/Drawing';
 import {DemoMaterialModule} from '../../../material.module';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
@@ -136,6 +136,42 @@ describe('OpenDrawingDialogComponent', () => {
       component['selectedTags'].push(fakeTag);
       component.removeSelectedTag('fakeTag');
       expect(component['selectedTags']).not.toContain(fakeTag);
+    });
+  });
+  describe('openLocalDrawing', () => {
+    it('should be able to open a file of correct format', () => {
+      const passFileValidationSpy = spyOn(component, 'validateFileType').and.callFake(() => {
+        // Do not send back an error, do nothing
+      });
+      const fakeDrawingString =
+      `{
+        "id": -1,
+        "name": "abc",
+        "svgElements":<defs></defs><rect><rect>,
+        "tags": [],
+        "miniature": '',
+        "canvasWidth": 1080,
+        "canvasHeight": 500
+      }`;
+      const fakeObserver = new Observable((subscriber) => {
+        subscriber.next(fakeDrawingString);
+        subscriber.complete();
+      });
+      const loadFileCorrectly = spyOn(component, 'loadFile').and.returnValue(fakeObserver);
+      const fakeHtmlInputElement: jasmine.SpyObj<HTMLInputElement> =
+        jasmine.createSpyObj('HTMLInputElement', ['files']);
+      component.openLocalDrawing(fakeHtmlInputElement);
+      expect(passFileValidationSpy).toHaveBeenCalled();
+      expect(loadFileCorrectly).toHaveBeenCalled();
+      // TODO somehow check value of drawing
+    });
+    it('should refuse a file of format different from JSON', () => {
+      // TODO
+    });
+  });
+  describe('loadFile', () => {
+    it('should refuse a file that does not contain a drawing', () => {
+      // TODO
     });
   });
 });
