@@ -8,15 +8,13 @@ import { MousePositionService } from './../../mouse-position/mouse-position.serv
 export class BrushGeneratorService extends AbstractWritingTool {
 
   private readonly DEFAULT_BRUSH_PATTERN = 'url(#brushPattern1)';
-
-  private currentBrushPathNumber: number;
   private currentBrushPattern: string;
 
   constructor(private mousePosition: MousePositionService,
               undoRedoService: UndoRedoService) {
     super(mousePosition, undoRedoService);
     this.currentBrushPattern = this.DEFAULT_BRUSH_PATTERN;
-    this.currentBrushPathNumber = 0;
+    this.currentElementsNumber = 0;
   }
 
   set _strokeWidth(width: number) {
@@ -35,32 +33,14 @@ export class BrushGeneratorService extends AbstractWritingTool {
     return this.currentBrushPattern;
   }
 
-  set _currentBrushPathNumber(count: number) {
-    this.currentBrushPathNumber = count;
-  }
-
-  createBrushPath(canvas: SVGElement, primaryColor: string, secondaryColor: string) {
+  createElement(primaryColor: string, secondaryColor: string) {
     const newPattern = this.createPattern(primaryColor, secondaryColor);
-    this.generateBrushPath(this.currentBrushPathNumber, this.strokeWidth);
-    this.addPatternToNewPath(newPattern, RendererSingleton.getCanvas());
+    this.generateBrushPath(this.strokeWidth);
+    this.addPatternToNewPath(newPattern, RendererSingleton.canvas);
     this.mouseDown = true;
   }
 
-  // Updates the path when the mouse is moving (mousedown)
-  updateBrushPath(mouseEvent: MouseEvent, currentChildPosition: number) {
-    this.updatePath(currentChildPosition);
-  }
-
-  // Finalizes the path, sets up the next one
-  finishBrushPath() {
-    if (this.mouseDown) {
-      this.currentBrushPathNumber += 1;
-      this.pushAction(this.currentElement);
-      this.mouseDown = false;
-    }
-  }
-
-  createPattern(primaryColor: string, secondaryColor: string): SVGElement {
+  private createPattern(primaryColor: string, secondaryColor: string): SVGElement {
     const newPattern = RendererSingleton.renderer.createElement('pattern', 'svg');
     const patternToCopy = RendererSingleton.renderer
         .selectRootElement(`${this.currentBrushPattern.substring(4, this.currentBrushPattern.length - 1)}`, true);
@@ -70,7 +50,7 @@ export class BrushGeneratorService extends AbstractWritingTool {
     RendererSingleton.renderer.setAttribute(newPattern, 'height', patternToCopy.getAttribute('height') as string);
     RendererSingleton.renderer.setAttribute(newPattern, 'width', patternToCopy.getAttribute('width') as string);
     RendererSingleton.renderer.setAttribute(newPattern, 'patternUnits', patternToCopy.getAttribute('patternUnits') as string);
-    RendererSingleton.renderer.setProperty(newPattern, 'id', `brushPath${this.currentBrushPathNumber}pattern`);
+    RendererSingleton.renderer.setProperty(newPattern, 'id', `brushPath${this.currentElementsNumber}pattern`);
 
     // Fills take the primary color
     for (const child of [].slice.call(newPattern.children)) {
@@ -84,15 +64,8 @@ export class BrushGeneratorService extends AbstractWritingTool {
         child.setAttribute('stroke', secondaryColor);
       }
     }
-    const defs = RendererSingleton.renderer.selectRootElement('#definitions', true);
-    RendererSingleton.renderer.appendChild(defs, newPattern);
+    RendererSingleton.renderer.appendChild(RendererSingleton.defs, newPattern);
     return newPattern;
-  }
-
-  addPatternToNewPath(pattern: SVGElement, canvas: SVGElement) {
-    const newBrushPath = canvas.children[canvas.children.length - 1];
-    const patternAddress = `url(#${pattern.id})`;
-    newBrushPath.setAttribute('stroke', patternAddress);
   }
 
   findPatternFromBrushPath(brushPath: SVGElement, defsElement: SVGElement): SVGElement {
@@ -106,17 +79,17 @@ export class BrushGeneratorService extends AbstractWritingTool {
     return new SVGElement();
   }
 
-  clone(item: SVGElement): SVGElement {
-    const newItem = item.cloneNode() as SVGElement;
-    newItem.setAttribute('id', 'brushPath' + this.currentBrushPathNumber++);
-    return newItem;
+  private addPatternToNewPath(pattern: SVGElement, canvas: SVGElement) {
+    const newBrushPath = canvas.children[canvas.children.length - 1];
+    const patternAddress = `url(#${pattern.id})`;
+    newBrushPath.setAttribute('stroke', patternAddress);
   }
 
-  private generateBrushPath(id: number, strokeWidth: number): void {
+  private generateBrushPath(strokeWidth: number): void {
     const path = RendererSingleton.renderer.createElement('path', 'svg');
     const properties: [string, string][] = [];
     properties.push(
-      ['id', `brushPath${id}`],
+      ['id', `brushPath${this.currentElementsNumber}`],
       ['d', `M ${this.mousePosition.canvasMousePositionX} ${(this.mousePosition.canvasMousePositionY)}
         L ${(this.mousePosition.canvasMousePositionX)} ${(this.mousePosition.canvasMousePositionY)}`],
       ['stroke-width', `${strokeWidth}`],
@@ -124,5 +97,11 @@ export class BrushGeneratorService extends AbstractWritingTool {
       ['fill', `none`],
     );
     this.drawElement(path, properties);
+  }
+
+  clone(item: SVGElement): SVGElement {
+    const newItem = item.cloneNode() as SVGElement;
+    newItem.setAttribute('id', 'brushPath' + this.currentElementsNumber++);
+    return newItem;
   }
 }

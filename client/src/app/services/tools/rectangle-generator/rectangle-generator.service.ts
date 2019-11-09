@@ -1,20 +1,18 @@
 import {Injectable} from '@angular/core';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
-import {Action, ActionGenerator, ActionType} from '../../../data-structures/command';
 import {PlotType} from '../../../data-structures/plot-type';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { MousePositionService } from './../../mouse-position/mouse-position.service';
 
 @Injectable()
-export class RectangleGeneratorService extends AbstractClosedShape implements ActionGenerator  {
+export class RectangleGeneratorService extends AbstractClosedShape  {
 
   private currentRectNumber: number;
   protected mouseDown: boolean;
 
   // attributes of rectangle
   protected strokeWidth: number;
-  protected plotType: PlotType;
 
   constructor(protected mouse: MousePositionService,
               undoRedoService: UndoRedoService) {
@@ -25,7 +23,6 @@ export class RectangleGeneratorService extends AbstractClosedShape implements Ac
     this.mouseDown = false;
   }
 
-  set _currentRectNumber(count: number) { this.currentRectNumber = count; }
   get _strokeWidth() {
     return this.strokeWidth;
   }
@@ -42,20 +39,6 @@ export class RectangleGeneratorService extends AbstractClosedShape implements Ac
     this.plotType = plotType;
   }
 
-  pushAction(svgElement: SVGElement): void {
-    const action: Action = {
-      actionType: ActionType.Create,
-      svgElements: [svgElement],
-      execute(): void {
-        RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), this.svgElements[0]);
-      },
-      unexecute(): void {
-        RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), this.svgElements[0]);
-      },
-    };
-    this.undoRedoService.pushAction(action);
-  }
-
   createRectangle(primaryColor: string, secondaryColor: string) {
     const rect = RendererSingleton.renderer.createElement('rect', 'svg');
     const properties: [string, string][] = [];
@@ -66,15 +49,30 @@ export class RectangleGeneratorService extends AbstractClosedShape implements Ac
       ['height', `0`],
       ['width', `0`],
       ['data-start-x', `${this.mouse.canvasMousePositionX}`],
-      ['data-start-y', `${this.mouse.canvasMousePositionY}`],
-    );
+      ['data-start-y', `${this.mouse.canvasMousePositionY}`]);
     this.drawElement(rect, properties, primaryColor, secondaryColor);
     this.mouseDown = true;
   }
 
-  updateSquare(canvas: SVGElement, currentChildPosition: number) {
+  updateElement(currentChildPosition: number, mouseEvent: MouseEvent): void {
+    if (mouseEvent.shiftKey) {
+      this.updateSquare(currentChildPosition);
+    } else {
+      this.updateRectangle(currentChildPosition);
+    }
+  }
+
+  finishElement() {
     if (this.mouseDown) {
-      const currentRect = canvas.children[currentChildPosition - 1];
+      this.currentElementsNumber += 1;
+      this.mouseDown = false;
+      this.pushGeneratorCommand(this.currentElement);
+    }
+  }
+
+  updateSquare(currentChildPosition: number) {
+    if (this.mouseDown) {
+      const currentRect = RendererSingleton.canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
@@ -122,9 +120,9 @@ export class RectangleGeneratorService extends AbstractClosedShape implements Ac
     }
   }
 
-  updateRectangle(canvas: SVGElement, currentChildPosition: number) {
+  updateRectangle(currentChildPosition: number) {
     if (this.mouseDown) {
-      const currentRect = canvas.children[currentChildPosition - 1];
+      const currentRect = RendererSingleton.canvas.children[currentChildPosition - 1];
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
@@ -143,14 +141,6 @@ export class RectangleGeneratorService extends AbstractClosedShape implements Ac
           currentRect.setAttribute('y', '' + this.mouse.canvasMousePositionY);
         }
       }
-    }
-  }
-
-  finishRectangle() {
-    if (this.mouseDown) {
-      this.currentRectNumber += 1;
-      this.mouseDown = false;
-      this.pushAction(this.currentElement);
     }
   }
 

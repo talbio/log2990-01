@@ -1,44 +1,39 @@
 import { MousePositionService } from './../services/mouse-position/mouse-position.service';
 import {RendererSingleton} from '../services/renderer-singleton';
+import {RectangleGeneratorService} from '../services/tools/rectangle-generator/rectangle-generator.service';
 import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
-import {Action, ActionType} from './command';
+import {AbstractGenerator} from './abstract-generator';
 import {PlotType} from './plot-type';
 
-export class AbstractClosedShape {
+export abstract class AbstractClosedShape extends AbstractGenerator {
 
-  /**
-   * @desc: the current element being rendered
-   */
-  protected currentElement: SVGElement;
   protected plotType: PlotType;
   protected strokeWidth: number;
+  protected mouseDown: boolean;
 
   constructor(protected mouse: MousePositionService,
-              protected undoRedoService: UndoRedoService) {}
-
-  get x(): number {
-    return this.mouse.canvasMousePositionX;
+              protected undoRedoService: UndoRedoService) {
+    super(mouse, undoRedoService);
+    this.strokeWidth = 1;
+    this.plotType = PlotType.Contour;
+    this.mouseDown = false;
   }
 
-  get y(): number {
-    return this.mouse.canvasMousePositionY;
+  createTemporaryRectangle(rectangleGenerator: RectangleGeneratorService) {
+    rectangleGenerator.plotType = PlotType.Contour;
+    rectangleGenerator.createElement('black', 'black');
+    RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1].id = 'tempRect';
+    RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1].setAttribute('stroke-dasharray', '4');
   }
 
-  pushAction(svgElement: SVGElement): void {
-    const action: Action = {
-      actionType: ActionType.Create,
-      svgElements: [svgElement],
-      execute(): void {
-        RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), this.svgElements[0]);
-      },
-      unexecute(): void {
-        RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), this.svgElements[0]);
-      },
-    };
-    this.undoRedoService.pushAction(action);
+  drawElement(element: SVGElement, properties: [string, string][], primaryColor: string, secondaryColor: string): void {
+    this.setProperties(element, properties);
+    this.setStrokeFillProperties(element, primaryColor, secondaryColor);
+    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, element);
+    this.currentElement = element;
   }
 
-  setStrokeFillProperties(element: SVGElement, primaryColor: string, secondaryColor: string): void {
+  private setStrokeFillProperties(element: SVGElement, primaryColor: string, secondaryColor: string): void {
     let stroke = '';
     let fill = '';
     switch (this.plotType) {
@@ -60,16 +55,9 @@ export class AbstractClosedShape {
     RendererSingleton.renderer.setAttribute(element, 'fill', `${fill}`);
   }
 
-  setProperties(element: SVGElement, properties: [string, string][]): void {
+  private setProperties(element: SVGElement, properties: [string, string][]): void {
     for (const property of properties) {
       RendererSingleton.renderer.setAttribute(element, property[0], property[1]);
     }
   }
-
-  drawElement(element: SVGElement, properties: [string, string][], primaryColor: string, secondaryColor: string): void {
-    this.setProperties(element, properties);
-    this.setStrokeFillProperties(element, primaryColor, secondaryColor);
-    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), element);
-    this.currentElement = element;
-    }
 }

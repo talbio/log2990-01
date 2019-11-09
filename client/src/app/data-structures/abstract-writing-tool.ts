@@ -1,50 +1,28 @@
 import { MousePositionService } from './../services/mouse-position/mouse-position.service';
 import {RendererSingleton} from '../services/renderer-singleton';
 import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
-import {Action, ActionType} from './command';
+import {AbstractGenerator} from './abstract-generator';
 
-export class AbstractWritingTool {
+export abstract class AbstractWritingTool extends AbstractGenerator {
 
   private readonly DEFAULT_WIDTH = 5;
 
   protected strokeWidth: number;
   protected mouseDown: boolean;
-  protected currentElement: SVGElement;
 
   constructor(protected mouse: MousePositionService,
               protected undoRedoService: UndoRedoService) {
+    super(mouse, undoRedoService);
     this.mouseDown = false;
     this.strokeWidth = this.DEFAULT_WIDTH;
   }
 
-  get x(): number {
-    return this.mouse.canvasMousePositionX;
-  }
-
-  get y(): number {
-    return this.mouse.canvasMousePositionY;
-  }
-
-  pushAction(svgElement: SVGElement): void {
-    const action: Action = {
-      actionType: ActionType.Create,
-      svgElements: [svgElement],
-      execute(): void {
-        RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), this.svgElements[0]);
-      },
-      unexecute(): void {
-        RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), this.svgElements[0]);
-      },
-    };
-    this.undoRedoService.pushAction(action);
-  }
-
   /**
-   * @desc // Updates the path when the mouse is moving (mousedown)
+   * @desc Updates the path when the mouse is moving (mousedown)
    */
   updatePath(currentChildPosition: number) {
     if (this.mouseDown) {
-      const currentPath = RendererSingleton.getCanvas().children[currentChildPosition - 1];
+      const currentPath = RendererSingleton.canvas.children[currentChildPosition - 1];
       if (currentPath != null) {
         currentPath.setAttribute('d',
           currentPath.getAttribute('d') + ' L' + (this.mouse.canvasMousePositionX) +
@@ -53,11 +31,22 @@ export class AbstractWritingTool {
     }
   }
 
+  /**
+   * @desc Finalizes the path, sets up the next one
+   */
+  finishElement(mouseEvent?: MouseEvent): void {
+    if (this.mouseDown) {
+      this.currentElementsNumber += 1;
+      this.pushGeneratorCommand(this.currentElement);
+      this.mouseDown = false;
+    }
+  }
+
   drawElement(element: SVGElement, properties: [string, string][]) {
     for (const property of properties) {
       RendererSingleton.renderer.setAttribute(element, property[0], property[1]);
     }
     this.currentElement = element;
-    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), element);
+    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, element);
   }
 }

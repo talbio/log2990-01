@@ -1,45 +1,47 @@
 import { Injectable } from '@angular/core';
-import {Action} from '../../data-structures/command';
+import {Command} from '../../data-structures/command';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UndoRedoService {
 
-  private readonly undoActions: Action[];
-  private redoActions: Action[];
+  private readonly undoCommands: Command[];
+  private redoCommands: Command[];
 
   constructor() {
-    this.undoActions = [];
-    this.redoActions = [];
+    this.undoCommands = [];
+    this.redoCommands = [];
   }
 
   undo(): void {
-    if (this.undoActions.length !== 0) {
-      const action: Action = this.undoActions.pop() as Action;
-      action.unexecute();
-      this.redoActions.push(action);
+    if (this.undoCommands.length !== 0) {
+      const command: Command = this.undoCommands.pop() as Command;
+      command.unexecute();
+      this.redoCommands.push(command);
     }
   }
 
   redo(): void {
-    if (this.redoActions.length !== 0) {
-      const action: Action = this.redoActions.pop() as Action;
-      action.execute();
-      this.undoActions.push(action);
+    if (this.redoCommands.length !== 0) {
+      const command: Command = this.redoCommands.pop() as Command;
+      command.execute();
+      this.undoCommands.push(command);
     }
   }
 
-  pushAction(action: Action): void {
-    this.undoActions.push(action);
+  canUndo(): boolean {
+    return this.undoCommands.length !== 0;
   }
 
-  /**
-   * 1 : créer rectangle
-   * 2 : push cette action dans undo
-   * 3 : l'utilisateur appuie sur annuler -> suppression du rectangle :
-   *       pop de undo le rectangle, appeler unexecute, push dans redo.
-   * 4 : l'utilisateur appuie sur refaire -> recréation du rectangle :
-   *       pop de redo le rectangle, appeler execute, push dans undo.
-   */
+  canRedo(): boolean {
+    return this.redoCommands.length !== 0;
+  }
+
+  pushCommand(command: Command): void {
+    if (this.redoCommands.length !== 0) {
+      this.redoCommands = [];
+    }
+    this.undoCommands.push(command);
+  }
 }

@@ -79,24 +79,20 @@ export class LateralBarComponent {
   }
 
   private loadSVGIcons(): void {
-    this.matIconRegistry.addSvgIcon('rectangle',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(RECTANGLE_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('polygon',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(POLYGON_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('ellipse',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(ELLIPSE_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('add-tag',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(ADD_TAG_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('delete-tag',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(DELETE_TAG_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('eraser',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(ERASER_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('pen',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(PEN_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('redo',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(REDO_ICON_PATH));
-    this.matIconRegistry.addSvgIcon('undo',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(UNDO_ICON_PATH));
+    const icons: [string, string][] = [];
+    icons.push(
+      ['rectangle', RECTANGLE_ICON_PATH],
+      ['polygon', POLYGON_ICON_PATH],
+      ['ellipse', ELLIPSE_ICON_PATH],
+      ['add-tag', ADD_TAG_ICON_PATH],
+      ['delete-tag', DELETE_TAG_ICON_PATH],
+      ['eraser', ERASER_ICON_PATH],
+      ['undo', UNDO_ICON_PATH],
+      ['redo', REDO_ICON_PATH],
+      ['pen', PEN_ICON_PATH],
+    );
+    icons.forEach( (icon: [string, string]) =>
+      this.matIconRegistry.addSvgIcon(icon[0], this.domSanitizer.bypassSecurityTrustResourceUrl(icon[1])));
   }
 
   private initializePencilToolsButtons() {

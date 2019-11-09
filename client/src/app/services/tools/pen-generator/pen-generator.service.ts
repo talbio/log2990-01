@@ -5,34 +5,33 @@ const MAX_WIDTH = 40;
 
 import { Injectable } from '@angular/core';
 import { AbstractWritingTool } from '../../../data-structures/abstract-writing-tool';
-import { Action, ActionType } from '../../../data-structures/command';
 import { RendererSingleton } from '../../renderer-singleton';
 import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 
 @Injectable()
 export class PenGeneratorService extends AbstractWritingTool {
-    strokeWidth: number;
-    strokeWidthMinimum: number;
-    strokeWidthMaximum: number;
-    mouseDown = false;
-    private dotPositionX: number;
-    private dotPositionY: number;
-    private date = new Date();
-    private time: number;
-    private speed: number;
-    private color: string;
-    private currentPenPathNumber: number;
-    private pathArray: SVGElement[] = [];
+  strokeWidth: number;
+  strokeWidthMinimum: number;
+  strokeWidthMaximum: number;
+  mouseDown = false;
+  private dotPositionX: number;
+  private dotPositionY: number;
+  private date = new Date();
+  private time: number;
+  private speed: number;
+  private color: string;
+  private currentPenPathNumber: number;
+  private pathArray: SVGElement[] = [];
 
-    constructor(protected mouse: MousePositionService,
-                protected undoRedoService: UndoRedoService) {
-        super(mouse, undoRedoService);
-        this.strokeWidthMinimum = MIN_WIDTH;
-        this.strokeWidthMaximum = MAX_WIDTH;
-        this.currentPenPathNumber = 0;
-    }
+  constructor(protected mouse: MousePositionService,
+              protected undoRedoService: UndoRedoService) {
+      super(mouse, undoRedoService);
+      this.strokeWidthMinimum = MIN_WIDTH;
+      this.strokeWidthMaximum = MAX_WIDTH;
+      this.currentPenPathNumber = 0;
+  }
 
-    createPenPath(primaryColor: string) {
+  createElement(primaryColor: string) {
         this.strokeWidth = DEFAULT_WIDTH;
         this.color = primaryColor;
         this.time = this.date.getTime();
@@ -60,7 +59,7 @@ export class PenGeneratorService extends AbstractWritingTool {
         this.pathArray.push(this.currentElement);
     }
 
-    updatePenPath(mouseEvent: MouseEvent, canvas: SVGElement) {
+    updatePenPath(canvas: SVGElement) {
         if (this.mouseDown) {
             const date = new Date();
             const time = date.getTime();
@@ -92,7 +91,6 @@ export class PenGeneratorService extends AbstractWritingTool {
     finishPenPath() {
         if (this.mouseDown) {
             this.currentPenPathNumber += 1;
-            this.pushActions(this.pathArray);
             this.pathArray = [];
             this.mouseDown = false;
         }
@@ -112,24 +110,9 @@ export class PenGeneratorService extends AbstractWritingTool {
         this.dotPositionY = currentDotPositionY;
     }
 
-    pushActions(paths: SVGElement[]): void {
-
-        const action: Action = {
-            actionType: ActionType.Create,
-            svgElements: paths,
-            execute(): void {
-                this.svgElements.forEach((path) => {
-                    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), path);
-                });
-            },
-            unexecute(): void {
-                this.svgElements.forEach((path) => {
-                    RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), path);
-                });
-            },
-        };
-
-        this.undoRedoService.pushAction(action);
+    clone(item: SVGElement): SVGElement {
+      const newItem = item.cloneNode() as SVGElement;
+      newItem.setAttribute('id', 'pencPath' + this.currentPenPathNumber++);
+      return newItem;
     }
-
 }

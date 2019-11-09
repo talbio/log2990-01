@@ -56,11 +56,17 @@
 
   <mat-list-item>
     <div id="undo-redo">
-      <button mat-icon-button (click)="this.undoRedoService.undo()" class="btn" matTooltip="Annuler">
+      <button mat-icon-button
+              (click)="this.undoRedoService.undo()"
+              [disabled]="!this.undoRedoService.canUndo()"
+              class="btn" matTooltip="Annuler">
         <mat-icon class="icon" svgIcon="undo"></mat-icon>
       </button>
       <mat-divider [vertical]="true"></mat-divider>
-      <button mat-icon-button (click)="this.undoRedoService.redo()" class="btn" matTooltip="Refaire">
+      <button mat-icon-button
+              (click)="this.undoRedoService.redo()"
+              [disabled]="!this.undoRedoService.canRedo()"
+              class="btn" matTooltip="Refaire">
         <mat-icon class="icon" svgIcon="redo"></mat-icon>
       </button>
     </div>

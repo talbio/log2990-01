@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { MatSliderChange } from '@angular/material';
-import { Subject } from 'rxjs';
 
 @Injectable()
 export class GridTogglerService {
@@ -10,8 +9,6 @@ export class GridTogglerService {
   // Defined at onInit in workzone component
   private grid: SVGElement;
   private gridPattern: SVGElement;
-
-  isVisibilityChange: Subject<boolean> = new Subject<boolean>();
 
   constructor() {
     this.gridSize = 50;
@@ -26,16 +23,8 @@ export class GridTogglerService {
     }
   }
 
-  get _grid(): SVGElement {
-    return this.grid;
-  }
-
   set _grid(gridElement: SVGElement) {
     this.grid = gridElement;
-  }
-
-  get _gridPattern(): SVGElement {
-    return this.gridPattern;
   }
 
   set _gridPattern(gridPatternElem: SVGElement) {

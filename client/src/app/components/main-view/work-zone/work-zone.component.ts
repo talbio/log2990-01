@@ -66,13 +66,12 @@ export class WorkZoneComponent implements OnInit {
     this.toolManager.updateElement(mouseEvent, this.canvasElement);
   }
 
-  onMouseUp() {
-    this.toolManager.finishElement();
-
+  onMouseUp(mouseEvent: MouseEvent) {
+    this.toolManager.finishElement(mouseEvent);
   }
 
   onLeftClick(mouseEvent: MouseEvent) {
-    this.toolManager.changeElementLeftClick(mouseEvent.target as SVGElement, this.canvasElement);
+    this.toolManager.changeElementLeftClick(mouseEvent.target as SVGElement);
     return true;
   }
 
@@ -83,7 +82,7 @@ export class WorkZoneComponent implements OnInit {
   }
 
   onDoubleClick(mouseEvent: MouseEvent) {
-    this.toolManager.finishElementDoubleClick(mouseEvent, this.canvasElement);
+    this.toolManager.finishElementDoubleClick(mouseEvent);
   }
 
   onMouseWheel(mouseEvent: WheelEvent) {

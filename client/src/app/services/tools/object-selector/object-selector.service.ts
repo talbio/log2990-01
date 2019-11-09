@@ -1,25 +1,46 @@
 import { Injectable } from '@angular/core';
 import { Colors } from 'src/app/data-structures/colors';
+import { Command, CommandGenerator } from '../../../data-structures/command';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
+import { RendererSingleton } from '../../renderer-singleton';
+import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 
 const DASHED_LINE_VALUE = 5;
 const STROKE_COLOR = Colors.BLACK;
 
+interface InitialPosition {
+  xPos: string;
+  yPos: string;
+}
+
+interface FinalPosition {
+  xPos: string;
+  yPos: string;
+}
+
 @Injectable()
-export class ObjectSelectorService {
+export class ObjectSelectorService implements CommandGenerator {
 
   private mouseDownSelector: boolean;
   private mouseDownTranslation: boolean;
   private currentRect: Element;
   SVGArray: SVGElement[] = [];
   private isSelectorVisible: boolean;
-  private hasBeenTranslated: boolean;
   private initialX: number;
   private initialY: number;
+  private hasBeenTranslated: boolean;
 
-  constructor(protected mousePosition: MousePositionService) {
+  /**
+   * @desc: the first Position is the position of the element
+   * before the translation and the second Position is after the translation.
+   */
+  private readonly initialAndFinalPositions: Map<SVGElement, [InitialPosition, FinalPosition]>;
+
+  constructor(private undoRedoService: UndoRedoService,
+              private mousePosition: MousePositionService) {
     this.mouseDownSelector = false;
     this.hasBeenTranslated = false;
+    this.initialAndFinalPositions = new Map<SVGElement, [InitialPosition, FinalPosition]>();
   }
 
   selectorMouseDown(mouseEvent: MouseEvent, canvas: SVGElement) {
@@ -31,17 +52,10 @@ export class ObjectSelectorService {
       if (this.mousePosition.canvasMousePositionX < box.x || this.mousePosition.canvasMousePositionX > (box.x + box.width)
         || this.mousePosition.canvasMousePositionY < box.y || this.mousePosition.canvasMousePositionY > (box.y + box.height)) {
         this.removeSelector(canvas);
-      } else { this.startTranslation(); }
+      } else {
+        this.startTranslation();
+      }
     }
-
-  }
-
-  removeSelector(canvas: SVGElement): void {
-    const box = canvas.querySelector('#box') as SVGElement;
-    const boxrect = canvas.querySelector('#boxrect') as SVGElement;
-    box.removeChild(boxrect);
-    canvas.removeChild(box);
-    this.hasBeenTranslated = false;
   }
 
   createSelectorRectangle(canvas: SVGElement) {
@@ -126,7 +140,7 @@ export class ObjectSelectorService {
   finish(canvas: SVGElement): void {
     if (!canvas.querySelector('#selected')) {
       this.finishSelection(canvas);
-    } else { this.finishTranslation(canvas); }
+    } else { this.finishTranslation(); }
   }
 
   finishSelection(canvas: SVGElement): void {
@@ -176,68 +190,133 @@ export class ObjectSelectorService {
     const box = (group as Element).getBoundingClientRect();
     this.initialX = box.left;
     this.initialY = box.top;
+    const selected = RendererSingleton.canvas.querySelector('#selected') as SVGGElement;
+    const childArray = Array.from(selected.children);
+    const boxRect = RendererSingleton.canvas.querySelector('#boxrect') as SVGElement;
+    this.setInitialCoordinates(boxRect);
+    childArray.forEach((child: SVGElement) => {
+     this.setInitialCoordinates(child);
+    });
   }
+
+setInitialCoordinates( svgElement: SVGElement){
+  const initialPosition: InitialPosition = {
+    xPos: '0', yPos: '0',
+  };
+  if (svgElement.getAttribute('transform')) {
+    const translationValues: number[] = this.getTranslationValue(svgElement);
+    initialPosition.xPos = (parseFloat(initialPosition.xPos) + translationValues[0]).toString();
+    initialPosition.yPos = (parseFloat(initialPosition.yPos) + translationValues[1]).toString();
+  }
+  this.initialAndFinalPositions.set(svgElement, [initialPosition, {xPos: '0', yPos: '0'}]);
+  console.log(svgElement.getAttribute('transform'));
+}
 
   translate(): void {
     if (this.mouseDownTranslation) {
-      const group = document.querySelector('#box');
+      const group = RendererSingleton.canvas.querySelector('#box');
       const box = (group as Element).getBoundingClientRect();
       (group as Element).setAttribute('x', '' + (this.mousePosition.canvasMousePositionX - this.initialX - (box.width / 2)));
       (group as Element).setAttribute('y', '' + (this.mousePosition.canvasMousePositionY - this.initialY - (box.height / 2)));
     }
-    this.hasBeenTranslated = true;
   }
 
-  finishTranslation(canvas: SVGElement) {
-    const groupElement = document.querySelector('#box') as SVGGElement;
+  finishTranslation() {
+    const groupElement = RendererSingleton.canvas.querySelector('#box') as SVGGElement;
     groupElement.setAttributeNS(null, 'onmousemove', 'null');
-    const box = canvas.querySelector('#box') as SVGElement;
-    const selected = canvas.querySelector('#selected') as SVGGElement;
+    const box = RendererSingleton.canvas.querySelector('#box') as SVGElement;
+    const selected = RendererSingleton.canvas.querySelector('#selected') as SVGGElement;
     const childArray = Array.from(selected.children);
-    childArray.forEach((child) => {
-      if (this.hasBeenTranslated) {
-        this.translateChildren(child, box);
-      }
-      canvas.appendChild(child);
-    });
+    const boxRect = RendererSingleton.canvas.querySelector('#boxrect') as SVGElement;
+    if (this.hasBeenTranslated) {
+      childArray.forEach((child: SVGElement) => {
+        this.translateChild(child, box);
+        RendererSingleton.canvas.appendChild(child);
+      });
+      this.translateChild(boxRect, box);
+      RendererSingleton.canvas.appendChild(boxRect);
+    }
     this.mouseDownTranslation = false;
+    childArray.forEach((child: SVGElement) => {
+      this.setFinalCoordinates(child);
+    });
+    this.setFinalCoordinates(boxRect);
+    this.pushTranslationCommand(this.initialAndFinalPositions, box);
   }
 
-  translateChildren(child: Element, box: SVGElement): void {
+  setFinalCoordinates(svgElement: SVGElement): void{
+    const initialPosition: InitialPosition = (this.initialAndFinalPositions.get(svgElement) as [InitialPosition, FinalPosition])[0];
+    const translationValues: number[] = this.getTranslationValue(svgElement);
+    const finalPosition: FinalPosition = {
+      xPos: translationValues[0].toString(),
+      yPos: translationValues[1].toString(),
+    };
+    this.initialAndFinalPositions.set(svgElement, [initialPosition, finalPosition]);
+  }
+
+  translateChild(child: SVGElement, box: SVGElement): void {
     let newX: number;
     let newY: number;
-    switch (child.nodeName) {
-      case 'rect':
-      case 'image':
-        newX = parseFloat('' + child.getAttribute('x')) + parseFloat('' + box.getAttribute('x'));
-        newY = parseFloat('' + child.getAttribute('y')) + parseFloat('' + box.getAttribute('y'));
-        child.setAttribute('x', newX as unknown as string);
-        child.setAttribute('y', newY as unknown as string);
-        break;
-      case 'ellipse':
-        newX = parseFloat('' + child.getAttribute('cx')) + parseFloat('' + box.getAttribute('x'));
-        newY = parseFloat('' + child.getAttribute('cy')) + parseFloat('' + box.getAttribute('y'));
-        child.setAttribute('cx', newX as unknown as string);
-        child.setAttribute('cy', newY as unknown as string);
-        break;
-      case 'path':
-      case 'polyline':
-      case 'polygon':
-        const xforms = child.getAttribute('transform');
-        if (xforms) {
-          const parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms as string) as unknown as string;
-          const firstX = parseFloat(parts[1]);
-          const firstY = parseFloat(parts[2]);
-          newX = parseFloat('' + (firstX + parseFloat(box.getAttribute('x') as string)));
-          newY = parseFloat('' + (firstY + parseFloat(box.getAttribute('y') as string)));
-        } else {
-          newX = parseFloat('' + box.getAttribute('x'));
-          newY = parseFloat('' + box.getAttribute('y'));
-        }
-        child.setAttribute('transform', 'translate(' + newX + ' ' + newY + ')');
-        break;
-      default:
-        break;
+    const initialPosition = this.getTranslationValue(child);
+    if (this.getTranslationValue(child)) {
+      newX = parseFloat('' + (initialPosition[0] + parseFloat(box.getAttribute('x') as string)));
+      newY = parseFloat('' + (initialPosition[1] + parseFloat(box.getAttribute('y') as string)));
+    } else {
+      newX = parseFloat('' + box.getAttribute('x'));
+      newY = parseFloat('' + box.getAttribute('y'));
     }
+    child.setAttribute('transform', 'translate(' + newX + ' ' + newY + ')');
+  }
+
+  getTranslationValue(child: SVGElement): number[] {
+    const initialPosition = new Array<number>();
+    const xforms = child.getAttribute('transform');
+    const parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms as string) as unknown as string;
+    if (parts) {
+      initialPosition[0] = parseFloat(parts[1]);
+      initialPosition[1] = parseFloat(parts[2]);
+    } else {
+      initialPosition[0] = 0;
+      initialPosition[1] = 0; }
+    return initialPosition;
+  }
+
+  removeSelector(canvas: SVGElement): void {
+    const box = canvas.querySelector('#box') as SVGElement;
+    const boxrect = canvas.querySelector('#boxrect') as SVGElement;
+    canvas.removeChild(boxrect);
+    canvas.removeChild(box);
+    const selected = box.querySelector('#selected') as SVGGElement;
+    if (selected) {
+      const childArray = Array.from(selected.children);
+      childArray.forEach((child: SVGElement) => {
+        RendererSingleton.canvas.appendChild(child);
+      });
+    }
+
+  }
+
+  pushTranslationCommand(initialAndFinalPositions: Map<SVGElement, [InitialPosition, FinalPosition]>, box: SVGElement): void {
+    // const selected = RendererSingleton.canvas.querySelector('#selected') as SVGGElement;
+    // const childArray = Array.from(selected.children);
+    const command: Command = {
+      execute(): void {
+        initialAndFinalPositions.forEach(
+          ((positions: [InitialPosition, FinalPosition], element: SVGElement) => {
+            element.setAttribute('transform', 'translate(' + positions[1].xPos + ' ' + positions[1].yPos + ')');
+          }));
+      },
+      unexecute(): void {
+        initialAndFinalPositions.forEach(
+          ((positions: [InitialPosition, FinalPosition], element: SVGElement) => {
+            element.setAttribute('transform', 'translate(' + positions[0].xPos + ' ' + positions[0].yPos + ')');
+          }));
+      },
+    };
+    this.pushCommand(command);
+  }
+
+  pushCommand(command: Command): void {
+    this.undoRedoService.pushCommand(command);
   }
 }

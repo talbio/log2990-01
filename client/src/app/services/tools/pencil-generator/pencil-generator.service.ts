@@ -26,10 +26,8 @@ export class PencilGeneratorService extends AbstractWritingTool {
     return this.strokeWidth;
   }
 
-  set _currentPencilPathNumber(count: number) { this.currentPencilPathNumber = count; }
-
   // Initializes the path
-  createPenPath(canvas: SVGElement, primaryColor: string) {
+  createPenPath(primaryColor: string) {
     const path = RendererSingleton.renderer.createElement('path', 'svg');
     const properties: [string, string][] = [];
     properties.push(
@@ -43,24 +41,6 @@ export class PencilGeneratorService extends AbstractWritingTool {
     );
     this.drawElement(path, properties);
     this.mouseDown = true;
-  }
-
-  /**
-   * @desc // Updates the path when the mouse is moving (mousedown)
-   */
-  updatePenPath(mouseEvent: MouseEvent, currentChildPosition: number) {
-    this.updatePath(currentChildPosition);
-  }
-
-  /**
-   * @desc Finalizes the path, sets up the next one
-   */
-  finishPenPath() {
-    if (this.mouseDown) {
-      this.currentPencilPathNumber += 1;
-      this.pushAction(this.currentElement);
-      this.mouseDown = false;
-    }
   }
 
   clone(item: SVGElement): SVGElement {
