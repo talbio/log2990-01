@@ -55,8 +55,9 @@ export class ColorApplicatorService implements CommandGenerator {
     targetObject.setAttribute('stroke', newColor);
     const markers = this.lineGenerator.findMarkerFromPolyline(targetObject, RendererSingleton.defs);
     const ancientColor = markers.children[0].getAttribute('fill') as string;
-    markers.children[0].setAttribute('fill', newColor);
     this.pushPolyLineChangedColorCommand(markers, newColor, ancientColor);
+    markers.children[0].setAttribute('fill', newColor);
+
   }
 
   /**
@@ -79,6 +80,7 @@ export class ColorApplicatorService implements CommandGenerator {
     const ancientColor = this.getBrushPatternColor(targetObject, property);
     const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, RendererSingleton.defs);
     if (pattern) {
+      console.log(ancientColor)
       this.pushBrushPatternsColorChangedCommand(pattern, property, newColor, ancientColor);
       for (const child of [].slice.call(pattern.children)) {
         if (child.hasAttribute(property)) {
@@ -120,9 +122,11 @@ export class ColorApplicatorService implements CommandGenerator {
   private pushPolyLineChangedColorCommand(markers: SVGElement, newColor: string, ancientColor: string) {
     const command: Command = {
       execute(): void {
+        console.log(newColor)
         markers.children[0].setAttribute('fill', newColor);
       },
       unexecute(): void {
+        console.log(ancientColor)
         markers.children[0].setAttribute('fill', ancientColor);
       },
     };
@@ -134,14 +138,14 @@ export class ColorApplicatorService implements CommandGenerator {
       execute(): void {
         for (const child of [].slice.call(pattern.children)) {
           if (child.hasAttribute(property)) {
-            child.setAttribute(newColor);
+            child.setAttribute(property, newColor);
           }
         }
       },
       unexecute(): void {
         for (const child of [].slice.call(pattern.children)) {
           if (child.hasAttribute(property)) {
-            child.setAttribute(ancientColor);
+            child.setAttribute(property, ancientColor);
           }
         }
       },
