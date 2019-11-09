@@ -1,5 +1,7 @@
-const MIN_WIDTH = 2;
-const MAX_WIDTH = 40;
+const DEFAULT_MIN_WIDTH = 0.1;
+const DEFAULT_MAX_WIDTH = 10;
+const SPEED_ARRAY_SIZE = 10;
+const K = 6;
 
 import { Injectable } from '@angular/core';
 import { AbstractWritingTool } from 'src/app/data-structures/abstract-writing-tool';
@@ -19,16 +21,17 @@ export class PenGeneratorService extends AbstractWritingTool {
     color: string;
     currentPenPathNumber: number;
     pathArray: SVGElement[] = [];
+    speedArray: number [] = new Array<number>(SPEED_ARRAY_SIZE);
 
     constructor(undoRedoService: UndoRedoService) {
         super(undoRedoService);
-        this.strokeWidthMinimum = MIN_WIDTH;
-        this.strokeWidthMaximum = MAX_WIDTH;
+        this.strokeWidthMinimum = DEFAULT_MIN_WIDTH;
+        this.strokeWidthMaximum = DEFAULT_MAX_WIDTH;
         this.currentPenPathNumber = 0;
     }
 
     createPenPath(mouseEvent: MouseEvent, primaryColor: string) {
-        this.strokeWidth = this.DEFAULT_WIDTH;
+        this.strokeWidth = this.strokeWidthMinimum;
         this.color = primaryColor;
         this.time = this.date.getTime();
         this.speed = 0;
@@ -71,34 +74,25 @@ export class PenGeneratorService extends AbstractWritingTool {
             currentPath.setAttribute('d',
                 currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
                 ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
-           // const acceleration = this.getAcceleration(currentTime, currentSpeed);
             this.updateStrokeWidth(currentSpeed);
             this.addPath(mouseEvent, this.strokeWidth);
             this.speed = currentSpeed;
         }
     }
 
-    // updateStrokeWidth(acceleration: number): void {
-    //     const variationStep = 2;
-    //     if ((acceleration) > 0) {
-    //         if (this.strokeWidth > this.strokeWidthMinimum) {
-    //             this.strokeWidth -= variationStep;
-    //         }
-    //     }
-    //     if ((acceleration) < 0) {
-    //         if (this.strokeWidth < this.strokeWidthMaximum) {
-    //             this.strokeWidth += variationStep;
-    //         }
-    //     }
-    // }
-
     updateStrokeWidth(speed: number): void {
-            this.strokeWidth = 20 / (1 + speed);
+        this.strokeWidth = K / speed;
+        if (this.strokeWidth < this.strokeWidthMinimum) {
+            this.strokeWidth = this.strokeWidthMinimum;
         }
+        if (this.strokeWidth > this.strokeWidthMaximum) {
+            this.strokeWidth = this.strokeWidthMaximum;
+        }
+    }
 
     finishPenPath() {
         if (this.mouseDown) {
-            this.currentPenPathNumber ++;
+            this.currentPenPathNumber++;
             this.pushActions(this.pathArray);
             this.pathArray = [];
             this.mouseDown = false;
@@ -110,13 +104,13 @@ export class PenGeneratorService extends AbstractWritingTool {
         const movementInY = Math.pow((currentDotPositionY - this.positionY), 2);
         const distance = Math.sqrt(movementInX + movementInY);
         const timePassed = currentTime - this.time;
-        return (distance / timePassed);
-    }
-
-    getAcceleration(currentTime: number, currentSpeed: number): number {
-        const speedVariation = currentSpeed - this.speed;
-        const timeVariation = currentTime - this.time;
-        return (speedVariation / timeVariation);
+        const newSpeed = distance / timePassed;
+        if (this.speedArray.length === SPEED_ARRAY_SIZE) {
+            this.speedArray.shift();
+            this.speedArray.push(newSpeed);
+        } else {this.speedArray.push(newSpeed); }
+        const speedAverage = (this.speedArray.reduce((a, b) => a + b, 0 )) / this.speedArray.length;
+        return speedAverage;
     }
 
     pushActions(paths: SVGElement[]): void {
