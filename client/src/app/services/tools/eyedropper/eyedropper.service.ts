@@ -35,6 +35,8 @@ export class EyedropperService {
               foundColor = child.getAttribute('fill');
             }
           }
+        } else if (object.id.startsWith('penPath')) {
+          foundColor = object.getAttribute('stroke') as string;
         } else {
           alert(`Object id is "${object.id}" and this case is not treated!`);
         }
