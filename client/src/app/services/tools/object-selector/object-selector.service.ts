@@ -102,6 +102,13 @@ export class ObjectSelectorService {
       if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== 'selector')
         && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
         tempArray.push(drawing);
+        if (drawing.id.startsWith('penPath')) {
+          drawings.forEach((element) => {
+            if (element.id === drawing.id) {
+              tempArray.push(element);
+            }
+          });
+        }
       }
     });
     this.SVGArray = tempArray;
