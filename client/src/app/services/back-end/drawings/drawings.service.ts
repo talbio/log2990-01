@@ -99,7 +99,7 @@ export class DrawingsService {
       })
       .catch((error: Error) => {
         console.error('An error occurred:', error.message);
-        return throwError('The file could not be saved successfully').toPromise();
+        return throwError(`Le fichier n'a pas été sauvé correctement`).toPromise();
       });
   }
 

@@ -1,6 +1,7 @@
-const DEFAULT_WIDTH = 20;
-const MIN_WIDTH = 2;
-const MAX_WIDTH = 40;
+const DEFAULT_MIN_WIDTH = 0.1;
+const DEFAULT_MAX_WIDTH = 15;
+const SPEED_ARRAY_SIZE = 10;
+const SPEED_CONSTANT = 6;
 
 import { Injectable } from '@angular/core';
 import { AbstractWritingTool } from 'src/app/data-structures/abstract-writing-tool';
@@ -10,49 +11,46 @@ import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 
 @Injectable()
 export class PenGeneratorService extends AbstractWritingTool {
-    strokeWidth: number;
     strokeWidthMinimum: number;
     strokeWidthMaximum: number;
-    OFFSET_CANVAS_X: number;
-    OFFSET_CANVAS_Y: number;
-    mouseDown = false;
-    dotPositionX: number;
-    dotPositionY: number;
+    positionX: number;
+    positionY: number;
     date = new Date();
     time: number;
     speed: number;
     color: string;
     currentPenPathNumber: number;
     pathArray: SVGElement[] = [];
+    speedArray: number [] = new Array<number>(SPEED_ARRAY_SIZE);
 
     constructor(undoRedoService: UndoRedoService) {
         super(undoRedoService);
-        this.strokeWidthMinimum = MIN_WIDTH;
-        this.strokeWidthMaximum = MAX_WIDTH;
+        this.strokeWidthMinimum = DEFAULT_MIN_WIDTH;
+        this.strokeWidthMaximum = DEFAULT_MAX_WIDTH;
         this.currentPenPathNumber = 0;
     }
 
-    createPenPath(mouseEvent: MouseEvent, canvas: SVGElement, primaryColor: string) {
-        this.strokeWidth = DEFAULT_WIDTH;
+    createPenPath(mouseEvent: MouseEvent, primaryColor: string) {
+        this.strokeWidth = this.strokeWidthMinimum;
         this.color = primaryColor;
         this.time = this.date.getTime();
         this.speed = 0;
-        this.addPath(mouseEvent, canvas, DEFAULT_WIDTH);
+        this.addPath(mouseEvent, this.DEFAULT_WIDTH);
         this.mouseDown = true;
     }
 
-    addPath(mouseEvent: MouseEvent, canvas: SVGElement, width: number): void {
-        this.OFFSET_CANVAS_Y = canvas.getBoundingClientRect().top;
-        this.OFFSET_CANVAS_X = canvas.getBoundingClientRect().left;
-        this.dotPositionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
-        this.dotPositionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
+    addPath(mouseEvent: MouseEvent, width: number): void {
+        this.OFFSET_CANVAS_Y = RendererSingleton.getCanvas().getBoundingClientRect().top;
+        this.OFFSET_CANVAS_X = RendererSingleton.getCanvas().getBoundingClientRect().left;
+        this.positionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
+        this.positionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
 
         const path = RendererSingleton.renderer.createElement('path', 'svg');
         const properties: [string, string][] = [];
         properties.push(
             ['id', `penPath${this.currentPenPathNumber}`],
-            ['d', `M ${(this.dotPositionX)} ${(this.dotPositionY)}
-        L ${(this.dotPositionX)} ${(this.dotPositionY)}`],
+            ['d', `M ${(this.positionX)} ${(this.positionY)}
+        L ${(this.positionX)} ${(this.positionY)}`],
             ['stroke', `${this.color}`],
             ['stroke-width', `${width}`],
             ['stroke-linecap', `round`],
@@ -62,62 +60,71 @@ export class PenGeneratorService extends AbstractWritingTool {
         this.pathArray.push(this.currentElement);
     }
 
-    updatePenPath(mouseEvent: MouseEvent, canvas: SVGElement) {
+    updatePenPath(mouseEvent: MouseEvent) {
         if (this.mouseDown) {
-            const currentDotPositionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
-            const currentDotPositionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
+            const currentPositionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
+            const currentPositionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
             const date = new Date();
-            const time = date.getTime();
-            const currentSpeed = this.getSpeed(time, currentDotPositionX, currentDotPositionY);
-            this.updateTimeAndPosition(time, currentDotPositionX, currentDotPositionY);
-            const currentPath = canvas.children[canvas.childElementCount - 1];
+            const currentTime = date.getTime();
+            const currentSpeed = this.getSpeed(currentTime, currentPositionX, currentPositionY);
+            const adjustedSpeed = this.adjustSpeed(currentSpeed);
+            this.time = currentTime;
+            this.updatePosition(currentPositionX, currentPositionX);
+            const currentPath = RendererSingleton.getCanvas().children[RendererSingleton.getCanvas().childElementCount - 1];
             currentPath.setAttribute('d',
                 currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
                 ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
-            this.updateStrokeWidth(currentSpeed);
-            this.addPath(mouseEvent, canvas, this.strokeWidth);
+            this.updateStrokeWidth(adjustedSpeed);
+            this.addPath(mouseEvent, this.strokeWidth);
             this.speed = currentSpeed;
         }
     }
 
-    updateStrokeWidth(currentSpeed: number): void {
-        if ((currentSpeed - this.speed) > 0) {
-            if (this.strokeWidth > this.strokeWidthMinimum) {
-                this.strokeWidth -= 2;
-            }
+    updatePosition(currentPositionX: number, currentPositionY: number){
+        this.positionX = currentPositionX;
+        this.positionY = currentPositionY;
+    }
+
+    updateStrokeWidth(speed: number): void {
+        this.strokeWidth = SPEED_CONSTANT / speed;
+        if (this.strokeWidth < this.strokeWidthMinimum) {
+            this.strokeWidth = this.strokeWidthMinimum;
         }
-        if ((currentSpeed - this.speed) < 0) {
-            if (this.strokeWidth < this.strokeWidthMaximum) {
-                this.strokeWidth += 2;
-            }
+        if (this.strokeWidth > this.strokeWidthMaximum) {
+            this.strokeWidth = this.strokeWidthMaximum;
         }
     }
 
     finishPenPath() {
         if (this.mouseDown) {
-            this.currentPenPathNumber += 1;
+            this.currentPenPathNumber++;
             this.pushActions(this.pathArray);
             this.pathArray = [];
+            this.speedArray = [];
             this.mouseDown = false;
         }
     }
 
-    getSpeed(currentTime: number, currentDotPositionX: number, currentDotPositionY: number): number {
-        const movementInX = Math.pow((currentDotPositionX - this.dotPositionX), 2);
-        const movementInY = Math.pow((currentDotPositionY - this.dotPositionY), 2);
+    getSpeed(currentTime: number, currentPositionX: number, currentPositionY: number): number {
+        const movementInX = Math.pow((currentPositionX - this.positionX), 2);
+        const movementInY = Math.pow((currentPositionY - this.positionY), 2);
         const distance = Math.sqrt(movementInX + movementInY);
-        const timePassed = currentTime - this.time;
-        return (distance / timePassed);
+        let timePassed = currentTime - this.time;
+        if (timePassed === 0) {timePassed = 0.001; }
+        return distance / timePassed;
     }
 
-    updateTimeAndPosition(time: number, currentDotPositionX: number, currentDotPositionY: number): void {
-        this.time = time;
-        this.dotPositionX = currentDotPositionX;
-        this.dotPositionY = currentDotPositionY;
+    adjustSpeed(newSpeed: number) {
+        // adds the current speed to an array of recent speeds and returns average for smoother results
+        if (this.speedArray.length === SPEED_ARRAY_SIZE) {
+            this.speedArray.shift();
+            this.speedArray.push(newSpeed);
+        } else {this.speedArray.push(newSpeed); }
+        const ajustedSpeed = ((this.speedArray.reduce((a, b) => a + b, 0 )) / this.speedArray.length);
+        return ajustedSpeed;
     }
 
     pushActions(paths: SVGElement[]): void {
-
         const action: Action = {
             actionType: ActionType.Create,
             svgElements: paths,

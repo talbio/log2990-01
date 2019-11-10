@@ -2,7 +2,7 @@ import {Component, Renderer2, Type} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import { NotifierService } from 'angular-notifier';
-import {of} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {Drawing} from '../../../../../../common/communication/Drawing';
 import {DemoMaterialModule} from '../../../material.module';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
@@ -136,6 +136,114 @@ describe('OpenDrawingDialogComponent', () => {
       component['selectedTags'].push(fakeTag);
       component.removeSelectedTag('fakeTag');
       expect(component['selectedTags']).not.toContain(fakeTag);
+    });
+  });
+  describe('openLocalDrawing', () => {
+    it('should be able to open a file of correct format', () => {
+      const passFileValidationSpy = spyOn(component, 'validateFileType').and.callFake(() => {
+        // Do not send back an error, do nothing
+      });
+      const fakeDrawingString =
+      `{
+        "id": -1,
+        "name": "abc",
+        "svgElements":"<defs></defs><rect><rect>",
+        "tags": [],
+        "miniature": "",
+        "canvasWidth": 1080,
+        "canvasHeight": 500
+      }`;
+      const fakeObserver = new Observable((subscriber) => {
+        subscriber.next(fakeDrawingString);
+        subscriber.complete();
+      });
+      const loadFileCorrectly = spyOn(component, 'loadFile').and.returnValue(fakeObserver);
+      const fakeHtmlInputElement: jasmine.SpyObj<HTMLInputElement> =
+        jasmine.createSpyObj('HTMLInputElement', ['files']);
+      component.openLocalDrawing(fakeHtmlInputElement);
+      expect(passFileValidationSpy).toHaveBeenCalled();
+      expect(loadFileCorrectly).toHaveBeenCalled();
+      // TODO somehow check value of drawing
+    });
+  });
+
+  describe('validateFileType', () => {
+    it('should throw an error on incorrect file type', () => {
+      const incorrectFile = new File([''], 'fake.jpg');
+      const failingFunction = () => {component.validateFileType(incorrectFile, 'application/json'); };
+      expect(failingFunction).toThrow();
+      // correct file should however not throw error
+      const correctFile = new File([''], 'fake.json', {type: 'application/json'});
+      expect(() => {component.validateFileType(correctFile, 'application/json'); }).not.toThrow();
+    });
+  });
+  describe('validateJSONDrawing', () => {
+    it('should throw an error on empty file', () => {
+      const emptyFile = new File([''], 'fake.json', {type: 'application/json'});
+      const fileReader = new FileReader();
+      fileReader.readAsText(emptyFile);
+      const failingFunction = () => {component.validateJSONDrawing(fileReader.result as string); };
+      expect(failingFunction).toThrow();
+    });
+    it('should throw an error on object of format different from Drawing', () => {
+      // We create a Drawing string but with the canvasHeight missing
+      const incorrectDrawingString =
+      `{
+        "id": -1,
+        "name": "abc",
+        "svgElements":"<defs></defs><rect><rect>",
+        "tags": [],
+        "miniature": "",
+        "canvasWidth": 1080
+      }`;
+      let failingFunction = () => {component.validateJSONDrawing(incorrectDrawingString); };
+      expect(failingFunction).toThrow();
+      // We also confirm that an object with the correct argument but with additional ones fails
+      const extraArgumentsDrawing =
+      `{
+        "id": -1,
+        "name": "abc",
+        "svgElements":"<defs></defs><rect><rect>",
+        "tags": [],
+        "miniature": "",
+        "canvasWidth": 1080,
+        "canvasHeight": 500,
+        "extraArgument": "de trop"
+      }`;
+      failingFunction = () => {component.validateJSONDrawing(extraArgumentsDrawing); };
+      expect(failingFunction).toThrow();
+      // Now we confirm it does not throw if the format is correct
+      const correctDrawingString =
+      `{
+        "id": -1,
+        "name": "abc",
+        "svgElements":"<defs></defs><rect><rect>",
+        "tags": [],
+        "miniature": "",
+        "canvasWidth": 1080,
+        "canvasHeight": 500
+      }`;
+      const succeedingFunction = () => {component.validateJSONDrawing(correctDrawingString); };
+      expect(succeedingFunction).not.toThrow();
+    });
+  });
+  describe('makeDrawingFromJSONString', () => {
+    it('should return a Drawing if given a valid json string', () => {
+      const validJSONString =
+      `{
+        "id": -1,
+        "name": "abc",
+        "svgElements":"<defs></defs><rect><rect>",
+        "tags": [],
+        "miniature": "",
+        "canvasWidth": 1080,
+        "canvasHeight": 500
+      }`;
+      const drawing: Drawing = component.makeDrawingFromJSONString(validJSONString);
+      expect(drawing.name).toBe('abc');
+      expect(drawing.id).toBe(-1);
+      const successfulFunction = () => {component.makeDrawingFromJSONString(validJSONString); };
+      expect(successfulFunction).not.toThrow();
     });
   });
 });

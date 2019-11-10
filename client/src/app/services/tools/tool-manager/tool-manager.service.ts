@@ -61,7 +61,7 @@ export class ToolManagerService {
         this.pencilGenerator.createPenPath(mouseEvent, canvas, this.colorService.getPrimaryColor());
         break;
       case Tools.Pen:
-        this.penGenerator.createPenPath(mouseEvent, canvas, this.colorService.getSecondaryColor());
+        this.penGenerator.createPenPath(mouseEvent, this.colorService.getSecondaryColor());
         break;
       case Tools.Brush:
         this.brushGenerator
@@ -104,7 +104,7 @@ export class ToolManagerService {
         this.pencilGenerator.updatePenPath(mouseEvent, this.numberOfElements);
         break;
       case Tools.Pen:
-        this.penGenerator.updatePenPath(mouseEvent, canvas);
+        this.penGenerator.updatePenPath(mouseEvent);
         break;
       case Tools.Brush:
         this.brushGenerator.updateBrushPath(mouseEvent, this.numberOfElements);
@@ -312,6 +312,8 @@ export class ToolManagerService {
     let pencilCount = 0;
     let rectangleCount = 0;
     let polygonCount = 0;
+    let penCount = 0;
+    let penIdList = [''];
     const canvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
     for (const child of [].slice.call(canvas.children)) {
       const childCast = child as SVGElement;
@@ -332,6 +334,13 @@ export class ToolManagerService {
             pencilCount += 1;
           } else if (childCast.id.startsWith('brush')) {
             brushCount += 1;
+          } else if (childCast.id.startsWith('penPath')) {
+            const index = penIdList.indexOf(childCast.id);
+            if (index === -1) {
+              // This is a new pen path
+              penCount += 1;
+              penIdList.push(childCast.id);
+            }
           } else {
             alert(`Untreated case: element ${childCast.id}!`);
           }
@@ -354,6 +363,7 @@ export class ToolManagerService {
     this.brushGenerator._currentBrushPathNumber = brushCount;
     this.pencilGenerator._currentPencilPathNumber = pencilCount;
     this.polygonGenerator._currentPolygonNumber = polygonCount;
+    this.penGenerator.currentPenPathNumber = penCount;
     this.updateNumberOfElements();
   }
   resetCounters() {

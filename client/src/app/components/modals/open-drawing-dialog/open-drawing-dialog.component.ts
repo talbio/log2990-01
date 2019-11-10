@@ -4,6 +4,7 @@ import {MatChipInputEvent} from '@angular/material/chips';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import { NotifierService } from 'angular-notifier';
 import { Observable } from 'rxjs';
+import { DRAWING_KEYS_COUNT } from 'src/app/data-structures/constants';
 import { LocalOpenError } from 'src/app/data-structures/custom-errors';
 import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
 import { Drawing } from '../../../../../../common/communication/Drawing';
@@ -146,6 +147,7 @@ export class OpenDrawingDialogComponent implements OnInit {
             subscriber.complete();
           } catch (err) {
             subscriber.error(err);
+            this.notifier.notify('error', err.message);
           }
         }
       };
@@ -167,9 +169,27 @@ export class OpenDrawingDialogComponent implements OnInit {
     if (this.JSONIsEmpty(jsonContent)) {
       throw new LocalOpenError('Le fichier est vide!');
     }
+    if (this.JSONIsNotADrawing(jsonContent)) {
+      throw new LocalOpenError(`Le fichier n'est pas d'un format valide! Veuillez utiliser un objet créé par l'application.`);
+    }
   }
   JSONIsEmpty(jsonContent: string): boolean {
     if (jsonContent.length === 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  JSONIsNotADrawing(jsonContent: string): boolean {
+    const jsonObject = JSON.parse(jsonContent);
+    if (!jsonObject.hasOwnProperty('id')
+    || !jsonObject.hasOwnProperty('name')
+    || !jsonObject.hasOwnProperty('svgElements')
+    || !jsonObject.hasOwnProperty('tags')
+    || !jsonObject.hasOwnProperty('miniature')
+    || !jsonObject.hasOwnProperty('canvasWidth')
+    || !jsonObject.hasOwnProperty('canvasHeight')
+    || Object.keys(jsonObject).length !== DRAWING_KEYS_COUNT) {
       return true;
     } else {
       return false;

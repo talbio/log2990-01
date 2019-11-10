@@ -4,13 +4,13 @@ import {Action, ActionType} from './command';
 
 export class AbstractWritingTool {
 
-  private readonly DEFAULT_WIDTH = 5;
+  protected readonly DEFAULT_WIDTH = 5;
 
-  protected OFFSET_CANVAS_X: number;
-  protected OFFSET_CANVAS_Y: number;
-  protected strokeWidth: number;
-  protected mouseDown: boolean;
-  protected currentElement: SVGElement;
+  OFFSET_CANVAS_X: number;
+  OFFSET_CANVAS_Y: number;
+  strokeWidth: number;
+  mouseDown: boolean;
+  currentElement: SVGElement;
 
   constructor(protected undoRedoService: UndoRedoService) {
     this.mouseDown = false;
