@@ -110,7 +110,6 @@ export class ClipboardService {
       box.removeChild(item);
       console.log('removed ' + item.tagName);
     }
-    this.removeSelector();
   }
 
   assessSelection() {
