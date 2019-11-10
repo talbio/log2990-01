@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { BrushGeneratorService } from 'src/app/services/tools/brush-generator/brush-generator.service';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
-import { RendererSingleton } from './../../renderer-singleton';
-import { EllipseGeneratorService } from './../ellipse-generator/ellipse-generator.service';
-import { LineGeneratorService } from './../line-generator/line-generator.service';
-import { ObjectSelectorService } from './../object-selector/object-selector.service';
-import { PencilGeneratorService } from './../pencil-generator/pencil-generator.service';
-import { PolygonGeneratorService } from './../polygon-generator/polygon-generator.service';
-import { RectangleGeneratorService } from './../rectangle-generator/rectangle-generator.service';
+import { RendererSingleton } from '../../renderer-singleton';
+import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.service';
+import { LineGeneratorService } from '../line-generator/line-generator.service';
+import { ObjectSelectorService } from '../object-selector/object-selector.service';
+import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
+import { PolygonGeneratorService } from '../polygon-generator/polygon-generator.service';
+import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 
 @Injectable()
 export class ClipboardService {
@@ -68,12 +68,12 @@ export class ClipboardService {
 
   // Appends clipboard to canvas
   paste() {
-    if (this.canvas !== null) {
+    if (RendererSingleton.canvas !== null) {
       for (const item of this.memorizedAction) {
         console.log('paste initiated');
         const newItem = this.duplicateElement(item);
-        this.canvas.appendChild(newItem);
-        const itemInCanvas = this.canvas.children[this.canvas.children.length - 1] as SVGElement;
+        RendererSingleton.canvas.appendChild(newItem);
+        const itemInCanvas = RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1] as SVGElement;
         console.log(itemInCanvas, ' is new item in canvas');
         this.slide(itemInCanvas, this.consecutivePastes);
       }
@@ -88,8 +88,8 @@ export class ClipboardService {
     this.assessSelection();
     for (const item of this.selector.selectedElements) {
       const newItem = this.duplicateElement(item);
-      this.canvas.appendChild(newItem);
-      const itemInCanvas = this.canvas.children[this.canvas.children.length - 1] as SVGElement;
+      RendererSingleton.canvas.appendChild(newItem);
+      const itemInCanvas = RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1] as SVGElement;
       console.log(itemInCanvas, ' is new item in canvas');
       this.slide(itemInCanvas, this.consecutiveDuplicates);
     }
@@ -114,7 +114,6 @@ export class ClipboardService {
   }
 
   assessSelection() {
-    this.canvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
     if (this.selectedItems !== this.selector.selectedElements) {
       this.resetCounters();
     }
@@ -177,11 +176,11 @@ export class ClipboardService {
 
   isOutside(item: SVGElement, consecultive: number) {
     const clientRect = item.getBoundingClientRect();
-    if (clientRect.right + consecultive > this.canvas.getBoundingClientRect().right) {
+    if (clientRect.right + consecultive > RendererSingleton.canvas.getBoundingClientRect().right) {
       // this.xSliding = this.xSliding + 6;
       this.xSliding = this.xSliding + 3;
     }
-    if (clientRect.bottom + consecultive > this.canvas.getBoundingClientRect().bottom) {
+    if (clientRect.bottom + consecultive > RendererSingleton.canvas.getBoundingClientRect().bottom) {
       // this.ySliding = this.ySliding + 6;
       this.ySliding = this.ySliding + 3;
     }
@@ -189,7 +188,7 @@ export class ClipboardService {
 
   removeSelector(): void {
     const box = RendererSingleton.renderer.selectRootElement('#box', true) as SVGElement;
-    this.canvas.removeChild(box);
+    RendererSingleton.canvas.removeChild(box);
   }
 
   resetCounters() {
