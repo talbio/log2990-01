@@ -1,40 +1,16 @@
 import {Injectable} from '@angular/core';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
 import {PlotType} from '../../../data-structures/plot-type';
+import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
 
 @Injectable()
 export class RectangleGeneratorService extends AbstractClosedShape  {
 
-  protected mouseDown: boolean;
-
-  // attributes of rectangle
-  protected strokeWidth: number;
-
-  constructor(mouse: MousePositionService,
-              undoRedoService: UndoRedoService) {
+  constructor(protected mouse: MousePositionService,
+              protected undoRedoService: UndoRedoService) {
     super(mouse, undoRedoService);
-    this.strokeWidth = 1;
-    this.plotType = PlotType.Contour;
-    this.mouseDown = false;
-  }
-
-  get _strokeWidth() {
-    return this.strokeWidth;
-  }
-
-  set _strokeWidth(width: number) {
-    this.strokeWidth = width;
-  }
-
-  get _plotType() {
-    return this.plotType;
-  }
-
-  set _plotType(plotType: PlotType) {
-    this.plotType = plotType;
   }
 
   createElement(primaryColor: string, secondaryColor: string) {
@@ -67,6 +43,13 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
       this.mouseDown = false;
       this.pushGeneratorCommand(this.currentElement);
     }
+  }
+
+  createTemporaryRectangle(id: string) {
+    this.plotType = PlotType.Contour;
+    this.createElement('black', 'black');
+    this.currentElement.setAttribute('id', id);
+    this.currentElement.setAttribute('stroke-dasharray', '4');
   }
 
   updateSquare(currentChildPosition: number) {

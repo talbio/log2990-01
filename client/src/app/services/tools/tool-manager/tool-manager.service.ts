@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import { Tools } from '../../../data-structures/tools';
-import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
@@ -49,8 +48,7 @@ export class ToolManagerService {
               private polygonGenerator: PolygonGeneratorService,
               private eyedropper: EyedropperService,
               private eraser: EraserService,
-              protected colorService: ColorService,
-              protected mousePosition: MousePositionService) {
+              protected colorService: ColorService) {
     this._activeTool = Tools.Pencil;
     this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
     this.initializeGenerators();

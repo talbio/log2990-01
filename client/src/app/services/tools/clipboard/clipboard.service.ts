@@ -2,22 +2,21 @@ import { Injectable } from '@angular/core';
 import { BrushGeneratorService } from 'src/app/services/tools/brush-generator/brush-generator.service';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
-import { RendererSingleton } from './../../renderer-singleton';
-import { EllipseGeneratorService } from './../ellipse-generator/ellipse-generator.service';
-import { LineGeneratorService } from './../line-generator/line-generator.service';
-import { ObjectSelectorService } from './../object-selector/object-selector.service';
-import { PencilGeneratorService } from './../pencil-generator/pencil-generator.service';
-import { PolygonGeneratorService } from './../polygon-generator/polygon-generator.service';
-import { RectangleGeneratorService } from './../rectangle-generator/rectangle-generator.service';
+import { RendererSingleton } from '../../renderer-singleton';
+import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.service';
+import { LineGeneratorService } from '../line-generator/line-generator.service';
+import { ObjectSelectorService } from '../object-selector/object-selector.service';
+import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
+import { PolygonGeneratorService } from '../polygon-generator/polygon-generator.service';
+import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 
 @Injectable()
 export class ClipboardService {
 
   memorizedAction: SVGElement[];
   private selectedItems: SVGElement[];
-  private canvas: SVGElement;
-  private consecultivePastes: number;
-  private consecultiveDuplicates: number;
+  private consecutivePastes: number;
+  private consecutiveDuplicates: number;
   private xSliding: number;
   private ySliding: number;
 
@@ -30,8 +29,8 @@ export class ClipboardService {
               private brushGenerator: BrushGeneratorService,
               private emojiGenerator: EmojiGeneratorService,
               private rectangleGenerator: RectangleGeneratorService) {
-    this.consecultivePastes = 1;
-    this.consecultiveDuplicates = 1;
+    this.consecutivePastes = 1;
+    this.consecutiveDuplicates = 1;
   }
 
   // hasSelectedElements(): boolean {
@@ -43,14 +42,13 @@ export class ClipboardService {
     this.resetCounters();
     this.assessSelection();
     this.memorizedAction = this.selectedItems;
-    const box = RendererSingleton.renderer.selectRootElement('#selected', true);
     for (const item of this.memorizedAction) {
       const index = this.findChildIndex(item);
       if (index === -1) {
         console.log('cannot cut item ' + item.id);
         return;
       }
-      box.removeChild(item);
+      this.selector.boundingRect.removeChild(item);
       console.log('removed ' + item.tagName);
     }
     this.removeSelector();
@@ -70,16 +68,16 @@ export class ClipboardService {
 
   // Appends clipboard to canvas
   paste() {
-    if (this.canvas !== null) {
+    if (RendererSingleton.canvas !== null) {
       for (const item of this.memorizedAction) {
         console.log('paste initiated');
         const newItem = this.duplicateElement(item);
-        this.canvas.appendChild(newItem);
-        const itemInCanvas = this.canvas.children[this.canvas.children.length - 1] as SVGElement;
+        RendererSingleton.canvas.appendChild(newItem);
+        const itemInCanvas = RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1] as SVGElement;
         console.log(itemInCanvas, ' is new item in canvas');
-        this.slide(itemInCanvas, this.consecultivePastes);
+        this.slide(itemInCanvas, this.consecutivePastes);
       }
-      this.consecultivePastes++;
+      this.consecutivePastes++;
     } else {
       console.log('nothing to paste, clipboard is empty');
     }
@@ -90,12 +88,12 @@ export class ClipboardService {
     this.assessSelection();
     for (const item of this.selector.selectedElements) {
       const newItem = this.duplicateElement(item);
-      this.canvas.appendChild(newItem);
-      const itemInCanvas = this.canvas.children[this.canvas.children.length - 1] as SVGElement;
+      RendererSingleton.canvas.appendChild(newItem);
+      const itemInCanvas = RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1] as SVGElement;
       console.log(itemInCanvas, ' is new item in canvas');
-      this.slide(itemInCanvas, this.consecultiveDuplicates);
+      this.slide(itemInCanvas, this.consecutiveDuplicates);
     }
-    this.consecultiveDuplicates++;
+    this.consecutiveDuplicates++;
   }
 
   // Removes the selected items
@@ -116,7 +114,6 @@ export class ClipboardService {
   }
 
   assessSelection() {
-    this.canvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
     if (this.selectedItems !== this.selector.selectedElements) {
       this.resetCounters();
     }
@@ -179,11 +176,11 @@ export class ClipboardService {
 
   isOutside(item: SVGElement, consecultive: number) {
     const clientRect = item.getBoundingClientRect();
-    if (clientRect.right + consecultive > this.canvas.getBoundingClientRect().right) {
+    if (clientRect.right + consecultive > RendererSingleton.canvas.getBoundingClientRect().right) {
       // this.xSliding = this.xSliding + 6;
       this.xSliding = this.xSliding + 3;
     }
-    if (clientRect.bottom + consecultive > this.canvas.getBoundingClientRect().bottom) {
+    if (clientRect.bottom + consecultive > RendererSingleton.canvas.getBoundingClientRect().bottom) {
       // this.ySliding = this.ySliding + 6;
       this.ySliding = this.ySliding + 3;
     }
@@ -191,12 +188,12 @@ export class ClipboardService {
 
   removeSelector(): void {
     const box = RendererSingleton.renderer.selectRootElement('#box', true) as SVGElement;
-    this.canvas.removeChild(box);
+    RendererSingleton.canvas.removeChild(box);
   }
 
   resetCounters() {
-    this.consecultiveDuplicates = 1;
-    this.consecultivePastes = 1;
+    this.consecutiveDuplicates = 1;
+    this.consecutivePastes = 1;
     this.xSliding = 0;
     this.ySliding = 0;
   }

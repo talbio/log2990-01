@@ -67,25 +67,6 @@ export class EmojiGeneratorService extends AbstractGenerator {
       this.scalingFactor = factor;
   }
 
-  get _rotationStep() {
-      return this.rotationStep;
-  }
-
-  set _rotationStep(step: number) {
-      this.rotationStep = step;
-  }
-
-  addEmoji(canvas: SVGElement) {
-    if (this.emoji !== '') {
-      canvas.innerHTML +=
-        `<image id="emoji${this.currentElementsNumber}"
-        x="${(this.xPos - (this.width * this.scalingFactor / 2))}"
-        y="${(this.yPos - (this.height * this.scalingFactor / 2))}"
-        xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
-        transform="rotate(${this.angle} ${this.xPos} ${this.yPos})"`;
-    }
-  }
-
   createElement() {
     if (this.emoji !== '') {
       RendererSingleton.canvas.innerHTML +=

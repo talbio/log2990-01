@@ -33,7 +33,7 @@ describe('LineToolsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // it('should change the value of lineGeneratorTools _strokeWidth when slider value changes', (() => {
+  // it('should change the value of lineGeneratorTools strokeWidth when slider value changes', (() => {
   //   // Select the slider
   //   const strokeSlider = fixture.debugElement.nativeElement.querySelector('[name=stroke-width-slider]');
   //   // set new value to 10

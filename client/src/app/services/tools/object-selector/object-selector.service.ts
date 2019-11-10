@@ -27,10 +27,12 @@ interface BoundingRect {
 @Injectable()
 export class ObjectSelectorService {
 
-  // private TEMP_RECT_ID = 'selectorRect';
+  private readonly SELECTOR_RECT_ID = 'selectorRect';
+  private readonly BOUNDING_RECT_ID = 'boundingRect';
+
   selectedElements: SVGElement[];
+
   private hasBoundingRect: boolean;
-  private currentRect: SVGElement;
   private mouseDown: boolean;
 
   constructor(private mousePosition: MousePositionService,
@@ -49,11 +51,11 @@ export class ObjectSelectorService {
   }
 
   get selectorRect(): SVGElement {
-    return RendererSingleton.canvas.querySelector('#selectorRect') as SVGElement;
+    return RendererSingleton.canvas.querySelector('#' + this.SELECTOR_RECT_ID) as SVGElement;
   }
 
   get boundingRect(): SVGElement {
-    return RendererSingleton.canvas.querySelector('#boundingRect') as SVGElement;
+    return RendererSingleton.canvas.querySelector('#' + this.BOUNDING_RECT_ID) as SVGElement;
   }
 
   onMouseDown(mouseEvent: MouseEvent) {
@@ -61,7 +63,7 @@ export class ObjectSelectorService {
       if (this.isMouseOutsideOfBoundingRect()) {
         this.mouseDown = true;
         this.selectedElements = [];
-        this.rectangleGenerator.createTemporaryRectangle(this.rectangleGenerator);
+        this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
         this.removeBoundingRect();
       } else {
         // translate
@@ -69,7 +71,7 @@ export class ObjectSelectorService {
     } else {
         this.mouseDown = true;
         this.selectedElements = [];
-        this.rectangleGenerator.createTemporaryRectangle(this.rectangleGenerator);
+        this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
     }
   }
 
@@ -84,7 +86,7 @@ export class ObjectSelectorService {
   }
 
   onMouseUp(): void {
-    if (this.selectorRect) {
+    if (this.mouseDown) {
       this.finishSelection();
     } else {
       // finishTranslation
@@ -94,7 +96,6 @@ export class ObjectSelectorService {
   updateSelection(currentChildPosition: number, mouseEvent: MouseEvent) {
     if (this.mouseDown) {
       this.rectangleGenerator.updateElement(currentChildPosition, mouseEvent);
-      this.currentRect = RendererSingleton.canvas.querySelector('#selectorRect') as Element as SVGElement;
     }
   }
 
@@ -108,7 +109,7 @@ export class ObjectSelectorService {
   }
 
   isElementInsideSelection(element: SVGElement): boolean {
-    const selectionRectangle = this.currentRect.getBoundingClientRect();
+    const selectionRectangle = this.selectorRect.getBoundingClientRect();
     const elementClientRect = element.getBoundingClientRect();
     const isInsideSelection: boolean = !(
       (elementClientRect.left > selectionRectangle.right || selectionRectangle.left > elementClientRect.right) ||
@@ -121,13 +122,12 @@ export class ObjectSelectorService {
   }
 
   finishSelection(): void {
-      console.log('remove');
-      this.updateSelectedItems();
-      RendererSingleton.canvas.removeChild(this.selectorRect);
-      if (this.selectedElements.length !== 0) {
-        this.addBoundingRect();
-      }
-      this.mouseDown = false;
+    this.updateSelectedItems();
+    RendererSingleton.canvas.removeChild(this.selectorRect);
+    if (this.selectedElements.length !== 0) {
+      this.addBoundingRect();
+    }
+    this.mouseDown = false;
   }
 
   isMouseOutsideOfBoundingRect(): boolean {

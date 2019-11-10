@@ -1,27 +1,15 @@
 import { Injectable } from '@angular/core';
 import {AbstractWritingTool} from '../../../data-structures/abstract-writing-tool';
+import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
 
 @Injectable()
 export class PencilGeneratorService extends AbstractWritingTool {
 
-  /**
-   * attributes of pencil tool :
-   */
-
   constructor(protected mouse: MousePositionService,
               protected undoRedoService: UndoRedoService) {
     super(mouse, undoRedoService);
-  }
-
-  set _strokeWidth(width: number) {
-    this.strokeWidth = width;
-  }
-
-  get _strokeWidth(): number {
-    return this.strokeWidth;
   }
 
   // Initializes the path
@@ -30,8 +18,7 @@ export class PencilGeneratorService extends AbstractWritingTool {
     const properties: [string, string][] = [];
     properties.push(
       ['id', `pencilPath${this.currentElementsNumber}`],
-      ['d', `M ${this.xPos} ${(this.yPos)}
-        L ${(this.xPos)} ${(this.yPos)}`],
+      ['d', `M ${this.xPos} ${(this.yPos)} L ${(this.xPos)} ${(this.yPos)}`],
       ['stroke', `${primaryColor}`],
       ['stroke-width', `${this.strokeWidth}`],
       ['stroke-linecap', `round`],
@@ -40,6 +27,4 @@ export class PencilGeneratorService extends AbstractWritingTool {
     this.drawElement(path, properties);
     this.mouseDown = true;
   }
-
-
 }
