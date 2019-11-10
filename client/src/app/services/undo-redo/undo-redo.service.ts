@@ -6,7 +6,7 @@ import {Command} from '../../data-structures/command';
 })
 export class UndoRedoService {
 
-  private readonly undoCommands: Command[];
+  private undoCommands: Command[];
   private redoCommands: Command[];
 
   constructor() {
@@ -39,7 +39,7 @@ export class UndoRedoService {
   }
 
   pushCommand(command: Command): void {
-    if (this.redoCommands.length !== 0) {
+    if (this.canRedo()) {
       this.redoCommands = [];
     }
     this.undoCommands.push(command);

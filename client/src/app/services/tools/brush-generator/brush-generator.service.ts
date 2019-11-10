@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {AbstractWritingTool} from '../../../data-structures/abstract-writing-tool';
+import {MousePositionService} from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
 
 @Injectable()
 export class BrushGeneratorService extends AbstractWritingTool {

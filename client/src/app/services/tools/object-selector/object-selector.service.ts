@@ -1,322 +1,232 @@
 import { Injectable } from '@angular/core';
 import { Colors } from 'src/app/data-structures/colors';
-import { Command, CommandGenerator } from '../../../data-structures/command';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
-import { UndoRedoService } from '../../undo-redo/undo-redo.service';
+import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 
-const DASHED_LINE_VALUE = 5;
 const STROKE_COLOR = Colors.BLACK;
 
-interface InitialPosition {
-  xPos: string;
-  yPos: string;
+const MAX_CANVAS_WIDTH = 2000;
+const MAX_CANVAS_HEIGHT = 2000;
+
+interface Box {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
-interface FinalPosition {
-  xPos: string;
-  yPos: string;
+interface BoundingRect {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
 }
 
+// @ts-ignore
 @Injectable()
-export class ObjectSelectorService implements CommandGenerator {
+export class ObjectSelectorService {
 
-  private mouseDownSelector: boolean;
-  private mouseDownTranslation: boolean;
-  private currentRect: Element;
-  SVGArray: SVGElement[] = [];
-  private isSelectorVisible: boolean;
-  private initialX: number;
-  private initialY: number;
-  private hasBeenTranslated: boolean;
+  private TEMP_RECT_ID = 'selectorRect';
+  selectedElements: SVGElement[];
+  private hasBoundingRect: boolean;
+  private currentRect: SVGElement;
+  private mouseDown: boolean;
 
-  /**
-   * @desc: the first Position is the position of the element
-   * before the translation and the second Position is after the translation.
-   */
-  private readonly initialAndFinalPositions: Map<SVGElement, [InitialPosition, FinalPosition]>;
-
-  constructor(private undoRedoService: UndoRedoService,
-              private mousePosition: MousePositionService) {
-    this.mouseDownSelector = false;
-    this.hasBeenTranslated = false;
-    this.initialAndFinalPositions = new Map<SVGElement, [InitialPosition, FinalPosition]>();
+  constructor(private mousePosition: MousePositionService,
+              private rectangleGenerator: RectangleGeneratorService) {
+    this.hasBoundingRect = false;
+    this.mouseDown = false;
   }
 
-  selectorMouseDown(mouseEvent: MouseEvent, canvas: SVGElement) {
-    if (!canvas.querySelector('#selected')) {
-      this.createSelectorRectangle(canvas);
-    } else {
-      const selectorBox = canvas.querySelector('#boxrect') as SVGGElement;
-      const box = selectorBox.getBBox();
-      if (this.mousePosition.canvasMousePositionX < box.x || this.mousePosition.canvasMousePositionX > (box.x + box.width)
-        || this.mousePosition.canvasMousePositionY < box.y || this.mousePosition.canvasMousePositionY > (box.y + box.height)) {
-        this.removeSelector(canvas);
+  get canvasBoxRect(): BoundingRect {
+    return {
+      left: RendererSingleton.canvas.getBoundingClientRect().left,
+      right: RendererSingleton.canvas.getBoundingClientRect().right,
+      bottom: RendererSingleton.canvas.getBoundingClientRect().bottom,
+      top: RendererSingleton.canvas.getBoundingClientRect().top,
+    };
+  }
+
+  get selectorRect(): SVGElement {
+    return RendererSingleton.canvas.querySelector('#selectorRect') as SVGElement;
+  }
+
+  get boundingRect(): SVGElement {
+    return RendererSingleton.canvas.querySelector('#boundingRect') as SVGElement;
+  }
+
+  onMouseDown(mouseEvent: MouseEvent) {
+    if (this.hasBoundingRect) {
+      if (this.isMouseOutsideOfBoundingRect()) {
+        this.mouseDown = true;
+        this.selectedElements = [];
+        this.rectangleGenerator.createTemporaryRectangle(this.rectangleGenerator);
+        this.removeBoundingRect();
       } else {
-        this.startTranslation();
+        // translate
+      }
+    } else {
+        this.mouseDown = true;
+        this.selectedElements = [];
+        this.rectangleGenerator.createTemporaryRectangle(this.rectangleGenerator);
+    }
+  }
+
+  onMouseMove(currentChildPosition: number, mouseEvent: MouseEvent) {
+    if (this.mouseDown) {
+      if (this.hasBoundingRect && !this.isMouseOutsideOfBoundingRect()) {
+        // this.translate(mouseEvent);
+      } else {
+        this.updateSelection(currentChildPosition, mouseEvent);
       }
     }
   }
 
-  createSelectorRectangle(canvas: SVGElement) {
-
-    canvas.innerHTML +=
-      `<rect id="selector"
-            x="${this.mousePosition.canvasMousePositionX}"
-            data-start-x = "${this.mousePosition.canvasMousePositionX}"
-            y="${this.mousePosition.canvasMousePositionY}"
-            data-start-y = "${this.mousePosition.canvasMousePositionY}"
-            width = "0" height = "0" stroke="${STROKE_COLOR}" stroke-dasharray = "${DASHED_LINE_VALUE}"
-            fill="transparent"></rect>`;
-    this.mouseDownSelector = true;
-  }
-
-  updateSelector(canvas: SVGElement) {
-    if (!canvas.querySelector('#selected')) {
-      this.updateSelectorRectangle(canvas);
-    } else { this.translate(); }
-  }
-  updateSelectorRectangle(canvas: SVGElement) {
-
-    if (this.mouseDownSelector) {
-      this.currentRect = canvas.querySelector('#selector') as Element;
-      if (this.currentRect != null) {
-        this.isSelectorVisible = true;
-        const startRectX: number = Number(this.currentRect.getAttribute('data-start-x'));
-        const startRectY: number = Number(this.currentRect.getAttribute('data-start-y'));
-        const actualWidth: number = this.mousePosition.canvasMousePositionX - startRectX;
-        const actualHeight: number = this.mousePosition.canvasMousePositionY - startRectY;
-        if (actualWidth >= 0) {
-          this.currentRect.setAttribute('width', '' + actualWidth);
-        } else {
-          this.currentRect.setAttribute('width', '' + Math.abs(actualWidth));
-          this.currentRect.setAttribute('x', '' + this.mousePosition.canvasMousePositionX);
-        }
-        if (actualHeight >= 0) {
-          this.currentRect.setAttribute('height', '' + actualHeight);
-        } else {
-          this.currentRect.setAttribute('height', '' + Math.abs(actualHeight));
-          this.currentRect.setAttribute('y', '' + this.mousePosition.canvasMousePositionY);
-        }
-      }
-      this.selectItems(canvas);
+  onMouseUp(): void {
+    if (this.selectorRect) {
+      this.finishSelection();
+    } else {
+      // finishTranslation
     }
   }
 
-  selectItems(canvas: SVGElement): void {
-    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
-    const tempArray = new Array();
-    drawings.forEach((drawing) => {
-      if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== 'selector')
-        && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
-        tempArray.push(drawing);
+  updateSelection(currentChildPosition: number, mouseEvent: MouseEvent) {
+    if (this.mouseDown) {
+      this.rectangleGenerator.updateElement(currentChildPosition, mouseEvent);
+      this.currentRect = RendererSingleton.canvas.querySelector('#selectorRect') as Element as SVGElement;
+    }
+  }
+
+  updateSelectedItems(): void {
+    const drawings = RendererSingleton.canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
+    drawings.forEach((svgElement: SVGElement) => {
+      if (this.isElementInsideSelection(svgElement) && !this.selectedElements.includes(svgElement)) {
+        this.selectedElements.push(svgElement);
       }
     });
-    this.SVGArray = tempArray;
+  }
+
+  isElementInsideSelection(element: SVGElement): boolean {
+    const selectionRectangle = this.currentRect.getBoundingClientRect();
+    const elementClientRect = element.getBoundingClientRect();
+    const isInsideSelection: boolean = !(
+      (elementClientRect.left > selectionRectangle.right || selectionRectangle.left > elementClientRect.right) ||
+      (elementClientRect.top > selectionRectangle.bottom || selectionRectangle.top > elementClientRect.bottom));
+    return isInsideSelection && this.isSvgDrawing(element);
+  }
+
+  isSvgDrawing(element: SVGElement): boolean {
+    return (element.id !== 'selectorRect') && (element.id !== 'backgroundGrid') && (element.id !== '');
+  }
+
+  finishSelection(): void {
+      console.log('remove');
+      this.updateSelectedItems();
+      RendererSingleton.canvas.removeChild(this.selectorRect);
+      if (this.selectedElements.length !== 0) {
+        this.addBoundingRect();
+      }
+      this.mouseDown = false;
+  }
+
+  isMouseOutsideOfBoundingRect(): boolean {
+    const boundingClientRect = this.boundingRect.getBoundingClientRect();
+    return this.mousePosition.canvasMousePositionX < boundingClientRect.left - this.canvasBoxRect.left ||
+      this.mousePosition.canvasMousePositionX > boundingClientRect.right - this.canvasBoxRect.right ||
+      this.mousePosition.canvasMousePositionY < boundingClientRect.bottom ||
+      this.mousePosition.canvasMousePositionY > boundingClientRect.top;
+  }
+
+  getWidthRect(rect: DOMRect): number {
+    return rect.left - rect.right;
+  }
+
+  getHeightRect(rect: DOMRect): number {
+    return rect.top - rect.bottom;
+  }
+
+  removeBoundingRect(): void {
+    this.hasBoundingRect = false;
+    const boundingRect: SVGElement = RendererSingleton.canvas.querySelector('#boundingRect') as SVGElement;
+    RendererSingleton.renderer.removeChild(RendererSingleton.canvas, boundingRect);
+  }
+
+  addBoundingRect(): void {
+    this.hasBoundingRect = true;
+    const boundingBox = this.getBoundingRectDimensions();
+    this.drawBoundingRect(boundingBox);
+  }
+
+  private getBoundingRectDimensions(): Box {
+    const boundingRect: BoundingRect = {
+      left: MAX_CANVAS_WIDTH,
+      right: 0,
+      bottom: 0,
+      top: MAX_CANVAS_HEIGHT,
+    };
+
+    this.selectedElements.forEach( (svgElement: SVGElement) => {
+      const elementClientRectLeft = svgElement.getBoundingClientRect().left;
+      const elementClientRectRight = svgElement.getBoundingClientRect().right;
+      const elementClientRectTop = svgElement.getBoundingClientRect().top;
+      const elementClientRectBottom = svgElement.getBoundingClientRect().bottom;
+      if (elementClientRectLeft < boundingRect.left ) {
+        boundingRect.left = elementClientRectLeft;
+      }
+      if (elementClientRectRight > boundingRect.right) {
+        boundingRect.right = elementClientRectRight;
+      }
+      if (elementClientRectTop < boundingRect.top) {
+        boundingRect.top = elementClientRectTop;
+      }
+      if (elementClientRectBottom > boundingRect.bottom) {
+        boundingRect.bottom = elementClientRectBottom;
+      }
+    });
+
+    boundingRect.left -= this.canvasBoxRect.left;
+    boundingRect.right -= this.canvasBoxRect.left;
+
+    return {
+      x: boundingRect.left,
+      y: boundingRect.top,
+      width: boundingRect.right - boundingRect.left,
+      height: boundingRect.bottom - boundingRect.top,
+    };
+  }
+
+  private drawBoundingRect(boundingBox: Box) {
+    const boundingRect: SVGElement = RendererSingleton.renderer.createElement('svg', 'svg');
+    boundingRect.setAttribute('id', 'boundingRect');
+    boundingRect.innerHTML +=
+      `<defs>
+            <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5">
+                <circle cx="5" cy="5" r="20" fill="red" />
+            </marker>
+      </defs>
+      <polyline
+        points="${boundingBox.x},${boundingBox.y}
+        ${boundingBox.x + (boundingBox.width / 2)},${boundingBox.y}
+        ${boundingBox.x + boundingBox.width},${boundingBox.y}
+        ${boundingBox.x + boundingBox.width},${boundingBox.y + (boundingBox.height / 2)}
+        ${boundingBox.x + boundingBox.width},${boundingBox.y + boundingBox.height}
+        ${boundingBox.x + (boundingBox.width / 2)},${boundingBox.y + boundingBox.height}
+        ${boundingBox.x},${boundingBox.y + boundingBox.height}
+        ${boundingBox.x},${boundingBox.y + (boundingBox.height / 2)}
+        ${boundingBox.x},${boundingBox.y}"
+        stroke="${STROKE_COLOR}" fill="transparent"
+        marker-start="url(#dot)" marker-mid="url(#dot)">
+      </polyline>`;
+    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, boundingRect);
   }
 
   selectAll(canvas: SVGElement): void {
-    if (!canvas.querySelector('#selected')) {
-      const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
-      const tempArray = new Array();
-      drawings.forEach((drawing) => {
-        if ((drawing.id !== 'selector') && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
-          tempArray.push(drawing);
-        }
-      });
-      this.SVGArray = tempArray;
-      this.addToGroup(canvas);
-    }
-  }
-
-  intersects(a: DOMRect): boolean {
-    const b = this.currentRect.getBoundingClientRect();
-    return !((a.left > b.right ||
-      b.left > a.right) ||
-      (a.top > b.bottom ||
-        b.top > a.bottom));
-  }
-
-  finish(canvas: SVGElement): void {
-    if (!canvas.querySelector('#selected')) {
-      this.finishSelection(canvas);
-    } else { this.finishTranslation(); }
-  }
-
-  finishSelection(canvas: SVGElement): void {
-    if (this.mouseDownSelector) {
-      if (this.isSelectorVisible) {
-        canvas.removeChild(this.currentRect);
-        this.isSelectorVisible = false;
-        if (this.SVGArray.length !== 0) {
-          this.addToGroup(canvas);
-        }
+    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
+    drawings.forEach((svgElement: SVGElement) => {
+      if (this.isSvgDrawing(svgElement)) {
+        this.selectedElements.push(svgElement);
       }
-    }
-    this.mouseDownSelector = false;
-  }
-
-  addToGroup(canvas: SVGElement): void {
-    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    group.setAttribute('id', 'selected');
-    this.SVGArray.forEach((drawing) => {
-      group.append(drawing);
     });
-    canvas.append(group);
-    const boxGroup = (group as SVGGElement).getBBox();
-    canvas.innerHTML +=
-      `<svg id="box">
-        <defs><marker id="dot" viewBox="0 0 10 10" refX="5" refY="5"
-        markerWidth="5" markerHeight="5">
-        <circle cx="5" cy="5" r="20" fill="red" />
-        </marker></defs>
-        <polyline id="boxrect"
-        points="${boxGroup.x},${boxGroup.y} ${boxGroup.x + (boxGroup.width / 2)},${boxGroup.y} ${boxGroup.x + boxGroup.width},${boxGroup.y}
-        ${boxGroup.x + boxGroup.width},${boxGroup.y + (boxGroup.height / 2)} ${boxGroup.x + boxGroup.width},${boxGroup.y + boxGroup.height}
-        ${boxGroup.x + (boxGroup.width / 2)},${boxGroup.y + boxGroup.height} ${boxGroup.x},${boxGroup.y + boxGroup.height}
-         ${boxGroup.x},${boxGroup.y + (boxGroup.height / 2)} ${boxGroup.x},${boxGroup.y}"
-        stroke="${STROKE_COLOR}" fill="transparent"
-        marker-start="url(#dot)" marker-mid="url(#dot)">
-        </polyline></svg>`;
-    const box = canvas.querySelector('#box') as SVGGElement;
-    box.append(group);
-    const selected = canvas.querySelector('#selected') as SVGGElement;
-    canvas.removeChild(selected);
-  }
-
-  startTranslation(): void {
-    this.mouseDownTranslation = true;
-    const group = document.querySelector('#box');
-    const box = (group as Element).getBoundingClientRect();
-    this.initialX = box.left;
-    this.initialY = box.top;
-    const selected = RendererSingleton.canvas.querySelector('#selected') as SVGGElement;
-    const childArray = Array.from(selected.children);
-    const boxRect = RendererSingleton.canvas.querySelector('#boxrect') as SVGElement;
-    this.setInitialCoordinates(boxRect);
-    childArray.forEach((child: SVGElement) => {
-     this.setInitialCoordinates(child);
-    });
-  }
-
-setInitialCoordinates( svgElement: SVGElement){
-  const initialPosition: InitialPosition = {
-    xPos: '0', yPos: '0',
-  };
-  if (svgElement.getAttribute('transform')) {
-    const translationValues: number[] = this.getTranslationValue(svgElement);
-    initialPosition.xPos = (parseFloat(initialPosition.xPos) + translationValues[0]).toString();
-    initialPosition.yPos = (parseFloat(initialPosition.yPos) + translationValues[1]).toString();
-  }
-  this.initialAndFinalPositions.set(svgElement, [initialPosition, {xPos: '0', yPos: '0'}]);
-  console.log(svgElement.getAttribute('transform'));
-}
-
-  translate(): void {
-    if (this.mouseDownTranslation) {
-      const group = RendererSingleton.canvas.querySelector('#box');
-      const box = (group as Element).getBoundingClientRect();
-      (group as Element).setAttribute('x', '' + (this.mousePosition.canvasMousePositionX - this.initialX - (box.width / 2)));
-      (group as Element).setAttribute('y', '' + (this.mousePosition.canvasMousePositionY - this.initialY - (box.height / 2)));
-    }
-  }
-
-  finishTranslation() {
-    const groupElement = RendererSingleton.canvas.querySelector('#box') as SVGGElement;
-    groupElement.setAttributeNS(null, 'onmousemove', 'null');
-    const box = RendererSingleton.canvas.querySelector('#box') as SVGElement;
-    const selected = RendererSingleton.canvas.querySelector('#selected') as SVGGElement;
-    const childArray = Array.from(selected.children);
-    const boxRect = RendererSingleton.canvas.querySelector('#boxrect') as SVGElement;
-    if (this.hasBeenTranslated) {
-      childArray.forEach((child: SVGElement) => {
-        this.translateChild(child, box);
-        RendererSingleton.canvas.appendChild(child);
-      });
-      this.translateChild(boxRect, box);
-      RendererSingleton.canvas.appendChild(boxRect);
-    }
-    this.mouseDownTranslation = false;
-    childArray.forEach((child: SVGElement) => {
-      this.setFinalCoordinates(child);
-    });
-    this.setFinalCoordinates(boxRect);
-    this.pushTranslationCommand(this.initialAndFinalPositions, box);
-  }
-
-  setFinalCoordinates(svgElement: SVGElement): void{
-    const initialPosition: InitialPosition = (this.initialAndFinalPositions.get(svgElement) as [InitialPosition, FinalPosition])[0];
-    const translationValues: number[] = this.getTranslationValue(svgElement);
-    const finalPosition: FinalPosition = {
-      xPos: translationValues[0].toString(),
-      yPos: translationValues[1].toString(),
-    };
-    this.initialAndFinalPositions.set(svgElement, [initialPosition, finalPosition]);
-  }
-
-  translateChild(child: SVGElement, box: SVGElement): void {
-    let newX: number;
-    let newY: number;
-    const initialPosition = this.getTranslationValue(child);
-    if (this.getTranslationValue(child)) {
-      newX = parseFloat('' + (initialPosition[0] + parseFloat(box.getAttribute('x') as string)));
-      newY = parseFloat('' + (initialPosition[1] + parseFloat(box.getAttribute('y') as string)));
-    } else {
-      newX = parseFloat('' + box.getAttribute('x'));
-      newY = parseFloat('' + box.getAttribute('y'));
-    }
-    child.setAttribute('transform', 'translate(' + newX + ' ' + newY + ')');
-  }
-
-  getTranslationValue(child: SVGElement): number[] {
-    const initialPosition = new Array<number>();
-    const xforms = child.getAttribute('transform');
-    const parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms as string) as unknown as string;
-    if (parts) {
-      initialPosition[0] = parseFloat(parts[1]);
-      initialPosition[1] = parseFloat(parts[2]);
-    } else {
-      initialPosition[0] = 0;
-      initialPosition[1] = 0; }
-    return initialPosition;
-  }
-
-  removeSelector(canvas: SVGElement): void {
-    const box = canvas.querySelector('#box') as SVGElement;
-    const boxrect = canvas.querySelector('#boxrect') as SVGElement;
-    canvas.removeChild(boxrect);
-    canvas.removeChild(box);
-    const selected = box.querySelector('#selected') as SVGGElement;
-    if (selected) {
-      const childArray = Array.from(selected.children);
-      childArray.forEach((child: SVGElement) => {
-        RendererSingleton.canvas.appendChild(child);
-      });
-    }
-
-  }
-
-  pushTranslationCommand(initialAndFinalPositions: Map<SVGElement, [InitialPosition, FinalPosition]>, box: SVGElement): void {
-    // const selected = RendererSingleton.canvas.querySelector('#selected') as SVGGElement;
-    // const childArray = Array.from(selected.children);
-    const command: Command = {
-      execute(): void {
-        initialAndFinalPositions.forEach(
-          ((positions: [InitialPosition, FinalPosition], element: SVGElement) => {
-            element.setAttribute('transform', 'translate(' + positions[1].xPos + ' ' + positions[1].yPos + ')');
-          }));
-      },
-      unexecute(): void {
-        initialAndFinalPositions.forEach(
-          ((positions: [InitialPosition, FinalPosition], element: SVGElement) => {
-            element.setAttribute('transform', 'translate(' + positions[0].xPos + ' ' + positions[0].yPos + ')');
-          }));
-      },
-    };
-    this.pushCommand(command);
-  }
-
-  pushCommand(command: Command): void {
-    this.undoRedoService.pushCommand(command);
   }
 }

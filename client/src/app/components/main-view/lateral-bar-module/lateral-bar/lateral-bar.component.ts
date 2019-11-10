@@ -131,7 +131,7 @@ export class LateralBarComponent {
 
   private initializeClipboardButtons() {
     this.clipboardButtonsProperties = [];
-    if (this.clipboard.hasSelectedElements()) {
+    // if (this.clipboard.hasSelectedElements()) {
       this.clipboardButtonsProperties.push(
         this.clipboardPropertiesFactory(() => this.clipboard.copy(), 'Copier', 'Copier', false));
       this.clipboardButtonsProperties.push(
@@ -140,7 +140,7 @@ export class LateralBarComponent {
         this.clipboardPropertiesFactory(() => this.clipboard.delete(), 'Supprimer', 'Supprimer', false));
       this.clipboardButtonsProperties.push(
         this.clipboardPropertiesFactory(() => this.clipboard.duplicate(), 'Dupliquer', 'Dupliquer', false));
-    }
+    // }
     this.clipboardButtonsProperties.push(
       this.clipboardPropertiesFactory(() => this.clipboard.paste(), 'Coller', 'Coller', false));
   }
@@ -174,9 +174,9 @@ export class LateralBarComponent {
     return { clipboardFunction: onClickFunction, matToolTip, icon, isSvgIcon};
   }
 
-  hasSelectedElements(): boolean {
-    return this.clipboard.hasSelectedElements();
-  }
+  // hasSelectedElements(): boolean {
+  //   return this.clipboard.hasSelectedElements();
+  // }
 
   hasElementsInClipboard(): boolean {
     return this.clipboard.memorizedAction.length !== 0;

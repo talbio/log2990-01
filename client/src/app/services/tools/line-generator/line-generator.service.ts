@@ -242,11 +242,11 @@ export class LineGeneratorService extends AbstractGenerator {
   }
 
   addMarkersToNewLine(markers: SVGElement, canvas: HTMLElement) {
-    const newLine = canvas.children[canvas.children.length - 1];
+    // const newLine = canvas.children[canvas.children.length - 1];
     const markersAddress = `url(#${markers.id})`;
-    newLine.setAttribute('marker-start', markersAddress);
-    newLine.setAttribute('marker-mid', markersAddress);
-    newLine.setAttribute('marker-end', markersAddress);
+    RendererSingleton.renderer.setAttribute(this.currentElement, 'marker-start', markersAddress);
+    RendererSingleton.renderer.setAttribute(this.currentElement, 'marker-mid', markersAddress);
+    RendererSingleton.renderer.setAttribute(this.currentElement, 'marker-end', markersAddress);
   }
   // this function returns the markers element corresponding to a specific polyline so it can be modified
   findMarkerFromPolyline(polyline: SVGElement, defsElement: SVGElement): SVGElement {

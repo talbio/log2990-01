@@ -1,6 +1,6 @@
-import { MousePositionService } from './../services/mouse-position/mouse-position.service';
 import {RendererSingleton} from '../services/renderer-singleton';
 import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
+import { MousePositionService } from './../services/mouse-position/mouse-position.service';
 import {AbstractGenerator} from './abstract-generator';
 
 export abstract class AbstractWritingTool extends AbstractGenerator {

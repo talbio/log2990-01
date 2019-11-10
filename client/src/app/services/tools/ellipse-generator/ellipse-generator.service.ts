@@ -1,10 +1,10 @@
 import { Injectable} from '@angular/core';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
 import { PlotType } from '../../../data-structures/plot-type';
+import {MousePositionService} from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
 
 enum Axis {
   x,
@@ -16,15 +16,10 @@ export class EllipseGeneratorService extends AbstractClosedShape {
 
   private readonly TEMP_RECT_ID = '#tempRect';
 
-  private currentEllipseNumber: number;
-  protected mouseDown: boolean;
-
-  constructor(private rectangleGenerator: RectangleGeneratorService,
-              private mousePosition: MousePositionService,
-              undoRedoService: UndoRedoService) {
-    super(mousePosition, undoRedoService);
-    this.currentEllipseNumber = 0;
-    this.mouseDown = false;
+  constructor(protected undoRedoService: UndoRedoService,
+              protected mousePositionService: MousePositionService,
+              private rectangleGenerator: RectangleGeneratorService) {
+    super(mousePositionService, undoRedoService);
   }
 
   // Getters/Setters
@@ -113,7 +108,7 @@ export class EllipseGeneratorService extends AbstractClosedShape {
     const ellipse = RendererSingleton.renderer.createElement('ellipse', 'svg');
     const properties: [string, string][] = [];
     properties.push(
-      ['id', `ellipse${this.currentEllipseNumber}`],
+      ['id', `ellipse${this.currentElementsNumber}`],
       ['cx', `${this.xPos}`],
       ['cy', `${this.yPos}`],
       ['rx', `0`],

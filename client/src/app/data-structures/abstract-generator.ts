@@ -1,6 +1,6 @@
-import { MousePositionService } from './../services/mouse-position/mouse-position.service';
 import {RendererSingleton} from '../services/renderer-singleton';
 import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
+import { MousePositionService } from './../services/mouse-position/mouse-position.service';
 import {Command, CommandGenerator} from './command';
 
 /**
@@ -9,7 +9,7 @@ import {Command, CommandGenerator} from './command';
 export abstract class AbstractGenerator implements CommandGenerator {
 
   currentElementsNumber: number;
-  protected currentElement: SVGElement;
+  currentElement: SVGElement;
 
   protected constructor(protected mouse: MousePositionService,
                         protected undoRedoService: UndoRedoService) {
@@ -27,12 +27,6 @@ export abstract class AbstractGenerator implements CommandGenerator {
   abstract createElement(primaryColor?: string, secondaryColor?: string): void;
   abstract updateElement(currentChildPosition: number, mouseEvent?: MouseEvent): void;
   abstract finishElement(mouseEvent?: MouseEvent): void;
-
-  clone(item: SVGElement, type: string): SVGElement {
-    const newItem = item.cloneNode() as SVGElement;
-    newItem.setAttribute('id', type + (this.currentElementsNumber++ as unknown as string));
-    return newItem;
-  }
 
   pushGeneratorCommand(...svgElements: SVGElement[]): void {
     const action: Command = {

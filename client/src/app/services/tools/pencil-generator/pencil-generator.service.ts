@@ -10,12 +10,10 @@ export class PencilGeneratorService extends AbstractWritingTool {
   /**
    * attributes of pencil tool :
    */
-  private currentPencilPathNumber: number;
 
   constructor(private mousePosition: MousePositionService,
               undoRedoService: UndoRedoService) {
     super(mousePosition, undoRedoService);
-    this.currentPencilPathNumber = 0;
   }
 
   set _strokeWidth(width: number) {
@@ -27,11 +25,11 @@ export class PencilGeneratorService extends AbstractWritingTool {
   }
 
   // Initializes the path
-  createPenPath(primaryColor: string) {
+  createElement(primaryColor: string) {
     const path = RendererSingleton.renderer.createElement('path', 'svg');
     const properties: [string, string][] = [];
     properties.push(
-      ['id', `pencilPath${this.currentPencilPathNumber}`],
+      ['id', `pencilPath${this.currentElementsNumber}`],
       ['d', `M ${this.xPos} ${(this.yPos)}
         L ${(this.xPos)} ${(this.yPos)}`],
       ['stroke', `${primaryColor}`],
@@ -42,4 +40,6 @@ export class PencilGeneratorService extends AbstractWritingTool {
     this.drawElement(path, properties);
     this.mouseDown = true;
   }
+
+
 }

@@ -28,7 +28,6 @@ export class EmojiGeneratorService extends AbstractGenerator {
       Emojis.LEAF,
       Emojis.TURKEY,
       Emojis.PUMPKIN];
-  private currentEmojiNumber: number;
   private width = 100;
   private height = 100;
   private angle: number;
@@ -42,7 +41,6 @@ export class EmojiGeneratorService extends AbstractGenerator {
       this.angle = MIN_ROTATION_ANGLE;
       this.scalingFactor = DEFAULT_SCALING_FACTOR;
       this.rotationStep = MAX_ROTATION_STEP;
-      this.currentEmojiNumber = 0;
   }
 
   getEmojis() {
@@ -80,7 +78,7 @@ export class EmojiGeneratorService extends AbstractGenerator {
   addEmoji(canvas: SVGElement) {
     if (this.emoji !== '') {
       canvas.innerHTML +=
-        `<image id="emoji${this.currentEmojiNumber}"
+        `<image id="emoji${this.currentElementsNumber}"
         x="${(this.xPos - (this.width * this.scalingFactor / 2))}"
         y="${(this.yPos - (this.height * this.scalingFactor / 2))}"
         xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
@@ -91,13 +89,13 @@ export class EmojiGeneratorService extends AbstractGenerator {
   createElement() {
     if (this.emoji !== '') {
       RendererSingleton.canvas.innerHTML +=
-          `<image id="emoji${this.currentEmojiNumber}"
+          `<image id="emoji${this.currentElementsNumber}"
           x="${(this.xPos - (this.width * this.scalingFactor / 2))}"
           y="${(this.yPos - (this.height * this.scalingFactor / 2))}"
           xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
           transform="rotate(${this.angle} ${this.xPos} ${(this.yPos)})"
           />`;
-      this.currentEmojiNumber ++;
+      this.currentElementsNumber ++;
     }
   }
 

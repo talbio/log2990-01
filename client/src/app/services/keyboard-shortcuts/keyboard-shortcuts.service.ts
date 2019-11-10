@@ -85,11 +85,13 @@ export class KeyboardShortcutsService {
       this.objectSelector.selectAll(RendererSingleton.canvas);
     });
     this.controlKeyShortcuts.set(this.NEW_DRAWING_KEY, () => this.modalManagerService.showCreateDrawingDialog());
+    this.controlKeyShortcuts.set(this.SAVE_DRAWING_KEY, () => this.modalManagerService.showSaveDrawingDialog());
+    this.controlKeyShortcuts.set(this.OPEN_DRAWING_KEY, () => this.modalManagerService.showOpenDrawingDialog());
+    // clipboard shortcuts
+    //if (this.toolManager._activeTool === Tools.Selector) {
     this.controlKeyShortcuts.set(this.COPY_KEY, () => this.clipboard.copy());
     this.controlKeyShortcuts.set(this.CUT_KEY, () => this.clipboard.cut());
     this.controlKeyShortcuts.set(this.DUPLICATE_KEY, () => this.clipboard.duplicate());
     this.controlKeyShortcuts.set(this.PASTE_KEY, () => this.clipboard.paste());
-    this.controlKeyShortcuts.set(this.SAVE_DRAWING_KEY, () => this.modalManagerService.showSaveDrawingDialog());
-    this.controlKeyShortcuts.set(this.OPEN_DRAWING_KEY, () => this.modalManagerService.showOpenDrawingDialog());
   }
 }

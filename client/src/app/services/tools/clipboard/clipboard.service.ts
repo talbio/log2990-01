@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
+import { BrushGeneratorService } from 'src/app/services/tools/brush-generator/brush-generator.service';
+import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
+import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
 import { RendererSingleton } from './../../renderer-singleton';
+import { EllipseGeneratorService } from './../ellipse-generator/ellipse-generator.service';
+import { LineGeneratorService } from './../line-generator/line-generator.service';
 import { ObjectSelectorService } from './../object-selector/object-selector.service';
+import { PencilGeneratorService } from './../pencil-generator/pencil-generator.service';
+import { PolygonGeneratorService } from './../polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from './../rectangle-generator/rectangle-generator.service';
 
 @Injectable()
@@ -15,14 +22,21 @@ export class ClipboardService {
   private ySliding: number;
 
   constructor(private selector: ObjectSelectorService,
+              private ellipseGenerator: EllipseGeneratorService,
+              private lineGenerator: LineGeneratorService,
+              private pencilGenerator: PencilGeneratorService,
+              private penGenerator: PenGeneratorService,
+              private polygonGenerator: PolygonGeneratorService,
+              private brushGenerator: BrushGeneratorService,
+              private emojiGenerator: EmojiGeneratorService,
               private rectangleGenerator: RectangleGeneratorService) {
     this.consecultivePastes = 1;
     this.consecultiveDuplicates = 1;
   }
 
-  hasSelectedElements(): boolean {
-    return this.selector.SVGArray.length === 0;
-  }
+  // hasSelectedElements(): boolean {
+  //   return this.selector.selectedElements.length === 0;
+  // }
 
   // Removes and stores in clipboard
   cut() {
@@ -46,8 +60,8 @@ export class ClipboardService {
   copy() {
     this.resetCounters();
     this.assessSelection();
-    if (this.selector.SVGArray !== null) {
-      this.memorizedAction = this.selector.SVGArray;
+    if (this.selector.selectedElements !== null) {
+      this.memorizedAction = this.selector.selectedElements;
       console.log(this.memorizedAction);
     } else {
       console.log('nothing to copy, nothing selected');
@@ -74,7 +88,7 @@ export class ClipboardService {
   // Appends a displaced version of the selected items
   duplicate() {
     this.assessSelection();
-    for (const item of this.selector.SVGArray) {
+    for (const item of this.selector.selectedElements) {
       const newItem = this.duplicateElement(item);
       this.canvas.appendChild(newItem);
       const itemInCanvas = this.canvas.children[this.canvas.children.length - 1] as SVGElement;
@@ -103,10 +117,10 @@ export class ClipboardService {
 
   assessSelection() {
     this.canvas = RendererSingleton.renderer.selectRootElement('#canvas', true);
-    if (this.selectedItems !== this.selector.SVGArray) {
+    if (this.selectedItems !== this.selector.selectedElements) {
       this.resetCounters();
     }
-    this.selectedItems = this.selector.SVGArray;
+    this.selectedItems = this.selector.selectedElements;
   }
 
   findChildIndex(item: SVGElement): number {
@@ -123,7 +137,7 @@ export class ClipboardService {
 
   duplicateElement(item: SVGElement): SVGElement {
     const type = item.tagName;
-    return this.rectangleGenerator.clone(item, type);
+    return this.clone(item, type);
   }
 
   slide(item: SVGElement, consecultive: number) {
@@ -185,5 +199,40 @@ export class ClipboardService {
     this.consecultivePastes = 1;
     this.xSliding = 0;
     this.ySliding = 0;
+  }
+
+  clone(item: SVGElement, type: string): SVGElement {
+    const newItem = item.cloneNode() as SVGElement;
+    switch (type) {
+      case 'rect':
+        newItem.setAttribute('id', type + (this.rectangleGenerator.currentElementsNumber++ as unknown as string));
+        break;
+      case 'ellipse':
+        newItem.setAttribute('id', type + (this.ellipseGenerator.currentElementsNumber++ as unknown as string));
+        break;
+      case 'polygon':
+        newItem.setAttribute('id', type + (this.polygonGenerator.currentElementsNumber++ as unknown as string));
+        break;
+      case 'path':
+        if (item.id.includes('brushPath')) {
+          newItem.setAttribute('id', type + (this.brushGenerator.currentElementsNumber++ as unknown as string));
+          break;
+        } else if (item.id.includes('pencilPath')){
+          newItem.setAttribute('id', type + (this.pencilGenerator.currentElementsNumber++ as unknown as string));
+          break;
+        } else {
+          newItem.setAttribute('id', type + (this.penGenerator.currentElementsNumber++ as unknown as string));
+          break;
+        }
+      case 'polyline':
+        newItem.setAttribute('id', type + (this.lineGenerator.currentElementsNumber++ as unknown as string));
+        break;
+      case 'image':
+        newItem.setAttribute('id', type + (this.emojiGenerator.currentElementsNumber++ as unknown as string));
+        break;
+      default :
+        break;
+    }
+    return newItem;
   }
 }

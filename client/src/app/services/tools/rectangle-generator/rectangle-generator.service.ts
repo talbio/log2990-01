@@ -37,7 +37,7 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
     this.plotType = plotType;
   }
 
-  createRectangle(primaryColor: string, secondaryColor: string) {
+  createElement(primaryColor: string, secondaryColor: string) {
     const rect = RendererSingleton.renderer.createElement('rect', 'svg');
     const properties: [string, string][] = [];
     properties.push(
@@ -47,7 +47,8 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
       ['height', `0`],
       ['width', `0`],
       ['data-start-x', `${this.xPos}`],
-      ['data-start-y', `${this.yPos}`]);
+      ['data-start-y', `${this.yPos}`],
+    );
     this.drawElement(rect, properties, primaryColor, secondaryColor);
     this.mouseDown = true;
   }
@@ -74,8 +75,8 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
-        const actualWidth: number = this.mouse.canvasMousePositionX - startRectX;
-        const actualHeight: number = this.mouse.canvasMousePositionY - startRectY;
+        const actualWidth: number = this.xPos - startRectX;
+        const actualHeight: number = this.yPos - startRectY;
         if (actualWidth >= 0) {
           if (Math.abs(actualHeight) > Math.abs(actualWidth)) {
             // height is bigger
@@ -88,11 +89,11 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
           if (Math.abs(actualHeight) > Math.abs(actualWidth)) {
             // height is bigger
             currentRect.setAttribute('width', '' + Math.abs(actualHeight));
-            currentRect.setAttribute('x', '' + (this.mouse.canvasMousePositionX + Math.abs(actualWidth) - Math.abs(actualHeight)));
+            currentRect.setAttribute('x', '' + (this.xPos + Math.abs(actualWidth) - Math.abs(actualHeight)));
           } else {
             // width is bigger, act normal
             currentRect.setAttribute('width', '' + Math.abs(actualWidth));
-            currentRect.setAttribute('x', '' + this.mouse.canvasMousePositionX);
+            currentRect.setAttribute('x', '' + this.xPos);
           }
         }
         if (actualHeight >= 0) {
@@ -107,11 +108,11 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
           if (Math.abs(actualWidth) > Math.abs(actualHeight)) {
             // width is bigger
             currentRect.setAttribute('height', '' + Math.abs(actualWidth));
-            currentRect.setAttribute('y', '' + (this.mouse.canvasMousePositionY + Math.abs(actualHeight) - Math.abs(actualWidth)));
+            currentRect.setAttribute('y', '' + (this.yPos + Math.abs(actualHeight) - Math.abs(actualWidth)));
           } else {
             // height is bigger, act normal
             currentRect.setAttribute('height', '' + Math.abs(actualHeight));
-            currentRect.setAttribute('y', '' + this.mouse.canvasMousePositionY);
+            currentRect.setAttribute('y', '' + this.yPos);
           }
         }
       }
@@ -124,19 +125,19 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
       if (currentRect != null) {
         const startRectX: number = Number(currentRect.getAttribute('data-start-x'));
         const startRectY: number = Number(currentRect.getAttribute('data-start-y'));
-        const actualWidth: number = this.mouse.canvasMousePositionX - startRectX;
-        const actualHeight: number = this.mouse.canvasMousePositionY - startRectY;
+        const actualWidth: number = this.xPos - startRectX;
+        const actualHeight: number = this.yPos - startRectY;
         if (actualWidth >= 0) {
           currentRect.setAttribute('width', '' + actualWidth);
         } else {
           currentRect.setAttribute('width', '' + Math.abs(actualWidth));
-          currentRect.setAttribute('x', '' + this.mouse.canvasMousePositionX);
+          currentRect.setAttribute('x', '' + this.xPos);
         }
         if (actualHeight >= 0) {
           currentRect.setAttribute('height', '' + actualHeight);
         } else {
           currentRect.setAttribute('height', '' + Math.abs(actualHeight));
-          currentRect.setAttribute('y', '' + this.mouse.canvasMousePositionY);
+          currentRect.setAttribute('y', '' + this.yPos);
         }
       }
     }

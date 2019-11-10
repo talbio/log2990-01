@@ -20,18 +20,26 @@ export class PenGeneratorService extends AbstractWritingTool {
   private time: number;
   private speed: number;
   private color: string;
-  private currentPenPathNumber: number;
   private pathArray: SVGElement[] = [];
 
-  constructor(protected mouse: MousePositionService,
-              protected undoRedoService: UndoRedoService) {
-      super(mouse, undoRedoService);
+  constructor(protected undoRedoService: UndoRedoService,
+              protected mousePositionService: MousePositionService) {
+      super(mousePositionService, undoRedoService);
       this.strokeWidthMinimum = MIN_WIDTH;
       this.strokeWidthMaximum = MAX_WIDTH;
-      this.currentPenPathNumber = 0;
   }
 
-  createElement(primaryColor: string) {
+  createElement(primaryColor?: string, secondaryColor?: string): void {}
+
+  updateElement(currentChildPosition: number) {
+    super.updateElement(currentChildPosition);
+  }
+
+  finishElement(mouseEvent?: MouseEvent): void {
+    super.finishElement(mouseEvent);
+  }
+
+  createPath(primaryColor: string) {
         this.strokeWidth = DEFAULT_WIDTH;
         this.color = primaryColor;
         this.time = this.date.getTime();
@@ -47,7 +55,7 @@ export class PenGeneratorService extends AbstractWritingTool {
       const path = RendererSingleton.renderer.createElement('path', 'svg');
       const properties: [string, string][] = [];
       properties.push(
-          ['id', `pencilPath${this.currentPenPathNumber}`],
+          ['id', `pencilPath${this.currentElementsNumber}`],
           ['d', `M ${(this.dotPositionX)} ${(this.dotPositionY)}
       L ${(this.dotPositionX)} ${(this.dotPositionY)}`],
           ['stroke', `${this.color}`],
@@ -90,7 +98,7 @@ export class PenGeneratorService extends AbstractWritingTool {
 
   finishPenPath() {
       if (this.mouseDown) {
-          this.currentPenPathNumber += 1;
+          this.currentElementsNumber += 1;
           this.pathArray = [];
           this.mouseDown = false;
       }

@@ -12,6 +12,7 @@ import { EraserService } from '../eraser/eraser.service';
 import { EyedropperService } from '../eyedropper/eyedropper.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
+import { PenGeneratorService } from '../pen-generator/pen-generator.service';
 import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from '../polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
@@ -40,7 +41,7 @@ export class ToolManagerService {
               private ellipseGenerator: EllipseGeneratorService,
               private emojiGenerator: EmojiGeneratorService,
               private pencilGenerator: PencilGeneratorService,
-              // private penGenerator: PenGeneratorService,
+              private penGenerator: PenGeneratorService,
               private brushGenerator: BrushGeneratorService,
               private colorApplicator: ColorApplicatorService,
               private objectSelector: ObjectSelectorService,
@@ -64,7 +65,7 @@ export class ToolManagerService {
     } else {
       switch (this._activeTool) {
         case Tools.Selector:
-          this.objectSelector.selectorMouseDown(mouseEvent, canvas);
+          this.objectSelector.onMouseDown(mouseEvent);
           break;
         case Tools.Eraser:
           this.eraser.startErasing(canvas);
@@ -82,7 +83,7 @@ export class ToolManagerService {
     } else {
       switch (this._activeTool) {
         case Tools.Selector:
-          this.objectSelector.updateSelector(canvas);
+          this.objectSelector.onMouseMove(this.numberOfElements, mouseEvent);
           this.updateNumberOfElements();
           break;
         case Tools.Eraser:
@@ -100,7 +101,7 @@ export class ToolManagerService {
     } else {
       switch (this._activeTool) {
         case Tools.Selector:
-          this.objectSelector.finish(RendererSingleton.canvas);
+          this.objectSelector.onMouseUp();
           this.updateNumberOfElements();
           break;
         case Tools.Eraser:
@@ -260,6 +261,8 @@ export class ToolManagerService {
             this.incrementCounter(counters, this.pencilGenerator);
           } else if (childCast.id.startsWith('brush')) {
             this.incrementCounter(counters, this.brushGenerator);
+          } else {
+            this.incrementCounter(counters, this.penGenerator);
           }
           break;
         case 'polyline':
