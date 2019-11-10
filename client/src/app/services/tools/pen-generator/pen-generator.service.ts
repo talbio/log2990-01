@@ -1,7 +1,7 @@
 const DEFAULT_MIN_WIDTH = 0.1;
 const DEFAULT_MAX_WIDTH = 10;
 const SPEED_ARRAY_SIZE = 10;
-const K = 6;
+const SPEED_CONSTANT = 6;
 
 import { Injectable } from '@angular/core';
 import { AbstractWritingTool } from 'src/app/data-structures/abstract-writing-tool';
@@ -60,28 +60,33 @@ export class PenGeneratorService extends AbstractWritingTool {
         this.pathArray.push(this.currentElement);
     }
 
-    updatePenPath(mouseEvent: MouseEvent, canvas: SVGElement) {
+    updatePenPath(mouseEvent: MouseEvent) {
         if (this.mouseDown) {
-            const currentDotPositionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
-            const currentDotPositionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
+            const currentPositionX = mouseEvent.pageX - this.OFFSET_CANVAS_X;
+            const currentPositionY = mouseEvent.pageY - this.OFFSET_CANVAS_Y;
             const date = new Date();
             const currentTime = date.getTime();
-            const currentSpeed = this.getSpeed(currentTime, currentDotPositionX, currentDotPositionY);
+            const currentSpeed = this.getSpeed(currentTime, currentPositionX, currentPositionY);
+            const adjustedSpeed = this.adjustSpeed(currentSpeed);
             this.time = currentTime;
-            this.positionX = currentDotPositionX;
-            this.positionY = currentDotPositionY;
-            const currentPath = canvas.children[canvas.childElementCount - 1];
+            this.updatePosition(currentPositionX, currentPositionX);
+            const currentPath = RendererSingleton.getCanvas().children[RendererSingleton.getCanvas().childElementCount - 1];
             currentPath.setAttribute('d',
                 currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
                 ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
-            this.updateStrokeWidth(currentSpeed);
+            this.updateStrokeWidth(adjustedSpeed);
             this.addPath(mouseEvent, this.strokeWidth);
             this.speed = currentSpeed;
         }
     }
 
+    updatePosition(currentPositionX: number, currentPositionY: number){
+        this.positionX = currentPositionX;
+        this.positionY = currentPositionY;
+    }
+
     updateStrokeWidth(speed: number): void {
-        this.strokeWidth = K / speed;
+        this.strokeWidth = SPEED_CONSTANT / speed;
         if (this.strokeWidth < this.strokeWidthMinimum) {
             this.strokeWidth = this.strokeWidthMinimum;
         }
@@ -95,26 +100,31 @@ export class PenGeneratorService extends AbstractWritingTool {
             this.currentPenPathNumber++;
             this.pushActions(this.pathArray);
             this.pathArray = [];
+            this.speedArray = [];
             this.mouseDown = false;
         }
     }
 
-    getSpeed(currentTime: number, currentDotPositionX: number, currentDotPositionY: number): number {
-        const movementInX = Math.pow((currentDotPositionX - this.positionX), 2);
-        const movementInY = Math.pow((currentDotPositionY - this.positionY), 2);
+    getSpeed(currentTime: number, currentPositionX: number, currentPositionY: number): number {
+        const movementInX = Math.pow((currentPositionX - this.positionX), 2);
+        const movementInY = Math.pow((currentPositionY - this.positionY), 2);
         const distance = Math.sqrt(movementInX + movementInY);
-        const timePassed = currentTime - this.time;
-        const newSpeed = distance / timePassed;
+        let timePassed = currentTime - this.time;
+        if (timePassed === 0) {timePassed = 0.001; }
+        return distance / timePassed;
+    }
+
+    adjustSpeed(newSpeed: number) {
+        // adds the current speed to an array of recent speeds and returns average for smoother results
         if (this.speedArray.length === SPEED_ARRAY_SIZE) {
             this.speedArray.shift();
             this.speedArray.push(newSpeed);
         } else {this.speedArray.push(newSpeed); }
-        const speedAverage = (this.speedArray.reduce((a, b) => a + b, 0 )) / this.speedArray.length;
-        return speedAverage;
+        const ajustedSpeed = ((this.speedArray.reduce((a, b) => a + b, 0 )) / this.speedArray.length);
+        return ajustedSpeed;
     }
 
     pushActions(paths: SVGElement[]): void {
-
         const action: Action = {
             actionType: ActionType.Create,
             svgElements: paths,
