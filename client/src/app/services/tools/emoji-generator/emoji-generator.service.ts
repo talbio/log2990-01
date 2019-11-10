@@ -34,9 +34,9 @@ export class EmojiGeneratorService extends AbstractGenerator {
   private scalingFactor: number;
   private rotationStep: number;
 
-  constructor(private mousePosition: MousePositionService,
+  constructor(protected mouse: MousePositionService,
               protected undoRedoService: UndoRedoService) {
-      super(mousePosition, undoRedoService);
+      super(mouse, undoRedoService);
       this.emoji = Emojis.SMILEY;
       this.angle = MIN_ROTATION_ANGLE;
       this.scalingFactor = DEFAULT_SCALING_FACTOR;

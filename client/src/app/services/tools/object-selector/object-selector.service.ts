@@ -27,7 +27,7 @@ interface BoundingRect {
 @Injectable()
 export class ObjectSelectorService {
 
-  private TEMP_RECT_ID = 'selectorRect';
+  // private TEMP_RECT_ID = 'selectorRect';
   selectedElements: SVGElement[];
   private hasBoundingRect: boolean;
   private currentRect: SVGElement;

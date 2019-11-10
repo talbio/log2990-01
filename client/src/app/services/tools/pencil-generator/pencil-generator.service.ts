@@ -11,9 +11,9 @@ export class PencilGeneratorService extends AbstractWritingTool {
    * attributes of pencil tool :
    */
 
-  constructor(private mousePosition: MousePositionService,
-              undoRedoService: UndoRedoService) {
-    super(mousePosition, undoRedoService);
+  constructor(protected mouse: MousePositionService,
+              protected undoRedoService: UndoRedoService) {
+    super(mouse, undoRedoService);
   }
 
   set _strokeWidth(width: number) {

@@ -19,9 +19,9 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   private readonly adjustment: number[];
 
   constructor(private rectangleGenerator: RectangleGeneratorService,
-              private mousePosition: MousePositionService,
-              undoRedoService: UndoRedoService) {
-    super(mousePosition, undoRedoService);
+              protected mouse: MousePositionService,
+              protected undoRedoService: UndoRedoService) {
+    super(mouse, undoRedoService);
     this.adjustment = [0, 0];
     this.aspectRatio = 0;
     this.nbOfApex = 3;

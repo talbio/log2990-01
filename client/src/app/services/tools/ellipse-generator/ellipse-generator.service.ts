@@ -17,9 +17,9 @@ export class EllipseGeneratorService extends AbstractClosedShape {
   private readonly TEMP_RECT_ID = '#tempRect';
 
   constructor(protected undoRedoService: UndoRedoService,
-              protected mousePositionService: MousePositionService,
+              protected mouse: MousePositionService,
               private rectangleGenerator: RectangleGeneratorService) {
-    super(mousePositionService, undoRedoService);
+    super(mouse, undoRedoService);
   }
 
   // Getters/Setters

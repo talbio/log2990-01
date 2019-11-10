@@ -10,9 +10,9 @@ export class BrushGeneratorService extends AbstractWritingTool {
   private readonly DEFAULT_BRUSH_PATTERN = 'url(#brushPattern1)';
   private currentBrushPattern: string;
 
-  constructor(private mousePosition: MousePositionService,
+  constructor(protected mouse: MousePositionService,
               undoRedoService: UndoRedoService) {
-    super(mousePosition, undoRedoService);
+    super(mouse, undoRedoService);
     this.currentBrushPattern = this.DEFAULT_BRUSH_PATTERN;
     this.currentElementsNumber = 0;
   }

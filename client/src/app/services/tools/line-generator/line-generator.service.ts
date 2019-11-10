@@ -32,9 +32,9 @@ export class LineGeneratorService extends AbstractGenerator {
   private lineJoinStyle: LineJoinStyle;
   private lineDashStyle: LineDashStyle;
 
-  constructor(private mousePosition: MousePositionService,
+  constructor(protected mouse: MousePositionService,
               protected undoRedoService: UndoRedoService) {
-    super(mousePosition, undoRedoService);
+    super(mouse, undoRedoService);
     this.strokeWidth = this.DEFAULT_WIDTH;
     this.markerDiameter = this.DEFAULT_DIAMETER;
     this.isMarkersActive = false;
