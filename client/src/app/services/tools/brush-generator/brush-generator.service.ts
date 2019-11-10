@@ -17,14 +17,6 @@ export class BrushGeneratorService extends AbstractWritingTool {
     this.currentElementsNumber = 0;
   }
 
-  set _strokeWidth(width: number) {
-    this.strokeWidth = width;
-  }
-
-  get _strokeWidth(): number {
-    return this.strokeWidth;
-  }
-
   set _currentBrushPattern(pattern: string) {
     this.currentBrushPattern = pattern;
   }
@@ -90,8 +82,7 @@ export class BrushGeneratorService extends AbstractWritingTool {
     const properties: [string, string][] = [];
     properties.push(
       ['id', `brushPath${this.currentElementsNumber}`],
-      ['d', `M ${this.xPos} ${this.yPos}
-        L ${this.xPos} ${this.yPos}`],
+      ['d', `M ${this.xPos} ${this.yPos} L ${this.xPos} ${this.yPos}`],
       ['stroke-width', `${strokeWidth}`],
       ['stroke-linecap', `round`],
       ['fill', `none`],

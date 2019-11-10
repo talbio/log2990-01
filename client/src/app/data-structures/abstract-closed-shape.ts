@@ -6,8 +6,9 @@ import {PlotType} from './plot-type';
 
 export abstract class AbstractClosedShape extends AbstractGenerator {
 
-  plotType: PlotType;
   strokeWidth: number;
+  plotType: PlotType;
+
   protected mouseDown: boolean;
 
   protected constructor(protected mouse: MousePositionService,

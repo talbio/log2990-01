@@ -1,9 +1,9 @@
 <p mat-card-title>Paramètres de Pinceau</p>
 
 <mat-label>
-  Épaisseur du trait du pinceau en pixels: {{this.brushGenerator._strokeWidth}}
+  Épaisseur du trait du pinceau en pixels: {{this.brushGenerator.strokeWidth}}
 </mat-label>
-<mat-slider [(ngModel)]="this.brushGenerator._strokeWidth"
+<mat-slider [(ngModel)]="this.brushGenerator.strokeWidth"
             min="5"
             max="50"
             step="0.5"
