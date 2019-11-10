@@ -15,9 +15,8 @@ export class ClipboardService {
 
   memorizedAction: SVGElement[];
   private selectedItems: SVGElement[];
-  private canvas: SVGElement;
-  private consecultivePastes: number;
-  private consecultiveDuplicates: number;
+  private consecutivePastes: number;
+  private consecutiveDuplicates: number;
   private xSliding: number;
   private ySliding: number;
 
@@ -30,8 +29,8 @@ export class ClipboardService {
               private brushGenerator: BrushGeneratorService,
               private emojiGenerator: EmojiGeneratorService,
               private rectangleGenerator: RectangleGeneratorService) {
-    this.consecultivePastes = 1;
-    this.consecultiveDuplicates = 1;
+    this.consecutivePastes = 1;
+    this.consecutiveDuplicates = 1;
   }
 
   // hasSelectedElements(): boolean {
@@ -43,14 +42,13 @@ export class ClipboardService {
     this.resetCounters();
     this.assessSelection();
     this.memorizedAction = this.selectedItems;
-    const box = RendererSingleton.renderer.selectRootElement('#selected', true);
     for (const item of this.memorizedAction) {
       const index = this.findChildIndex(item);
       if (index === -1) {
         console.log('cannot cut item ' + item.id);
         return;
       }
-      box.removeChild(item);
+      this.selector.boundingRect.removeChild(item);
       console.log('removed ' + item.tagName);
     }
     this.removeSelector();
@@ -77,9 +75,9 @@ export class ClipboardService {
         this.canvas.appendChild(newItem);
         const itemInCanvas = this.canvas.children[this.canvas.children.length - 1] as SVGElement;
         console.log(itemInCanvas, ' is new item in canvas');
-        this.slide(itemInCanvas, this.consecultivePastes);
+        this.slide(itemInCanvas, this.consecutivePastes);
       }
-      this.consecultivePastes++;
+      this.consecutivePastes++;
     } else {
       console.log('nothing to paste, clipboard is empty');
     }
@@ -93,9 +91,9 @@ export class ClipboardService {
       this.canvas.appendChild(newItem);
       const itemInCanvas = this.canvas.children[this.canvas.children.length - 1] as SVGElement;
       console.log(itemInCanvas, ' is new item in canvas');
-      this.slide(itemInCanvas, this.consecultiveDuplicates);
+      this.slide(itemInCanvas, this.consecutiveDuplicates);
     }
-    this.consecultiveDuplicates++;
+    this.consecutiveDuplicates++;
   }
 
   // Removes the selected items
@@ -195,8 +193,8 @@ export class ClipboardService {
   }
 
   resetCounters() {
-    this.consecultiveDuplicates = 1;
-    this.consecultivePastes = 1;
+    this.consecutiveDuplicates = 1;
+    this.consecutivePastes = 1;
     this.xSliding = 0;
     this.ySliding = 0;
   }

@@ -17,6 +17,14 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
     this.strokeWidth = this.DEFAULT_WIDTH;
   }
 
+  drawElement(element: SVGElement, properties: [string, string][]) {
+    for (const property of properties) {
+      RendererSingleton.renderer.setAttribute(element, property[0], property[1]);
+    }
+    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, element);
+    this.currentElement = element;
+  }
+
   /**
    * @desc Updates the path when the mouse is moving (mousedown)
    */
@@ -39,13 +47,5 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
       this.pushGeneratorCommand(this.currentElement);
       this.mouseDown = false;
     }
-  }
-
-  drawElement(element: SVGElement, properties: [string, string][]) {
-    for (const property of properties) {
-      RendererSingleton.renderer.setAttribute(element, property[0], property[1]);
-    }
-    this.currentElement = element;
-    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, element);
   }
 }
