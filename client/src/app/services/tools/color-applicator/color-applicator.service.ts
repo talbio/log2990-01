@@ -80,6 +80,8 @@ export class ColorApplicatorService implements ActionGenerator {
     } else if (id.startsWith('brush')) {
       // TODO: BRUSH???
       this.changeBrushPatternsColor(targetObject, newColor, 'fill');
+    } else if (id.startsWith('penPath')) {
+      this.changePenColor(targetObject, newColor);
     }
   }
 
@@ -95,6 +97,16 @@ export class ColorApplicatorService implements ActionGenerator {
         }
       }
     }
+  }
+
+  private changePenColor(targetObject: SVGElement, newColor: string) {
+    const paths = RendererSingleton.getCanvas().querySelectorAll('path');
+    paths.forEach((path) => {
+        if (path.id === targetObject.id) {
+            path.setAttribute('stroke', newColor);
+            path.setAttribute('fill', newColor);
+        }
+    });
   }
 
   private isClosedForm(nodeName: string): boolean {
