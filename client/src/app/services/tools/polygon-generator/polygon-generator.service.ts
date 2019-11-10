@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
-import { PlotType } from '../../../data-structures/plot-type';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
@@ -9,7 +8,7 @@ import { RectangleGeneratorService } from '../rectangle-generator/rectangle-gene
 @Injectable()
 export class PolygonGeneratorService extends AbstractClosedShape {
 
-  private readonly TEMP_RECT_ID = '#tempRect';
+  private readonly TEMP_RECT_ID = 'tempRect';
 
   // attributes of polygon
   private nbOfApex: number;
@@ -31,14 +30,12 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   // Getters/Setters
   get _aspectRatio() { return this.aspectRatio; }
 
-  get _strokeWidth() { return this.strokeWidth; }
-  set _strokeWidth(width: number) { this.strokeWidth = width; }
-
-  get _plotType() { return this.plotType; }
-  set _plotType(plotType: PlotType) { this.plotType = plotType; }
-
   get _nbOfApex() { return this.nbOfApex; }
   set _nbOfApex(nb: number) { this.nbOfApex = nb; }
+
+  get tempRect(): SVGElement {
+    return RendererSingleton.renderer.selectRootElement('#' + this.TEMP_RECT_ID, true);
+  }
 
   // First layer functions
   createElement(primaryColor: string, secondaryColor: string) {
@@ -48,7 +45,7 @@ export class PolygonGeneratorService extends AbstractClosedShape {
     // Setup of the children's HTML in canvas
     this.injectInitialHTML(primaryColor, secondaryColor);
     this.currentPolygonID = '#polygon' + this.currentElementsNumber;
-    this.createTemporaryRectangle(this.rectangleGenerator);
+    this.rectangleGenerator.createTemporaryRectangle(this.TEMP_RECT_ID);
     this.mouseDown = true;
   }
 
@@ -66,7 +63,7 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   finishElement() {
     if (this.mouseDown) {
       // Remove the rectangle
-      RendererSingleton.canvas.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
+      RendererSingleton.canvas.removeChild(this.tempRect);
       this.currentElementsNumber += 1;
       this.pushGeneratorCommand(this.currentElement);
       this.mouseDown = false;
@@ -87,9 +84,8 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   }
 
   private determineRadius(): number {
-    const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
-    const h: number = parseFloat(tempRect.getAttribute('height') as string);
-    const w: number = parseFloat(tempRect.getAttribute('width') as string);
+    const h: number = parseFloat(this.tempRect.getAttribute('height') as string);
+    const w: number = parseFloat(this.tempRect.getAttribute('width') as string);
     if ((w / h) <= this.aspectRatio) {
       if ((this.nbOfApex % 4) === 0) {
         return (w / 2) * this.adjustment[0];
@@ -110,11 +106,10 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   }
 
   private determineCenter(radius: number): number[] {
-    const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
-    const h: number = parseFloat(tempRect.getAttribute('height') as string);
-    const w: number = parseFloat(tempRect.getAttribute('width') as string);
-    const x: number = parseFloat(tempRect.getAttribute('x') as string);
-    const y: number = parseFloat(tempRect.getAttribute('y') as string);
+    const h: number = parseFloat(this.tempRect.getAttribute('height') as string);
+    const w: number = parseFloat(this.tempRect.getAttribute('width') as string);
+    const x: number = parseFloat(this.tempRect.getAttribute('x') as string);
+    const y: number = parseFloat(this.tempRect.getAttribute('y') as string);
     const center: number[] = [(x + w / 2), (y + h / 2)];
     if (this.nbOfApex % 2 === 1) {
       if ((w / h) > this.aspectRatio ) {

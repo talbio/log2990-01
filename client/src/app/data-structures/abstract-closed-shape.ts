@@ -1,29 +1,21 @@
-import { MousePositionService } from './../services/mouse-position/mouse-position.service';
+import { MousePositionService } from '../services/mouse-position/mouse-position.service';
 import {RendererSingleton} from '../services/renderer-singleton';
-import {RectangleGeneratorService} from '../services/tools/rectangle-generator/rectangle-generator.service';
 import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
 import {AbstractGenerator} from './abstract-generator';
 import {PlotType} from './plot-type';
 
 export abstract class AbstractClosedShape extends AbstractGenerator {
 
-  protected plotType: PlotType;
-  protected strokeWidth: number;
+  plotType: PlotType;
+  strokeWidth: number;
   protected mouseDown: boolean;
 
-  constructor(protected mouse: MousePositionService,
-              protected undoRedoService: UndoRedoService) {
+  protected constructor(protected mouse: MousePositionService,
+                        protected undoRedoService: UndoRedoService) {
     super(mouse, undoRedoService);
     this.strokeWidth = 1;
     this.plotType = PlotType.Contour;
     this.mouseDown = false;
-  }
-
-  createTemporaryRectangle(rectangleGenerator: RectangleGeneratorService) {
-    rectangleGenerator.plotType = PlotType.Contour;
-    rectangleGenerator.createElement('black', 'black');
-    RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1].id = 'tempRect';
-    RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1].setAttribute('stroke-dasharray', '4');
   }
 
   drawElement(element: SVGElement, properties: [string, string][], primaryColor: string, secondaryColor: string): void {

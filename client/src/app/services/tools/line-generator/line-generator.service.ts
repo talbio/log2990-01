@@ -23,8 +23,8 @@ export class LineGeneratorService extends AbstractGenerator {
   private strokeWidth: number;
   private markerDiameter: number;
   private isMakingLine = false;
-  private currentPolyineStartX: number;
-  private currentPolyineStartY: number;
+  private currentPolylineStartX: number;
+  private currentPolylineStartY: number;
   private isMarkersActive: boolean;
   private lineJoin: string;
   private dashArray: string;
@@ -130,8 +130,8 @@ export class LineGeneratorService extends AbstractGenerator {
       this.currentElement = polyline;
       this.createMarkers(primaryColor);
       this.isMakingLine = true;
-      this.currentPolyineStartX = this.xPos;
-      this.currentPolyineStartY = this.yPos;
+      this.currentPolylineStartX = this.xPos;
+      this.currentPolylineStartY = this.yPos;
 
     } else {
       this.addPointToCurrentLine();
@@ -186,7 +186,7 @@ export class LineGeneratorService extends AbstractGenerator {
       // delete the two last lines for double click
       this.deleteLine();
       this.deleteLine();
-      const newPoint = ` ${this.currentPolyineStartX},${this.currentPolyineStartY}`;
+      const newPoint = ` ${this.currentPolylineStartX},${this.currentPolylineStartY}`;
       this.currentElement.setAttribute('points', this.currentElement.getAttribute('points') + newPoint);
       this.currentElementsNumber += 1;
       this.isMakingLine = false;

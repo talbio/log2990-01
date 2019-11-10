@@ -1,6 +1,5 @@
 import { Injectable} from '@angular/core';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
-import { PlotType } from '../../../data-structures/plot-type';
 import {MousePositionService} from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
@@ -14,27 +13,22 @@ enum Axis {
 @Injectable()
 export class EllipseGeneratorService extends AbstractClosedShape {
 
-  private readonly TEMP_RECT_ID = '#tempRect';
+  private readonly TEMP_RECT_ID = 'tempRect';
 
-  constructor(protected undoRedoService: UndoRedoService,
-              protected mouse: MousePositionService,
-              private rectangleGenerator: RectangleGeneratorService) {
+  constructor(private rectangleGenerator: RectangleGeneratorService,
+              protected undoRedoService: UndoRedoService,
+              protected mouse: MousePositionService) {
     super(mouse, undoRedoService);
   }
 
-  // Getters/Setters
-  get _strokeWidth() { return this.strokeWidth; }
-  set _strokeWidth(width: number) { this.strokeWidth = width; }
-
-  get _plotType() { return this.plotType; }
-  set _plotType(plotType: PlotType) { this.plotType = plotType; }
-
-  set _currentEllipseNumber(count: number) { this.currentElementsNumber = count; }
+  get tempRect(): SVGElement {
+    return RendererSingleton.renderer.selectRootElement('#' + this.TEMP_RECT_ID);
+  }
 
   // Primary methods
   createElement(primaryColor: string, secondaryColor: string) {
     this.generateEllipseElement(primaryColor, secondaryColor);
-    this.createTemporaryRectangle(this.rectangleGenerator);
+    this.rectangleGenerator.createTemporaryRectangle(this.TEMP_RECT_ID);
     this.mouseDown = true;
   }
 
@@ -48,7 +42,7 @@ export class EllipseGeneratorService extends AbstractClosedShape {
 
   finishElement() {
     if (this.mouseDown) {
-      RendererSingleton.canvas.removeChild(RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true));
+      RendererSingleton.canvas.removeChild(this.tempRect);
       this.currentElementsNumber += 1;
       this.pushGeneratorCommand(this.currentElement);
       this.mouseDown = false;
@@ -58,11 +52,10 @@ export class EllipseGeneratorService extends AbstractClosedShape {
   updateEllipse(currentChildPosition: number) {
     if (this.mouseDown) {
       this.rectangleGenerator.updateRectangle(currentChildPosition);
-      const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
-      const x: number = parseFloat(tempRect.getAttribute('x') as string);
-      const y: number = parseFloat(tempRect.getAttribute('y') as string);
-      const w: number = parseFloat(tempRect.getAttribute('width') as string);
-      const h: number = parseFloat(tempRect.getAttribute('height') as string);
+      const x: number = parseFloat(this.tempRect.getAttribute('x') as string);
+      const y: number = parseFloat(this.tempRect.getAttribute('y') as string);
+      const w: number = parseFloat(this.tempRect.getAttribute('width') as string);
+      const h: number = parseFloat(this.tempRect.getAttribute('height') as string);
       const currentEllipse = RendererSingleton.canvas.children[currentChildPosition - 2] as SVGElement;
       const radiusWidth: number = w / 2;
       const radiusHeight: number = h / 2;
@@ -83,10 +76,9 @@ export class EllipseGeneratorService extends AbstractClosedShape {
   updateCircle(currentChildPosition: number): void {
     if (this.mouseDown) {
       this.rectangleGenerator.updateSquare(currentChildPosition);
-      const tempRect = RendererSingleton.renderer.selectRootElement(this.TEMP_RECT_ID, true);
-      const x: number = parseFloat(tempRect.getAttribute('x') as string);
-      const y: number = parseFloat(tempRect.getAttribute('y') as string);
-      const h: number = parseFloat(tempRect.getAttribute('height') as string);
+      const x: number = parseFloat(this.tempRect.getAttribute('x') as string);
+      const y: number = parseFloat(this.tempRect.getAttribute('y') as string);
+      const h: number = parseFloat(this.tempRect.getAttribute('height') as string);
       const currentEllipse = RendererSingleton.canvas.children[currentChildPosition - 2] as SVGElement;
       const radius: number = h / 2;
       this.setAxisAttributes(currentEllipse, Axis.x, radius, x + radius);

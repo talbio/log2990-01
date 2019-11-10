@@ -260,7 +260,7 @@ describe('DrawingViewComponent', () => {
     expect(initialSecondaryColor).not.toBe(newSecondaryColor);
     // create the ellipse and make sure it has a plot type that allows both colors to be shown
     const ellipseGeneratorService = fixture.debugElement.injector.get(EllipseGeneratorService);
-    ellipseGeneratorService._plotType = PlotType.FullWithContour;
+    ellipseGeneratorService.plotType = PlotType.FullWithContour;
     drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
     // ellipse  should be created as the last child
     const ellipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
@@ -275,8 +275,8 @@ describe('DrawingViewComponent', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     // Create a first ellipse with plot type only contour and a stroke width
     const ellipseGeneratorService = fixture.debugElement.injector.get(EllipseGeneratorService);
-    ellipseGeneratorService._plotType = PlotType.Contour;
-    ellipseGeneratorService._strokeWidth = 10;
+    ellipseGeneratorService.plotType = PlotType.Contour;
+    ellipseGeneratorService.strokeWidth = 10;
     drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
     // ellipse  should be created as the last child
     const firstEllipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
@@ -285,8 +285,8 @@ describe('DrawingViewComponent', () => {
     expect(firstEllipseChild.getAttribute('fill')).toEqual('transparent');
     expect(firstEllipseChild.getAttribute('stroke')).not.toEqual('transparent');
     // Create a second ellipse with plot type only fill and a different stroke width
-    ellipseGeneratorService._plotType = PlotType.Full;
-    ellipseGeneratorService._strokeWidth = 15;
+    ellipseGeneratorService.plotType = PlotType.Full;
+    ellipseGeneratorService.strokeWidth = 15;
     drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
     // ellipse  should be created as the last child
     const secondEllipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
@@ -295,8 +295,8 @@ describe('DrawingViewComponent', () => {
     expect(secondEllipseChild.getAttribute('fill')).not.toEqual('transparent');
     expect(secondEllipseChild.getAttribute('stroke')).toEqual('transparent');
     // Create a first ellipse with plot type fill and contour and a different stroke width
-    ellipseGeneratorService._plotType = PlotType.FullWithContour;
-    ellipseGeneratorService._strokeWidth = 20;
+    ellipseGeneratorService.plotType = PlotType.FullWithContour;
+    ellipseGeneratorService.strokeWidth = 20;
     drawShapeOnCanvas(100, 100, 200, 200, Tools.Ellipse);
     // ellipse  should be created as the last child
     const thirdEllipseChild = getLastSvgElement(svgHandle, 1) as SVGElement;
@@ -1058,7 +1058,7 @@ describe('DrawingViewComponent', () => {
 
     // Create the rectangle with the initial color and make sure it has a fill
     const rectangleGeneratorService = fixture.debugElement.injector.get(RectangleGeneratorService);
-    rectangleGeneratorService._plotType = PlotType.FullWithContour;
+    rectangleGeneratorService.plotType = PlotType.FullWithContour;
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     const xInitial = 100;
     const yInitial = 100;
@@ -1351,9 +1351,9 @@ describe('DrawingViewComponent', () => {
     mousePosition.canvasMousePositionY = movedY;
 
     // Setting up the event
-    polygonGenerator._plotType = PlotType.Contour;
+    polygonGenerator.plotType = PlotType.Contour;
     polygonGenerator._nbOfApex = 3;
-    polygonGenerator._strokeWidth = 1;
+    polygonGenerator.strokeWidth = 1;
     component.workZoneComponent.onMouseDown(mouseDownEvent);
     const defaultPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
     component.workZoneComponent.onMouseMove(mouseMoveEvent);
@@ -1372,9 +1372,9 @@ describe('DrawingViewComponent', () => {
 
     component.workZoneComponent.onMouseUp();
 
-    polygonGenerator._plotType = PlotType.Full;
+    polygonGenerator.plotType = PlotType.Full;
     polygonGenerator._nbOfApex = 11;
-    polygonGenerator._strokeWidth = 5;
+    polygonGenerator.strokeWidth = 5;
 
     component.workZoneComponent.onMouseDown(mouseDownEvent);
     const changedPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
@@ -1430,9 +1430,9 @@ describe('DrawingViewComponent', () => {
     mousePosition.canvasMousePositionY = movedY;
 
     // Setting up the event
-    polygonGenerator._plotType = PlotType.Contour;
+    polygonGenerator.plotType = PlotType.Contour;
     polygonGenerator._nbOfApex = 3;
-    polygonGenerator._strokeWidth = 1;
+    polygonGenerator.strokeWidth = 1;
     component.workZoneComponent.onMouseDown(mouseDownEvent);
     const defaultPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
     component.workZoneComponent.onMouseMove(mouseMoveEvent);
@@ -1451,9 +1451,9 @@ describe('DrawingViewComponent', () => {
 
     component.workZoneComponent.onMouseUp();
 
-    polygonGenerator._plotType = PlotType.Full;
+    polygonGenerator.plotType = PlotType.Full;
     polygonGenerator._nbOfApex = 11;
-    polygonGenerator._strokeWidth = 5;
+    polygonGenerator.strokeWidth = 5;
 
     component.workZoneComponent.onMouseDown(mouseDownEvent);
     const changedPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
@@ -1688,7 +1688,7 @@ describe('DrawingViewComponent', () => {
     expect(initialSecondaryColor).not.toBe(newSecondaryColor);
     // create the polygon and make sure it has a plot type that allows both colors to be shown
     const polygonGeneratorService = fixture.debugElement.injector.get(PolygonGeneratorService);
-    polygonGeneratorService._plotType = PlotType.FullWithContour;
+    polygonGeneratorService.plotType = PlotType.FullWithContour;
     drawShapeOnCanvas(100, 100, 200, 200, Tools.Polygon);
     // polygon should be created as the last child
     const polygonChild = getLastSvgElement(svgHandle, 1) as SVGElement;
