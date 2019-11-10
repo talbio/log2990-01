@@ -80,7 +80,7 @@ export class PenGeneratorService extends AbstractWritingTool {
         }
     }
 
-    updatePosition(currentPositionX: number, currentPositionY: number){
+    updatePosition(currentPositionX: number, currentPositionY: number) {
         this.positionX = currentPositionX;
         this.positionY = currentPositionY;
     }
