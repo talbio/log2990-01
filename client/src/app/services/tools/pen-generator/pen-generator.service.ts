@@ -57,7 +57,7 @@ export class PenGeneratorService extends AbstractWritingTool {
       this.pathArray.push(this.currentElement);
   }
 
-  updateElement(currentChildPosition: number) {
+  updateElement() {
       if (this.mouseDown) {
           const currentPositionX = this.xPos;
           const currentPositionY = this.yPos;
