@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+/*import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Tools } from 'src/app/data-structures/Tools';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
 import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
@@ -259,4 +259,4 @@ fdescribe('WorkZoneComponent', () => {
     expect(workChilds.length).toEqual(4);
     expect(workChilds[3]).toEqual(workChilds[2]);
   });
-});
+});*/

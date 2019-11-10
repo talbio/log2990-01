@@ -25,7 +25,8 @@ describe('DrawingsStockerService', () => {
     let i  = 0;
     sandbox.stub(fs, 'readFileSync')
         .value( (path: string, options: string) => {
-            const drawing: Drawing =  {id: i, name: '', svgElements: '', tags: [], miniature: ''};
+            const drawing: Drawing =  {id: i, name: '', svgElements: '', tags: [], miniature: '',
+                canvasWidth: 0, canvasHeight: 0};
             ++i;
             return JSON.stringify(drawing);
         });
@@ -48,13 +49,15 @@ describe('DrawingsStockerService', () => {
     });
 
     it('storeDrawing should write json object to file', async () => {
-        const drawing: Drawing =  {id: -1, name: 'fake', svgElements: '', tags: [], miniature: ''};
+        const drawing: Drawing =  {id: -1, name: 'fake', svgElements: '', tags: [], miniature: '',
+            canvasWidth: 0, canvasHeight: 0};
         await expect(drawingsService.storeDrawing(drawing)).to.be.equal(true);
         expect(mockedFile.pop()).to.contain('fake');
     });
 
     it('storeDrawing should not write json object to file if drawing does not contain name', async () => {
-        const drawing: Drawing =  {id: -1, name: '', svgElements: '', tags: [], miniature: ''};
+        const drawing: Drawing =  {id: -1, name: '', svgElements: '', tags: [], miniature: '',
+            canvasWidth: 0, canvasHeight: 0};
         await expect(drawingsService.storeDrawing(drawing)).to.be.equal(false);
     });
 

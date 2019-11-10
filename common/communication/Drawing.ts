@@ -4,4 +4,6 @@ export interface Drawing {
     svgElements: string;
     tags: string[];
     miniature: string;
+    canvasWidth: number;
+    canvasHeight: number;
 }

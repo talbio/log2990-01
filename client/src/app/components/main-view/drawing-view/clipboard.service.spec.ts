@@ -106,7 +106,6 @@ fdescribe('DrawingViewComponent', () => {
     // Create the work-zone
     // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-    const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
     // Setting up the event
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
@@ -118,7 +117,7 @@ fdescribe('DrawingViewComponent', () => {
         width="100" height="150" stroke="black" stroke-width="1"
         fill="pink"></rect>`;
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
-    selector.SVGArray.push(workChilds[2] as SVGElement);
+    selector.selectedElements.push(workChilds[2] as SVGElement);
 
     const itemToBeCut = workChilds[2] as SVGElement;
 
@@ -135,7 +134,7 @@ fdescribe('DrawingViewComponent', () => {
         width="100" height="250" stroke="red" stroke-width="1"
         fill="pink"></rect>`;
     const itemToBeCopied = workChilds[3] as SVGElement;
-    selector.SVGArray.push(workChilds[3] as SVGElement);
+    selector.selectedElements.push(workChilds[3] as SVGElement);
     clipboardService.copy();
     // The clipboard contains the item copied
     expect(clipboardService.memorizedAction).toContain(itemToBeCopied);
@@ -146,7 +145,7 @@ fdescribe('DrawingViewComponent', () => {
         y="100" data-start-y="100"
         width="100" height="50" stroke="yellow" stroke-width="1"
         fill="pink"></rect>`;
-    selector.SVGArray.push(workChilds[4] as SVGElement);
+    selector.selectedElements.push(workChilds[4] as SVGElement);
     clipboardService.delete();
     // The clipboard contains only one element and it is not the one that was deleted
     expect(clipboardService.memorizedAction).toContain(itemToBeCopied);
@@ -155,7 +154,6 @@ fdescribe('DrawingViewComponent', () => {
 
   it('should add slightely displaced copies of the clipboarded elements on canvas (paste)', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-    const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
     // const polygonGen = fixture.debugElement.injector.get(PolygonGeneratorService);
     // const mouse = fixture.debugElement.injector.get(MousePositionService);
@@ -180,7 +178,7 @@ fdescribe('DrawingViewComponent', () => {
         fill="pink"></rect>`;
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
     const itemToBeCut = workChilds[2] as SVGElement;
-    selector.SVGArray.push(itemToBeCut);
+    selector.selectedElements.push(itemToBeCut);
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
     clipboardService.cut();
     clipboardService.paste();
@@ -192,7 +190,6 @@ fdescribe('DrawingViewComponent', () => {
 
   it('should add slightely displaced copies of the clipboarded elements on canvas and not affect the clipboard (paste)', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-    const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
 
     // Setting up the event
@@ -206,7 +203,7 @@ fdescribe('DrawingViewComponent', () => {
         fill="pink"></rect>`;
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
     const itemToBeCut = workChilds[2] as SVGElement;
-    selector.SVGArray.push(itemToBeCut);
+    selector.selectedElements.push(itemToBeCut);
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
     clipboardService.cut();
     const nbChildrenBeforePaste = workChilds.length;
@@ -221,7 +218,6 @@ fdescribe('DrawingViewComponent', () => {
 
   it('should add slightely displaced copies of the clipboarded elements on canvas (duplicate)', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-    const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
 
     // Setting up the event
@@ -235,25 +231,25 @@ fdescribe('DrawingViewComponent', () => {
         fill="pink"></rect>`;
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
     const itemToBeDuplicated = workChilds[2] as SVGElement;
-    selector.SVGArray.push(itemToBeDuplicated);
+    selector.selectedElements.push(itemToBeDuplicated);
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
     clipboardService.duplicate();
 
     const clone = workChilds[3];
     let isAClone = true;
-    if (parseFloat(clone.getAttribute('height')) !== parseFloat(itemToBeDuplicated.getAttribute('height'))) {
+    if (parseFloat(clone.getAttribute('height') as unknown as string) !== parseFloat(itemToBeDuplicated.getAttribute('height') as unknown as string)) {
       isAClone = false;
     }
-    if (parseFloat(clone.getAttribute('width')) !== parseFloat(itemToBeDuplicated.getAttribute('width'))) {
+    if (parseFloat(clone.getAttribute('width') as unknown as string) !== parseFloat(itemToBeDuplicated.getAttribute('width') as unknown as string)) {
       isAClone = false;
     }
-    if (parseFloat(clone.getAttribute('fill')) !== parseFloat(itemToBeDuplicated.getAttribute('fill'))) {
+    if (parseFloat(clone.getAttribute('fill') as unknown as string) !== parseFloat(itemToBeDuplicated.getAttribute('fill') as unknown as string)) {
       isAClone = false;
     }
-    if (parseFloat(clone.getAttribute('stroke-width')) !== parseFloat(itemToBeDuplicated.getAttribute('stroke-width'))) {
+    if (parseFloat(clone.getAttribute('stroke-width') as unknown as string) !== parseFloat(itemToBeDuplicated.getAttribute('stroke-width') as unknown as string)) {
       isAClone = false;
     }
-    if (parseFloat(clone.getAttribute('stroke')) !== parseFloat(itemToBeDuplicated.getAttribute('stroke'))) {
+    if (parseFloat(clone.getAttribute('stroke') as unknown as string) !== parseFloat(itemToBeDuplicated.getAttribute('stroke') as unknown as string)) {
       isAClone = false;
     }
     expect(isAClone).toBe(true);
@@ -265,7 +261,6 @@ fdescribe('DrawingViewComponent', () => {
 
   it('should ', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-    const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
 
     // Setting up the event
@@ -279,7 +274,7 @@ fdescribe('DrawingViewComponent', () => {
         fill="pink"></rect>`;
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
     const itemToBeCut = workChilds[2] as SVGElement;
-    selector.SVGArray.push(itemToBeCut);
+    selector.selectedElements.push(itemToBeCut);
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
     clipboardService.duplicate();
 
@@ -289,7 +284,6 @@ fdescribe('DrawingViewComponent', () => {
 
   it('should add slightely displaced copies of the clipboarded elements on canvas (duplicate)', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-    const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
 
     // Setting up the event
@@ -303,7 +297,7 @@ fdescribe('DrawingViewComponent', () => {
         fill="pink"></rect>`;
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
     const itemToBeCut = workChilds[2] as SVGElement;
-    selector.SVGArray.push(itemToBeCut);
+    selector.selectedElements.push(itemToBeCut);
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
     clipboardService.duplicate();
 

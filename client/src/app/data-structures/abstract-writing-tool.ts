@@ -5,9 +5,9 @@ import {AbstractGenerator} from './abstract-generator';
 
 export abstract class AbstractWritingTool extends AbstractGenerator {
 
-  private readonly DEFAULT_WIDTH = 5;
+  protected readonly DEFAULT_WIDTH = 5;
 
-  protected strokeWidth: number;
+  strokeWidth: number;
   protected mouseDown: boolean;
 
   constructor(protected mouse: MousePositionService,

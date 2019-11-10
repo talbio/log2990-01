@@ -126,7 +126,7 @@ describe('DrawingViewComponent', () => {
     mousePositionService.canvasMousePositionX = x2;
     mousePositionService.canvasMousePositionY = y2;
     component.workZoneComponent.onMouseMove(mouseEvent);
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(mouseEvent);
   };
 
   // This returns the child at 'position' from the canvas's last position (1 for last)
@@ -229,7 +229,7 @@ describe('DrawingViewComponent', () => {
     expect(ellipseRight).toEqual(200);
     expect(ellipseBottom).toEqual(200);
     // call a mouseup event to finish the ellipse and remove the rectangle
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(mouseEvent);
     expect(svgHandle.contains(rectangleChild)).toBeFalsy();
   });
 
@@ -1017,7 +1017,7 @@ describe('DrawingViewComponent', () => {
   });
   component.workZoneComponent.onMouseDown(mouseEvent2);
   component.workZoneComponent.onMouseMove(mouseMove);
-  component.workZoneComponent.onMouseUp();
+  component.workZoneComponent.onMouseUp(mouseMove);
 
   const selectorBox = getLastSvgElement(svgHandle, 1);
 
@@ -1084,7 +1084,7 @@ describe('DrawingViewComponent', () => {
     mousePositionService.canvasMousePositionX = newX;
     mousePositionService.canvasMousePositionY = newY;
     component.workZoneComponent.onMouseMove(mouseEvent);
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(mouseEvent);
     // Expect a <rectangle>
     // Since the rectangle was just created it should be the last element
     const rectangle = getLastSvgElement(svgHandle, 1);
@@ -1129,10 +1129,10 @@ describe('DrawingViewComponent', () => {
   });
 
   it('should be able to assign a color to secondary color with right click as eyedropper', () => {
-    // Step 1. Place a path with a specific stroke color
-    // We use a pencil path since it uses the secondary color as its stroke
+    // Step 1. Place a rectangle with a specific stroke color
+    // We use a rectangle since it uses the secondary color as its stroke
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-    toolManagerService._activeTool = Tools.Pencil;
+    toolManagerService._activeTool = Tools.Rectangle;
     // Create the work-zone
     // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
@@ -1144,74 +1144,55 @@ describe('DrawingViewComponent', () => {
     colorService.assignSecondaryColor();
     const initialSecondaryColor = colorService.getSecondaryColor();
 
-    // Create the pencil path with the initial color
-    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    const xInitial = 100;
-    const yInitial = 100;
+    // Set the primary color to be different
+    newColor = 'rgba(100,100,100,1)';
+    colorService.setPrimaryColor(newColor);
+    colorService.assignPrimaryColor();
+    const initialPrimaryColor = colorService.getPrimaryColor();
 
-    let mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: xInitial,
-      clientY: yInitial,
-    });
-    // Also change the positions on the mouse position service
-    mousePositionService.canvasMousePositionX = xInitial;
-    mousePositionService.canvasMousePositionY = yInitial;
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    expect(initialPrimaryColor).not.toEqual(initialSecondaryColor);
+    // Create the rectangle with the initial color and make sure it has a fill of a different color from the secondary color
+    const rectangleGeneratorService = fixture.debugElement.injector.get(RectangleGeneratorService);
+    rectangleGeneratorService._plotType = PlotType.FullWithContour;
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
 
-    // Make the path cover a space so we can click it
-    let newX = 200;
-    let newY = 200;
-    mouseEvent = new MouseEvent('mousemove', {
-      clientX: newX,
-      clientY: newY,
-    });
-    // update mouse position on the service
-    mousePositionService.canvasMousePositionX = newX;
-    mousePositionService.canvasMousePositionY = newY;
-    component.workZoneComponent.onMouseMove(mouseEvent);
-    component.workZoneComponent.onMouseUp();
-    // Expect a <path>
-    // Since the pencil path was just created it should be the last element
-    const pencilPath = getLastSvgElement(svgHandle, 1);
-    expect(pencilPath.tagName).toEqual('path');
-
-    // Now change the color, the pipette should bring it back to the initial value, since the path was made with it
-    newColor = 'rgba(100,0,0,1)';
-    colorService.setSecondaryColor(newColor);
-    colorService.assignSecondaryColor();
-    const secondSecondaryColor = colorService.getSecondaryColor();
-    expect(initialSecondaryColor).not.toBe(secondSecondaryColor);
+    // Expect a <rect>
+    // Since the rectangle was just created it should be the last element
+    const rectangle = getLastSvgElement(svgHandle, 1);
+    expect(rectangle.tagName).toEqual('rect');
+    expect(rectangle.getAttribute('stroke')).toBe(initialSecondaryColor);
+    expect(rectangle.getAttribute('fill')).toBe(initialPrimaryColor);
 
     // Select the eyedropper (pipette)
     toolManagerService._activeTool = Tools.Eyedropper;
 
-    // Click on the line (links 100,100 and 200,200)
-    newX = 150;
-    newY = 150;
-    mouseEvent = new MouseEvent('contextmenu', {
+    // Click on the rectangle's fill (between 100,100 and 200,200)
+    const clickX = 150;
+    const clickY = 150;
+    const mouseEvent = new MouseEvent('contextmenu', {
       button: 2,
-      clientX: newX,
-      clientY: newY,
+      clientX: clickX,
+      clientY: clickY,
       bubbles: true,
     });
     // update mouse position on the service
-    mousePositionService.canvasMousePositionX = newX;
-    mousePositionService.canvasMousePositionY = newY;
-    // click the pencil path
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService.canvasMousePositionX = clickX;
+    mousePositionService.canvasMousePositionY = clickY;
+    // click the rectangle
     const spy = spyOn(component.workZoneComponent, 'onRightClick').and.callThrough();
     const eyedropperService = fixture.debugElement.injector.get(EyedropperService);
     const deepSpy = spyOn(eyedropperService, 'changeSecondaryColor').and.callThrough();
-    pencilPath.dispatchEvent(mouseEvent);
+    rectangle.dispatchEvent(mouseEvent);
     expect(spy).toHaveBeenCalled();
     expect(deepSpy).toHaveBeenCalled();
     // Look at the new secondary color
     const lastSecondaryColor = colorService.getSecondaryColor();
 
     // Step 3. compare values
-    // The color should be equal to the initial value and different from the modified one
-    expect(lastSecondaryColor).toBe(initialSecondaryColor);
-    expect(lastSecondaryColor).not.toBe(secondSecondaryColor);
+    // The color should be equal to the primaryColor and different from the intial color
+    expect(lastSecondaryColor).toBe(initialPrimaryColor);
+    expect(lastSecondaryColor).not.toBe(initialSecondaryColor);
   });
 
   ////////////////////////////
@@ -1308,7 +1289,7 @@ describe('DrawingViewComponent', () => {
     const expectedPolygon = getLastSvgElement(svgHandle, 2);
     expect(expectedPolygon.tagName).toEqual('polygon');
 
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(mouseEvent);
 
     // Verify if tempRect disapeared
     expect(workChilds.length).toEqual(currentNumberOfChildren - 1);
@@ -1362,7 +1343,6 @@ describe('DrawingViewComponent', () => {
     // Getting the number of vertex
     const pointsHTML = defaultPolygon.getAttribute('points') as string;
     const points = pointsHTML.split(' ', 12);
-    console.log(points);
 
     // If next 2 pass, plotType is really Contour
     expect(defaultPolygon.getAttribute('fill')).toEqual('transparent');
@@ -1370,7 +1350,7 @@ describe('DrawingViewComponent', () => {
     expect(points.length).toEqual(3);
     expect(defaultPolygon.getAttribute('stroke-width')).toEqual('1');
 
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(mouseMoveEvent);
 
     polygonGenerator._plotType = PlotType.Full;
     polygonGenerator._nbOfApex = 11;
@@ -1382,10 +1362,7 @@ describe('DrawingViewComponent', () => {
 
     // Getting number of apex
     const changedPointsHTML = changedPolygon.getAttribute('points') as string;
-    console.log(changedPointsHTML);
     const changedPoints = changedPointsHTML.split(' ', 11);
-    console.log(changedPoints);
-    console.log(polygonGenerator._nbOfApex);
 
     expect(changedPolygon.getAttribute('fill')).toEqual(colorService.primaryColor);
     expect(changedPolygon.getAttribute('stroke')).toEqual('transparent');
@@ -1441,7 +1418,6 @@ describe('DrawingViewComponent', () => {
     // Getting the number of vertex
     const pointsHTML = defaultPolygon.getAttribute('points') as string;
     const points = pointsHTML.split(' ', 12);
-    console.log(points);
 
     // If next 2 pass, plotType is really Contour
     expect(defaultPolygon.getAttribute('fill')).toEqual('transparent');
@@ -1449,7 +1425,7 @@ describe('DrawingViewComponent', () => {
     expect(points.length).toEqual(3);
     expect(defaultPolygon.getAttribute('stroke-width')).toEqual('1');
 
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(mouseMoveEvent);
 
     polygonGenerator._plotType = PlotType.Full;
     polygonGenerator._nbOfApex = 11;
@@ -1461,11 +1437,7 @@ describe('DrawingViewComponent', () => {
 
     // Getting number of apex
     const changedPointsHTML = changedPolygon.getAttribute('points') as string;
-    console.log(changedPointsHTML);
     const changedPoints = changedPointsHTML.split(' ', 11);
-    console.log(changedPoints);
-    console.log(polygonGenerator._nbOfApex);
-
     expect(changedPolygon.getAttribute('fill')).toEqual(colorService.primaryColor);
     expect(changedPolygon.getAttribute('stroke')).toEqual('transparent');
     expect(changedPoints.length).toEqual(11);
@@ -1479,7 +1451,6 @@ describe('DrawingViewComponent', () => {
     // Finding length of a side
     const pointsXY: string[][] = [['']];
     for (let i = 0 ; i < apex ; i++) {
-      console.log(i);
       pointsXY[i] = points[i].split(',', 2);
     }
 
@@ -1507,9 +1478,6 @@ describe('DrawingViewComponent', () => {
     const w: number = parseFloat(tempRect.getAttribute('width') as string);
     const x: number = parseFloat(tempRect.getAttribute('x') as string);
     const y: number = parseFloat(tempRect.getAttribute('y') as string);
-    console.log(x);
-    console.log(y);
-    console.log(x + w);
 
     let widestLeftPoint = points[0];
     let widestRightPoint = points[0];
@@ -1528,10 +1496,6 @@ describe('DrawingViewComponent', () => {
     if (Math.round(parseFloat(widestRightPoint[0])) === (x + w)) { touchCounter[1] = true; }
     if (Math.round(parseFloat(highestPoint[1])) === y) { touchCounter[2] = true; }
     if (Math.round(parseFloat(lowestPoint[1])) === (y + h)) { touchCounter[3] = true; }
-
-    console.log(Math.round(parseFloat(widestLeftPoint[0])));
-    console.log(Math.round(parseFloat(highestPoint[1])));
-    console.log(Math.round(parseFloat(lowestPoint[1])));
 
     if (points.length % 2 === 0) {
       if (w / h < aspectRatio) {
@@ -1628,7 +1592,7 @@ describe('DrawingViewComponent', () => {
     verifiePolygonIsBiggest(pointsTriangle, tempRect1, polygonGenerator._aspectRatio);
     verifiePointsInRectangle(pointsTriangle, tempRect1, polygonGenerator._aspectRatio);
 
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(mouseMoveEvent);
 
     // Case 2 => (NbOfApex) % 4 === 0
     polygonGenerator._nbOfApex = 8;
@@ -1643,7 +1607,7 @@ describe('DrawingViewComponent', () => {
     verifiePolygonIsBiggest(pointsOctogon, tempRect2, polygonGenerator._aspectRatio);
     verifiePointsInRectangle(pointsOctogon, tempRect2, polygonGenerator._aspectRatio);
 
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(mouseMoveEvent);
 
     // Case 3 => (NbOfApex) % 2 === 0 && (NbOfApex) % 4 !== 0
     polygonGenerator._nbOfApex = 6;
@@ -1658,7 +1622,7 @@ describe('DrawingViewComponent', () => {
     verifiePolygonIsBiggest(pointsHexagon, tempRect3, polygonGenerator._aspectRatio);
     verifiePointsInRectangle(pointsHexagon, tempRect3, polygonGenerator._aspectRatio);
 
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(mouseMoveEvent);
   });
 
   it('should have the polygon be drawn using the primary and secondary colors', () => {

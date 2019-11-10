@@ -11,9 +11,11 @@
      (mousewheel)='onMouseWheel($event)'>
     <defs id="definitions">
         <!-- Pattern for grid -->
-        <pattern id="backgroundGridPattern" patternUnits="userSpaceOnUse" [attr.width]="gridSize" [attr.height]="gridSize">
-            <line [attr.x1]="0" [attr.y1]="0" [attr.x2]="gridSize" [attr.y2]="0" stroke="black" stroke-width="1"/>
-            <line [attr.x1]="gridSize" [attr.y1]="0" [attr.x2]="gridSize" [attr.y2]="gridSize" stroke="black" stroke-width="1"/>
+        <pattern id="backgroundGridPattern" patternUnits="userSpaceOnUse" [attr.width]="gridSize"
+            [attr.height]="gridSize">
+            <line [attr.x1]="0" [attr.y1]="0" [attr.x2]="gridSize" [attr.y2]="0" stroke="black" stroke-width="1" />
+            <line [attr.x1]="gridSize" [attr.y1]="0" [attr.x2]="gridSize" [attr.y2]="gridSize" stroke="black"
+                stroke-width="1" />
         </pattern>
         <!-- Patterns for brush -->
         <pattern id="brushPattern1" patternUnits="userSpaceOnUse" width="3" height="3">
@@ -53,7 +55,17 @@
             <polygon points="0 8 3 7 2 10" stroke="black" fill="white" stroke-width="1" />
             <polygon points="8 10 7 7 10 8" stroke="black" fill="white" stroke-width="1" />
         </pattern>
+        <filter id="dropshadow" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feComponentTransfer in="SourceAlpha">
+                <feFuncR type="discrete" tableValues="1"/>
+                <feFuncG type="discrete" tableValues="0"/>
+                <feFuncB type="discrete" tableValues="0"/>
+            </feComponentTransfer>
+            <feGaussianBlur stdDeviation="2"/>
+            <feOffset dx="0" dy="0" result="shadow"/>
+            <feComposite in="SourceGraphic" in2="shadow" operator="over"/>
+          </filter>
     </defs>
-    <rect id="backgroundGrid" x="0" y="0" width="100%" height="100%" fill="url(#backgroundGridPattern)" [attr.fill-opacity]="gridService._gridOpacity" visibility='hidden'></rect>
+    <rect id="backgroundGrid" x="0" y="0" width="100%" height="100%" fill="url(#backgroundGridPattern)"
+        [attr.fill-opacity]="gridService._gridOpacity" visibility='hidden'></rect>
 </svg>
-

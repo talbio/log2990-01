@@ -68,7 +68,7 @@ export class ToolManagerService {
           this.objectSelector.onMouseDown(mouseEvent);
           break;
         case Tools.Eraser:
-          this.eraser.startErasing(canvas);
+          this.eraser.startErasing();
           break;
         default:
           break;
@@ -87,7 +87,7 @@ export class ToolManagerService {
           this.updateNumberOfElements();
           break;
         case Tools.Eraser:
-          this.eraser.moveEraser(canvas);
+          this.eraser.moveEraser();
           break;
         default:
           break;
@@ -105,7 +105,7 @@ export class ToolManagerService {
           this.updateNumberOfElements();
           break;
         case Tools.Eraser:
-          this.eraser.stopErasing(RendererSingleton.canvas);
+          this.eraser.stopErasing();
           break;
         default:
           break;
@@ -189,7 +189,7 @@ export class ToolManagerService {
   }
 
   drawingNonEmpty(): boolean {
-    return this.numberOfElements > 1;
+    return this.numberOfElements > this.DEFAULT_NUMBER_OF_ELEMENTS;
   }
 
   deleteAllDrawings(): void {
@@ -244,6 +244,7 @@ export class ToolManagerService {
   synchronizeAllCounters() {
     const counters: Map<AbstractGenerator, number> = new Map<AbstractGenerator, number>();
     this.generators.forEach( (generator: AbstractGenerator) => counters.set(generator, 0));
+    const penIdList = [''];
     for (const child of [].slice.call(RendererSingleton.canvas.children)) {
       const childCast = child as SVGElement;
       switch (childCast.tagName) {
@@ -261,6 +262,13 @@ export class ToolManagerService {
             this.incrementCounter(counters, this.pencilGenerator);
           } else if (childCast.id.startsWith('brush')) {
             this.incrementCounter(counters, this.brushGenerator);
+          } else if (childCast.id.startsWith('penPath')) {
+            const index = penIdList.indexOf(childCast.id);
+            if (index === -1) {
+              // This is a new pen path
+              this.incrementCounter(counters, this.penGenerator);
+              penIdList.push(childCast.id);
+            }
           } else {
             this.incrementCounter(counters, this.penGenerator);
           }
@@ -279,6 +287,7 @@ export class ToolManagerService {
     counters.set(this.rectangleGenerator, --count);
     this.generators.forEach( (generator: AbstractGenerator) =>
       generator.currentElementsNumber = counters.get(generator) as number);
+    this.numberOfElements = RendererSingleton.canvas.childNodes.length;
   }
 
   private resetCounters(): void {

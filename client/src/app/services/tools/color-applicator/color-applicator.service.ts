@@ -70,6 +70,8 @@ export class ColorApplicatorService implements CommandGenerator {
       targetObject.setAttribute('stroke', newColor);
     } else if (id.startsWith('brush')) {
       this.changeBrushPatternsColor(targetObject, newColor, 'fill');
+    } else if (id.startsWith('penPath')) {
+      this.changePenColor(targetObject, newColor);
     }
   }
 
@@ -80,7 +82,6 @@ export class ColorApplicatorService implements CommandGenerator {
     const ancientColor = this.getBrushPatternColor(targetObject, property);
     const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, RendererSingleton.defs);
     if (pattern) {
-      console.log(ancientColor)
       this.pushBrushPatternsColorChangedCommand(pattern, property, newColor, ancientColor);
       for (const child of [].slice.call(pattern.children)) {
         if (child.hasAttribute(property)) {
@@ -103,6 +104,16 @@ export class ColorApplicatorService implements CommandGenerator {
     return defaultColor;
   }
 
+  private changePenColor(targetObject: SVGElement, newColor: string) {
+    const paths = RendererSingleton.canvas.querySelectorAll('path');
+    paths.forEach((path) => {
+        if (path.id === targetObject.id) {
+            path.setAttribute('stroke', newColor);
+            path.setAttribute('fill', newColor);
+        }
+    });
+  }
+
   private isClosedForm(nodeName: string): boolean {
     return this.CLOSED_FORMS.includes(nodeName);
   }
@@ -122,11 +133,9 @@ export class ColorApplicatorService implements CommandGenerator {
   private pushPolyLineChangedColorCommand(markers: SVGElement, newColor: string, ancientColor: string) {
     const command: Command = {
       execute(): void {
-        console.log(newColor)
         markers.children[0].setAttribute('fill', newColor);
       },
       unexecute(): void {
-        console.log(ancientColor)
         markers.children[0].setAttribute('fill', ancientColor);
       },
     };

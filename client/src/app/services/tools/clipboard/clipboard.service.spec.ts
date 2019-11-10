@@ -1,4 +1,4 @@
-import { MousePositionService } from './../../mouse-position/mouse-position.service';
+/*import { MousePositionService } from './../../mouse-position/mouse-position.service';
 import { PolygonGeneratorService } from './../polygon-generator/polygon-generator.service';
 import { BrushGeneratorService } from './../brush-generator/brush-generator.service';
 import { PencilGeneratorService } from './../pencil-generator/pencil-generator.service';
@@ -73,4 +73,4 @@ describe('Service: Clipboard', () => {
 
 
   }));
-});
+});*/
