@@ -76,7 +76,7 @@ export class EraserService {
                 if (this.strokeColors.get(drawing.id) === undefined) {
                     this.strokeColors.set(drawing.id, drawing.getAttribute('stroke') as string);
                 }
-                if (drawing.id.substring(0, 7) === 'penPath') {
+                if (drawing.id.startsWith('penPath')) {
                     this.isPenCloseToBeingErased = true;
                    // const children = RendererSingleton.getCanvas().childNodes;
                     // TODO: gerer couleur pen path
@@ -95,7 +95,7 @@ export class EraserService {
         }
 
     erase(drawing: SVGGElement): void {
-        if (drawing.id.substring(0, 7) === 'penPath') {
+        if (drawing.id.startsWith('penPath')) {
             const paths = RendererSingleton.getCanvas().querySelectorAll('path');
             paths.forEach((path) => {
                 if (path.id === drawing.id) {
