@@ -124,7 +124,7 @@ export class EraserService {
         if (this.mouseDown) {
             const eraser = RendererSingleton.canvas.querySelector('#eraser') as SVGElement;
             RendererSingleton.canvas.removeChild(eraser);
-            this.pushAction();
+            this.pushAction(this.erasedDrawings);
             this.erasedDrawings = [];
             this.mouseDown = false;
         }
@@ -187,15 +187,15 @@ export class EraserService {
         fill="transparent"></rect>`;
     }
 
-    pushAction(): void {
+    pushAction(drawings: SVGElement[]): void {
         const command: Command = {
             execute(): void {
-                this.svgElements.forEach((drawing) => {
+                drawings.forEach((drawing) => {
                     RendererSingleton.renderer.removeChild(RendererSingleton.canvas, drawing);
                 });
             },
             unexecute(): void {
-                this.svgElements.forEach((drawing) => {
+                drawings.forEach((drawing) => {
                     RendererSingleton.renderer.appendChild(RendererSingleton.canvas, drawing);
                 });
             },

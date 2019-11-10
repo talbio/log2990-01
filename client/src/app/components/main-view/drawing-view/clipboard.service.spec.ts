@@ -1,3 +1,5 @@
+import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
+import { EraserService } from 'src/app/services/tools/eraser/eraser.service';
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -55,6 +57,9 @@ const DRAWING_SERVICES = [
   ColorApplicatorService,
   LineGeneratorService,
   EyedropperService,
+  ClipboardService,
+  EraserService,
+  PenGeneratorService,
   ColorService,
   MousePositionService,
   ObjectSelectorService,
@@ -62,7 +67,7 @@ const DRAWING_SERVICES = [
   PolygonGeneratorService,
 ];
 
-fdescribe('DrawingViewComponent', () => {
+describe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
   beforeEach(async(() => {

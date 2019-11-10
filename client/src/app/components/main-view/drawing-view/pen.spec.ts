@@ -31,6 +31,7 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -62,6 +63,7 @@ const DRAWING_SERVICES = [
   ObjectSelectorService,
   GridTogglerService,
   PolygonGeneratorService,
+  ClipboardService,
   EraserService,
   PenGeneratorService,
 ];
@@ -145,7 +147,7 @@ describe('PenGeneratorService', () => {
         mouse.canvasMousePositionX = 100;
         mouse.canvasMousePositionY = 100;
         // initial stroke width is DEFAULT_MAX_WIDTH and speed is 0
-        penService.createPenPath('black');
+        penService.createElement('black');
         expect(workChilds.length).toBeGreaterThan(initialChildsLength);
         const penPathBeginning = workChilds[workChilds.length - 1];
         const initialStrokeWidth = penPathBeginning.getAttribute('stroke-width');

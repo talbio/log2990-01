@@ -304,6 +304,7 @@ export class ToolManagerService {
       this.ellipseGenerator,
       this.emojiGenerator,
       this.pencilGenerator,
+      this.penGenerator,
       this.brushGenerator,
       this.lineGenerator,
       this.polygonGenerator);
@@ -331,6 +332,9 @@ export class ToolManagerService {
         break;
       case Tools.Stamp:
         this.activeGenerator = this.emojiGenerator;
+        break;
+      case Tools.Pen:
+        this.activeGenerator = this.penGenerator;
         break;
       default:
         this.activeGenerator = undefined;

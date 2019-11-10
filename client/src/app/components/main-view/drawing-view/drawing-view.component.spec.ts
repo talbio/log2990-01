@@ -1,3 +1,4 @@
+import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -60,6 +61,7 @@ const DRAWING_SERVICES = [
   LineGeneratorService,
   EyedropperService,
   ColorService,
+  ClipboardService,
   MousePositionService,
   ObjectSelectorService,
   GridTogglerService,
@@ -1153,7 +1155,7 @@ describe('DrawingViewComponent', () => {
     expect(initialPrimaryColor).not.toEqual(initialSecondaryColor);
     // Create the rectangle with the initial color and make sure it has a fill of a different color from the secondary color
     const rectangleGeneratorService = fixture.debugElement.injector.get(RectangleGeneratorService);
-    rectangleGeneratorService._plotType = PlotType.FullWithContour;
+    rectangleGeneratorService.plotType = PlotType.FullWithContour;
     drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
 
     // Expect a <rect>

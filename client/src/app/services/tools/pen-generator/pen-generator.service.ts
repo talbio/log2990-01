@@ -1,3 +1,5 @@
+import {MousePositionService} from '../../mouse-position/mouse-position.service';
+
 const DEFAULT_MIN_WIDTH = 0.1;
 const DEFAULT_MAX_WIDTH = 15;
 const SPEED_ARRAY_SIZE = 10;
@@ -5,8 +7,6 @@ const SPEED_CONSTANT = 6;
 
 import { Injectable } from '@angular/core';
 import { AbstractWritingTool } from '../../../data-structures/abstract-writing-tool';
-import { Command } from '../../../data-structures/command';
-import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
 import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 
@@ -16,23 +16,24 @@ export class PenGeneratorService extends AbstractWritingTool {
   strokeWidthMaximum: number;
   positionX: number;
   positionY: number;
-  date = new Date();
+  date: Date;
   time: number;
   speed: number;
   color: string;
-  currentPenPathNumber: number;
-  pathArray: SVGElement[] = [];
-  speedArray: number [] = new Array<number>(SPEED_ARRAY_SIZE);
+  pathArray: SVGElement[];
+  speedArray: number [];
 
-  constructor(protected mouse: MousePositionService,
-              protected undoRedoService: UndoRedoService) {
-      super(mouse, undoRedoService);
+  constructor(protected undoRedoService: UndoRedoService,
+              protected mousePosition: MousePositionService) {
+      super(mousePosition, undoRedoService);
       this.strokeWidthMinimum = DEFAULT_MIN_WIDTH;
       this.strokeWidthMaximum = DEFAULT_MAX_WIDTH;
-      this.currentPenPathNumber = 0;
+      this.date = new Date();
+      this.pathArray = [];
+      this.speedArray = new Array<number>(SPEED_ARRAY_SIZE);
   }
 
-  createPenPath(primaryColor: string) {
+  createElement(primaryColor: string) {
       this.strokeWidth = this.strokeWidthMinimum;
       this.color = primaryColor;
       this.time = this.date.getTime();
@@ -42,15 +43,11 @@ export class PenGeneratorService extends AbstractWritingTool {
   }
 
   addPath(width: number): void {
-      this.positionX = this.xPos;
-      this.positionY = this.yPos;
-
       const path = RendererSingleton.renderer.createElement('path', 'svg');
       const properties: [string, string][] = [];
       properties.push(
-          ['id', `penPath${this.currentPenPathNumber}`],
-          ['d', `M ${(this.positionX)} ${(this.positionY)}
-      L ${(this.positionX)} ${(this.positionY)}`],
+          ['id', `penPath${this.currentElementsNumber}`],
+          ['d', `M ${(this.positionX)} ${(this.positionY)} L ${(this.positionX)} ${(this.positionY)}`],
           ['stroke', `${this.color}`],
           ['stroke-width', `${width}`],
           ['stroke-linecap', `round`],
@@ -60,7 +57,7 @@ export class PenGeneratorService extends AbstractWritingTool {
       this.pathArray.push(this.currentElement);
   }
 
-  updatePenPath() {
+  updateElement(currentChildPosition: number) {
       if (this.mouseDown) {
           const currentPositionX = this.xPos;
           const currentPositionY = this.yPos;
@@ -69,11 +66,10 @@ export class PenGeneratorService extends AbstractWritingTool {
           const currentSpeed = this.getSpeed(currentTime, currentPositionX, currentPositionY);
           const adjustedSpeed = this.adjustSpeed(currentSpeed);
           this.time = currentTime;
-          this.updatePosition(currentPositionX, currentPositionX);
+          this.updatePosition(currentPositionX, currentPositionY);
           const currentPath = RendererSingleton.canvas.children[RendererSingleton.canvas.childElementCount - 1];
-          currentPath.setAttribute('d',
-              currentPath.getAttribute('d') + ' L' + this.xPos +
-              ' ' + this.yPos);
+          currentPath.setAttribute(
+            'd', currentPath.getAttribute('d') + ' L' + this.xPos + ' ' + this.yPos);
           this.updateStrokeWidth(adjustedSpeed);
           this.addPath(this.strokeWidth);
           this.speed = currentSpeed;
@@ -95,10 +91,10 @@ export class PenGeneratorService extends AbstractWritingTool {
       }
   }
 
-  finishPenPath() {
+  finishElement() {
       if (this.mouseDown) {
-          this.currentPenPathNumber++;
-          this.pushActions();
+          this.currentElementsNumber++;
+          this.pushGeneratorCommand(...this.pathArray);
           this.pathArray = [];
           this.speedArray = [];
           this.mouseDown = false;
@@ -120,24 +116,7 @@ export class PenGeneratorService extends AbstractWritingTool {
           this.speedArray.shift();
           this.speedArray.push(newSpeed);
       } else {this.speedArray.push(newSpeed); }
-      const ajustedSpeed = ((this.speedArray.reduce((a, b) => a + b, 0 )) / this.speedArray.length);
-      return ajustedSpeed;
-  }
-
-  pushActions(): void {
-      const command: Command = {
-          execute(): void {
-              this.svgElements.forEach((path) => {
-                  RendererSingleton.renderer.appendChild(RendererSingleton.canvas, path);
-              });
-          },
-          unexecute(): void {
-              this.svgElements.forEach((path) => {
-                  RendererSingleton.renderer.removeChild(RendererSingleton.canvas, path);
-              });
-          },
-      };
-
-      this.undoRedoService.pushCommand(command);
+      const adjustedSpeed = ((this.speedArray.reduce((a, b) => a + b, 0 )) / this.speedArray.length);
+      return adjustedSpeed;
   }
 }

@@ -13,7 +13,7 @@ import { RectangleGeneratorService } from '../rectangle-generator/rectangle-gene
 @Injectable()
 export class ClipboardService {
 
-  memorizedAction: SVGElement[];
+  memorizedElements: SVGElement[];
   private selectedItems: SVGElement[];
   private consecutivePastes: number;
   private consecutiveDuplicates: number;
@@ -41,8 +41,8 @@ export class ClipboardService {
   cut() {
     this.resetCounters();
     this.assessSelection();
-    this.memorizedAction = this.selectedItems;
-    for (const item of this.memorizedAction) {
+    this.memorizedElements = this.selectedItems;
+    for (const item of this.memorizedElements) {
       const index = this.findChildIndex(item);
       if (index === -1) {
         console.log('cannot cut item ' + item.id);
@@ -59,8 +59,8 @@ export class ClipboardService {
     this.resetCounters();
     this.assessSelection();
     if (this.selector.selectedElements !== null) {
-      this.memorizedAction = this.selector.selectedElements;
-      console.log(this.memorizedAction);
+      this.memorizedElements = this.selector.selectedElements;
+      console.log(this.memorizedElements);
     } else {
       console.log('nothing to copy, nothing selected');
     }
@@ -69,7 +69,7 @@ export class ClipboardService {
   // Appends clipboard to canvas
   paste() {
     if (RendererSingleton.canvas !== null) {
-      for (const item of this.memorizedAction) {
+      for (const item of this.memorizedElements) {
         console.log('paste initiated');
         const newItem = this.duplicateElement(item);
         RendererSingleton.canvas.appendChild(newItem);

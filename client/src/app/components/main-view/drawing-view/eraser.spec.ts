@@ -13,6 +13,7 @@ import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
 import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
+import { ClipboardService } from '../../../services/tools/clipboard/clipboard.service';
 import { ColorApplicatorService } from '../../../services/tools/color-applicator/color-applicator.service';
 import { ColorService } from '../../../services/tools/color/color.service';
 import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
@@ -56,6 +57,7 @@ const DRAWING_SERVICES = [
   ColorApplicatorService,
   LineGeneratorService,
   EyedropperService,
+  ClipboardService,
   ColorService,
   MousePositionService,
   ObjectSelectorService,
