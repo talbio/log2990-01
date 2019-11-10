@@ -224,7 +224,7 @@ describe('EraserService', () => {
     expect(workChilds.length).toBe(initialNumberOfChildren + 1);
     // border should be red
     const child = workChilds[workChilds.length - 1];
-    expect((child.getAttribute('stroke') === 'red')).toBeTruthy();
+    expect(child.getAttribute('filter')).toEqual('url(#dropshadow)');
   });
 
 });
