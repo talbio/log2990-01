@@ -51,7 +51,7 @@ export class EraserService {
             const drawings = RendererSingleton.canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
             const drawingPile = new Array();
             drawings.forEach((drawing) => {
-                this.warnBeforeErasing(drawing);
+                this.warnBeforeErasing(drawing as SVGElement);
                 const drawingZone = drawing.getBoundingClientRect();
                 if ((this.intersects(drawingZone as DOMRect)) && (!svgTypesNotToBeErased.includes(drawing.id))) {
                     drawingPile.push(drawing);
@@ -67,33 +67,14 @@ export class EraserService {
         }
     }
 
-    warnBeforeErasing(drawing: Element): void {
+    warnBeforeErasing(drawing: SVGElement): void {
         const drawingZone = drawing.getBoundingClientRect();
-
         if ((this.isCloseToIntersecting(drawingZone as DOMRect) && (!svgTypesNotToBeErased.includes(drawing.id)))) {
-            if (drawing.tagName === 'image') {
-                    drawing.setAttribute('filter', 'url(#dropshadow)');
-            } else {
-                if (this.strokeColors.get(drawing.id) === undefined) {
-                    this.strokeColors.set(drawing.id, drawing.getAttribute('stroke') as string);
-                }
-                if (drawing.id.startsWith('penPath')) {
-                    this.isPenCloseToBeingErased = true;
-                   // const children = RendererSingleton.getCanvas().childNodes;
-                    // TODO: gerer couleur pen path
-                }
-                drawing.setAttribute('stroke', 'red');
-            }
-
+            drawing.setAttribute('filter', 'url(#dropshadow)');
         } else {
-            if ((this.strokeColors.get(drawing.id) !== undefined) && !this.isPenCloseToBeingErased) {
-                drawing.setAttribute('stroke', this.strokeColors.get(drawing.id) as string);
-            }
-            if (drawing.tagName === 'image') {
-                    drawing.setAttribute('filter', '');
-                }
-            }
+            drawing.setAttribute('filter', '');
         }
+    }
 
     erase(drawing: SVGGElement): void {
         if (drawing.id.startsWith('penPath')) {

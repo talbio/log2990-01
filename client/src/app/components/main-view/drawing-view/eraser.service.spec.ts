@@ -143,90 +143,67 @@ describe('EraserService', () => {
   });
 
   it('should be possible to use eraser as a brush', () => {
-    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-    toolManagerService._activeTool = Tools.Rectangle;
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
     const initialNumberOfChildren = workChilds.length;
-    // Setting up the event
-    const offsetX = 64;
-    const mouseDown1 = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: 10 + offsetX,
-      clientY: 10,
-    });
-    const mouseDown2 = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: 15 + offsetX,
-      clientY: 15,
-    });
-    const mouseDown3 = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: 20 + offsetX,
-      clientY: 20,
-    });
+    const eraserService = fixture.debugElement.injector.get(EraserService);
     // Adding 3 rectangles in 3 different places
-    component.workZoneComponent.onMouseDown(mouseDown1);
-    component.workZoneComponent.onMouseDown(mouseDown2);
-    component.workZoneComponent.onMouseDown(mouseDown3);
-    expect(workChilds.length).toBe(initialNumberOfChildren + 3);
+    svgHandle.innerHTML +=
+      `<rect id="rectTest1"
+        x="10" data-start-x="10"
+        y="10" data-start-y="10"
+        width="10" height="10" stroke="black" stroke-width="1"></rect>`;
+
+    svgHandle.innerHTML +=
+      `<rect id="rectTest2"
+       x="20" data-start-x="10"
+       y="20" data-start-y="10"
+       width="10" height="10" stroke="black" stroke-width="1"></rect>`;
+
+    svgHandle.innerHTML +=
+      `<rect id="rectTest3"
+       x="30" data-start-x="10"
+       y="30" data-start-y="10"
+       width="10" height="10" stroke="black" stroke-width="1"></rect>`;
 
     // erasing
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    const mouseMove = new MouseEvent('mousemove', {});
-    toolManagerService._activeTool = Tools.Eraser;
+
     mousePositionService.canvasMousePositionX = 10;
     mousePositionService.canvasMousePositionY = 10;
-    component.workZoneComponent.onMouseDown(mouseDown1);
-    mousePositionService.canvasMousePositionX = 15;
-    mousePositionService.canvasMousePositionY = 15;
-    component.workZoneComponent.onMouseMove(mouseMove);
+    eraserService.startErasing();
     mousePositionService.canvasMousePositionX = 20;
     mousePositionService.canvasMousePositionY = 20;
-    component.workZoneComponent.onMouseMove(mouseMove);
-    component.workZoneComponent.onMouseUp(mouseMove);
+    eraserService.moveEraser();
+    mousePositionService.canvasMousePositionX = 30;
+    mousePositionService.canvasMousePositionY = 30;
+    eraserService.moveEraser();
+    eraserService.stopErasing();
 
     // all three drawings have been erased
     expect(workChilds.length).toBe(initialNumberOfChildren);
+    console.log(workChilds)
   });
 
   it('should show a red border when close to being erased', () => {
-    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-    toolManagerService._activeTool = Tools.Rectangle;
+    const eraserService = fixture.debugElement.injector.get(EraserService);
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-    const workChilds = svgHandle.children;
-    const initialNumberOfChildren = workChilds.length;
     // Setting up the event
-    const offsetX = 64;
-    const drawingMouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: 15 + offsetX,
-      clientY: 15,
-    });
-
-    const mouseDown = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: 5 + offsetX,
-      clientY: 5,
-    });
-    const mouseUp = new MouseEvent('mousedown', {});
-
-    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService.canvasMousePositionX = 10;
-    mousePositionService.canvasMousePositionY = 10;
 
     // Adding 1 rectangle
-    component.workZoneComponent.onMouseDown(drawingMouseEvent);
-    expect(workChilds.length).toBe(initialNumberOfChildren + 1);
+    svgHandle.innerHTML +=
+      `<rect id="rectTest"
+        x="5" data-start-x="5"
+        y="5" data-start-y="5"
+        width="2" height="2" stroke="black" stroke-width="1"></rect>`;
 
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService.canvasMousePositionX = 15;
+    mousePositionService.canvasMousePositionY = 15;
     // erasing
-    toolManagerService._activeTool = Tools.Eraser;
-    component.workZoneComponent.onMouseDown(mouseDown);
-    component.workZoneComponent.onMouseUp(mouseUp);
-    // drawing is not erased
-    expect(workChilds.length).toBe(initialNumberOfChildren + 1);
-    // border should be red
-    const child = workChilds[workChilds.length - 1];
+    eraserService.startErasing();
+    // drawing is not erased and border should be red
+    const child = svgHandle.querySelector('#rectTest') as SVGElement;
     expect(child.getAttribute('filter')).toEqual('url(#dropshadow)');
   });
 });
