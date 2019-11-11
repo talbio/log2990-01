@@ -87,10 +87,6 @@ describe('SaveDrawingDialogComponent', () => {
     expect(spyDialog.close).toHaveBeenCalled();
   });
 
-  it('file option shortcuts should be unaccessible while this modal is active', () => {
-    // TODO
-  });
-
   it('submit should close the dialog and notify user that his drawing was saved if the http post was successful', async () => {
     component = fixture.componentInstance;
     drawingsServiceSpy.httpPostDrawing.and.returnValue(Promise.resolve(true));
