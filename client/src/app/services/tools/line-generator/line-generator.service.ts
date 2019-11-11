@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+// tslint:disable-next-line: max-line-length
+import { CURVY_ENDS, DASHARRAY_DOT_SIZE, DEFAULT_DASHARRAY, DEFAULT_LINECAP, DEFAULT_LINEDASHSTYLE, DEFAULT_LINEJOIN, DEFAULT_LINEJOINSTYLE, DEFAULT_POLYLINE_MARKER_DIAMETER, DEFAULT_POLYLINE_WIDTH, LINEJOIN_ANGLE, LINEJOIN_ROUND, STRAIGHT_ENDS } from 'src/app/data-structures/constants';
 import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/line-styles';
 import {Action, ActionGenerator, ActionType} from '../../../data-structures/command';
 import {RendererSingleton} from '../../renderer-singleton';
@@ -7,18 +9,6 @@ import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 @Injectable()
 export class LineGeneratorService implements ActionGenerator {
 
-  private readonly DEFAULT_WIDTH = 5;
-  private readonly DEFAULT_DIAMETER = 5;
-  private readonly DEFAULT_LINEJOIN = 'round';
-  private readonly DEFAULT_DASHARRAY = 'none';
-  private readonly DEFAULT_LINECAP = 'butt';
-  private readonly STRAIGHT_ENDS = 'butt';
-  private readonly CURVY_ENDS = 'round';
-  private readonly LINEJOIN_ANGLE = 'miter';
-  private readonly LINEJOIN_ROUND = 'round';
-  private readonly DOT_SIZE = '1';
-  private readonly DEFAULT_LINEJOINSTYLE = LineJoinStyle.Round;
-  private readonly DEFAULT_LINEDASHSTYLE = LineDashStyle.Continuous;
   private strokeWidth: number;
   private markerDiameter: number;
   private currentPolylineNumber: number;
@@ -34,15 +24,15 @@ export class LineGeneratorService implements ActionGenerator {
   private currentElement: SVGElement;
 
   constructor(private undoRedoService: UndoRedoService) {
-    this.strokeWidth = this.DEFAULT_WIDTH;
+    this.strokeWidth = DEFAULT_POLYLINE_WIDTH;
     this.currentPolylineNumber = 0;
-    this.markerDiameter = this.DEFAULT_DIAMETER;
+    this.markerDiameter = DEFAULT_POLYLINE_MARKER_DIAMETER;
     this.isMarkersActive = false;
-    this.lineJoin = this.DEFAULT_LINEJOIN;
-    this.dashArray = this.DEFAULT_DASHARRAY;
-    this.lineCap = this.DEFAULT_LINECAP;
-    this.lineJoinStyle = this.DEFAULT_LINEJOINSTYLE;
-    this.lineDashStyle = this.DEFAULT_LINEDASHSTYLE;
+    this.lineJoin = DEFAULT_LINEJOIN;
+    this.dashArray = DEFAULT_DASHARRAY;
+    this.lineCap = DEFAULT_LINECAP;
+    this.lineJoinStyle = DEFAULT_LINEJOINSTYLE;
+    this.lineDashStyle = DEFAULT_LINEDASHSTYLE;
   }
 
   set _lineJoinStyle(style: LineJoinStyle) {
@@ -50,15 +40,15 @@ export class LineGeneratorService implements ActionGenerator {
     switch (style) {
       case LineJoinStyle.WithPoints:
         this.isMarkersActive = true;
-        this.lineJoin = this.DEFAULT_LINEJOIN;
+        this.lineJoin = DEFAULT_LINEJOIN;
         break;
       case LineJoinStyle.Angled:
         this.isMarkersActive = false;
-        this.lineJoin = this.LINEJOIN_ANGLE;
+        this.lineJoin = LINEJOIN_ANGLE;
         break;
       case LineJoinStyle.Round:
         this.isMarkersActive = false;
-        this.lineJoin = this.LINEJOIN_ROUND;
+        this.lineJoin = LINEJOIN_ROUND;
         break;
       default:
         break;
@@ -73,16 +63,16 @@ export class LineGeneratorService implements ActionGenerator {
     this.lineDashStyle = style;
     switch (style) {
       case LineDashStyle.Continuous:
-        this.dashArray = this.DEFAULT_DASHARRAY;
-        this.lineCap = this.DEFAULT_LINECAP;
+        this.dashArray = DEFAULT_DASHARRAY;
+        this.lineCap = DEFAULT_LINECAP;
         break;
       case LineDashStyle.Dashed:
         this.dashArray = `${this.strokeWidth * 2}, ${this.strokeWidth}`;
-        this.lineCap = this.STRAIGHT_ENDS;
+        this.lineCap = STRAIGHT_ENDS;
         break;
       case LineDashStyle.Dotted:
-        this.dashArray = `${this.DOT_SIZE}, ${this.strokeWidth * 2}`;
-        this.lineCap = this.CURVY_ENDS;
+        this.dashArray = `${DASHARRAY_DOT_SIZE}, ${this.strokeWidth * 2}`;
+        this.lineCap = CURVY_ENDS;
         break;
       default:
         break;
