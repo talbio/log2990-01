@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BrushGeneratorService } from 'src/app/services/tools/brush-generator/brush-generator.service';
-import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
-import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
 import { RendererSingleton } from '../../renderer-singleton';
+import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.service';
+import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
+import { PenGeneratorService } from '../pen-generator/pen-generator.service';
 import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from '../polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
@@ -14,7 +14,7 @@ import { RectangleGeneratorService } from '../rectangle-generator/rectangle-gene
 export class ClipboardService {
 
   memorizedElements: SVGElement[];
-  private selectedItems: SVGElement[];
+  selectedItems: SVGElement[];
   private consecutivePastes: number;
   private consecutiveDuplicates: number;
   private xSliding: number;
@@ -31,86 +31,8 @@ export class ClipboardService {
               private rectangleGenerator: RectangleGeneratorService) {
     this.consecutivePastes = 1;
     this.consecutiveDuplicates = 1;
-  }
-
-  // hasSelectedElements(): boolean {
-  //   return this.selector.selectedElements.length === 0;
-  // }
-
-  // Removes and stores in clipboard
-  cut() {
-    this.resetCounters();
-    this.assessSelection();
-    this.memorizedElements = this.selectedItems;
-    for (const item of this.memorizedElements) {
-      const index = this.findChildIndex(item);
-      if (index === -1) {
-        console.log('cannot cut item ' + item.id);
-        return;
-      }
-      this.selector.boundingRect.removeChild(item);
-      console.log('removed ' + item.tagName);
-    }
-    this.removeSelector();
-  }
-
-  // Stores in clipboard
-  copy() {
-    this.resetCounters();
-    this.assessSelection();
-    if (this.selector.selectedElements !== null) {
-      this.memorizedElements = this.selector.selectedElements;
-      console.log(this.memorizedElements);
-    } else {
-      console.log('nothing to copy, nothing selected');
-    }
-  }
-
-  // Appends clipboard to canvas
-  paste() {
-    if (RendererSingleton.canvas !== null) {
-      for (const item of this.memorizedElements) {
-        console.log('paste initiated');
-        const newItem = this.duplicateElement(item);
-        RendererSingleton.canvas.appendChild(newItem);
-        const itemInCanvas = RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1] as SVGElement;
-        console.log(itemInCanvas, ' is new item in canvas');
-        this.slide(itemInCanvas, this.consecutivePastes);
-      }
-      this.consecutivePastes++;
-    } else {
-      console.log('nothing to paste, clipboard is empty');
-    }
-  }
-
-  // Appends a displaced version of the selected items
-  duplicate() {
-    this.assessSelection();
-    for (const item of this.selector.selectedElements) {
-      const newItem = this.duplicateElement(item);
-      RendererSingleton.canvas.appendChild(newItem);
-      const itemInCanvas = RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1] as SVGElement;
-      console.log(itemInCanvas, ' is new item in canvas');
-      this.slide(itemInCanvas, this.consecutiveDuplicates);
-    }
-    this.consecutiveDuplicates++;
-  }
-
-  // Removes the selected items
-  delete() {
-    this.resetCounters();
-    this.assessSelection();
-    const box = RendererSingleton.renderer.selectRootElement('#selected', true);
-    for (const item of this.selectedItems) {
-      const index = this.findChildIndex(item);
-      if (index === -1) {
-        console.log('cannot cut item ' + item.id);
-        return;
-      }
-      box.removeChild(item);
-      console.log('removed ' + item.tagName);
-    }
-    this.removeSelector();
+    this.selectedItems = [];
+    this.memorizedElements = [];
   }
 
   assessSelection() {
@@ -120,28 +42,17 @@ export class ClipboardService {
     this.selectedItems = this.selector.selectedElements;
   }
 
-  findChildIndex(item: SVGElement): number {
-    const id = item.id;
-    const box = RendererSingleton.renderer.selectRootElement('#selected', true);
-    const list = box.children;
-    console.log(list);
-    for (let i = 0 ; i < list.length ; i++) {
-      if (list[i].getAttribute('id') === id) { return i; }
-    }
-    console.log('cannot get item in canvas for ' + item.id);
-    return -1;
-  }
+  // hasSelectedElements(): boolean {
+  //   return this.selector.selectedElements.length === 0;
+  // }
 
-  duplicateElement(item: SVGElement): SVGElement {
-    const type = item.tagName;
-    return this.clone(item, type);
-  }
+  // Removes and stores in clipboard
 
   slide(item: SVGElement, consecultive: number) {
     const transformation = item.getAttribute('transform');
     let newTransform = '';
     let foundTranslate = false;
-    const slides = this.getSlideSide(item, consecultive);
+    const slides = this.getSlideLength(item, consecultive);
     if (transformation === null) {
       newTransform = 'translate(' + slides[0] + ' ' + slides[1] + ')';
     } else if (!transformation.includes('translate')) {
@@ -168,8 +79,8 @@ export class ClipboardService {
     item.setAttribute('transform', newTransform);
   }
 
-  getSlideSide(item: SVGElement, consecultive: number): [number, number] {
-    const slideLength = 3 * (consecultive);
+  getSlideLength(item: SVGElement, consecultive: number): [number, number] {
+    const slideLength = 5 * (consecultive);
     this.isOutside(item, slideLength);
     return [(slideLength - this.xSliding), (slideLength - this.ySliding)];
   }
@@ -177,18 +88,13 @@ export class ClipboardService {
   isOutside(item: SVGElement, consecultive: number) {
     const clientRect = item.getBoundingClientRect();
     if (clientRect.right + consecultive > RendererSingleton.canvas.getBoundingClientRect().right) {
-      // this.xSliding = this.xSliding + 6;
-      this.xSliding = this.xSliding + 3;
+      // this.xSliding = this.xSliding + 10;
+      this.xSliding = this.xSliding + 5;
     }
     if (clientRect.bottom + consecultive > RendererSingleton.canvas.getBoundingClientRect().bottom) {
-      // this.ySliding = this.ySliding + 6;
-      this.ySliding = this.ySliding + 3;
+      // this.ySliding = this.ySliding + 10;
+      this.ySliding = this.ySliding + 5;
     }
-  }
-
-  removeSelector(): void {
-    const box = RendererSingleton.renderer.selectRootElement('#box', true) as SVGElement;
-    RendererSingleton.canvas.removeChild(box);
   }
 
   resetCounters() {
@@ -198,13 +104,14 @@ export class ClipboardService {
     this.ySliding = 0;
   }
 
-  clone(item: SVGElement, type: string): SVGElement {
+  clone(item: SVGElement): SVGElement {
+    const type = item.tagName;
     const newItem = item.cloneNode() as SVGElement;
     switch (type) {
       case 'rect':
         newItem.setAttribute('id', type + (this.rectangleGenerator.currentElementsNumber++ as unknown as string));
         break;
-      case 'ellipse':
+        case 'ellipse':
         newItem.setAttribute('id', type + (this.ellipseGenerator.currentElementsNumber++ as unknown as string));
         break;
       case 'polygon':
@@ -214,22 +121,92 @@ export class ClipboardService {
         if (item.id.includes('brushPath')) {
           newItem.setAttribute('id', type + (this.brushGenerator.currentElementsNumber++ as unknown as string));
           break;
-        } else if (item.id.includes('pencilPath')){
+        } else if (item.id.includes('pencilPath')) {
           newItem.setAttribute('id', type + (this.pencilGenerator.currentElementsNumber++ as unknown as string));
           break;
         } else {
           newItem.setAttribute('id', type + (this.penGenerator.currentElementsNumber++ as unknown as string));
           break;
         }
-      case 'polyline':
+        case 'polyline':
         newItem.setAttribute('id', type + (this.lineGenerator.currentElementsNumber++ as unknown as string));
         break;
-      case 'image':
+        case 'image':
         newItem.setAttribute('id', type + (this.emojiGenerator.currentElementsNumber++ as unknown as string));
         break;
-      default :
+        default :
         break;
     }
     return newItem;
+  }
+
+  cut() {
+    this.resetCounters();
+    this.assessSelection();
+    if (this.selectedItems.length === 0) {
+      console.log('no selection found');
+      return;
+    }
+    this.memorizedElements = this.selectedItems;
+    for (const item of this.selectedItems) {
+      RendererSingleton.canvas.removeChild(item);
+    }
+    this.selector.removeBoundingRect();
+    this.selector.selectedElements = [];
+  }
+
+  // Stores in clipboard
+  copy() {
+    this.resetCounters();
+    this.assessSelection();
+    if (this.selector.selectedElements !== null) {
+      this.memorizedElements = this.selectedItems;
+    } else {
+      console.log('nothing to copy, nothing selected, clipboard unchanged');
+    }
+  }
+
+  // Appends clipboard to canvas
+  paste() {
+    if (RendererSingleton.canvas !== null) {
+      for (const item of this.memorizedElements) {
+        const newItem = this.clone(item);
+        RendererSingleton.canvas.appendChild(newItem);
+        const itemInCanvas = RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1] as SVGElement;
+        this.slide(itemInCanvas, this.consecutivePastes);
+      }
+      this.consecutivePastes++;
+    } else {
+      console.log('nothing to paste, clipboard is empty');
+    }
+  }
+
+  // Appends a displaced version of the selected items
+  duplicate() {
+    this.assessSelection();
+    let i = 0;
+    for (i; i < this.selectedItems.length; i++) {
+      const newItem = this.clone(this.selectedItems[i]);
+      RendererSingleton.canvas.appendChild(newItem);
+      const itemInCanvas = RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1] as SVGElement;
+      this.slide(itemInCanvas, this.consecutiveDuplicates);
+    }
+    this.consecutiveDuplicates++;
+  }
+
+  // Removes the selected items
+  delete() {
+    this.resetCounters();
+    this.assessSelection();
+    if (this.selectedItems.length === 0) {
+      console.log('no selection found');
+      return;
+    }
+    for (const item of this.selector.selectedElements) {
+      RendererSingleton.canvas.removeChild(item);
+      console.log('removed ' + item.tagName);
+    }
+    this.selector.removeBoundingRect();
+    this.selector.selectedElements = [];
   }
 }

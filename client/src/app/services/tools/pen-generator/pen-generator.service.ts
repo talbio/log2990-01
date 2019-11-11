@@ -92,13 +92,15 @@ export class PenGeneratorService extends AbstractWritingTool {
   }
 
   finishElement() {
-      if (this.mouseDown) {
-          this.currentElementsNumber++;
-          this.pushGeneratorCommand(...this.pathArray);
-          this.pathArray = [];
-          this.speedArray = [];
-          this.mouseDown = false;
-      }
+    console.log('reached finishElement');
+    if (this.mouseDown) {
+      console.log('into finishElement');
+      this.currentElementsNumber++;
+      this.pushGeneratorCommand(...this.pathArray);
+      this.pathArray = [];
+      this.speedArray = [];
+      this.mouseDown = false;
+    }
   }
 
   getSpeed(currentTime: number, currentPositionX: number, currentPositionY: number): number {

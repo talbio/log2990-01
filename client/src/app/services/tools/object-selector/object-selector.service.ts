@@ -58,7 +58,7 @@ export class ObjectSelectorService {
     return RendererSingleton.canvas.querySelector('#' + this.BOUNDING_RECT_ID) as SVGElement;
   }
 
-  onMouseDown(mouseEvent: MouseEvent) {
+  onMouseDown() {
     if (this.hasBoundingRect) {
       if (this.isMouseOutsideOfBoundingRect()) {
         this.mouseDown = true;

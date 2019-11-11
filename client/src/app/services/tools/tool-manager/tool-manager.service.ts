@@ -63,7 +63,7 @@ export class ToolManagerService {
     } else {
       switch (this._activeTool) {
         case Tools.Selector:
-          this.objectSelector.onMouseDown(mouseEvent);
+          this.objectSelector.onMouseDown();
           break;
         case Tools.Eraser:
           this.eraser.startErasing();
@@ -75,7 +75,7 @@ export class ToolManagerService {
     this.numberOfElements = canvas.children.length;
   }
 
-  updateElement(mouseEvent: MouseEvent, canvas: SVGElement) {
+  updateElement(mouseEvent: MouseEvent) {
     if (this.activeGenerator) {
       this.activeGenerator.updateElement(this.numberOfElements, mouseEvent);
     } else {
