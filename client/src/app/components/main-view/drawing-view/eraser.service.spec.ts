@@ -204,11 +204,12 @@ describe('EraserService', () => {
       clientY: 15,
     });
 
-    const eraserMouseEvent = new MouseEvent('mousedown', {
+    const mouseDown = new MouseEvent('mousedown', {
       button: 0,
       clientX: 5 + offsetX,
       clientY: 5,
     });
+    const mouseUp = new MouseEvent('mousedown', {});
 
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     mousePositionService.canvasMousePositionX = 10;
@@ -220,13 +221,12 @@ describe('EraserService', () => {
 
     // erasing
     toolManagerService._activeTool = Tools.Eraser;
-    component.workZoneComponent.onMouseDown(eraserMouseEvent);
-    component.workZoneComponent.onMouseUp(eraserMouseEvent);
+    component.workZoneComponent.onMouseDown(mouseDown);
+    component.workZoneComponent.onMouseUp(mouseUp);
     // drawing is not erased
     expect(workChilds.length).toBe(initialNumberOfChildren + 1);
     // border should be red
     const child = workChilds[workChilds.length - 1];
-    expect((child.getAttribute('stroke') === 'red')).toBeTruthy();
+    expect(child.getAttribute('filter')).toEqual('url(#dropshadow)');
   });
-
 });
