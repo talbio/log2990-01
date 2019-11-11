@@ -178,7 +178,7 @@ export class LateralBarComponent {
   //   return this.clipboard.hasSelectedElements();
   // }
 
-  hasElementsInClipboard(): boolean {
-    return this.clipboard.memorizedAction.length !== 0;
-  }
+  // hasElementsInClipboard(): boolean {
+  //   return this.clipboard.memorizedAction.length !== 0;
+  // }
 }

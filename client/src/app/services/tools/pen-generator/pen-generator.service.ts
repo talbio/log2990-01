@@ -1,6 +1,6 @@
 import {MousePositionService} from '../../mouse-position/mouse-position.service';
 
-const DEFAULT_MIN_WIDTH = 0.1;
+const DEFAULT_MIN_WIDTH = 1;
 const DEFAULT_MAX_WIDTH = 15;
 const SPEED_ARRAY_SIZE = 10;
 const SPEED_CONSTANT = 6;
@@ -24,8 +24,8 @@ export class PenGeneratorService extends AbstractWritingTool {
   speedArray: number [];
 
   constructor(protected undoRedoService: UndoRedoService,
-              protected mousePosition: MousePositionService) {
-      super(mousePosition, undoRedoService);
+              protected mouse: MousePositionService) {
+      super(mouse, undoRedoService);
       this.strokeWidthMinimum = DEFAULT_MIN_WIDTH;
       this.strokeWidthMaximum = DEFAULT_MAX_WIDTH;
       this.date = new Date();
@@ -47,7 +47,7 @@ export class PenGeneratorService extends AbstractWritingTool {
       const properties: [string, string][] = [];
       properties.push(
           ['id', `penPath${this.currentElementsNumber}`],
-          ['d', `M ${(this.positionX)} ${(this.positionY)} L ${(this.positionX)} ${(this.positionY)}`],
+          ['d', `M ${(this.xPos)} ${(this.yPos)} L ${(this.xPos)} ${(this.yPos)}`],
           ['stroke', `${this.color}`],
           ['stroke-width', `${width}`],
           ['stroke-linecap', `round`],
@@ -91,9 +91,9 @@ export class PenGeneratorService extends AbstractWritingTool {
       }
   }
 
-  finishElement() {
+  finishElement(): void {
       if (this.mouseDown) {
-          this.currentElementsNumber++;
+          this.currentElementsNumber += 1;
           this.pushGeneratorCommand(...this.pathArray);
           this.pathArray = [];
           this.speedArray = [];
