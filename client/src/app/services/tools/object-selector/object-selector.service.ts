@@ -39,6 +39,7 @@ export class ObjectSelectorService {
               private rectangleGenerator: RectangleGeneratorService) {
     this.hasBoundingRect = false;
     this.mouseDown = false;
+    this.selectedElements = [];
   }
 
   get canvasBoxRect(): BoundingRect {
@@ -148,8 +149,9 @@ export class ObjectSelectorService {
 
   removeBoundingRect(): void {
     this.hasBoundingRect = false;
-    const boundingRect: SVGElement = RendererSingleton.canvas.querySelector('#boundingRect') as SVGElement;
-    RendererSingleton.renderer.removeChild(RendererSingleton.canvas, boundingRect);
+    const boundingRect: SVGElement = RendererSingleton.renderer.selectRootElement('#boundingRect', true) as SVGElement;
+    //RendererSingleton.renderer.removeChild(RendererSingleton.canvas, boundingRect);
+    RendererSingleton.canvas.removeChild(boundingRect);
   }
 
   addBoundingRect(): void {
