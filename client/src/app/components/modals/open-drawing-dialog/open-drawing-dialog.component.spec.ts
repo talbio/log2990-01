@@ -141,7 +141,7 @@ describe('OpenDrawingDialogComponent', () => {
   describe('openLocalDrawing', () => {
     it('should be able to open a file of correct format', () => {
       const passFileValidationSpy = spyOn(component, 'validateFileType').and.callFake(() => {
-        // Do not send back an error, do nothing
+        // Do not throw an error, do nothing
       });
       const fakeDrawingString =
       `{
@@ -163,7 +163,6 @@ describe('OpenDrawingDialogComponent', () => {
       component.openLocalDrawing(fakeHtmlInputElement);
       expect(passFileValidationSpy).toHaveBeenCalled();
       expect(loadFileCorrectly).toHaveBeenCalled();
-      // TODO somehow check value of drawing
     });
   });
 

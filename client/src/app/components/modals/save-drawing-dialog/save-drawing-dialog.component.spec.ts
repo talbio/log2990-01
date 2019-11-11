@@ -1,8 +1,9 @@
 import {Renderer2, Type} from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {FormBuilder} from '@angular/forms';
-import {MatDialogRef} from '@angular/material/dialog';
+import { MatDialogRef} from '@angular/material/dialog';
 import {NotifierModule, NotifierService} from 'angular-notifier';
+import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
 import {DemoMaterialModule} from '../../../material.module';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
 import { SaveDrawingDialogComponent } from './save-drawing-dialog.component';
@@ -19,7 +20,7 @@ const spyDialog: jasmine.SpyObj<MatDialogRef<SaveDrawingDialogComponent>> =
 spyDialog.close.and.callThrough();
 
 const drawingsServiceSpy: jasmine.SpyObj<DrawingsService> =
-  jasmine.createSpyObj('SaveDrawingService', ['httpPostDrawing']);
+  jasmine.createSpyObj('SaveDrawingService', ['httpPostDrawing', 'localPostDrawing']);
 
 const notifierServiceSpy: jasmine.SpyObj<NotifierService> =
   jasmine.createSpyObj('NotifierService', ['notify']);
@@ -48,6 +49,7 @@ describe('SaveDrawingDialogComponent', () => {
         { provide: FormBuilder, useValue: formBuilder },
         { provide: DrawingsService, useValue: drawingsServiceSpy },
         { provide: NotifierService, useValue: notifierServiceSpy },
+        { provide: ToolManagerService },
       ],
       imports: [NotifierModule, DemoMaterialModule],
     })
@@ -60,6 +62,10 @@ describe('SaveDrawingDialogComponent', () => {
       fixture.detectChanges();
     });
   }));
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
   it('addTag should addSelectedTag a tag form control to the tags form array', () => {
     component = fixture.componentInstance;
@@ -79,6 +85,10 @@ describe('SaveDrawingDialogComponent', () => {
     component = fixture.componentInstance;
     component.close();
     expect(spyDialog.close).toHaveBeenCalled();
+  });
+
+  it('file option shortcuts should be unaccessible while this modal is active', () => {
+    // TODO
   });
 
   it('submit should close the dialog and notify user that his drawing was saved if the http post was successful', async () => {
@@ -105,6 +115,15 @@ describe('SaveDrawingDialogComponent', () => {
     drawingsServiceSpy.httpPostDrawing.and.callFake( () => Promise.resolve(expect(component.isPostingToServer).toBe(true)));
     await component.submit();
     expect(component.isPostingToServer).toBe(false);
+  });
+  describe('submitLocal', () => {
+    it('should set localPosting variable to true while executing and set it back to false when done executing ', async () => {
+    // component = fixture.componentInstance;
+    // @ts-ignore changing return type of promise to void for testing purposes
+    drawingsServiceSpy.localPostDrawing.and.callFake( () => Promise.resolve(expect(component.isPostingLocally).toBe(true)));
+    await component.submitLocal();
+    expect(component.isPostingLocally).toBe(false);
+    });
   });
 
 });
