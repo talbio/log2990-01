@@ -6,11 +6,12 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSliderChange } from '@angular/material';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
-import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/LineStyles';
-import { PlotType } from 'src/app/data-structures/PlotType';
+import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/line-styles';
+import { PlotType } from 'src/app/data-structures/plot-type';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
-import { Tools } from '../../../data-structures/Tools';
+import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
+import { Tools } from '../../../data-structures/tools';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
@@ -31,6 +32,7 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+import { EraserService } from './../../../services/tools/eraser/eraser.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -62,8 +64,10 @@ const DRAWING_SERVICES = [
   ObjectSelectorService,
   GridTogglerService,
   PolygonGeneratorService,
+  EraserService,
+  PenGeneratorService,
 ];
-fdescribe('DrawingViewComponent', () => {
+describe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
   beforeEach(async(() => {
@@ -1125,10 +1129,10 @@ fdescribe('DrawingViewComponent', () => {
   });
 
   it('should be able to assign a color to secondary color with right click as eyedropper', () => {
-    // Step 1. Place a path with a specific stroke color
-    // We use a pencil path since it uses the secondary color as its stroke
+    // Step 1. Place a rectangle with a specific stroke color
+    // We use a rectangle since it uses the secondary color as its stroke
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-    toolManagerService._activeTool = Tools.Pencil;
+    toolManagerService._activeTool = Tools.Rectangle;
     // Create the work-zone
     // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
@@ -1140,74 +1144,55 @@ fdescribe('DrawingViewComponent', () => {
     colorService.assignSecondaryColor();
     const initialSecondaryColor = colorService.getSecondaryColor();
 
-    // Create the pencil path with the initial color
-    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    const xInitial = 100;
-    const yInitial = 100;
+    // Set the primary color to be different
+    newColor = 'rgba(100,100,100,1)';
+    colorService.setPrimaryColor(newColor);
+    colorService.assignPrimaryColor();
+    const initialPrimaryColor = colorService.getPrimaryColor();
 
-    let mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: xInitial,
-      clientY: yInitial,
-    });
-    // Also change the positions on the mouse position service
-    mousePositionService._canvasMousePositionX = xInitial;
-    mousePositionService._canvasMousePositionY = yInitial;
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    expect(initialPrimaryColor).not.toEqual(initialSecondaryColor);
+    // Create the rectangle with the initial color and make sure it has a fill of a different color from the secondary color
+    const rectangleGeneratorService = fixture.debugElement.injector.get(RectangleGeneratorService);
+    rectangleGeneratorService._plotType = PlotType.FullWithContour;
+    drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
 
-    // Make the path cover a space so we can click it
-    let newX = 200;
-    let newY = 200;
-    mouseEvent = new MouseEvent('mousemove', {
-      clientX: newX,
-      clientY: newY,
-    });
-    // update mouse position on the service
-    mousePositionService._canvasMousePositionX = newX;
-    mousePositionService._canvasMousePositionY = newY;
-    component.workZoneComponent.onMouseMove(mouseEvent);
-    component.workZoneComponent.onMouseUp();
-    // Expect a <path>
-    // Since the pencil path was just created it should be the last element
-    const pencilPath = getLastSvgElement(svgHandle, 1);
-    expect(pencilPath.tagName).toEqual('path');
-
-    // Now change the color, the pipette should bring it back to the initial value, since the path was made with it
-    newColor = 'rgba(100,0,0,1)';
-    colorService.setSecondaryColor(newColor);
-    colorService.assignSecondaryColor();
-    const secondSecondaryColor = colorService.getSecondaryColor();
-    expect(initialSecondaryColor).not.toBe(secondSecondaryColor);
+    // Expect a <rect>
+    // Since the rectangle was just created it should be the last element
+    const rectangle = getLastSvgElement(svgHandle, 1);
+    expect(rectangle.tagName).toEqual('rect');
+    expect(rectangle.getAttribute('stroke')).toBe(initialSecondaryColor);
+    expect(rectangle.getAttribute('fill')).toBe(initialPrimaryColor);
 
     // Select the eyedropper (pipette)
     toolManagerService._activeTool = Tools.Eyedropper;
 
-    // Click on the line (links 100,100 and 200,200)
-    newX = 150;
-    newY = 150;
-    mouseEvent = new MouseEvent('contextmenu', {
+    // Click on the rectangle's fill (between 100,100 and 200,200)
+    const clickX = 150;
+    const clickY = 150;
+    const mouseEvent = new MouseEvent('contextmenu', {
       button: 2,
-      clientX: newX,
-      clientY: newY,
+      clientX: clickX,
+      clientY: clickY,
       bubbles: true,
     });
     // update mouse position on the service
-    mousePositionService._canvasMousePositionX = newX;
-    mousePositionService._canvasMousePositionY = newY;
-    // click the pencil path
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService._canvasMousePositionX = clickX;
+    mousePositionService._canvasMousePositionY = clickY;
+    // click the rectangle
     const spy = spyOn(component.workZoneComponent, 'onRightClick').and.callThrough();
     const eyedropperService = fixture.debugElement.injector.get(EyedropperService);
     const deepSpy = spyOn(eyedropperService, 'changeSecondaryColor').and.callThrough();
-    pencilPath.dispatchEvent(mouseEvent);
+    rectangle.dispatchEvent(mouseEvent);
     expect(spy).toHaveBeenCalled();
     expect(deepSpy).toHaveBeenCalled();
     // Look at the new secondary color
     const lastSecondaryColor = colorService.getSecondaryColor();
 
     // Step 3. compare values
-    // The color should be equal to the initial value and different from the modified one
-    expect(lastSecondaryColor).toBe(initialSecondaryColor);
-    expect(lastSecondaryColor).not.toBe(secondSecondaryColor);
+    // The color should be equal to the primaryColor and different from the intial color
+    expect(lastSecondaryColor).toBe(initialPrimaryColor);
+    expect(lastSecondaryColor).not.toBe(initialSecondaryColor);
   });
 
   ////////////////////////////
@@ -1358,7 +1343,6 @@ fdescribe('DrawingViewComponent', () => {
     // Getting the number of vertex
     const pointsHTML = defaultPolygon.getAttribute('points') as string;
     const points = pointsHTML.split(' ', 12);
-    console.log(points);
 
     // If next 2 pass, plotType is really Contour
     expect(defaultPolygon.getAttribute('fill')).toEqual('transparent');
@@ -1378,10 +1362,7 @@ fdescribe('DrawingViewComponent', () => {
 
     // Getting number of apex
     const changedPointsHTML = changedPolygon.getAttribute('points') as string;
-    console.log(changedPointsHTML);
     const changedPoints = changedPointsHTML.split(' ', 11);
-    console.log(changedPoints);
-    console.log(polygonGenerator._nbOfApex);
 
     expect(changedPolygon.getAttribute('fill')).toEqual(colorService.primaryColor);
     expect(changedPolygon.getAttribute('stroke')).toEqual('transparent');
@@ -1437,7 +1418,6 @@ fdescribe('DrawingViewComponent', () => {
     // Getting the number of vertex
     const pointsHTML = defaultPolygon.getAttribute('points') as string;
     const points = pointsHTML.split(' ', 12);
-    console.log(points);
 
     // If next 2 pass, plotType is really Contour
     expect(defaultPolygon.getAttribute('fill')).toEqual('transparent');
@@ -1457,11 +1437,7 @@ fdescribe('DrawingViewComponent', () => {
 
     // Getting number of apex
     const changedPointsHTML = changedPolygon.getAttribute('points') as string;
-    console.log(changedPointsHTML);
     const changedPoints = changedPointsHTML.split(' ', 11);
-    console.log(changedPoints);
-    console.log(polygonGenerator._nbOfApex);
-
     expect(changedPolygon.getAttribute('fill')).toEqual(colorService.primaryColor);
     expect(changedPolygon.getAttribute('stroke')).toEqual('transparent');
     expect(changedPoints.length).toEqual(11);
@@ -1475,7 +1451,6 @@ fdescribe('DrawingViewComponent', () => {
     // Finding length of a side
     const pointsXY: string[][] = [['']];
     for (let i = 0 ; i < apex ; i++) {
-      console.log(i);
       pointsXY[i] = points[i].split(',', 2);
     }
 
@@ -1503,9 +1478,6 @@ fdescribe('DrawingViewComponent', () => {
     const w: number = parseFloat(tempRect.getAttribute('width') as string);
     const x: number = parseFloat(tempRect.getAttribute('x') as string);
     const y: number = parseFloat(tempRect.getAttribute('y') as string);
-    console.log(x);
-    console.log(y);
-    console.log(x + w);
 
     let widestLeftPoint = points[0];
     let widestRightPoint = points[0];
@@ -1524,10 +1496,6 @@ fdescribe('DrawingViewComponent', () => {
     if (Math.round(parseFloat(widestRightPoint[0])) === (x + w)) { touchCounter[1] = true; }
     if (Math.round(parseFloat(highestPoint[1])) === y) { touchCounter[2] = true; }
     if (Math.round(parseFloat(lowestPoint[1])) === (y + h)) { touchCounter[3] = true; }
-
-    console.log(Math.round(parseFloat(widestLeftPoint[0])));
-    console.log(Math.round(parseFloat(highestPoint[1])));
-    console.log(Math.round(parseFloat(lowestPoint[1])));
 
     if (points.length % 2 === 0) {
       if (w / h < aspectRatio) {

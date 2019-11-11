@@ -22,9 +22,7 @@ export class DrawingsService {
   constructor(private httpClient: HttpClient) {}
 
   httpPostDrawing(name: string, tags: string[]): Promise<boolean> {
-    const svgElements: string = this.getSvgElements();
-    const miniature: string = this.getMiniature();
-    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature};
+    const drawing: Drawing = this.makeDrawing(name, tags);
     return this.httpClient.post<{httpCode: number}>(this.BASE_URL, {data: drawing}, this.HTTP_OPTIONS)
       .toPromise()
       .then( (response: {httpCode: number}) => {
@@ -54,14 +52,22 @@ export class DrawingsService {
 
   getSvgElements(): string {
     const svgCanvas: HTMLElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
-    const patternsEndDef = '</defs>';
-    const startIndex = svgCanvas.innerHTML.search(patternsEndDef) + patternsEndDef.length;
-    return svgCanvas.innerHTML.substring(startIndex);
+    return svgCanvas.innerHTML.substring(0);
   }
 
   getMiniature(): string {
     const miniature = RendererSingleton.renderer.selectRootElement('#min', true);
     return (new XMLSerializer()).serializeToString(miniature);
+  }
+
+  getCanvasWidth(): number {
+    const svgCanvas: SVGElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
+    return parseFloat(svgCanvas.getAttribute('width') as string);
+  }
+
+  getCanvasHeight(): number {
+    const svgCanvas: SVGElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
+    return parseFloat(svgCanvas.getAttribute('height') as string);
   }
 
   private handleError(error: HttpErrorResponse): Promise<never> {
@@ -77,5 +83,35 @@ export class DrawingsService {
         'The backend returned an unsuccessful response code').toPromise();
     }
   }
+  localPostDrawing(name: string, tags: string[]): Promise<boolean> {
+    const drawing = this.makeDrawing(name, tags);
+    return this.saveFileToLocation(drawing)
+      .then( () => {
+        return true;
+      })
+      .catch((error: Error) => {
+        console.error('An error occurred:', error.message);
+        return throwError(`Le fichier n'a pas été sauvé correctement`).toPromise();
+      });
+  }
 
+  saveFileToLocation(drawing: Drawing): Promise<boolean> {
+    // solution inspired from https://stackoverflow.com/questions/48499087/file-save-functionality-in-angular
+    const myBlob: Blob = new Blob([JSON.stringify(drawing, null, 2)], {type: 'application/json'});
+    const link = RendererSingleton.renderer.createElement('a');
+    link.href = URL.createObjectURL(myBlob);
+    link.download = `${drawing.name}.json`;
+    link.click();
+
+    return Promise.resolve(true);
+  }
+
+  makeDrawing(name: string, tags: string[]): Drawing {
+    const svgElements: string = this.getSvgElements();
+    const miniature: string = this.getMiniature();
+    const canvasWidth: number = this.getCanvasWidth();
+    const canvasHeight: number = this.getCanvasHeight();
+    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature, canvasWidth, canvasHeight};
+    return drawing;
+  }
 }

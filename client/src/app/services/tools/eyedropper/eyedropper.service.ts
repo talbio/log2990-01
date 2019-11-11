@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BrushGeneratorService } from 'src/app/services/tools/brush-generator/brush-generator.service';
-import {RendererSingleton} from '../../renderer-singleton';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
+import {RendererSingleton} from '../../renderer-singleton';
 import { ColorService } from '../color/color.service';
 
 @Injectable()
@@ -35,6 +35,8 @@ export class EyedropperService {
               foundColor = child.getAttribute('fill');
             }
           }
+        } else if (object.id.startsWith('penPath')) {
+          foundColor = object.getAttribute('stroke') as string;
         } else {
           alert(`Object id is "${object.id}" and this case is not treated!`);
         }

@@ -19,9 +19,11 @@ import { BrushToolsComponent } from './components/main-view/tools-attributes-mod
 import { ColorApplicatorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/color-applicator/color-applicator-tools.component';
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
+import { EraserToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eraser/eraser-tools.component';
 import { EyedropperToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eyedropper/eyedropper-tools.component';
 import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
+import { PenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pen/pen-tools.component';
 import { PencilToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pencil/pencil-tools.component';
 import { PolygonToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/polygon/polygon-tools.component';
 import { RectangleToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/rectangle/rectangle-tools.component';
@@ -46,10 +48,12 @@ import { ColorApplicatorService } from './services/tools/color-applicator/color-
 import { ColorService } from './services/tools/color/color.service';
 import { EllipseGeneratorService } from './services/tools/ellipse-generator/ellipse-generator.service';
 import { EmojiGeneratorService } from './services/tools/emoji-generator/emoji-generator.service';
+import { EraserService } from './services/tools/eraser/eraser.service';
 import { EyedropperService } from './services/tools/eyedropper/eyedropper.service';
 import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
 import { ObjectSelectorService } from './services/tools/object-selector/object-selector.service';
+import { PenGeneratorService } from './services/tools/pen-generator/pen-generator.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from './services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
@@ -115,10 +119,12 @@ const customNotifierOptions: NotifierOptions = {
     AbstractToolButtonComponent,
     AbstractDialogButtonComponent,
     PencilToolsComponent,
+    PenToolsComponent,
     RectangleToolsComponent,
     LineToolsComponent,
     EllipseToolsComponent,
     EmojiToolsComponent,
+    EraserToolsComponent,
     BrushToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
@@ -160,6 +166,8 @@ const customNotifierOptions: NotifierOptions = {
     LineGeneratorService,
     MousePositionService,
     EyedropperService,
+    EraserService,
+    PenGeneratorService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [
@@ -175,6 +183,7 @@ const customNotifierOptions: NotifierOptions = {
     LineToolsComponent,
     EllipseToolsComponent,
     EmojiToolsComponent,
+    EraserToolsComponent,
     BrushToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,

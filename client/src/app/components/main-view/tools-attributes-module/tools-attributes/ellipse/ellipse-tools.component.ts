@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {PlotType} from '../../../../../data-structures/PlotType';
+import {PlotType} from '../../../../../data-structures/plot-type';
 import {EllipseGeneratorService} from '../../../../../services/tools/ellipse-generator/ellipse-generator.service';
 
 @Component({

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Colors } from 'src/app/data-structures/Colors';
+import { Colors } from 'src/app/data-structures/colors';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 
 const DASHED_LINE_VALUE = 5;
@@ -15,11 +15,35 @@ export class ObjectSelectorService {
   private currentRect: Element;
   private SVGArray: SVGElement[] = [];
   private isSelectorVisible: boolean;
+  private hasBeenTranslated: boolean;
   private initialX: number;
   private initialY: number;
 
   constructor(protected mousePosition: MousePositionService) {
     this.mouseDownSelector = false;
+    this.hasBeenTranslated = false;
+  }
+
+  selectorMouseDown(mouseEvent: MouseEvent, canvas: SVGElement) {
+    if (!canvas.querySelector('#selected')) {
+      this.createSelectorRectangle(mouseEvent, canvas);
+    } else {
+      const selectorBox = canvas.querySelector('#boxrect') as SVGGElement;
+      const box = selectorBox.getBBox();
+      if (this.mousePosition._canvasMousePositionX < box.x || this.mousePosition._canvasMousePositionX > (box.x + box.width)
+        || this.mousePosition._canvasMousePositionY < box.y || this.mousePosition._canvasMousePositionY > (box.y + box.height)) {
+        this.removeSelector(canvas);
+      } else { this.startTranslation(); }
+    }
+
+  }
+
+  removeSelector(canvas: SVGElement): void {
+    const box = canvas.querySelector('#box') as SVGElement;
+    const boxrect = canvas.querySelector('#boxrect') as SVGElement;
+    box.removeChild(boxrect);
+    canvas.removeChild(box);
+    this.hasBeenTranslated = false;
   }
 
   createSelectorRectangle(mouseEvent: MouseEvent, canvas: SVGElement) {
@@ -38,6 +62,12 @@ export class ObjectSelectorService {
     this.mouseDownSelector = true;
   }
 
+  updateSelector(mouseEvent: MouseEvent, canvas: SVGElement) {
+    if (!canvas.querySelector('#selected')) {
+      this.updateSelectorRectangle(mouseEvent, canvas);
+    } else { this.translate(mouseEvent); }
+
+  }
   updateSelectorRectangle(mouseEvent: MouseEvent, canvas: SVGElement) {
 
     if (this.mouseDownSelector) {
@@ -70,24 +100,32 @@ export class ObjectSelectorService {
     const tempArray = new Array();
     drawings.forEach((drawing) => {
       if ((this.intersects(drawing.getBoundingClientRect() as DOMRect)) && (drawing.id !== 'selector')
-         && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
+        && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
         tempArray.push(drawing);
+        if (drawing.id.startsWith('penPath')) {
+          drawings.forEach((element) => {
+            if (element.id === drawing.id) {
+              tempArray.push(element);
+            }
+          });
+        }
       }
     });
     this.SVGArray = tempArray;
   }
 
   selectAll(canvas: SVGElement): void {
-    const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
-    const tempArray = new Array();
-    drawings.forEach((drawing) => {
-      if ((drawing.id !== 'selector') && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
-        tempArray.push(drawing);
-      }
-    });
-    this.SVGArray = tempArray;
-    // not quite working
-    // this.addToGroup(canvas);
+    if (!canvas.querySelector('#selected')) {
+      const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
+      const tempArray = new Array();
+      drawings.forEach((drawing) => {
+        if ((drawing.id !== 'selector') && (drawing.id !== 'backgroundGrid') && (drawing.id !== '')) {
+          tempArray.push(drawing);
+        }
+      });
+      this.SVGArray = tempArray;
+      this.addToGroup(canvas);
+    }
   }
 
   intersects(a: DOMRect): boolean {
@@ -98,7 +136,13 @@ export class ObjectSelectorService {
         b.top > a.bottom));
   }
 
-  finishSelector(canvas: SVGElement): void {
+  finish(canvas: SVGElement): void {
+    if (!canvas.querySelector('#selected')) {
+      this.finishSelection(canvas);
+    } else { this.finishTranslation(canvas); }
+  }
+
+  finishSelection(canvas: SVGElement): void {
     if (this.mouseDownSelector) {
       if (this.isSelectorVisible) {
         canvas.removeChild(this.currentRect);
@@ -154,12 +198,59 @@ export class ObjectSelectorService {
       (group as Element).setAttribute('x', '' + (mouseEvent.x - this.initialX - (box.width / 2)));
       (group as Element).setAttribute('y', '' + (mouseEvent.y - this.initialY - (box.height / 2)));
     }
+    this.hasBeenTranslated = true;
   }
 
-  drop() {
+  finishTranslation(canvas: SVGElement) {
     const groupElement = document.querySelector('#box') as SVGGElement;
     groupElement.setAttributeNS(null, 'onmousemove', 'null');
+    const box = canvas.querySelector('#box') as SVGElement;
+    const selected = canvas.querySelector('#selected') as SVGGElement;
+    const childArray = Array.from(selected.children);
+    childArray.forEach((child) => {
+      if (this.hasBeenTranslated) {
+        this.translateChildren(child, box);
+      }
+      canvas.appendChild(child);
+    });
     this.mouseDownTranslation = false;
   }
 
+  translateChildren(child: Element, box: SVGElement): void {
+    let newX: number;
+    let newY: number;
+    switch (child.nodeName) {
+      case 'rect':
+      case 'image':
+        newX = parseFloat('' + child.getAttribute('x')) + parseFloat('' + box.getAttribute('x'));
+        newY = parseFloat('' + child.getAttribute('y')) + parseFloat('' + box.getAttribute('y'));
+        child.setAttribute('x', newX as unknown as string);
+        child.setAttribute('y', newY as unknown as string);
+        break;
+      case 'ellipse':
+        newX = parseFloat('' + child.getAttribute('cx')) + parseFloat('' + box.getAttribute('x'));
+        newY = parseFloat('' + child.getAttribute('cy')) + parseFloat('' + box.getAttribute('y'));
+        child.setAttribute('cx', newX as unknown as string);
+        child.setAttribute('cy', newY as unknown as string);
+        break;
+      case 'path':
+      case 'polyline':
+      case 'polygon':
+        const xforms = child.getAttribute('transform');
+        if (xforms) {
+          const parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms as string) as unknown as string;
+          const firstX = parseFloat(parts[1]);
+          const firstY = parseFloat(parts[2]);
+          newX = parseFloat('' + (firstX + parseFloat(box.getAttribute('x') as string)));
+          newY = parseFloat('' + (firstY + parseFloat(box.getAttribute('y') as string)));
+        } else {
+          newX = parseFloat('' + box.getAttribute('x'));
+          newY = parseFloat('' + box.getAttribute('y'));
+        }
+        child.setAttribute('transform', 'translate(' + newX + ' ' + newY + ')');
+        break;
+      default:
+        break;
+    }
+  }
 }

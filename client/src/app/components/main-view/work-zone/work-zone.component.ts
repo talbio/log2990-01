@@ -1,6 +1,5 @@
 import { Component, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
-import { Colors } from 'src/app/data-structures/Colors';
-import { Tools } from 'src/app/data-structures/Tools';
+import { Colors } from 'src/app/data-structures/colors';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 
@@ -60,30 +59,16 @@ export class WorkZoneComponent implements OnInit {
   }
 
   onMouseDown(mouseEvent: MouseEvent) {
-    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
-      this.toolManager.selectorMouseDown();
-    } else { this.toolManager.createElement(mouseEvent, this.canvasElement); }
-  }
-
-  hasActiveSelector(): boolean {
-    let hasSelector = false;
-    const groupElement = this.canvasElement.querySelector('#selected');
-    if (groupElement) {
-      hasSelector = true;
-    }
-    return hasSelector;
+    this.toolManager.createElement(mouseEvent, this.canvasElement);
   }
 
   onMouseMove(mouseEvent: MouseEvent) {
-    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
-      this.toolManager.translate(mouseEvent);
-    } else {this.toolManager.updateElement(mouseEvent, this.canvasElement); }
+    this.toolManager.updateElement(mouseEvent, this.canvasElement);
   }
 
   onMouseUp() {
-    if (this.toolManager._activeTool === Tools.Selector && this.hasActiveSelector()) {
-      this.toolManager.finishTranslation();
-    } else {this.toolManager.finishElement(); }
+    this.toolManager.finishElement();
+
   }
 
   onLeftClick(mouseEvent: MouseEvent) {

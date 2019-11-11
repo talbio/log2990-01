@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
+import { LineDashStyle, LineJoinStyle } from '../../../../../data-structures/line-styles';
 import {LineGeneratorService} from '../../../../../services/tools/line-generator/line-generator.service';
-import { LineDashStyle, LineJoinStyle } from './../../../../../data-structures/LineStyles';
 
 @Component({
   selector: 'app-line-tools',
