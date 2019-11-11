@@ -32,7 +32,7 @@ export class ObjectSelectorService {
 
   selectedElements: SVGElement[];
 
-  private hasBoundingRect: boolean;
+  hasBoundingRect: boolean;
   private mouseDown: boolean;
 
   constructor(private mousePosition: MousePositionService,

@@ -148,11 +148,8 @@ describe('DrawingViewComponent', () => {
 
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
     clipboardService.cut();
-    fixture.detectChanges();
     // The clipboard contains the cut element and the canvas does not
-    console.log(workChilds);
     expect(workChilds.length).toEqual(initialChildrenLength);
-    console.log(workChilds[1]);
     expect(clipboardService.memorizedElements).toContain(itemToBeCut);
   });
 
@@ -206,14 +203,13 @@ describe('DrawingViewComponent', () => {
     const initialChildrenLength = workChilds.length;
     // Setting up the event
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-    const selector = fixture.debugElement.injector.get(ObjectSelectorService);
     const mouse = fixture.debugElement.injector.get(MousePositionService);
     toolManagerService._activeTool = Tools.Selector;
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
 
     svgHandle.innerHTML +=
     `<rect id="rectTestDelete"
-        x="400" data-start-x="200"
+        x="100" data-start-x="100"
         y="100" data-start-y="100"
         width="100" height="50" stroke="yellow" stroke-width="1"
         fill="pink"></rect>`;
@@ -223,8 +219,8 @@ describe('DrawingViewComponent', () => {
     mouse.canvasMousePositionY = 0;
     const mouseEvent0 = new MouseEvent('mousemove', {
       button: 0,
-      clientX: 900,
-      clientY: 475,
+      clientX: 0,
+      clientY: 0,
     });
 
     component.workZoneComponent.onMouseDown(mouseEvent0);
@@ -234,14 +230,11 @@ describe('DrawingViewComponent', () => {
       clientX: 900,
       clientY: 475,
     });
+    mouse.canvasMousePositionX = 900;
+    mouse.canvasMousePositionY = 475;
     component.workZoneComponent.onMouseMove(mouseEvent1);
     component.workZoneComponent.onMouseUp(mouseEvent1);
-    // selector.selectedElements.push(itemToBeDeleted);
-    console.log(selector.selectedElements);
     clipboardService.delete();
-    fixture.detectChanges();
-    console.log(clipboardService.selectedItems);
-    console.log(workChilds);
     // The clipboard contains only one element and it is not the one that was deleted
     expect(clipboardService.memorizedElements.length).toEqual(0);
     expect(workChilds.length).toEqual(initialChildrenLength);
@@ -265,9 +258,6 @@ describe('DrawingViewComponent', () => {
     const itemToBeCut = workChilds[2] as SVGElement;
     // selector.selectedElements.push(itemToBeCut);
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
-    clipboardService.cut();
-    const nbChildrenBeforePaste = workChilds.length;
-    clipboardService.paste();
 
     toolManagerService._activeTool = Tools.Selector;
     mouse.canvasMousePositionX = 100;
@@ -282,6 +272,9 @@ describe('DrawingViewComponent', () => {
     selector.onMouseMove(workChilds.length, mouseEvent);
     selector.onMouseUp();
 
+    clipboardService.copy();
+    const nbChildrenBeforePaste = workChilds.length;
+    clipboardService.paste();
     // The paste added a child on the canvas, which is the one selected and the clipboard contains still the element selected
     expect(workChilds.length).toBeGreaterThan(nbChildrenBeforePaste);
     expect(workChilds[2]).toEqual(itemToBeCut);
@@ -303,11 +296,10 @@ describe('DrawingViewComponent', () => {
         width="100" height="150" stroke="black" stroke-width="1"
         fill="pink"></rect>`;
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
-    const itemToBeDuplicated = workChilds[1] as SVGElement;
+    const itemToBeDuplicated = workChilds[2] as SVGElement;
 
     // selector.selectedElements.push(itemToBeDuplicated);
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
-    clipboardService.duplicate();
 
     toolManagerService._activeTool = Tools.Selector;
     mouse.canvasMousePositionX = 100;
@@ -322,7 +314,9 @@ describe('DrawingViewComponent', () => {
     selector.onMouseMove(workChilds.length, mouseEvent);
     selector.onMouseUp();
 
-    const clone = workChilds[2];
+    clipboardService.duplicate();
+    // 4 because 2 is the itemToDuplicate and 3 is the boundingRect
+    const clone = workChilds[4];
     let isAClone = true;
     if (parseFloat(clone.getAttribute('height') as unknown as string) !==
       parseFloat(itemToBeDuplicated.getAttribute('height') as unknown as string)) {
@@ -330,29 +324,23 @@ describe('DrawingViewComponent', () => {
     }
     console.log(isAClone);
     if (parseFloat(clone.getAttribute('width') as unknown as string) !==
-      parseFloat(itemToBeDuplicated.getAttribute('width') as unknown as string)) {
+    parseFloat(itemToBeDuplicated.getAttribute('width') as unknown as string)) {
       isAClone = false;
     }
-    console.log(isAClone);
-    if (parseFloat(clone.getAttribute('fill') as unknown as string) !==
-      parseFloat(itemToBeDuplicated.getAttribute('fill') as unknown as string)) {
+    if (clone.getAttribute('fill') !== itemToBeDuplicated.getAttribute('fill')) {
       isAClone = false;
     }
-    console.log(isAClone);
     if (parseFloat(clone.getAttribute('stroke-width') as unknown as string) !==
       parseFloat(itemToBeDuplicated.getAttribute('stroke-width') as unknown as string)) {
       isAClone = false;
     }
-    console.log(isAClone);
-    if (parseFloat(clone.getAttribute('stroke') as unknown as string) !==
-      parseFloat(itemToBeDuplicated.getAttribute('stroke') as unknown as string)) {
+    if (clone.getAttribute('stroke') !== itemToBeDuplicated.getAttribute('stroke')) {
       isAClone = false;
     }
-    console.log(isAClone);
     expect(isAClone).toBe(true);
     // The clipboard is still empty and a slightely displaced clone of the selected element was added
-    expect(workChilds.length).toEqual(3);
-    expect(workChilds[2]).toEqual(workChilds[1]);
+    // Def + Grid + item + clone + boundingRect
+    expect(workChilds.length).toEqual(5);
     expect(clipboardService.memorizedElements.length).toEqual(0);
   });
 });

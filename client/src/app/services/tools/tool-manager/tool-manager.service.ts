@@ -28,6 +28,12 @@ export class ToolManagerService {
   private generators: AbstractGenerator[];
 
   set _activeTool(tool: Tools) {
+    if (this.activeTool === Tools.Selector && tool === Tools.Selector) {
+      if (this.objectSelector.hasBoundingRect) {
+        this.objectSelector.removeBoundingRect();
+        this.objectSelector.selectedElements = [];
+      }
+    }
     this.activeTool = tool;
     this.setCurrentGenerator(tool);
   }
