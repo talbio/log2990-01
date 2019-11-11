@@ -978,69 +978,6 @@ describe('DrawingViewComponent', () => {
   component.workZoneComponent.onMouseDown(mouseEvent);
   expect(children.length).toEqual(initialChildsLength);
 });
-  it('should be possible to select multiple drawings. They are then added to a group and surrounded by a minimal box', () => {
-  // add an emoji
-  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-  toolManagerService._activeTool = Tools.Stamp;
-  // tslint:disable-next-line: no-string-literal
-  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-  const children = svgHandle.childNodes;
-  const initialChildsLength = svgHandle.children.length;
-  const mouseEvent = new MouseEvent('mousedown', {});
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  const emoji1: Element = svgHandle.childNodes[children.length - 1] as Element;
-  emoji1.setAttribute('x', '' + 100);
-  emoji1.setAttribute('y', '' + 100);
-  emoji1.setAttribute('id', 'testEmoji1');
-  expect(children.length).toEqual(initialChildsLength + 1);
-
- // add another emoji
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  const emoji2: Element = svgHandle.childNodes[children.length - 1] as Element;
-  emoji2.setAttribute('x', '' + 150);
-  emoji2.setAttribute('y', '' + 150);
-  emoji2.setAttribute('id', 'testEmoji2');
-  expect(children.length).toEqual(initialChildsLength + 2);
-
-  // select the emojis
-  toolManagerService._activeTool = Tools.Selector;
-  const mouseEvent2 = new MouseEvent('mousedown', {
-    button: 0,
-    clientX: 100,
-    clientY: 100,
-  });
-
-  // Add new click
-  const newX = 300;
-  const newY = 300;
-  const mouseMove = new MouseEvent('mousemove', {
-    clientX: newX,
-    clientY: newY,
-  });
-  component.workZoneComponent.onMouseDown(mouseEvent2);
-  component.workZoneComponent.onMouseMove(mouseMove);
-  component.workZoneComponent.onMouseUp(mouseMove);
-
-  const selectorBox = getLastSvgElement(svgHandle, 1);
-
-  // notre canvas a maintenant un enfant <svg> qui contient un groupe <g> qui contient nos deux emojis
-  expect(selectorBox.tagName).toBe('svg');
-  expect(selectorBox.getAttribute('id')).toBe('box');
-
-  const group = selectorBox.children[2];
-  expect(group.tagName).toBe('g');
-  expect(group.getAttribute('id')).toBe('selected');
-
-  const drawing1 = group.children[0];
-  expect(drawing1.getAttribute('id')).toBe('testEmoji1');
-
-  const drawing2 = group.children[1];
-  expect(drawing2.getAttribute('id')).toBe('testEmoji2');
-
-  // notre dessin est entouré d'une boîte minimale
-  const box = selectorBox.children[1];
-  expect(box.getBoundingClientRect()).toEqual(group.getBoundingClientRect());
-});
 
   // Tests for Eyedropper
   it('should be able to assign a color to primary color with left click as eyedropper', () => {

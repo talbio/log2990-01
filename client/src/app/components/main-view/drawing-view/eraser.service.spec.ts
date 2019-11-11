@@ -182,7 +182,6 @@ describe('EraserService', () => {
 
     // all three drawings have been erased
     expect(workChilds.length).toBe(initialNumberOfChildren);
-    console.log(workChilds)
   });
 
   it('should show a red border when close to being erased', () => {
