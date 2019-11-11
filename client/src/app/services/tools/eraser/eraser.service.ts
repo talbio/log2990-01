@@ -21,14 +21,11 @@ export class EraserService {
     eraseSize: number;
     eraseZone: IEraseZone;
     erasedDrawings: SVGElement[] = [];
-    strokeColors = new Map<string, string>();
-    isPenCloseToBeingErased: boolean;
 
     constructor(protected mousePosition: MousePositionService,
                 protected undoRedoService: UndoRedoService) {
         this.mouseDown = false;
         this.eraseSize = DEFAULT_ERASER_SIZE;
-        this.isPenCloseToBeingErased = false;
     }
 
     set _eraseSize(width: number) { this.eraseSize = width; }
@@ -81,6 +78,7 @@ export class EraserService {
             const paths = RendererSingleton.canvas.querySelectorAll('path');
             paths.forEach((path) => {
                 if (path.id === drawing.id) {
+                    path.setAttribute('filter', '');
                     this.erasedDrawings.push(path);
                     RendererSingleton.canvas.removeChild(path);
                 }
