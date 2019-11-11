@@ -5,6 +5,7 @@ import {ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2} from '@angula
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { ClipboardService } from 'src/app/services/tools/clipboard/clipboard.service';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
@@ -57,6 +58,7 @@ const DRAWING_SERVICES = [
   LineGeneratorService,
   EyedropperService,
   ColorService,
+  ClipboardService,
   MousePositionService,
   ObjectSelectorService,
   GridTogglerService,
