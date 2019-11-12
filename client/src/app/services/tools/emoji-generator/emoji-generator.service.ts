@@ -69,7 +69,7 @@ export class EmojiGeneratorService extends AbstractGenerator {
 
   createElement() {
     if (this.emoji !== '') {
-      const img = RendererSingleton.renderer.createElement('img', 'img');
+      const img = RendererSingleton.renderer.createElement('image', 'svg');
       RendererSingleton.renderer.setAttribute(img, 'id', `emoji${this.currentElementsNumber}`);
       RendererSingleton.renderer.setAttribute(img, 'x', `${(this.xPos - (this.width * this.scalingFactor / 2))}`);
       RendererSingleton.renderer.setAttribute(img, 'y', `${(this.yPos - (this.height * this.scalingFactor / 2))}`);

@@ -43,6 +43,7 @@ class LateralBarStubComponent { }
 @Component({ selector: 'app-welcome-modal', template: '' })
 class WelcomeModalStubComponent { }
 
+export const STUB_COMPONENTS = [LateralBarStubComponent, WelcomeModalStubComponent];
 const rendererSpy: jasmine.SpyObj<Renderer2> =
   jasmine.createSpyObj('Renderer2', ['selectRootElement']);
 
