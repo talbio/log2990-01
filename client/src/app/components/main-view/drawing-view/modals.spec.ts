@@ -5,6 +5,7 @@ import {ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2} from '@angula
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { ClipboardService } from 'src/app/services/tools/clipboard/clipboard.service';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
@@ -29,7 +30,6 @@ import { LastTenColorsComponent } from '../../modals/color-picker-module/last-te
 import { ModalManagerSingleton } from '../../modals/modal-manager-singleton';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
-import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { EraserService } from './../../../services/tools/eraser/eraser.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
@@ -59,6 +59,7 @@ const DRAWING_SERVICES = [
   LineGeneratorService,
   EyedropperService,
   ColorService,
+  ClipboardService,
   MousePositionService,
   ObjectSelectorService,
   GridTogglerService,

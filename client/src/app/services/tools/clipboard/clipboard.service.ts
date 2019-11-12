@@ -45,55 +45,9 @@ export class ClipboardService {
     this.selectedItems = this.selector.selectedElements;
   }
 
-  // slide(item: SVGElement, consecultive: number) {
-  //   const transformation = item.getAttribute('transform');
-  //   let newTransform = '';
-  //   let foundTranslate = false;
-  //   const slides = this.getSlideLength(item, consecultive);
-  //   if (transformation === null) {
-  //     newTransform = 'translate(' + slides[0] + ' ' + slides[1] + ')';
-  //   } else if (!transformation.includes('translate')) {
-  //     newTransform = 'translate(' + slides[0] as unknown as string + ' ' + slides[1] as unknown as string + ') ';
-  //     newTransform += transformation;
-
-  //   } else {
-  //     const eachTrans = transformation.split(' ');
-  //     for (const slot of eachTrans) {
-  //       if (slot.includes('translate(')) {
-  //         const xCord = slot.split('(', 2);
-  //         xCord[1] = (parseFloat(xCord[1]) + slides[0]) as unknown as string;
-  //         foundTranslate = true;
-  //         newTransform += 'translate(' + xCord[1] + ' ';
-  //       } else if (foundTranslate) {
-  //         const yCord = slot.split(')');
-  //         yCord[0] = (parseFloat(yCord[0]) + slides[1]) as unknown as string;
-  //         newTransform += yCord[0] + ') ';
-  //       } else {
-  //         newTransform += slot + ' ';
-  //       }
-  //     }
-  //   }
-  //   item.setAttribute('transform', newTransform);
-  // }
-
-  // getSlideLength(item: SVGElement, consecultive: number): [number, number] {
-  //   const slideLength = 5 * (consecultive);
-  //   this.isOutside(item, slideLength);
-  //   return [(slideLength - this.xSliding), (slideLength - this.ySliding)];
-  // }
-
-  // isOutside(item: SVGElement, consecultive: number) {
-  //   const clientRect = item.getBoundingClientRect();
-  //   if (clientRect.right + consecultive > RendererSingleton.canvas.getBoundingClientRect().right) {
-  //     // this.xSliding = this.xSliding + 10;
-  //     this.xSliding = this.xSliding + 5;
-  //   }
-
-  //   if (clientRect.bottom + consecultive > RendererSingleton.canvas.getBoundingClientRect().bottom) {
-  //     // this.ySliding = this.ySliding + 10;
-  //     this.ySliding = this.ySliding + 5;
-  //   }
-  // }
+  hasMemorizedElements(): boolean {
+    return this.memorizedElements.length !== 0;
+  }
 
   slide(item: SVGElement) {
     const transformation = item.getAttribute('transform');

@@ -43,6 +43,7 @@ class LateralBarStubComponent { }
 @Component({ selector: 'app-welcome-modal', template: '' })
 class WelcomeModalStubComponent { }
 
+export const STUB_COMPONENTS = [LateralBarStubComponent, WelcomeModalStubComponent];
 const rendererSpy: jasmine.SpyObj<Renderer2> =
   jasmine.createSpyObj('Renderer2', ['selectRootElement']);
 
@@ -146,7 +147,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Ellipse;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -176,7 +176,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Ellipse;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -241,7 +240,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Ellipse;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     // Set an initial color and change it
     const colorService = fixture.debugElement.injector.get(ColorService);
@@ -274,7 +272,6 @@ describe('DrawingViewComponent', () => {
 
   it('should have the ellipse plot type and stroke width be changeable', () => {
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     // Create a first ellipse with plot type only contour and a stroke width
     const ellipseGeneratorService = fixture.debugElement.injector.get(EllipseGeneratorService);
@@ -311,7 +308,6 @@ describe('DrawingViewComponent', () => {
 
   it('should be able to make ellipse a circle on shift press and return to ellipse on shift up', () => {
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     // Start to create an ellipse
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
@@ -377,7 +373,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -437,7 +432,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -471,7 +465,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -506,7 +499,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -554,7 +546,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -588,7 +579,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -643,7 +633,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -699,7 +688,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Setting up the event
@@ -719,7 +707,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Setting up the event
@@ -738,7 +725,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     const lineGeneratorService = fixture.debugElement.injector.get(LineGeneratorService);
@@ -796,7 +782,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Line;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     const lineGeneratorService = fixture.debugElement.injector.get(LineGeneratorService);
@@ -858,7 +843,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Stamp;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -878,7 +862,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Stamp;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const children = svgHandle.childNodes;
     const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
@@ -892,8 +875,7 @@ describe('DrawingViewComponent', () => {
     expect(wheelSpy).toHaveBeenCalled();
     expect(mouseSpy).toHaveBeenCalled();
     const emoji = svgHandle.childNodes[children.length - 1] as Element;
-    // tslint:disable-next-line: no-non-null-assertion
-    const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
+    const angle = (emoji.getAttribute('transform') as string).substr(7, 2) ;
     expect(angle).toEqual('15');
   });
 
@@ -902,7 +884,6 @@ describe('DrawingViewComponent', () => {
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Stamp;
   // Create the work-zone
-  // tslint:disable-next-line: no-string-literal
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
@@ -921,8 +902,7 @@ describe('DrawingViewComponent', () => {
   }
   component.workZoneComponent.onMouseDown(mouseEvent);
   let emoji = svgHandle.childNodes[children.length - 1] as Element;
-  // tslint:disable-next-line: no-non-null-assertion
-  let angle = emoji.getAttribute('transform')!.substr(7, 3) ;
+  let angle = (emoji.getAttribute('transform') as string).substr(7, 3) ;
   expect(angle).toEqual('360');
 
   // It shouldn't be possible to lower the angle under 0
@@ -934,15 +914,13 @@ describe('DrawingViewComponent', () => {
     }
   component.workZoneComponent.onMouseDown(mouseEvent);
   emoji = svgHandle.childNodes[children.length - 1] as Element;
-  // tslint:disable-next-line: no-non-null-assertion
-  angle = emoji.getAttribute('transform')!.substr(7, 1) ;
+  angle = (emoji.getAttribute('transform') as string).substr(7, 1) ;
   expect(angle).toEqual('0');
 });
 
   it('should be possible to modify an emoji rotation step from 15 to 1 with the ALT button', () => {
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Stamp;
-  // tslint:disable-next-line: no-string-literal
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const altSpy = spyOn(component.workZoneComponent, 'keyDownEvent').and.callThrough();
@@ -962,8 +940,7 @@ describe('DrawingViewComponent', () => {
   expect(wheelSpy).toHaveBeenCalled();
   expect(mouseSpy).toHaveBeenCalled();
   const emoji = svgHandle.childNodes[children.length - 1] as Element;
-  // tslint:disable-next-line: no-non-null-assertion
-  const angle = emoji.getAttribute('transform')!.substr(7, 2) ;
+  const angle = (emoji.getAttribute('transform') as string).substr(7, 2) ;
   expect(angle).toEqual('1 ');
 });
   it('should be impossible to add an emoji if no emoji is selected', () => {
@@ -971,76 +948,12 @@ describe('DrawingViewComponent', () => {
   toolManagerService._activeTool = Tools.Stamp;
   const emojiService = fixture.debugElement.injector.get(EmojiGeneratorService);
   emojiService._emoji = '';
-  // tslint:disable-next-line: no-string-literal
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const initialChildsLength = svgHandle.children.length;
   const mouseEvent = new MouseEvent('mousedown', {});
   component.workZoneComponent.onMouseDown(mouseEvent);
   expect(children.length).toEqual(initialChildsLength);
-});
-  it('should be possible to select multiple drawings. They are then added to a group and surrounded by a minimal box', () => {
-  // add an emoji
-  const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-  toolManagerService._activeTool = Tools.Stamp;
-  // tslint:disable-next-line: no-string-literal
-  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-  const children = svgHandle.childNodes;
-  const initialChildsLength = svgHandle.children.length;
-  const mouseEvent = new MouseEvent('mousedown', {});
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  const emoji1: Element = svgHandle.childNodes[children.length - 1] as Element;
-  emoji1.setAttribute('x', '' + 100);
-  emoji1.setAttribute('y', '' + 100);
-  emoji1.setAttribute('id', 'testEmoji1');
-  expect(children.length).toEqual(initialChildsLength + 1);
-
- // add another emoji
-  component.workZoneComponent.onMouseDown(mouseEvent);
-  const emoji2: Element = svgHandle.childNodes[children.length - 1] as Element;
-  emoji2.setAttribute('x', '' + 150);
-  emoji2.setAttribute('y', '' + 150);
-  emoji2.setAttribute('id', 'testEmoji2');
-  expect(children.length).toEqual(initialChildsLength + 2);
-
-  // select the emojis
-  toolManagerService._activeTool = Tools.Selector;
-  const mouseEvent2 = new MouseEvent('mousedown', {
-    button: 0,
-    clientX: 100,
-    clientY: 100,
-  });
-
-  // Add new click
-  const newX = 300;
-  const newY = 300;
-  const mouseMove = new MouseEvent('mousemove', {
-    clientX: newX,
-    clientY: newY,
-  });
-  component.workZoneComponent.onMouseDown(mouseEvent2);
-  component.workZoneComponent.onMouseMove(mouseMove);
-  component.workZoneComponent.onMouseUp(mouseMove);
-
-  const selectorBox = getLastSvgElement(svgHandle, 1);
-
-  // notre canvas a maintenant un enfant <svg> qui contient un groupe <g> qui contient nos deux emojis
-  expect(selectorBox.tagName).toBe('svg');
-  expect(selectorBox.getAttribute('id')).toBe('box');
-
-  const group = selectorBox.children[2];
-  expect(group.tagName).toBe('g');
-  expect(group.getAttribute('id')).toBe('selected');
-
-  const drawing1 = group.children[0];
-  expect(drawing1.getAttribute('id')).toBe('testEmoji1');
-
-  const drawing2 = group.children[1];
-  expect(drawing2.getAttribute('id')).toBe('testEmoji2');
-
-  // notre dessin est entouré d'une boîte minimale
-  const box = selectorBox.children[1];
-  expect(box.getBoundingClientRect()).toEqual(group.getBoundingClientRect());
 });
 
   // Tests for Eyedropper
@@ -1049,7 +962,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Rectangle;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Set the first color
@@ -1137,7 +1049,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Rectangle;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
 
     // Set the first color
@@ -1202,7 +1113,6 @@ describe('DrawingViewComponent', () => {
   // Test regarding the grid
   ////////////////////////////
   it('should be alternating between hidden and visible when toggled', () => {
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const gridRect = svgHandle.children[1];
     expect(gridRect.id).toBe('backgroundGrid');
@@ -1219,7 +1129,6 @@ describe('DrawingViewComponent', () => {
   });
 
   it('should change its opacity and size with setters', () => {
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const gridRect = svgHandle.children[1];
     const gridToggler = fixture.debugElement.injector.get(GridTogglerService);
@@ -1247,7 +1156,6 @@ describe('DrawingViewComponent', () => {
   });
 
   it('should have the upper right corner of canvas as its origin', () => {
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const gridRect = svgHandle.children[1];
 
@@ -1265,7 +1173,6 @@ describe('DrawingViewComponent', () => {
     toolManagerService._activeTool = Tools.Polygon;
 
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
@@ -1307,7 +1214,6 @@ describe('DrawingViewComponent', () => {
     const colorService = fixture.debugElement.injector.get(ColorService);
 
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
 
@@ -1382,7 +1288,6 @@ describe('DrawingViewComponent', () => {
     const colorService = fixture.debugElement.injector.get(ColorService);
 
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
 
@@ -1553,7 +1458,6 @@ describe('DrawingViewComponent', () => {
     const mousePosition = fixture.debugElement.injector.get(MousePositionService);
 
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
 
@@ -1633,7 +1537,6 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Polygon;
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     // Set an initial color and change it
     const colorService = fixture.debugElement.injector.get(ColorService);

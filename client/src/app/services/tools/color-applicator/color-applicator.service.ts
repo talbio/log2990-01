@@ -55,7 +55,7 @@ export class ColorApplicatorService implements CommandGenerator {
     targetObject.setAttribute('stroke', newColor);
     const markers = this.lineGenerator.findMarkerFromPolyline(targetObject, RendererSingleton.defs);
     const ancientColor = markers.children[0].getAttribute('fill') as string;
-    this.pushPolyLineChangedColorCommand(markers, newColor, ancientColor);
+    this.pushPolyLineChangedColorCommand(targetObject, markers, newColor, ancientColor);
     markers.children[0].setAttribute('fill', newColor);
 
   }
@@ -130,13 +130,15 @@ export class ColorApplicatorService implements CommandGenerator {
     this.pushCommand(command);
   }
 
-  private pushPolyLineChangedColorCommand(markers: SVGElement, newColor: string, ancientColor: string) {
+  private pushPolyLineChangedColorCommand(targetObject: SVGElement, markers: SVGElement, newColor: string, ancientColor: string) {
     const command: Command = {
       execute(): void {
         markers.children[0].setAttribute('fill', newColor);
+        targetObject.setAttribute('stroke', newColor);
       },
       unexecute(): void {
         markers.children[0].setAttribute('fill', ancientColor);
+        targetObject.setAttribute('stroke', ancientColor);
       },
     };
     this.pushCommand(command);

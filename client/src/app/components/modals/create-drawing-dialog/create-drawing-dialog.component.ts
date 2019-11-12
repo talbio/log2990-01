@@ -58,20 +58,17 @@ export class CreateDrawingDialogComponent implements OnInit {
 
   get height(): AbstractControl {
     // we are sure that this is non null, (see drawingForm declaration)
-    // tslint:disable-next-line:no-non-null-assertion
-    return this.drawingForm.get('height')!;
+    return this.drawingForm.get('height') as AbstractControl;
   }
 
   get width(): AbstractControl {
     // we are sure that this is non null, (see drawingForm declaration)
-    // tslint:disable-next-line:no-non-null-assertion
-    return this.drawingForm.get('width')!;
+    return this.drawingForm.get('width') as AbstractControl;
   }
 
   get color(): AbstractControl {
     // we are sure that this is non null, (see drawingForm declaration)
-    // tslint:disable-next-line:no-non-null-assertion
-    return this.drawingForm.get('color')!;
+    return this.drawingForm.get('color') as AbstractControl;
   }
 
   set color(colorValue) {

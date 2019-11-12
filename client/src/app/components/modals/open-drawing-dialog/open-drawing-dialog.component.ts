@@ -11,6 +11,7 @@ import { Drawing } from '../../../../../../common/communication/Drawing';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
 import {GiveUpChangesDialogComponent} from '../give-up-changes-dialog/give-up-changes-dialog.component';
 import { ModalManagerSingleton } from '../modal-manager-singleton';
+import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 
 export interface DialogData {
   drawingNonEmpty: boolean;
@@ -24,7 +25,7 @@ export interface DialogData {
 export class OpenDrawingDialogComponent implements OnInit {
 
   protected readonly separatorKeysCodes: number[] = [ENTER, COMMA, SPACE];
-  protected readonly LOCAL_OPEN_DRAWING_SUCCEEDED_MSG = `Votre dessin a bien été ouvert!`;
+  protected readonly LOCAL_OPEN_DRAWING_SUCCEEDED_MSG = `Votre dessin a bien été chargé!`;
 
   protected selectedTags: string[];
   protected drawings: Drawing[];
@@ -37,6 +38,7 @@ export class OpenDrawingDialogComponent implements OnInit {
               private dialog: MatDialog,
               private renderer: Renderer2,
               private notifier: NotifierService,
+              private gridManager: GridTogglerService,
               @Inject(MAT_DIALOG_DATA) private data: DialogData) {
 
     this.modalManagerSingleton._isModalActive = true;
@@ -78,10 +80,12 @@ export class OpenDrawingDialogComponent implements OnInit {
         .then( (confirm: boolean) => {
           if (confirm) {
             this.loadDrawingAndCloseDialog(drawing);
+            this.linkGrid();
           }
         });
     } else {
       this.loadDrawingAndCloseDialog(drawing);
+      this.linkGrid();
     }
   }
 
@@ -207,5 +211,9 @@ export class OpenDrawingDialogComponent implements OnInit {
       canvasHeight: jsonObject.canvasHeight,
     };
     return jsonDrawing;
+  }
+  linkGrid(): void {
+    this.gridManager._grid = this.renderer.selectRootElement('#backgroundGrid', true);
+    this.gridManager._gridPattern = this.renderer.selectRootElement('#backgroundGridPattern', true);
   }
 }

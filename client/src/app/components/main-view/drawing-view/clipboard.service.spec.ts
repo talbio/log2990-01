@@ -1,4 +1,3 @@
-import { UndoRedoService } from './../../../services/undo-redo/undo-redo.service';
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -9,7 +8,7 @@ import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/t
 import { RendererSingleton } from 'src/app/services/renderer-singleton';
 import { EraserService } from 'src/app/services/tools/eraser/eraser.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
-import { Tools } from '../../../data-structures/Tools';
+import { Tools } from '../../../data-structures/tools';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
@@ -33,6 +32,7 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+import { UndoRedoService } from './../../../services/undo-redo/undo-redo.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -69,7 +69,7 @@ const DRAWING_SERVICES = [
   PolygonGeneratorService,
 ];
 
-fdescribe('DrawingViewComponent', () => {
+describe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
   beforeEach(async(() => {
@@ -99,8 +99,8 @@ fdescribe('DrawingViewComponent', () => {
     }).overrideModule(BrowserDynamicTestingModule, {
       set: {
         entryComponents: [ToolsAttributesBarComponent,
-          DrawingViewComponent]
-      }
+          DrawingViewComponent],
+      },
     },
     ).compileComponents().then(() => {
       fixture = TestBed.createComponent(DrawingViewComponent);
@@ -134,7 +134,6 @@ fdescribe('DrawingViewComponent', () => {
 
   it('should react properly to cut', () => {
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
     const initialChildrenLength = workChilds.length;
@@ -175,7 +174,6 @@ fdescribe('DrawingViewComponent', () => {
 
   it('should react properly to copy', () => {
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
     // Setting up the event
@@ -213,7 +211,6 @@ fdescribe('DrawingViewComponent', () => {
 
   it('should react properly to delete', () => {
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
     const initialChildrenLength = workChilds.length;
@@ -321,19 +318,16 @@ fdescribe('DrawingViewComponent', () => {
     // 4 because 2 is the itemToDuplicate and 3 is the boundingRect
     const clone = workChilds[4];
     let isAClone = true;
-    if (parseFloat(clone.getAttribute('height') as unknown as string) !==
-      parseFloat(itemToBeDuplicated.getAttribute('height') as unknown as string)) {
+    if (clone.getAttribute('height') !== itemToBeDuplicated.getAttribute('height')) {
       isAClone = false;
     }
-    if (parseFloat(clone.getAttribute('width') as unknown as string) !==
-    parseFloat(itemToBeDuplicated.getAttribute('width') as unknown as string)) {
+    if (clone.getAttribute('width') !== itemToBeDuplicated.getAttribute('width')) {
       isAClone = false;
     }
     if (clone.getAttribute('fill') !== itemToBeDuplicated.getAttribute('fill')) {
       isAClone = false;
     }
-    if (parseFloat(clone.getAttribute('stroke-width') as unknown as string) !==
-      parseFloat(itemToBeDuplicated.getAttribute('stroke-width') as unknown as string)) {
+    if (clone.getAttribute('stroke-width') !== itemToBeDuplicated.getAttribute('stroke-width')) {
       isAClone = false;
     }
     if (clone.getAttribute('stroke') !== itemToBeDuplicated.getAttribute('stroke')) {
@@ -346,7 +340,7 @@ fdescribe('DrawingViewComponent', () => {
     expect(clipboardService.memorizedElements.length).toEqual(0);
   });
 
-  it('should react properly to command pattern when delete/cut or paste/duplicate is called', () => {
+  it('should react properly to command pattern when paste/duplicate is called', () => {
     const svgHandle = RendererSingleton.canvas as SVGElement;
     const workChilds = svgHandle.children;
     const initialChildrenLength = workChilds.length;
@@ -390,19 +384,49 @@ fdescribe('DrawingViewComponent', () => {
     expect(workChilds.length).toEqual(initialChildrenLength + 3);
     expect(workChilds[2]).toEqual(itemToBeDuplicated);
 
+  });
+
+  it('should react properly to command pattern when delete/cut is called', () => {
+    const svgHandle = RendererSingleton.canvas as SVGElement;
+    const workChilds = svgHandle.children;
+    const initialChildrenLength = workChilds.length;
+
+    // Setting up the event
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    const mouse = fixture.debugElement.injector.get(MousePositionService);
+
+    drawShapeOnCanvas(100, 100, 200, 250, Tools.Rectangle);
+
+    const selector = fixture.debugElement.injector.get(ObjectSelectorService);
+    const itemToBeDeleted = workChilds[2] as SVGElement;
+
+    const clipboardService = fixture.debugElement.injector.get(ClipboardService);
+
+    toolManagerService._activeTool = Tools.Selector;
+    mouse.canvasMousePositionX = 100;
+    mouse.canvasMousePositionY = 100;
     selector.onMouseDown();
+
+    const mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: 200,
+      clientY: 250,
+    });
+    mouse.canvasMousePositionX = 200;
+    mouse.canvasMousePositionY = 250;
     selector.onMouseMove(workChilds.length, mouseEvent);
     selector.onMouseUp();
+
+    const undoRedo = fixture.debugElement.injector.get(UndoRedoService);
 
     // since delete utilizes the command pattern in the same way as cut, let's just test delete
     clipboardService.delete();
 
     undoRedo.undo();
-    // defs + grid + initialRect + clone = 4
-    expect(workChilds.length).toEqual(initialChildrenLength + 2);
+    // defs + grid + initialRect = 3
+    expect(workChilds.length).toEqual(initialChildrenLength + 1);
     // is a clone ignoring transform
-    workChilds[2].removeAttribute('transform');
-    expect(workChilds[2]).toEqual(itemToBeDuplicated);
+    expect(workChilds[workChilds.length - 1]).toEqual(itemToBeDeleted);
 
     undoRedo.redo();
     // defs + grid + initialRect = 3

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
-import { Tools } from '../../../data-structures/tools';
+import {Tools} from '../../../data-structures/tools';
 import {RendererSingleton} from '../../renderer-singleton';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
@@ -28,7 +28,7 @@ export class ToolManagerService {
   private generators: AbstractGenerator[];
 
   set _activeTool(tool: Tools) {
-    if (this.activeTool === Tools.Selector && tool === Tools.Selector) {
+    if (this.activeTool === Tools.Selector && tool !== Tools.Selector) {
       if (this.objectSelector.hasBoundingRect) {
         this.objectSelector.removeBoundingRect();
         this.objectSelector.selectedElements = [];
