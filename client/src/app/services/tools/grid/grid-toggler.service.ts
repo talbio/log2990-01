@@ -16,6 +16,7 @@ export class GridTogglerService {
   }
 
   toggleGrid() {
+    console.log('toggle');
     if ( this.grid.getAttribute('visibility') === 'visible') {
       this.grid.setAttribute('visibility', 'hidden');
     } else {
@@ -58,5 +59,6 @@ export class GridTogglerService {
 
   adjustGridOpacity(sliderChange: MatSliderChange) {
     this.gridOpacity = sliderChange.value as number;
+    this.grid.setAttribute('fill-opacity', this.gridOpacity as unknown as string);
   }
 }

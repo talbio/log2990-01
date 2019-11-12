@@ -34,8 +34,8 @@ import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-at
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { DrawingViewComponent } from './drawing-view.component';
 
-/* tslint:disable:max-classes-per-file for mocking classes*/
-/* tslint:disable:no-string-literal for testing purposes*/
+// /* tslint:disable:max-classes-per-file for mocking classes*/
+// /* tslint:disable:no-string-literal for testing purposes*/
 @Component({ selector: 'app-lateral-bar', template: '' })
 class LateralBarStubComponent { }
 @Component({ selector: 'app-welcome-modal', template: '' })
