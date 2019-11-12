@@ -24,7 +24,7 @@ export abstract class AbstractGenerator implements CommandGenerator {
     return this.mouse.canvasMousePositionY;
   }
 
-  abstract createElement(primaryColor?: string, secondaryColor?: string): void;
+  abstract createElement(mainColors: [string, string]): void;
   abstract updateElement(currentChildPosition: number, mouseEvent?: MouseEvent): void;
   abstract finishElement(mouseEvent?: MouseEvent): void;
 

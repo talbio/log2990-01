@@ -13,13 +13,13 @@ export class PencilGeneratorService extends AbstractWritingTool {
   }
 
   // Initializes the path
-  createElement(primaryColor: string) {
+  createElement(mainColors: [string, string]) {
     const path = RendererSingleton.renderer.createElement('path', 'svg');
     const properties: [string, string][] = [];
     properties.push(
       ['id', `pencilPath${this.currentElementsNumber}`],
       ['d', `M ${this.xPos} ${(this.yPos)} L ${(this.xPos)} ${(this.yPos)}`],
-      ['stroke', `${primaryColor}`],
+      ['stroke', `${mainColors[1]}`],
       ['stroke-width', `${this.strokeWidth}`],
       ['stroke-linecap', `round`],
       ['fill', `none`],
