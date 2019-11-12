@@ -25,6 +25,7 @@ export class PolygonGeneratorService extends AbstractClosedShape {
     this.aspectRatio = 0;
     this.nbOfApex = 3;
     this.angleBetweenVertex = (Math.PI * 2) / this.nbOfApex;
+    this.idPrefix = 'polygon';
   }
 
   // Getters/Setters

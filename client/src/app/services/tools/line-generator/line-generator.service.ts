@@ -34,6 +34,7 @@ export class LineGeneratorService extends AbstractGenerator {
     this.lineCap = DEFAULT_LINECAP;
     this.lineJoinStyle = DEFAULT_LINEJOINSTYLE;
     this.lineDashStyle = DEFAULT_LINEDASHSTYLE;
+    this.idPrefix = 'line';
   }
 
   set _lineJoinStyle(style: LineJoinStyle) {

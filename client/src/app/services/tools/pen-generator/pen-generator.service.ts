@@ -34,6 +34,7 @@ export class PenGeneratorService extends AbstractWritingTool {
       this.speedArray = new Array<number>(SPEED_ARRAY_SIZE);
       this.positionX = this.xPos;
       this.positionY = this.yPos;
+      this.idPrefix = 'penPath';
   }
 
   createElement(mainColors: string[]) {
@@ -49,7 +50,7 @@ export class PenGeneratorService extends AbstractWritingTool {
       const path = RendererSingleton.renderer.createElement('path', 'svg');
       const properties: [string, string][] = [];
       properties.push(
-          ['id', `penPath${this.currentElementsNumber}`],
+          ['id', this.idPrefix + this.currentElementsNumber],
           ['d', `M ${(this.xPos)} ${(this.yPos)} L ${(this.xPos)} ${(this.yPos)}`],
           ['stroke', `${this.color}`],
           ['stroke-width', `${width}`],

@@ -11,6 +11,7 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
   constructor(protected mouse: MousePositionService,
               protected undoRedoService: UndoRedoService) {
     super(mouse, undoRedoService);
+    this.idPrefix = 'rect';
   }
 
   createElement(mainColors: [string, string]) {

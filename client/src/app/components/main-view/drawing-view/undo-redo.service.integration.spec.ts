@@ -10,67 +10,23 @@ import {UndoRedoService} from '../../../services/undo-redo/undo-redo.service';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { DrawingViewComponent } from './drawing-view.component';
 import {STUB_COMPONENTS} from './drawing-view.component.spec';
-import {COMPONENTS, DRAWING_SERVICES, IMPORTS, modalManagerSpy} from './integration-tests-environment.spec';
+import {
+  CanvasDrawer,
+  COMPONENTS,
+  DRAWING_SERVICES,
+  IMPORTS,
+  modalManagerSpy
+} from './integration-tests-environment.spec';
 
 describe('UndoRedoService integrations tests', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
-
-  const drawLine = () => {
-    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-    toolManagerService._activeTool = Tools.Line;
-    const xInitial = 100;
-    const yInitial = 100;
-    const mouseEvent = new MouseEvent('click', {
-      button: 0,
-      clientX: xInitial,
-      clientY: yInitial,
-    });
-    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService.canvasMousePositionX = xInitial;
-    mousePositionService.canvasMousePositionY = yInitial;
-    component.workZoneComponent.onLeftClick(mouseEvent);
-    const finalMouseEvent = new MouseEvent('click', {
-      button: 0,
-      clientX: 200,
-      clientY: 200,
-    });
-    component.workZoneComponent.onDoubleClick(finalMouseEvent);
-  };
-
-  // This takes 2 x and y coordinates and draws a shape from point 1 to 2 on the canvas
-  const drawShapeOnCanvas = (x1: number, y1: number, x2: number, y2: number, toolType: Tools) => {
-    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-    toolManagerService._activeTool = toolType;
-    let mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: x1,
-      clientY: y1,
-    });
-    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService.canvasMousePositionX = x1;
-    mousePositionService.canvasMousePositionY = y1;
-    component.workZoneComponent.onMouseDown(mouseEvent);
-    mouseEvent = new MouseEvent('mousemove', {
-      clientX: x2,
-      clientY: y2,
-    });
-    // update mouse position on the service
-    mousePositionService.canvasMousePositionX = x2;
-    mousePositionService.canvasMousePositionY = y2;
-    component.workZoneComponent.onMouseMove(mouseEvent);
-    component.workZoneComponent.onMouseUp(mouseEvent);
-  };
-
-  // This returns the child at 'position' from the canvas's last position (1 for last)
-  const getLastSvgElement = (svgHandle: SVGElement, position: number) => {
-    return svgHandle.children.item(svgHandle.children.length - position) as SVGElement;
-  };
+  let canvasDrawer: CanvasDrawer;
 
   const expectCreationToBeUndoable = async (tool: Tools, id: string) => {
     const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
-    drawShapeOnCanvas(100, 100, 200, 200, tool);
-    const svgElement = getLastSvgElement(svgCanvas, 1) as SVGElement;
+    canvasDrawer.drawShapeOnCanvas(100, 100, 200, 200, tool);
+    const svgElement = canvasDrawer.getLastSvgElement(svgCanvas, 1) as SVGElement;
     await expect(svgElement.getAttribute('id')).toBe(id);
     const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
     undoRedoService.undo();
@@ -102,6 +58,7 @@ describe('UndoRedoService integrations tests', () => {
     ).compileComponents().then(() => {
       fixture = TestBed.createComponent(DrawingViewComponent);
       component = fixture.componentInstance;
+      canvasDrawer = new CanvasDrawer(fixture, component);
       fixture.detectChanges();
     });
   }));
@@ -133,7 +90,7 @@ describe('UndoRedoService integrations tests', () => {
 
     it('should be able to undo and redo a line', async () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
-      drawLine();
+      canvasDrawer.drawLine();
       const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
       undoRedoService.undo();
       await expect(svgCanvas.querySelector('#line0')).toBe(null);
@@ -205,8 +162,8 @@ describe('UndoRedoService integrations tests', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
       const fillColor = 'rgba(100,100,100,1)';
       setPrimaryColor(fillColor);
-      drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
-      const rectangleChild = getLastSvgElement(svgCanvas, 1) as SVGElement;
+      canvasDrawer.drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
+      const rectangleChild = canvasDrawer.getLastSvgElement(svgCanvas, 1) as SVGElement;
       expect(rectangleChild.getAttribute('fill')).toBe('transparent');
       applyColorApplicatorOnElement(150, 150, rectangleChild,  fillColor, true);
       expectPropertyToBeUndoAndRedoable(rectangleChild, 'fill', fillColor, 'transparent');
@@ -216,8 +173,8 @@ describe('UndoRedoService integrations tests', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
       const initialColor = 'rgba(100,100,100,1)';
       setSecondaryColor(initialColor);
-      drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
-      const rectangleChild = getLastSvgElement(svgCanvas, 1) as SVGElement;
+      canvasDrawer.drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
+      const rectangleChild = canvasDrawer.getLastSvgElement(svgCanvas, 1) as SVGElement;
       expect(rectangleChild.getAttribute('stroke')).toBe(initialColor);
       const changedColor = 'rgba(180,180,180,1)';
       applyColorApplicatorOnElement(150, 150, rectangleChild, changedColor, false);
@@ -240,9 +197,9 @@ describe('UndoRedoService integrations tests', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
       const initialColor = 'rgba(150,150,150,1)';
       setSecondaryColor(initialColor);
-      drawLine();
+      canvasDrawer.drawLine();
       const changedColor = 'rgba(100, 100, 100, 1)';
-      const pen: SVGElement = getLastSvgElement(svgCanvas, 1);
+      const pen: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 1);
       applyColorApplicatorOnElement(100, 100, pen, changedColor, true);
       expectPropertyToBeUndoAndRedoable(pen, 'stroke', changedColor, initialColor);
     });
