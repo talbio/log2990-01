@@ -14,6 +14,4 @@ export class AbstractClipboardComponent {
 
   @Input() clipboardProperties: ClipboardProperties;
 
-  constructor() { }
-
 }
