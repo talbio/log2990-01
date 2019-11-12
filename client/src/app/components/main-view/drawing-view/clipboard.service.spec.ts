@@ -32,6 +32,7 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+import { UndoRedoService } from './../../../services/undo-redo/undo-redo.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -108,6 +109,29 @@ describe('DrawingViewComponent', () => {
     });
   }));
 
+  const drawShapeOnCanvas = (x1: number, y1: number, x2: number, y2: number, toolType: Tools) => {
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = toolType;
+    let mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: x1,
+      clientY: y1,
+    });
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService.canvasMousePositionX = x1;
+    mousePositionService.canvasMousePositionY = y1;
+    component.workZoneComponent.onMouseDown(mouseEvent);
+    mouseEvent = new MouseEvent('mousemove', {
+    clientX: x2,
+    clientY: y2,
+    });
+    // update mouse position on the service
+    mousePositionService.canvasMousePositionX = x2;
+    mousePositionService.canvasMousePositionY = y2;
+    component.workZoneComponent.onMouseMove(mouseEvent);
+    component.workZoneComponent.onMouseUp(mouseEvent);
+  };
+
   it('should react properly to cut', () => {
     // Create the work-zone
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
@@ -117,12 +141,8 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     const mouse = fixture.debugElement.injector.get(MousePositionService);
     toolManagerService._activeTool = Tools.Selector;
-    svgHandle.innerHTML +=
-        `<rect id="rectTestCut"
-        x="100" data-start-x="100"
-        y="100" data-start-y="100"
-        width="100" height="150" stroke="black" stroke-width="1"
-        fill="pink"></rect>`;
+
+    drawShapeOnCanvas(100, 100, 200, 250, Tools.Rectangle);
 
     toolManagerService._activeTool = Tools.Selector;
     mouse.canvasMousePositionX = 100;
@@ -160,14 +180,10 @@ describe('DrawingViewComponent', () => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     const mouse = fixture.debugElement.injector.get(MousePositionService);
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
-    toolManagerService._activeTool = Tools.Selector;
-    svgHandle.innerHTML +=
-    `<rect id="rectTestCopy"
-        x="200" data-start-x="200"
-        y="200" data-start-y="200"
-        width="100" height="250" stroke="red" stroke-width="1"
-        fill="pink"></rect>`;
 
+    drawShapeOnCanvas(200, 200, 300, 450, Tools.Rectangle);
+
+    toolManagerService._activeTool = Tools.Selector;
     const itemToBeCopied = workChilds[2] as SVGElement;
 
     mouse.canvasMousePositionX = 210;
@@ -201,34 +217,27 @@ describe('DrawingViewComponent', () => {
     // Setting up the event
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     const mouse = fixture.debugElement.injector.get(MousePositionService);
-    toolManagerService._activeTool = Tools.Selector;
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
 
-    svgHandle.innerHTML +=
-    `<rect id="rectTestDelete"
-        x="100" data-start-x="100"
-        y="100" data-start-y="100"
-        width="100" height="50" stroke="yellow" stroke-width="1"
-        fill="pink"></rect>`;
+    drawShapeOnCanvas(200, 200, 300, 450, Tools.Rectangle);
+    toolManagerService._activeTool = Tools.Selector;
 
-    // const itemToBeDeleted = workChilds[2] as SVGElement;
-    mouse.canvasMousePositionX = 0;
-    mouse.canvasMousePositionY = 0;
+    mouse.canvasMousePositionX = 210;
+    mouse.canvasMousePositionY = 210;
     const mouseEvent0 = new MouseEvent('mousemove', {
       button: 0,
-      clientX: 0,
-      clientY: 0,
+      clientX: 210,
+      clientY: 210,
     });
 
     component.workZoneComponent.onMouseDown(mouseEvent0);
 
     const mouseEvent1 = new MouseEvent('mousemove', {
       button: 0,
-      clientX: 900,
-      clientY: 475,
+      clientX: 300,
+      clientY: 450,
     });
-    mouse.canvasMousePositionX = 900;
-    mouse.canvasMousePositionY = 475;
+
     component.workZoneComponent.onMouseMove(mouseEvent1);
     component.workZoneComponent.onMouseUp(mouseEvent1);
     clipboardService.delete();
@@ -244,13 +253,10 @@ describe('DrawingViewComponent', () => {
     // Setting up the event
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     const mouse = fixture.debugElement.injector.get(MousePositionService);
+
+    drawShapeOnCanvas(100, 100, 250, 200, Tools.Rectangle);
     toolManagerService._activeTool = Tools.Selector;
-    svgHandle.innerHTML +=
-        `<rect id="rect0"
-        x="100" data-start-x="100"
-        y="100" data-start-y="100"
-        width="100" height="150" stroke="black" stroke-width="1"
-        fill="pink"></rect>`;
+
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
     const itemToBeCut = workChilds[2] as SVGElement;
     // selector.selectedElements.push(itemToBeCut);
@@ -286,12 +292,9 @@ describe('DrawingViewComponent', () => {
     // Setting up the event
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     const mouse = fixture.debugElement.injector.get(MousePositionService);
-    svgHandle.innerHTML +=
-        `<rect id="rect0"
-        x="100" data-start-x="100"
-        y="100" data-start-y="100"
-        width="100" height="150" stroke="black" stroke-width="1"
-        fill="pink"></rect>`;
+
+    drawShapeOnCanvas(100, 100, 200, 250, Tools.Rectangle);
+
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
     const itemToBeDuplicated = workChilds[2] as SVGElement;
 
@@ -315,20 +318,16 @@ describe('DrawingViewComponent', () => {
     // 4 because 2 is the itemToDuplicate and 3 is the boundingRect
     const clone = workChilds[4];
     let isAClone = true;
-    if (parseFloat(clone.getAttribute('height') as unknown as string) !==
-      parseFloat(itemToBeDuplicated.getAttribute('height') as unknown as string)) {
+    if (clone.getAttribute('height') !== itemToBeDuplicated.getAttribute('height')) {
       isAClone = false;
     }
-    console.log(isAClone);
-    if (parseFloat(clone.getAttribute('width') as unknown as string) !==
-    parseFloat(itemToBeDuplicated.getAttribute('width') as unknown as string)) {
+    if (clone.getAttribute('width') !== itemToBeDuplicated.getAttribute('width')) {
       isAClone = false;
     }
     if (clone.getAttribute('fill') !== itemToBeDuplicated.getAttribute('fill')) {
       isAClone = false;
     }
-    if (parseFloat(clone.getAttribute('stroke-width') as unknown as string) !==
-      parseFloat(itemToBeDuplicated.getAttribute('stroke-width') as unknown as string)) {
+    if (clone.getAttribute('stroke-width') !== itemToBeDuplicated.getAttribute('stroke-width')) {
       isAClone = false;
     }
     if (clone.getAttribute('stroke') !== itemToBeDuplicated.getAttribute('stroke')) {
@@ -339,5 +338,98 @@ describe('DrawingViewComponent', () => {
     // Def + Grid + item + clone + boundingRect
     expect(workChilds.length).toEqual(5);
     expect(clipboardService.memorizedElements.length).toEqual(0);
+  });
+
+  it('should react properly to command pattern when paste/duplicate is called', () => {
+    const svgHandle = RendererSingleton.canvas as SVGElement;
+    const workChilds = svgHandle.children;
+    const initialChildrenLength = workChilds.length;
+
+    // Setting up the event
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    const mouse = fixture.debugElement.injector.get(MousePositionService);
+
+    drawShapeOnCanvas(100, 100, 200, 250, Tools.Rectangle);
+
+    const selector = fixture.debugElement.injector.get(ObjectSelectorService);
+    const itemToBeDuplicated = workChilds[2] as SVGElement;
+
+    // selector.selectedElements.push(itemToBeDuplicated);
+    const clipboardService = fixture.debugElement.injector.get(ClipboardService);
+
+    toolManagerService._activeTool = Tools.Selector;
+    mouse.canvasMousePositionX = 100;
+    mouse.canvasMousePositionY = 100;
+    selector.onMouseDown();
+
+    const mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: 200,
+      clientY: 250,
+    });
+    mouse.canvasMousePositionX = 200;
+    mouse.canvasMousePositionY = 250;
+    selector.onMouseMove(workChilds.length, mouseEvent);
+    selector.onMouseUp();
+
+    const undoRedo = fixture.debugElement.injector.get(UndoRedoService);
+    // since duplicate utilizes the command pattern in the same way as paste, let's just test duplicate
+    clipboardService.duplicate();
+    undoRedo.undo();
+    // defs + grid + initialRect + boundingRect = 4
+    expect(workChilds.length).toEqual(initialChildrenLength + 2);
+
+    undoRedo.redo();
+    // defs + grid + initialRect + boundingRect + clone = 5
+    expect(workChilds.length).toEqual(initialChildrenLength + 3);
+    expect(workChilds[2]).toEqual(itemToBeDuplicated);
+
+  });
+
+  it('should react properly to command pattern when delete/cut is called', () => {
+    const svgHandle = RendererSingleton.canvas as SVGElement;
+    const workChilds = svgHandle.children;
+    const initialChildrenLength = workChilds.length;
+
+    // Setting up the event
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    const mouse = fixture.debugElement.injector.get(MousePositionService);
+
+    drawShapeOnCanvas(100, 100, 200, 250, Tools.Rectangle);
+
+    const selector = fixture.debugElement.injector.get(ObjectSelectorService);
+    const itemToBeDeleted = workChilds[2] as SVGElement;
+
+    const clipboardService = fixture.debugElement.injector.get(ClipboardService);
+
+    toolManagerService._activeTool = Tools.Selector;
+    mouse.canvasMousePositionX = 100;
+    mouse.canvasMousePositionY = 100;
+    selector.onMouseDown();
+
+    const mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: 200,
+      clientY: 250,
+    });
+    mouse.canvasMousePositionX = 200;
+    mouse.canvasMousePositionY = 250;
+    selector.onMouseMove(workChilds.length, mouseEvent);
+    selector.onMouseUp();
+
+    const undoRedo = fixture.debugElement.injector.get(UndoRedoService);
+
+    // since delete utilizes the command pattern in the same way as cut, let's just test delete
+    clipboardService.delete();
+
+    undoRedo.undo();
+    // defs + grid + initialRect = 3
+    expect(workChilds.length).toEqual(initialChildrenLength + 1);
+    // is a clone ignoring transform
+    expect(workChilds[workChilds.length - 1]).toEqual(itemToBeDeleted);
+
+    undoRedo.redo();
+    // defs + grid + initialRect = 3
+    expect(workChilds.length).toEqual(initialChildrenLength);
   });
 });
