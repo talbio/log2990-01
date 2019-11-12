@@ -105,9 +105,15 @@ export class ObjectSelectorService {
     drawings.forEach((svgElement: SVGElement) => {
       if (this.isElementInsideSelection(svgElement) && !this.selectedElements.includes(svgElement)) {
         this.selectedElements.push(svgElement);
-      }
-    });
-  }
+
+        if (svgElement.id.startsWith('penPath')) {
+                  drawings.forEach((element) => {
+                    if (element.id === svgElement.id) {
+                      this.selectedElements.push(element as SVGElement);
+                    }
+                  }); }
+    }});
+}
 
   isElementInsideSelection(element: SVGElement): boolean {
     const selectionRectangle = this.selectorRect.getBoundingClientRect();
