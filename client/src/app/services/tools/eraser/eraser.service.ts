@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Action, ActionType } from 'src/app/data-structures/command';
+import { Command } from '../../../data-structures/command';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
 import { UndoRedoService } from '../../undo-redo/undo-redo.service';
@@ -22,7 +22,8 @@ export class EraserService {
     eraseZone: IEraseZone;
     erasedDrawings: SVGElement[] = [];
 
-    constructor(protected mousePosition: MousePositionService, protected undoRedoService: UndoRedoService) {
+    constructor(protected mousePosition: MousePositionService,
+                protected undoRedoService: UndoRedoService) {
         this.mouseDown = false;
         this.eraseSize = DEFAULT_ERASER_SIZE;
     }
@@ -36,15 +37,15 @@ export class EraserService {
     }
 
     initialiseData(): void {
-        this.OFFSET_CANVAS_Y = RendererSingleton.getCanvas().getBoundingClientRect().top;
-        this.OFFSET_CANVAS_X = RendererSingleton.getCanvas().getBoundingClientRect().left;
+        this.OFFSET_CANVAS_Y = RendererSingleton.canvas.getBoundingClientRect().top;
+        this.OFFSET_CANVAS_X = RendererSingleton.canvas.getBoundingClientRect().left;
         this.setEraseZone();
         this.setEraserSquare();
     }
 
     evaluateWhichDrawingsToErase(): void {
         if (this.eraseZone != null) {
-            const drawings = RendererSingleton.getCanvas().querySelectorAll('rect, path, ellipse, image, polyline, polygon');
+            const drawings = RendererSingleton.canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
             const drawingPile = new Array();
             drawings.forEach((drawing) => {
                 this.warnBeforeErasing(drawing as SVGElement);
@@ -53,8 +54,8 @@ export class EraserService {
                     drawingPile.push(drawing);
                 }
             });
-            for (let i = RendererSingleton.getCanvas().children.length - 1; i > 0; i--) {
-                const index = drawingPile.indexOf(RendererSingleton.getCanvas().children[i]);
+            for (let i = RendererSingleton.canvas.children.length - 1; i > 0; i--) {
+                const index = drawingPile.indexOf(RendererSingleton.canvas.children[i]);
                 if (index !== -1) {
                     this.erase(drawingPile[index]);
                     return;
@@ -74,17 +75,17 @@ export class EraserService {
 
     erase(drawing: SVGGElement): void {
         if (drawing.id.startsWith('penPath')) {
-            const paths = RendererSingleton.getCanvas().querySelectorAll('path');
+            const paths = RendererSingleton.canvas.querySelectorAll('path');
             paths.forEach((path) => {
                 if (path.id === drawing.id) {
                     path.setAttribute('filter', '');
                     this.erasedDrawings.push(path);
-                    RendererSingleton.getCanvas().removeChild(path);
+                    RendererSingleton.canvas.removeChild(path);
                 }
             });
         } else {
             this.erasedDrawings.push(drawing);
-            RendererSingleton.getCanvas().removeChild(drawing);
+            RendererSingleton.canvas.removeChild(drawing);
         }
     }
 
@@ -92,17 +93,17 @@ export class EraserService {
         if (this.mouseDown) {
             this.setEraseZone();
             this.setEraserSquare();
-            const eraser = RendererSingleton.getCanvas().querySelector('#eraser') as SVGElement;
-            RendererSingleton.getCanvas().removeChild(eraser);
+            const eraser = RendererSingleton.canvas.querySelector('#eraser') as SVGElement;
+            RendererSingleton.canvas.removeChild(eraser);
             this.evaluateWhichDrawingsToErase();
         }
     }
 
     stopErasing(): void {
         if (this.mouseDown) {
-            const eraser = RendererSingleton.getCanvas().querySelector('#eraser') as SVGElement;
-            RendererSingleton.getCanvas().removeChild(eraser);
-            this.pushAction();
+            const eraser = RendererSingleton.canvas.querySelector('#eraser') as SVGElement;
+            RendererSingleton.canvas.removeChild(eraser);
+            this.pushAction(this.erasedDrawings);
             this.erasedDrawings = [];
             this.mouseDown = false;
         }
@@ -149,37 +150,35 @@ export class EraserService {
 
     setEraseZone(): void {
         this.eraseZone = {
-            left: this.mousePosition._canvasMousePositionX - (this.eraseSize / 2),
-            top: this.mousePosition._canvasMousePositionY - (this.eraseSize / 2),
-            bottom: this.mousePosition._canvasMousePositionY + (this.eraseSize / 2),
-            right: this.mousePosition._canvasMousePositionX + (this.eraseSize / 2),
+            left: this.mousePosition.canvasMousePositionX - (this.eraseSize / 2),
+            top: this.mousePosition.canvasMousePositionY - (this.eraseSize / 2),
+            bottom: this.mousePosition.canvasMousePositionY + (this.eraseSize / 2),
+            right: this.mousePosition.canvasMousePositionX + (this.eraseSize / 2),
         };
     }
 
     setEraserSquare(): void {
-        RendererSingleton.getCanvas().innerHTML +=
+        RendererSingleton.canvas.innerHTML +=
             `<rect id="eraser"
-        x="${(this.mousePosition._canvasMousePositionX - this.eraseSize / 2)}"
-        y="${(this.mousePosition._canvasMousePositionY - this.eraseSize / 2)}"
+        x="${(this.mousePosition.canvasMousePositionX - this.eraseSize / 2)}"
+        y="${(this.mousePosition.canvasMousePositionY - this.eraseSize / 2)}"
         width="${(this.eraseSize)}" height="${(this.eraseSize)}" stroke="black"
         fill="transparent"></rect>`;
     }
 
-    pushAction(): void {
-        const action: Action = {
-            actionType: ActionType.Create,
-            svgElements: this.erasedDrawings,
+    pushAction(drawings: SVGElement[]): void {
+        const command: Command = {
             execute(): void {
-                this.svgElements.forEach((drawing) => {
-                    RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), drawing);
+                drawings.forEach((drawing) => {
+                    RendererSingleton.renderer.removeChild(RendererSingleton.canvas, drawing);
                 });
             },
             unexecute(): void {
-                this.svgElements.forEach((drawing) => {
-                    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), drawing);
+                drawings.forEach((drawing) => {
+                    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, drawing);
                 });
             },
         };
-        this.undoRedoService.pushAction(action);
+        this.undoRedoService.pushCommand(command);
     }
 }

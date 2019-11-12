@@ -18,11 +18,11 @@ export class RendererSingleton {
     return this.renderer2;
   }
 
-  static getCanvas(): SVGElement {
+  static get canvas(): SVGElement {
     return this.renderer.selectRootElement('#canvas', true);
   }
 
-  static getDefs(): SVGElement {
+  static get defs(): SVGElement {
     return this.renderer.selectRootElement('#definitions', true);
   }
 }

@@ -1,7 +1,14 @@
-<svg id="canvas" [attr.height]="height" [attr.width]="width" [ngStyle]="setBackGroundColor()"
-    (mousedown)='onMouseDown($event)' (mousemove)='onMouseMove($event)' (mouseup)='onMouseUp()'
-    (click)='onLeftClick($event)' (contextmenu)='onRightClick($event)' (dblclick)='onDoubleClick($event)'
-    (mousewheel)='onMouseWheel($event)'>
+<svg id="canvas"
+     [attr.height]="height"
+     [attr.width]="width"
+     [ngStyle]="setBackGroundColor()"
+     (mousedown)='onMouseDown($event)'
+     (mousemove)='onMouseMove($event)'
+     (mouseup)='onMouseUp($event)'
+     (click)='onLeftClick($event)'
+     (contextmenu)='onRightClick($event)'
+     (dblclick)='onDoubleClick($event)'
+     (mousewheel)='onMouseWheel($event)'>
     <defs id="definitions">
         <!-- Pattern for grid -->
         <pattern id="backgroundGridPattern" patternUnits="userSpaceOnUse" [attr.width]="gridSize"

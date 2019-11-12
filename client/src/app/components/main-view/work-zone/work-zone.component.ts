@@ -19,7 +19,7 @@ export class WorkZoneComponent implements OnInit {
   @Input() color: string;
   @Input() gridSize: number;
 
-  private canvasElement: SVGElement;
+  canvasElement: SVGElement;
 
   constructor(private toolManager: ToolManagerService,
               private renderer: Renderer2,
@@ -63,16 +63,15 @@ export class WorkZoneComponent implements OnInit {
   }
 
   onMouseMove(mouseEvent: MouseEvent) {
-    this.toolManager.updateElement(mouseEvent, this.canvasElement);
+    this.toolManager.updateElement(mouseEvent);
   }
 
-  onMouseUp() {
-    this.toolManager.finishElement();
-
+  onMouseUp(mouseEvent: MouseEvent) {
+    this.toolManager.finishElement(mouseEvent);
   }
 
   onLeftClick(mouseEvent: MouseEvent) {
-    this.toolManager.changeElementLeftClick(mouseEvent.target as SVGElement, this.canvasElement);
+    this.toolManager.changeElementLeftClick(mouseEvent.target as SVGElement);
     return true;
   }
 
@@ -83,7 +82,7 @@ export class WorkZoneComponent implements OnInit {
   }
 
   onDoubleClick(mouseEvent: MouseEvent) {
-    this.toolManager.finishElementDoubleClick(mouseEvent, this.canvasElement);
+    this.toolManager.finishElementDoubleClick(mouseEvent);
   }
 
   onMouseWheel(mouseEvent: WheelEvent) {

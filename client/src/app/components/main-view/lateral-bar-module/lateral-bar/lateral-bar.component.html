@@ -11,6 +11,12 @@
   </app-abstract-tool-button>
 </mat-menu>
 
+<mat-menu #clipboardButton="matMenu">
+  <app-abstract-tool-button *ngFor="let clipboardButtonsProperties of clipboardButtonsProperties"
+    [attributesSideNav]="attributesSideNav" [toolProperties]="clipboardButtonsProperties">
+  </app-abstract-tool-button>
+</mat-menu>
+
 <mat-list>
   <!-- Tools Buttons -->
   <mat-list-item>
@@ -18,25 +24,60 @@
       <mat-icon>create</mat-icon>
     </button>
   </mat-list-item>
+
   <mat-divider></mat-divider>
+
   <mat-list-item>
     <button mat-icon-button [matMenuTriggerFor]="shapeToolButton">
       <mat-icon svgIcon="rectangle"></mat-icon>
     </button>
   </mat-list-item>
+
+  <mat-divider></mat-divider>
+
+  <mat-list-item>
+    <button mat-icon-button [matMenuTriggerFor]="clipboardButton">
+      <mat-icon>assignment</mat-icon>
+    </button>
+  </mat-list-item>
+
+  <!-- <mat-list-item>
+    <div id="copier">
+      *ngIf="hasSelectedElements()"
+      <button [disabled]="!hasSelectedElements" (click)="this.clipboard.copy()" class="btn" matTooltip="Copier">Copier</button>
+      <button [disabled]="!hasSelectedElements" (click)="this.clipboard.cut()" class="btn" matTooltip="Couper">Couper</button>
+      <button [disabled]="!hasSelectedElements" (click)="this.clipboard.duplicate()" class="btn" matTooltip="Dupliquer">Dupliquer</button>
+      <button [disabled]="!hasSelectedElements" (click)="this.clipboard.delete()" class="btn" matTooltip="Supprimer">Supprimer</button>
+      <button (click)="this.clipboard.paste()" class="btn" matTooltip="Coller">Coller</button>
+    </div>
+  </mat-list-item> -->
+
   <mat-divider></mat-divider>
 
   <mat-list-item>
     <div id="undo-redo">
-      <button mat-icon-button (click)="this.undoRedoService.undo()" class="btn" matTooltip="Annuler">
+      <button mat-icon-button
+              (click)="this.undoRedoService.undo()"
+              [disabled]="!this.undoRedoService.canUndo()"
+              class="btn" matTooltip="Annuler">
         <mat-icon class="icon" svgIcon="undo"></mat-icon>
       </button>
       <mat-divider [vertical]="true"></mat-divider>
-      <button mat-icon-button (click)="this.undoRedoService.redo()" class="btn" matTooltip="Refaire">
+      <button mat-icon-button
+              (click)="this.undoRedoService.redo()"
+              [disabled]="!this.undoRedoService.canRedo()"
+              class="btn" matTooltip="Refaire">
         <mat-icon class="icon" svgIcon="redo"></mat-icon>
       </button>
     </div>
   </mat-list-item>
+  <mat-divider></mat-divider>
+
+  <!-- <mat-list-item>
+    <button mat-icon-button [matMenuTriggerFor]="clipboardButton">
+      <mat-icon>assignment</mat-icon>
+    </button>
+  </mat-list-item> -->
   <mat-divider></mat-divider>
 
   <!-- primary & secondary colors -->

@@ -30,6 +30,7 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -50,6 +51,7 @@ const httpClientSpy: jasmine.SpyObj<HttpClient> =
 const DRAWING_SERVICES = [
   RectangleGeneratorService,
   EllipseGeneratorService,
+  ClipboardService,
   EmojiGeneratorService,
   PencilGeneratorService,
   BrushGeneratorService,
@@ -123,8 +125,8 @@ describe('EraserService', () => {
     });
 
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService._canvasMousePositionX = 10;
-    mousePositionService._canvasMousePositionY = 10;
+    mousePositionService.canvasMousePositionX = 10;
+    mousePositionService.canvasMousePositionY = 10;
 
     // Adding 3 rectangles in the same place
     component.workZoneComponent.onMouseDown(mouseEvent);
@@ -135,7 +137,7 @@ describe('EraserService', () => {
     // erasing
     toolManagerService._activeTool = Tools.Eraser;
     component.workZoneComponent.onMouseDown(mouseEvent);
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(mouseEvent);
     // only one drawing missing
     expect(workChilds.length).toBe(initialNumberOfChildren + 2);
   });
@@ -173,16 +175,16 @@ describe('EraserService', () => {
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     const mouseMove = new MouseEvent('mousemove', {});
     toolManagerService._activeTool = Tools.Eraser;
-    mousePositionService._canvasMousePositionX = 10;
-    mousePositionService._canvasMousePositionY = 10;
+    mousePositionService.canvasMousePositionX = 10;
+    mousePositionService.canvasMousePositionY = 10;
     component.workZoneComponent.onMouseDown(mouseDown1);
-    mousePositionService._canvasMousePositionX = 15;
-    mousePositionService._canvasMousePositionY = 15;
+    mousePositionService.canvasMousePositionX = 15;
+    mousePositionService.canvasMousePositionY = 15;
     component.workZoneComponent.onMouseMove(mouseMove);
-    mousePositionService._canvasMousePositionX = 20;
-    mousePositionService._canvasMousePositionY = 20;
+    mousePositionService.canvasMousePositionX = 20;
+    mousePositionService.canvasMousePositionY = 20;
     component.workZoneComponent.onMouseMove(mouseMove);
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(mouseMove);
 
     // all three drawings have been erased
     expect(workChilds.length).toBe(initialNumberOfChildren);
@@ -209,8 +211,8 @@ describe('EraserService', () => {
     });
 
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService._canvasMousePositionX = 10;
-    mousePositionService._canvasMousePositionY = 10;
+    mousePositionService.canvasMousePositionX = 10;
+    mousePositionService.canvasMousePositionY = 10;
 
     // Adding 1 rectangle
     component.workZoneComponent.onMouseDown(drawingMouseEvent);
@@ -219,7 +221,7 @@ describe('EraserService', () => {
     // erasing
     toolManagerService._activeTool = Tools.Eraser;
     component.workZoneComponent.onMouseDown(eraserMouseEvent);
-    component.workZoneComponent.onMouseUp();
+    component.workZoneComponent.onMouseUp(eraserMouseEvent);
     // drawing is not erased
     expect(workChilds.length).toBe(initialNumberOfChildren + 1);
     // border should be red

@@ -29,6 +29,7 @@ import { LastTenColorsComponent } from '../../modals/color-picker-module/last-te
 import { ModalManagerSingleton } from '../../modals/modal-manager-singleton';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { EraserService } from './../../../services/tools/eraser/eraser.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
@@ -51,6 +52,7 @@ const DRAWING_SERVICES = [
   RectangleGeneratorService,
   EllipseGeneratorService,
   EmojiGeneratorService,
+  ClipboardService,
   PencilGeneratorService,
   BrushGeneratorService,
   ColorApplicatorService,

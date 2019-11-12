@@ -21,7 +21,7 @@ export class DrawingViewComponent implements AfterViewInit {
 
   protected toolAttributesComponent: ComponentPortal<ToolsAttributesBarComponent>;
 
-  private canvas: HTMLElement;
+  private canvas: SVGElement;
 
   constructor(private cd: ChangeDetectorRef,
               private renderer: Renderer2,
@@ -59,10 +59,10 @@ export class DrawingViewComponent implements AfterViewInit {
     // Listen to the mouse's position in the page and communicate it to the service so it is available to all components.
     const OFFSET_CANVAS_Y = this.canvas.getBoundingClientRect().top;
     const OFFSET_CANVAS_X = this.canvas.getBoundingClientRect().left;
-    this.mousePosition._pageMousePositionX = mouseEvent.pageX;
-    this.mousePosition._pageMousePositionY = mouseEvent.pageY;
-    this.mousePosition._canvasMousePositionX = (mouseEvent.pageX - OFFSET_CANVAS_X);
-    this.mousePosition._canvasMousePositionY = (mouseEvent.pageY - OFFSET_CANVAS_Y);
+    this.mousePosition.pageMousePositionX = mouseEvent.pageX;
+    this.mousePosition.pageMousePositionY = mouseEvent.pageY;
+    this.mousePosition.canvasMousePositionX = (mouseEvent.pageX - OFFSET_CANVAS_X);
+    this.mousePosition.canvasMousePositionY = (mouseEvent.pageY - OFFSET_CANVAS_Y);
   }
 
   private executeShortcutFunction(shortcutsToFunction: Map<string, () => void>, key: string): void {

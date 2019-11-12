@@ -1,55 +1,51 @@
+import {MousePositionService} from '../services/mouse-position/mouse-position.service';
 import {RendererSingleton} from '../services/renderer-singleton';
 import {UndoRedoService} from '../services/undo-redo/undo-redo.service';
-import {Action, ActionType} from './command';
+import {AbstractGenerator} from './abstract-generator';
 
-export class AbstractWritingTool {
+export abstract class AbstractWritingTool extends AbstractGenerator {
 
   protected readonly DEFAULT_WIDTH = 5;
 
-  OFFSET_CANVAS_X: number;
-  OFFSET_CANVAS_Y: number;
   strokeWidth: number;
-  mouseDown: boolean;
-  currentElement: SVGElement;
+  protected mouseDown: boolean;
 
-  constructor(protected undoRedoService: UndoRedoService) {
+  protected constructor(protected mouse: MousePositionService,
+                        protected undoRedoService: UndoRedoService) {
+    super(mouse, undoRedoService);
     this.mouseDown = false;
     this.strokeWidth = this.DEFAULT_WIDTH;
-  }
-
-  pushAction(svgElement: SVGElement): void {
-    const action: Action = {
-      actionType: ActionType.Create,
-      svgElements: [svgElement],
-      execute(): void {
-        RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), this.svgElements[0]);
-      },
-      unexecute(): void {
-        RendererSingleton.renderer.removeChild(RendererSingleton.getCanvas(), this.svgElements[0]);
-      },
-    };
-    this.undoRedoService.pushAction(action);
-  }
-
-  /**
-   * @desc // Updates the path when the mouse is moving (mousedown)
-   */
-  updatePath(mouseEvent: MouseEvent, currentChildPosition: number) {
-    if (this.mouseDown) {
-      const currentPath = RendererSingleton.getCanvas().children[currentChildPosition - 1];
-      if (currentPath != null) {
-        currentPath.setAttribute('d',
-          currentPath.getAttribute('d') + ' L' + (mouseEvent.pageX - this.OFFSET_CANVAS_X) +
-          ' ' + (mouseEvent.pageY - this.OFFSET_CANVAS_Y));
-      }
-    }
   }
 
   drawElement(element: SVGElement, properties: [string, string][]) {
     for (const property of properties) {
       RendererSingleton.renderer.setAttribute(element, property[0], property[1]);
     }
+    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, element);
     this.currentElement = element;
-    RendererSingleton.renderer.appendChild(RendererSingleton.getCanvas(), element);
+  }
+
+  /**
+   * @desc Updates the path when the mouse is moving (mousedown)
+   */
+  updateElement(currentChildPosition: number) {
+    if (this.mouseDown) {
+      const currentPath = RendererSingleton.canvas.children[currentChildPosition - 1];
+      if (currentPath != null) {
+        currentPath.setAttribute(
+          'd', currentPath.getAttribute('d') + ' L' + this.xPos + ' ' + this.yPos);
+      }
+    }
+  }
+
+  /**
+   * @desc Finalizes the path, sets up the next one
+   */
+  finishElement(mouseEvent?: MouseEvent): void {
+    if (this.mouseDown) {
+      this.currentElementsNumber += 1;
+      this.pushGeneratorCommand(this.currentElement);
+      this.mouseDown = false;
+    }
   }
 }
