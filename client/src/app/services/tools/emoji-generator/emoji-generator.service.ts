@@ -69,13 +69,16 @@ export class EmojiGeneratorService extends AbstractGenerator {
 
   createElement() {
     if (this.emoji !== '') {
-      RendererSingleton.canvas.innerHTML +=
-          `<image id="emoji${this.currentElementsNumber}"
-          x="${(this.xPos - (this.width * this.scalingFactor / 2))}"
-          y="${(this.yPos - (this.height * this.scalingFactor / 2))}"
-          xlink:href="${this.emoji}"' width="${this.width * this.scalingFactor}" height="${this.height * this.scalingFactor}"
-          transform="rotate(${this.angle} ${this.xPos} ${(this.yPos)})"
-          />`;
+      const img = RendererSingleton.renderer.createElement('img', 'img');
+      RendererSingleton.renderer.setAttribute(img, 'id', `emoji${this.currentElementsNumber}`);
+      RendererSingleton.renderer.setAttribute(img, 'x', `${(this.xPos - (this.width * this.scalingFactor / 2))}`);
+      RendererSingleton.renderer.setAttribute(img, 'y', `${(this.yPos - (this.height * this.scalingFactor / 2))}`);
+      RendererSingleton.renderer.setAttribute(img, 'src', `${this.emoji}`);
+      RendererSingleton.renderer.setAttribute(img, 'width', `${this.width * this.scalingFactor}`);
+      RendererSingleton.renderer.setAttribute(img, 'height', `${this.height * this.scalingFactor}`);
+      RendererSingleton.renderer.setAttribute(img, 'transform', `rotate(${this.angle} ${this.xPos} ${(this.yPos)})`);
+      RendererSingleton.canvas.appendChild(img);
+      this.pushGeneratorCommand(img);
       this.currentElementsNumber ++;
     }
   }
