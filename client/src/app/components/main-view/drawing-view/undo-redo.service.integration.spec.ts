@@ -185,8 +185,8 @@ describe('UndoRedoService integrations tests', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
       const initialColor = 'rgba(150,150,150,1)';
       setSecondaryColor(initialColor);
-      drawShapeOnCanvas(100, 100, 200, 100, Tools.Pencil);
-      const pencil: SVGElement = getLastSvgElement(svgCanvas, 1);
+      canvasDrawer.drawShapeOnCanvas(100, 100, 200, 100, Tools.Pencil);
+      const pencil: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 1);
       expect(pencil.getAttribute('stroke')).toBe(initialColor);
       const changedColor = 'rgba(167,167,167,1)';
       applyColorApplicatorOnElement(100, 150, pencil, changedColor, true);
@@ -204,5 +204,4 @@ describe('UndoRedoService integrations tests', () => {
       expectPropertyToBeUndoAndRedoable(pen, 'stroke', changedColor, initialColor);
     });
   });
-
 });

@@ -1,23 +1,24 @@
 import { Injectable } from '@angular/core';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
+import {Command, CommandGenerator} from '../../../data-structures/command';
 import { RendererSingleton } from '../../renderer-singleton';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import {ToolManagerService} from '../tool-manager/tool-manager.service';
 
 @Injectable()
-export class ClipboardService {
+export class ClipboardService implements CommandGenerator {
 
   memorizedElements: SVGElement[];
   selectedItems: SVGElement[];
   newItems: SVGElement[];
   private xSliding: number;
   private ySliding: number;
-  private sideImpacts: boolean[];
+  private readonly sideImpacts: boolean[];
 
   constructor(private selector: ObjectSelectorService,
-              private toolManager: ToolManagerService) {
-    this.consecutivePastes = 1;
-    this.consecutiveDuplicates = 1;
+              private toolManager: ToolManagerService,
+              private undoRedoService: UndoRedoService) {
     this.selectedItems = [];
     this.memorizedElements = [];
     this.sideImpacts = [false, false];
@@ -193,7 +194,7 @@ export class ClipboardService {
           RendererSingleton.canvas.removeChild(svgElement));
       },
     };
-    this.undoRedo.pushCommand(command);
+    this.pushCommand(command);
   }
 
   pushCutCommand(svgElements: SVGElement[]): void {
@@ -207,6 +208,10 @@ export class ClipboardService {
           RendererSingleton.canvas.appendChild(svgElement));
       },
     };
-    this.undoRedo.pushCommand(command);
+    this.pushCommand(command);
+  }
+
+  pushCommand(command: Command): void {
+    this.undoRedoService.pushCommand(command);
   }
 }
