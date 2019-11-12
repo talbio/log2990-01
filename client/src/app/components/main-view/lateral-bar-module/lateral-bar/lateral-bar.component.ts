@@ -54,7 +54,7 @@ export class LateralBarComponent {
               protected undoRedoService: UndoRedoService) {
     this.loadSVGIcons();
     this.setAppropriateIconsClass();
-    this.initializeClipboardButtons();
+    // this.initializeClipboardButtons();
     this.initializePencilToolsButtons();
     this.initializeShapeToolsButtons();
     this.initializeDialogsButtons();
@@ -129,21 +129,21 @@ export class LateralBarComponent {
       this.toolPropertiesFactory(Tools.Grid, 'Grille', 'grid_on', false));
   }
 
-  private initializeClipboardButtons() {
-    this.clipboardButtonsProperties = [];
-    // if (this.clipboard.hasSelectedElements()) {
-      this.clipboardButtonsProperties.push(
-        this.clipboardPropertiesFactory(() => this.clipboard.copy(), 'Copier', 'Copier', false));
-      this.clipboardButtonsProperties.push(
-        this.clipboardPropertiesFactory(() => this.clipboard.cut(), 'Couper', 'Couper', false));
-      this.clipboardButtonsProperties.push(
-        this.clipboardPropertiesFactory(() => this.clipboard.delete(), 'Supprimer', 'Supprimer', false));
-      this.clipboardButtonsProperties.push(
-        this.clipboardPropertiesFactory(() => this.clipboard.duplicate(), 'Dupliquer', 'Dupliquer', false));
-    // }
-    this.clipboardButtonsProperties.push(
-      this.clipboardPropertiesFactory(() => this.clipboard.paste(), 'Coller', 'Coller', false));
-  }
+  // private initializeClipboardButtons() {
+  //   this.clipboardButtonsProperties = [];
+  //   // if (this.clipboard.hasSelectedElements()) {
+  //     this.clipboardButtonsProperties.push(
+  //       this.clipboardPropertiesFactory(() => this.clipboard.copy(), 'Copier', 'Copier', false));
+  //     this.clipboardButtonsProperties.push(
+  //       this.clipboardPropertiesFactory(() => this.clipboard.cut(), 'Couper', 'Couper', false));
+  //     this.clipboardButtonsProperties.push(
+  //       this.clipboardPropertiesFactory(() => this.clipboard.delete(), 'Supprimer', 'Supprimer', false));
+  //     this.clipboardButtonsProperties.push(
+  //       this.clipboardPropertiesFactory(() => this.clipboard.duplicate(), 'Dupliquer', 'Dupliquer', false));
+  //   // }
+  //   this.clipboardButtonsProperties.push(
+  //     this.clipboardPropertiesFactory(() => this.clipboard.paste(), 'Coller', 'Coller', false));
+  // }
 
   private initializeDialogsButtons() {
     this.dialogsButtonsProperties = [];
@@ -169,16 +169,12 @@ export class LateralBarComponent {
     return { openDialog: onClickFunction, matToolTip, icon, isSvgIcon};
   }
 
-  private clipboardPropertiesFactory(onClickFunction: () => void,
-                                     matToolTip: string, icon: string, isSvgIcon: boolean): ClipboardProperties {
-    return { clipboardFunction: onClickFunction, matToolTip, icon, isSvgIcon};
-  }
-
-  // hasSelectedElements(): boolean {
-  //   return this.clipboard.hasSelectedElements();
+  // private clipboardPropertiesFactory(onClickFunction: () => void,
+  //                                    matToolTip: string, icon: string, isSvgIcon: boolean): ClipboardProperties {
+  //   return { clipboardFunction: onClickFunction, matToolTip, icon, isSvgIcon};
   // }
 
   // hasElementsInClipboard(): boolean {
-  //   return this.clipboard.memorizedAction.length !== 0;
+  //   return this.clipboard.memorizedElements.length !== 0;
   // }
 }

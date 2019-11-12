@@ -26,6 +26,7 @@ export class LineGeneratorService extends AbstractGenerator {
               protected undoRedoService: UndoRedoService) {
     super(mouse, undoRedoService);
     this.strokeWidth = DEFAULT_POLYLINE_WIDTH;
+    this.currentElementsNumber = 0;
     this.markerDiameter = DEFAULT_POLYLINE_MARKER_DIAMETER;
     this.isMarkersActive = false;
     this.lineJoin = DEFAULT_LINEJOIN;

@@ -92,7 +92,7 @@ describe('PenGeneratorService', () => {
       providers: [ToolManagerService, ...DRAWING_SERVICES, ColorService, ChangeDetectorRef, RendererSingleton,
         { provide: Renderer2, useValue: rendererSpy },
         { provide: ModalManagerService, useValue: modalManagerSpy },
-        { provide: HttpClient, useValue: httpClientSpy },],
+        { provide: HttpClient, useValue: httpClientSpy }, ],
       schemas: [NO_ERRORS_SCHEMA],
     }).overrideModule(BrowserDynamicTestingModule, {
       set: {

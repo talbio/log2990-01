@@ -13,7 +13,6 @@ import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
 import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
-import { ClipboardService } from '../../../services/tools/clipboard/clipboard.service';
 import { ColorApplicatorService } from '../../../services/tools/color-applicator/color-applicator.service';
 import { ColorService } from '../../../services/tools/color/color.service';
 import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
@@ -31,6 +30,7 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -51,13 +51,13 @@ const httpClientSpy: jasmine.SpyObj<HttpClient> =
 const DRAWING_SERVICES = [
   RectangleGeneratorService,
   EllipseGeneratorService,
+  ClipboardService,
   EmojiGeneratorService,
   PencilGeneratorService,
   BrushGeneratorService,
   ColorApplicatorService,
   LineGeneratorService,
   EyedropperService,
-  ClipboardService,
   ColorService,
   MousePositionService,
   ObjectSelectorService,

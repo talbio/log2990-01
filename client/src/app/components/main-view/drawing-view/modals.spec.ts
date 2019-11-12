@@ -52,6 +52,7 @@ const DRAWING_SERVICES = [
   RectangleGeneratorService,
   EllipseGeneratorService,
   EmojiGeneratorService,
+  ClipboardService,
   PencilGeneratorService,
   BrushGeneratorService,
   ColorApplicatorService,

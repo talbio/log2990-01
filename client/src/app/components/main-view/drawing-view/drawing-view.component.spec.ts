@@ -1,4 +1,3 @@
-import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -33,6 +32,7 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { EraserService } from './../../../services/tools/eraser/eraser.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
@@ -55,6 +55,7 @@ const DRAWING_SERVICES = [
   RectangleGeneratorService,
   EllipseGeneratorService,
   EmojiGeneratorService,
+  ClipboardService,
   PencilGeneratorService,
   BrushGeneratorService,
   ColorApplicatorService,
