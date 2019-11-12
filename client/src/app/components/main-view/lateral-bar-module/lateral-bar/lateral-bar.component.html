@@ -12,9 +12,9 @@
 </mat-menu>
 
 <mat-menu #clipboardButton="matMenu">
-  <app-abstract-tool-button *ngFor="let clipboardButtonsProperties of clipboardButtonsProperties"
-    [attributesSideNav]="attributesSideNav" [toolProperties]="clipboardButtonsProperties">
-  </app-abstract-tool-button>
+  <app-abstract-clipboard *ngFor="let clipboardButtonsProperties of clipboardButtonsProperties"
+    [clipboardProperties]="clipboardButtonsProperties">
+  </app-abstract-clipboard>
 </mat-menu>
 
 <mat-list>
