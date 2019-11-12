@@ -25,7 +25,7 @@ export class BrushGeneratorService extends AbstractWritingTool {
     return this.currentBrushPattern;
   }
 
-  createElement(mainColors:[string, string]) {
+  createElement(mainColors: [string, string]) {
     const newPattern = this.createPattern(mainColors[0], mainColors[1]);
     this.generateBrushPath(this.strokeWidth);
     this.addPatternToNewPath(newPattern, RendererSingleton.canvas);
