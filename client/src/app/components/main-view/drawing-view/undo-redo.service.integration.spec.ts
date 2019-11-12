@@ -12,7 +12,7 @@ import { DrawingViewComponent } from './drawing-view.component';
 import {STUB_COMPONENTS} from './drawing-view.component.spec';
 import {COMPONENTS, DRAWING_SERVICES, IMPORTS, modalManagerSpy} from './integration-tests-environment.spec';
 
-fdescribe('UndoRedoService integrations tests', () => {
+describe('UndoRedoService integrations tests', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
 
@@ -219,6 +219,6 @@ fdescribe('UndoRedoService integrations tests', () => {
   });
 
   describe('eraser', () => {
-
+    // TODO
   });
 });
