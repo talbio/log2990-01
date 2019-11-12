@@ -227,7 +227,7 @@ describe('UndoRedoService integrations tests', () => {
     it('should be able to undo and redo a path stroke color change', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
       const initialColor = 'rgba(150,150,150,1)';
-      setPrimaryColor(initialColor);
+      setSecondaryColor(initialColor);
       drawShapeOnCanvas(100, 100, 200, 100, Tools.Pencil);
       const pencil: SVGElement = getLastSvgElement(svgCanvas, 1);
       expect(pencil.getAttribute('stroke')).toBe(initialColor);
@@ -235,7 +235,6 @@ describe('UndoRedoService integrations tests', () => {
       applyColorApplicatorOnElement(100, 150, pencil, changedColor, true);
       expectPropertyToBeUndoAndRedoable(pencil, 'stroke', changedColor, initialColor);
     });
-
 
     it('should be able to undo and redo a path line color change', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
@@ -249,8 +248,4 @@ describe('UndoRedoService integrations tests', () => {
     });
   });
 
-  describe('eraser', () => {
-    it('should be able to undo an erased element', () => {
-    });
-  });
 });

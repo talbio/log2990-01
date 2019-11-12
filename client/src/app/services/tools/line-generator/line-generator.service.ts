@@ -119,7 +119,7 @@ export class LineGeneratorService extends AbstractGenerator {
       RendererSingleton.renderer.appendChild(RendererSingleton.canvas, polyline);
 
       this.currentElement = polyline;
-      this.createMarkers(mainColors[0]);
+      this.createMarkers(mainColors[1]);
       this.isMakingLine = true;
       this.currentPolylineStartX = this.xPos;
       this.currentPolylineStartY = this.yPos;

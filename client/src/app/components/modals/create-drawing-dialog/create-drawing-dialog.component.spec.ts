@@ -112,7 +112,7 @@ describe('CreateDrawingDialogComponent', () => {
         afterClosed: () => of(false),
       });
       await component.submit();
-      // expect(spyToolManager.deleteAllDrawings).not.toHaveBeenCalled();
+      //expect(spyToolManager.deleteAllDrawings).not.toHaveBeenCalled();
     });
 
     it('should call ToolManager.deleteAllDrawings if drawing is non empty and user confirmed deletion', async () => {
