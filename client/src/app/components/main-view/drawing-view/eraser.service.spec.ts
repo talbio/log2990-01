@@ -9,6 +9,7 @@ import { Tools } from 'src/app/data-structures/tools';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
+import { UndoRedoService } from 'src/app/services/undo-redo/undo-redo.service';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
@@ -204,5 +205,28 @@ describe('EraserService', () => {
     // drawing is not erased and border should be red
     const child = svgHandle.querySelector('#rectTest') as SVGElement;
     expect(child.getAttribute('filter')).toEqual('url(#dropshadow)');
+  });
+
+  it('should be able to undo drawing being erased', () => {
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+
+    svgHandle.innerHTML +=
+    `<rect id="rectTestUndoRedo"
+      x="10" data-start-x="10"
+      y="10" data-start-y="10"
+      width="10" height="10" stroke="black" stroke-width="1"></rect>`;
+
+    const workChilds = svgHandle.children;
+    const initialNumberOfChildren = workChilds.length;
+    const eraserService = fixture.debugElement.injector.get(EraserService);
+    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+    mousePositionService.canvasMousePositionX = 10;
+    mousePositionService.canvasMousePositionY = 10;
+    eraserService.startErasing();
+    eraserService.stopErasing();
+    expect(workChilds.length).toBe(initialNumberOfChildren - 1);
+    const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
+    undoRedoService.undo();
+    expect(workChilds.length).toBe(initialNumberOfChildren);
   });
 });

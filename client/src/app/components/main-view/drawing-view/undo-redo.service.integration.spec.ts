@@ -134,7 +134,7 @@ describe('UndoRedoService integrations tests', () => {
       await expectCreationToBeUndoable(Tools.Ellipse, 'ellipse0');
     });
 
-    it('should be able to undo an brush', async () => {
+    it('should be able to undo a brush', async () => {
       await expectCreationToBeUndoable(Tools.Brush, 'brushPath0');
     });
   });
@@ -218,7 +218,4 @@ describe('UndoRedoService integrations tests', () => {
     });
   });
 
-  describe('eraser', () => {
-    // TODO
-  });
 });
