@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
-import { Tools } from '../../../data-structures/tools';
+import {Tools} from '../../../data-structures/tools';
 import {RendererSingleton} from '../../renderer-singleton';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
