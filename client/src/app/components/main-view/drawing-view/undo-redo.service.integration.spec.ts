@@ -78,6 +78,15 @@ describe('UndoRedoService integrations tests', () => {
     await expect(svgCanvas.querySelector('#' + id)).toBe(null);
   };
 
+  const expectCreationToBeRedoable = async (id: string) => {
+    const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
+    expect(svgCanvas.querySelector('#' + id)).toBe(null);
+    const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
+    undoRedoService.redo();
+    fixture.detectChanges();
+    await expect(svgCanvas.querySelector('#' + id)).not.toBe(null);
+  };
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [COMPONENTS, STUB_COMPONENTS],
@@ -102,40 +111,48 @@ describe('UndoRedoService integrations tests', () => {
   });
 
   describe('Generators', () => {
-    it('should be able to undo a rectangle', async () => {
+    it('should be able to undo and redo a rectangle', async () => {
       await expectCreationToBeUndoable(Tools.Rectangle, 'rect0');
+      await expectCreationToBeRedoable('rect0');
     });
 
-    it('should be able to undo a polygon', async () => {
+    it('should be able to undo and redo a polygon', async () => {
       await expectCreationToBeUndoable(Tools.Polygon, 'polygon0');
+      await expectCreationToBeRedoable('polygon0');
     });
 
-    it('should be able to undo a pencil', async () => {
+    it('should be able to undo and redo a pencil', async () => {
       await expectCreationToBeUndoable(Tools.Pencil, 'pencilPath0');
+      await expectCreationToBeRedoable('pencilPath0');
     });
 
-    it('should be able to undo a pen', async () => {
+    it('should be able to undo and redo a pen', async () => {
       await expectCreationToBeUndoable(Tools.Pen, 'penPath0');
+      await expectCreationToBeRedoable('penPath0');
     });
 
-    it('should be able to undo a line', async () => {
+    it('should be able to undo and redo a line', async () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
       drawLine();
       const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
       undoRedoService.undo();
       await expect(svgCanvas.querySelector('#line0')).toBe(null);
+      await expectCreationToBeRedoable('line0');
     });
 
-    it('should be able to undo an emoji', async () => {
+    it('should be able to undo and redo an emoji', async () => {
       await expectCreationToBeUndoable(Tools.Stamp, 'emoji0');
+      await expectCreationToBeRedoable('emoji0');
     });
 
-    it('should be able to undo an ellipse', async () => {
+    it('should be able to undo and redo an ellipse', async () => {
       await expectCreationToBeUndoable(Tools.Ellipse, 'ellipse0');
+      await expectCreationToBeRedoable('ellipse0');
     });
 
-    it('should be able to undo an brush', async () => {
+    it('should be able to undo and redo a brush', async () => {
       await expectCreationToBeUndoable(Tools.Brush, 'brushPath0');
+      await expectCreationToBeRedoable('brushPath0');
     });
   });
 
@@ -170,24 +187,32 @@ describe('UndoRedoService integrations tests', () => {
       element.dispatchEvent(mouseEvent);
     };
 
+    const expectPropertyToBeUndoAndRedoable =
+      (svgElement: SVGElement, property: string, newAttribute: string, ancientAttribute: string) => {
+      expect(svgElement.getAttribute(property)).toBe(newAttribute);
+      const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
+      undoRedoService.undo();
+      expect(svgElement.getAttribute(property)).toBe(ancientAttribute);
+      undoRedoService.redo();
+      expect(svgElement.getAttribute(property)).toBe(newAttribute);
+    };
+
     /**
      * since closed forms are treated in the same way for the color change,
      * we test only for a rectangle and we can assert that it will also work for ellipse and polygon.
      */
-    it('should be able to undo a fill color change for a closed form', () => {
+    it('should be able to undo and redo a fill color change for a closed shape', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
-      const newColor = 'rgba(100,100,100,1)';
+      const fillColor = 'rgba(100,100,100,1)';
+      setPrimaryColor(fillColor);
       drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
       const rectangleChild = getLastSvgElement(svgCanvas, 1) as SVGElement;
       expect(rectangleChild.getAttribute('fill')).toBe('transparent');
-      applyColorApplicatorOnElement(150, 150, rectangleChild,  newColor, true);
-      expect(rectangleChild.getAttribute('fill')).toBe(newColor);
-      const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
-      undoRedoService.undo();
-      expect(rectangleChild.getAttribute('fill')).toBe('transparent');
+      applyColorApplicatorOnElement(150, 150, rectangleChild,  fillColor, true);
+      expectPropertyToBeUndoAndRedoable(rectangleChild, 'fill', fillColor, 'transparent');
     });
 
-    it('should be able to undo a stroke color change for a closed form', () => {
+    it('should be able to undo and redo a stroke color change for a closed shape', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
       const initialColor = 'rgba(100,100,100,1)';
       setSecondaryColor(initialColor);
@@ -196,13 +221,10 @@ describe('UndoRedoService integrations tests', () => {
       expect(rectangleChild.getAttribute('stroke')).toBe(initialColor);
       const changedColor = 'rgba(180,180,180,1)';
       applyColorApplicatorOnElement(150, 150, rectangleChild, changedColor, false);
-      expect(rectangleChild.getAttribute('stroke')).toBe(changedColor);
-      const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
-      undoRedoService.undo();
-      expect(rectangleChild.getAttribute('stroke')).toBe(initialColor);
+      expectPropertyToBeUndoAndRedoable(rectangleChild, 'stroke', changedColor, initialColor);
     });
 
-    it('should be able to undo a path stroke color change', () => {
+    it('should be able to undo and redo a path stroke color change', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
       const initialColor = 'rgba(150,150,150,1)';
       setPrimaryColor(initialColor);
@@ -211,14 +233,24 @@ describe('UndoRedoService integrations tests', () => {
       expect(pencil.getAttribute('stroke')).toBe(initialColor);
       const changedColor = 'rgba(167,167,167,1)';
       applyColorApplicatorOnElement(100, 150, pencil, changedColor, true);
-      expect(pencil.getAttribute('stroke')).toBe(changedColor);
-      const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
-      undoRedoService.undo();
-      expect(pencil.getAttribute('stroke')).toBe(initialColor);
+      expectPropertyToBeUndoAndRedoable(pencil, 'stroke', changedColor, initialColor);
+    });
+
+
+    it('should be able to undo and redo a path line color change', () => {
+      const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
+      const initialColor = 'rgba(150,150,150,1)';
+      setSecondaryColor(initialColor);
+      drawLine();
+      const changedColor = 'rgba(100, 100, 100, 1)';
+      const pen: SVGElement = getLastSvgElement(svgCanvas, 1);
+      applyColorApplicatorOnElement(100, 100, pen, changedColor, true);
+      expectPropertyToBeUndoAndRedoable(pen, 'stroke', changedColor, initialColor);
     });
   });
 
   describe('eraser', () => {
-    // TODO
+    it('should be able to undo an erased element', () => {
+    });
   });
 });

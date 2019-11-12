@@ -8,7 +8,7 @@ import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/t
 import { RendererSingleton } from 'src/app/services/renderer-singleton';
 import { EraserService } from 'src/app/services/tools/eraser/eraser.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
-import { Tools } from '../../../data-structures/Tools';
+import { Tools } from '../../../data-structures/tools';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
