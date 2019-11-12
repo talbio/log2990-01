@@ -29,20 +29,21 @@ export abstract class AbstractGenerator implements CommandGenerator {
   abstract finishElement(mouseEvent?: MouseEvent): void;
 
   pushGeneratorCommand(...svgElements: SVGElement[]): void {
-    const action: Command = {
+    const command: Command = {
       execute(): void {
         svgElements.forEach( (svgElement: SVGElement) =>
           RendererSingleton.renderer.appendChild(RendererSingleton.canvas, svgElement));
       },
       unexecute(): void {
-        svgElements.forEach( (svgElement: SVGElement) =>
-          RendererSingleton.renderer.removeChild(RendererSingleton.canvas, svgElement));
+        svgElements.forEach( (svgElement: SVGElement) => {
+          RendererSingleton.canvas.removeChild(svgElement);
+        });
       },
     };
-    this.pushCommand(action);
+    this.pushCommand(command);
   }
 
-  pushCommand(action: Command): void {
-    this.undoRedoService.pushCommand(action);
+  pushCommand(command: Command): void {
+    this.undoRedoService.pushCommand(command);
   }
 }
