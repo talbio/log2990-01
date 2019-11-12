@@ -13,6 +13,10 @@ import { ClipboardService } from './clipboard.service';
 
 let service: ClipboardService;
 
+const testSubject: jasmine.SpyObj<SVGElement> =
+jasmine.createSpyObj('SVGElement', ['setAttribute', 'getAttribute', 'getBoundingClientRect', 'cloneNode', 'tagName']);
+testSubject.setAttribute.and.callThrough();
+
 const DRAWING_SERVICES = [
   RectangleGeneratorService,
   EllipseGeneratorService,
@@ -25,6 +29,7 @@ const DRAWING_SERVICES = [
   PolygonGeneratorService,
   MousePositionService,
 ];
+
 describe('Service: Clipboard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -34,43 +39,42 @@ describe('Service: Clipboard', () => {
   });
 
   const setUpTestSubject = (width: number, height: number, x: number, y: number): SVGElement => {
-    const testSubject: jasmine.SpyObj<SVGElement> =
-      jasmine.createSpyObj('SVGElement', ['setAttribute', 'getAttribute', 'getBoundingClientRect', 'cloneNode']);
-    testSubject.id = 'expectedClone';
+    testSubject.setAttribute('id', 'expectedClone');
     testSubject.setAttribute('height', height as unknown as string);
     testSubject.setAttribute('width', width as unknown as string);
     testSubject.setAttribute('stroke', 'transparent');
     testSubject.setAttribute('fill', 'black');
     testSubject.setAttribute('x', x as unknown as string);
     testSubject.setAttribute('y', y as unknown as string);
+    testSubject.setAttribute('tagName', 'rect');
     return testSubject.correspondingElement;
   };
 
   describe('clone()', () => {
     it('should receive a perfect clone (ignoring the id) of the SVG passed in parameter', () => {
-    const testSubject: jasmine.SpyObj<SVGElement> =
-      jasmine.createSpyObj('SVGElement', ['setAttribute', 'getAttribute', 'getBoundingClientRect', 'cloneNode']);
-
-    const actualClone = service.clone(testSubject);
-    testSubject.id = 'expectedClone';
-
-    expect(actualClone).toEqual(testSubject);
-  });
+      const initialSVGElement = setUpTestSubject(100, 100, 100, 100);
+      expect(initialSVGElement.tagName).toEqual('rect');
+      const clonedSVGElement: SVGElement = service.clone(initialSVGElement);
+      expect(testSubject.cloneNode).toHaveBeenCalled();
+      expect(clonedSVGElement).toBeTruthy();
+      clonedSVGElement.setAttribute('id', 'expectedClone');
+      expect(clonedSVGElement).toEqual(testSubject);
+    });
   });
 
   describe('slide()', () => {
     it('should slide further for each consecultive slide a given element and not drive it out of the canvas', () => {
-      const itemToSlide = setUpTestSubject(100, 100, 800, 200);
-      itemToSlide.setAttribute('transform', 'translate(2 5) rotate(0 850 250');
+      const svgElement = setUpTestSubject(100, 100, 100, 100);
+      svgElement.setAttribute('transform', 'translate(2 5) rotate(0 850 250');
 
-      service.slide(itemToSlide);
-      expect(itemToSlide.getAttribute('transform')).toEqual('translate(7 10) rotate(0 850 250');
+      service.slide(svgElement);
+      expect(svgElement.getAttribute('transform')).toEqual('translate(7 10) rotate(0 850 250');
 
-      service.slide(itemToSlide);
-      expect(itemToSlide.getAttribute('transform')).toEqual('translate(12 15) rotate(0 850 250');
+      service.slide(svgElement);
+      expect(svgElement.getAttribute('transform')).toEqual('translate(12 15) rotate(0 850 250');
 
-      service.slide(itemToSlide);
-      const transform = itemToSlide.getAttribute('transform') as string;
+      service.slide(svgElement);
+      const transform = svgElement.getAttribute('transform') as string;
       const newTransform = transform.split('(');
       const newTranslate = newTransform[1].split(')');
       const theTranslate = newTranslate[0].split(' ');

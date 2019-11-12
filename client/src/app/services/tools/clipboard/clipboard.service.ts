@@ -176,7 +176,7 @@ export class ClipboardService {
       case 'rect':
         newItem.setAttribute('id', type + (this.rectangleGenerator.currentElementsNumber++ as unknown as string));
         break;
-        case 'ellipse':
+      case 'ellipse':
         newItem.setAttribute('id', type + (this.ellipseGenerator.currentElementsNumber++ as unknown as string));
         break;
       case 'polygon':
@@ -184,13 +184,13 @@ export class ClipboardService {
         break;
       case 'path':
         if (item.id.includes('brushPath')) {
-          newItem.setAttribute('id', type + (this.brushGenerator.currentElementsNumber++ as unknown as string));
+          newItem.setAttribute('id', 'brushPath' + (this.brushGenerator.currentElementsNumber++ as unknown as string));
           break;
         } else if (item.id.includes('pencilPath')) {
-          newItem.setAttribute('id', type + (this.pencilGenerator.currentElementsNumber++ as unknown as string));
+          newItem.setAttribute('id', 'pencilPath' + (this.pencilGenerator.currentElementsNumber++ as unknown as string));
           break;
         } else {
-          newItem.setAttribute('id', type + (this.penGenerator.currentElementsNumber++ as unknown as string));
+          newItem.setAttribute('id', 'penPath' + (this.penGenerator.currentElementsNumber++ as unknown as string));
           break;
         }
         case 'polyline':
@@ -245,7 +245,7 @@ export class ClipboardService {
   // Appends a displaced version of the selected items
   duplicate() {
     this.assessSelection();
-    const clonedItems = [];
+    const clonedItems: SVGElement[] = [];
     this.selectedItems.forEach((selectedItem: SVGElement) => {
       const newItem = this.clone(selectedItem);
       RendererSingleton.canvas.appendChild(newItem);
@@ -279,7 +279,7 @@ export class ClipboardService {
       },
       unexecute(): void {
         svgElements.forEach((svgElement: SVGElement) =>
-          RendererSingleton.renderer.removeChild(RendererSingleton.canvas, svgElement));
+          RendererSingleton.canvas.removeChild(svgElement));
       },
     };
     this.undoRedo.pushCommand(command);
