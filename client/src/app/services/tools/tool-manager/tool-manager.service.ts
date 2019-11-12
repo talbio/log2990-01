@@ -63,8 +63,8 @@ export class ToolManagerService {
   createElement(mouseEvent: MouseEvent, canvas: SVGElement) {
     if (this.activeGenerator && this.activeGenerator !== this.lineGenerator) {
       this.activeGenerator.createElement(
-        this.colorService.getPrimaryColor(),
-        this.colorService.getSecondaryColor(),
+        [this.colorService.getPrimaryColor(),
+        this.colorService.getSecondaryColor()],
       );
     } else {
       switch (this._activeTool) {
@@ -123,7 +123,7 @@ export class ToolManagerService {
         this.colorApplicator.changePrimaryColor(clickedElement, this.colorService.getPrimaryColor());
         break;
       case Tools.Line:
-        this.lineGenerator.createElement(this.colorService.getSecondaryColor());
+        this.lineGenerator.createElement([this.colorService.getPrimaryColor(), this.colorService.getSecondaryColor()]);
         break;
       case Tools.Eyedropper:
         this.eyedropper.changePrimaryColor(clickedElement);
