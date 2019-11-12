@@ -34,8 +34,8 @@ import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-at
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { DrawingViewComponent } from './drawing-view.component';
 
-// /* tslint:disable:max-classes-per-file for mocking classes*/
-// /* tslint:disable:no-string-literal for testing purposes*/
+/* tslint:disable:max-classes-per-file for mocking classes*/
+/* tslint:disable:no-string-literal for testing purposes*/
 @Component({ selector: 'app-lateral-bar', template: '' })
 class LateralBarStubComponent { }
 @Component({ selector: 'app-welcome-modal', template: '' })
@@ -98,8 +98,8 @@ describe('DrawingViewComponent', () => {
     }).overrideModule(BrowserDynamicTestingModule, {
       set: {
         entryComponents: [ToolsAttributesBarComponent,
-          DrawingViewComponent]
-      }
+          DrawingViewComponent],
+      },
     },
     ).compileComponents().then(() => {
       fixture = TestBed.createComponent(DrawingViewComponent);
@@ -110,7 +110,6 @@ describe('DrawingViewComponent', () => {
 
   it('should react properly to cut', () => {
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
     const initialChildrenLength = workChilds.length;
@@ -155,7 +154,6 @@ describe('DrawingViewComponent', () => {
 
   it('should react properly to copy', () => {
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
     // Setting up the event
@@ -197,7 +195,6 @@ describe('DrawingViewComponent', () => {
 
   it('should react properly to delete', () => {
     // Create the work-zone
-    // tslint:disable-next-line: no-string-literal
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
     const initialChildrenLength = workChilds.length;
