@@ -111,8 +111,9 @@ describe('CreateDrawingDialogComponent', () => {
       spyOn(mockMatDialogToFalse as MockMatDialog, 'open').and.returnValue({
         afterClosed: () => of(false),
       });
+      spyToolManager.deleteAllDrawings.calls.reset(); // In case it was called before
       await component.submit();
-      // expect(spyToolManager.deleteAllDrawings).not.toHaveBeenCalled();
+      expect(spyToolManager.deleteAllDrawings).not.toHaveBeenCalled();
     });
 
     it('should call ToolManager.deleteAllDrawings if drawing is non empty and user confirmed deletion', async () => {
