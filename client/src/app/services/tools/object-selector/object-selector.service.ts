@@ -156,7 +156,6 @@ export class ObjectSelectorService {
   removeBoundingRect(): void {
     this.hasBoundingRect = false;
     const boundingRect: SVGElement = RendererSingleton.renderer.selectRootElement('#boundingRect', true) as SVGElement;
-    //RendererSingleton.renderer.removeChild(RendererSingleton.canvas, boundingRect);
     RendererSingleton.canvas.removeChild(boundingRect);
   }
 

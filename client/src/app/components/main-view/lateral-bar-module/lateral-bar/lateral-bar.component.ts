@@ -50,11 +50,11 @@ export class LateralBarComponent {
   constructor(private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
               private modalManagerService: ModalManagerService,
-              protected clipboard: ClipboardService,
+              private clipboard: ClipboardService,
               protected undoRedoService: UndoRedoService) {
     this.loadSVGIcons();
     this.setAppropriateIconsClass();
-    // this.initializeClipboardButtons();
+    this.initializeClipboardButtons();
     this.initializePencilToolsButtons();
     this.initializeShapeToolsButtons();
     this.initializeDialogsButtons();
@@ -97,68 +97,69 @@ export class LateralBarComponent {
 
   private initializePencilToolsButtons() {
     this.pencilToolsButtonsProperties = [];
-    this.pencilToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Pencil, 'Crayon', 'create', false));
-    this.pencilToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Pen, 'Stylo', 'pen', true));
-    this.pencilToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Brush, 'Pinceau', 'brush', false));
-    this.pencilToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.ColorApplicator, 'Applicateur de couleur', 'format_paint', false));
-    this.pencilToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Selector, 'Outil de sélection', 'select_all', false));
-    this.pencilToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Eyedropper, 'Pipette', 'colorize', false));
-    this.pencilToolsButtonsProperties.push(
-        this.toolPropertiesFactory(Tools.Eraser, 'Efface', 'eraser', true));
+    const propertyTable: [Tools, string, string, boolean][] = [];
+    propertyTable.push(
+      [Tools.Pencil, 'Crayon', 'create', false],
+      [Tools.Pen, 'Stylo', 'pen', true],
+      [Tools.Brush, 'Pinceau', 'brush', false],
+      [Tools.ColorApplicator, 'Applicateur de couleur', 'format_paint', false],
+      [Tools.Selector, 'Outil de sélection', 'select_all', false],
+      [Tools.Eyedropper, 'Pipette', 'colorize', false],
+      [Tools.Eraser, 'Efface', 'eraser', true],
+    );
+    propertyTable.forEach( (property: [Tools, string, string, boolean]) => {
+      this.pencilToolsButtonsProperties.push(
+        this.toolPropertiesFactory(property[0], property[1], property[2], property[3]),
+      );
+    });
   }
 
   private initializeShapeToolsButtons() {
     this.shapeToolsButtonsProperties = [];
-    this.shapeToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Polygon, 'Polygone', 'polygon', true));
-    this.shapeToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Rectangle, 'Rectangle', 'rectangle', true));
-    this.shapeToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Line, 'Ligne', 'timeline', false));
-    this.shapeToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Ellipse, 'Ellipse', 'ellipse', true));
-    this.shapeToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Stamp, 'Étampe', 'sentiment_satisfied_alt', false));
-    this.shapeToolsButtonsProperties.push(
-      this.toolPropertiesFactory(Tools.Grid, 'Grille', 'grid_on', false));
+    const propertyTable: [Tools, string, string, boolean][] = [];
+    propertyTable.push(
+      [Tools.Polygon, 'Polygone', 'polygon', true],
+      [Tools.Rectangle, 'Rectangle', 'rectangle', true],
+      [Tools.Line, 'Ligne', 'timeline', false],
+      [Tools.Ellipse, 'Ellipse', 'ellipse', true],
+      [Tools.Stamp, 'Étampe', 'sentiment_satisfied_alt', false],
+      [Tools.Grid, 'Grille', 'grid_on', false],
+    );
+    propertyTable.forEach( (property: [Tools, string, string, boolean]) => {
+      this.shapeToolsButtonsProperties.push(
+        this.toolPropertiesFactory(property[0], property[1], property[2], property[3]));
+    });
   }
 
-  // private initializeClipboardButtons() {
-  //   this.clipboardButtonsProperties = [];
-  //   // if (this.clipboard.hasSelectedElements()) {
-  //     this.clipboardButtonsProperties.push(
-  //       this.clipboardPropertiesFactory(() => this.clipboard.copy(), 'Copier', 'Copier', false));
-  //     this.clipboardButtonsProperties.push(
-  //       this.clipboardPropertiesFactory(() => this.clipboard.cut(), 'Couper', 'Couper', false));
-  //     this.clipboardButtonsProperties.push(
-  //       this.clipboardPropertiesFactory(() => this.clipboard.delete(), 'Supprimer', 'Supprimer', false));
-  //     this.clipboardButtonsProperties.push(
-  //       this.clipboardPropertiesFactory(() => this.clipboard.duplicate(), 'Dupliquer', 'Dupliquer', false));
-  //   // }
-  //   this.clipboardButtonsProperties.push(
-  //     this.clipboardPropertiesFactory(() => this.clipboard.paste(), 'Coller', 'Coller', false));
-  // }
+  private initializeClipboardButtons() {
+    this.clipboardButtonsProperties = [];
+    const propertyTable: [() => void, string, string, boolean][] = [];
+    propertyTable.push(
+      [() => {this.clipboard.copy(); }, 'Copier', 'Copier', false],
+      [() => this.clipboard.cut(), 'Couper', 'Couper', false],
+      [() => this.clipboard.delete(), 'Supprimer', 'Supprimer', false],
+      [() => this.clipboard.duplicate(), 'Dupliquer', 'Dupliquer', false],
+      [() => this.clipboard.paste(), 'Coller', 'Coller', false],
+    );
+    propertyTable.forEach( (property: [() => void, string, string, boolean]) => {
+      this.clipboardButtonsProperties.push(
+        this.clipboardPropertiesFactory(property[0], property[1], property[2], property[3]));
+    });
+  }
 
   private initializeDialogsButtons() {
     this.dialogsButtonsProperties = [];
-    this.dialogsButtonsProperties.push(
-      this.dialogPropertiesFactory(
-        () => this.modalManagerService.showCreateDrawingDialog(), 'Nouveau Dessin', 'add', false));
-    this.dialogsButtonsProperties.push(
-      this.dialogPropertiesFactory(
-        () => this.modalManagerService.showSaveDrawingDialog(), 'Sauvegarder Dessin', 'save', false));
-    this.dialogsButtonsProperties.push(
-      this.dialogPropertiesFactory(
-        () => this.modalManagerService.showOpenDrawingDialog(), 'Ouvrir un Dessin', 'folder_open', false));
-    this.dialogsButtonsProperties.push(
-      this.dialogPropertiesFactory(
-        () => this.modalManagerService.showUserManualDialog(), `Guide d'utilisation`, 'contact_support', false));
+    const propertyTable: [() => void, string, string, boolean][] = [];
+    propertyTable.push(
+      [() => this.modalManagerService.showCreateDrawingDialog(), 'Nouveau Dessin', 'add', false],
+      [() => this.modalManagerService.showSaveDrawingDialog(), 'Sauvegarder Dessin', 'save', false],
+      [() => this.modalManagerService.showOpenDrawingDialog(), 'Ouvrir un Dessin', 'folder_open', false],
+      [() => this.modalManagerService.showUserManualDialog(), `Guide d'utilisation`, 'contact_support', false],
+    );
+    propertyTable.forEach( (property: [() => void, string, string, boolean]) => {
+      this.dialogsButtonsProperties.push(
+        this.dialogPropertiesFactory(property[0], property[1], property[2], property[3]));
+    });
   }
 
   private toolPropertiesFactory(tool: Tools, matToolTip: string, icon: string, isSvgIcon: boolean): ToolProperties {
@@ -169,12 +170,8 @@ export class LateralBarComponent {
     return { openDialog: onClickFunction, matToolTip, icon, isSvgIcon};
   }
 
-  // private clipboardPropertiesFactory(onClickFunction: () => void,
-  //                                    matToolTip: string, icon: string, isSvgIcon: boolean): ClipboardProperties {
-  //   return { clipboardFunction: onClickFunction, matToolTip, icon, isSvgIcon};
-  // }
-
-  // hasElementsInClipboard(): boolean {
-  //   return this.clipboard.memorizedElements.length !== 0;
-  // }
+  private clipboardPropertiesFactory(onClickFunction: () => void,
+                                     matToolTip: string, icon: string, isSvgIcon: boolean): ClipboardProperties {
+    return { clipboardFunction: onClickFunction, matToolTip, icon, isSvgIcon};
+  }
 }

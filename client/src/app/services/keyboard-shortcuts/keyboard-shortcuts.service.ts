@@ -1,4 +1,6 @@
 import {Injectable} from '@angular/core';
+// tslint:disable-next-line: max-line-length
+import { COLOR_APPLICATOR_KEY, COPY_KEY, CUT_KEY, DELETE_FULL_ELEMENT_KEY, DELETE_KEY, DELETE_LAST_ELEMENT_KEY, DUPLICATE_KEY, ELLIPSE_KEY, EYEDROPPER_KEY, GRID_KEY, LINE_KEY, NEW_DRAWING_KEY, OPEN_DRAWING_KEY, PAINTBRUSH_KEY, PASTE_KEY, PENCIL_KEY, POLYGON_KEY, RECTANGLE_KEY, SAVE_DRAWING_KEY, SELECT_ALL_KEY } from 'src/app/data-structures/constants';
 import {Tools} from '../../data-structures/tools';
 import {ModalManagerService} from '../modal-manager/modal-manager.service';
 import {RendererSingleton} from '../renderer-singleton';
@@ -11,27 +13,6 @@ import { ClipboardService } from './../tools/clipboard/clipboard.service';
   providedIn: 'root',
 })
 export class KeyboardShortcutsService {
-
-  private readonly PENCIL_KEY = 'c';
-  private readonly PAINTBRUSH_KEY = 'w';
-  private readonly LINE_KEY = 'l';
-  private readonly DELETE_FULL_ELEMENT_KEY = 'Escape';
-  private readonly DELETE_LAST_ELEMENT_KEY = 'Backspace';
-  private readonly RECTANGLE_KEY = '1';
-  private readonly ELLIPSE_KEY = '2';
-  private readonly POLYGON_KEY = '3';
-  private readonly COLOR_APPLICATOR_KEY = 'r';
-  private readonly NEW_DRAWING_KEY = 'o';
-  private readonly EYEDROPPER_KEY = 'i';
-  private readonly GRID_KEY = 'g';
-  private readonly SELECT_ALL_KEY = 'a';
-  private readonly COPY_KEY = 'c';
-  private readonly CUT_KEY = 'x';
-  private readonly DUPLICATE_KEY = 'd';
-  private readonly DELETE_KEY = 'Delete';
-  private readonly PASTE_KEY = 'v';
-  private readonly SAVE_DRAWING_KEY = 's';
-  private readonly OPEN_DRAWING_KEY = 'g';
 
   private readonly oneKeyShortcuts: Map<string, () => void>;
   private readonly controlKeyShortcuts: Map<string, () => void>;
@@ -57,41 +38,38 @@ export class KeyboardShortcutsService {
 
   private setOneCommandShortcuts(): void {
     // path shortcuts
-    this.oneKeyShortcuts.set(this.PENCIL_KEY, () => this.toolManager._activeTool = Tools.Pencil);
-    this.oneKeyShortcuts.set(this.PAINTBRUSH_KEY, () => this.toolManager._activeTool = Tools.Brush);
-    this.oneKeyShortcuts.set(this.LINE_KEY, () => this.toolManager._activeTool = Tools.Line);
-    this.oneKeyShortcuts.set(this.DELETE_FULL_ELEMENT_KEY, () => this.toolManager.escapePress());
-    this.oneKeyShortcuts.set(this.DELETE_LAST_ELEMENT_KEY, () => this.toolManager.backSpacePress());
+    this.oneKeyShortcuts.set(PENCIL_KEY, () => this.toolManager._activeTool = Tools.Pencil);
+    this.oneKeyShortcuts.set(PAINTBRUSH_KEY, () => this.toolManager._activeTool = Tools.Brush);
+    this.oneKeyShortcuts.set(LINE_KEY, () => this.toolManager._activeTool = Tools.Line);
+    this.oneKeyShortcuts.set(DELETE_FULL_ELEMENT_KEY, () => this.toolManager.escapePress());
+    this.oneKeyShortcuts.set(DELETE_LAST_ELEMENT_KEY, () => this.toolManager.backSpacePress());
 
     // shape shortcuts
-    this.oneKeyShortcuts.set(this.RECTANGLE_KEY, () => this.toolManager._activeTool = Tools.Rectangle);
-    this.oneKeyShortcuts.set(this.ELLIPSE_KEY, () => this.toolManager._activeTool = Tools.Ellipse);
-    this.oneKeyShortcuts.set(this.POLYGON_KEY, () => this.toolManager._activeTool = Tools.Polygon);
+    this.oneKeyShortcuts.set(RECTANGLE_KEY, () => this.toolManager._activeTool = Tools.Rectangle);
+    this.oneKeyShortcuts.set(ELLIPSE_KEY, () => this.toolManager._activeTool = Tools.Ellipse);
+    this.oneKeyShortcuts.set(POLYGON_KEY, () => this.toolManager._activeTool = Tools.Polygon);
 
     // personalization shortcuts
-    this.oneKeyShortcuts.set(this.COLOR_APPLICATOR_KEY, () => this.toolManager._activeTool = Tools.ColorApplicator);
-    this.oneKeyShortcuts.set(this.EYEDROPPER_KEY, () => this.toolManager._activeTool = Tools.Eyedropper);
-    this.oneKeyShortcuts.set(this.GRID_KEY, () => this.gridToggler.toggleGrid());
+    this.oneKeyShortcuts.set(COLOR_APPLICATOR_KEY, () => this.toolManager._activeTool = Tools.ColorApplicator);
+    this.oneKeyShortcuts.set(EYEDROPPER_KEY, () => this.toolManager._activeTool = Tools.Eyedropper);
+    this.oneKeyShortcuts.set(GRID_KEY, () => this.gridToggler.toggleGrid());
 
     // clipboard shortcuts
-    //if (this.toolManager._activeTool === Tools.Selector) {
-    this.oneKeyShortcuts.set(this.DELETE_KEY, () => this.clipboard.delete());
-    //}
+    this.oneKeyShortcuts.set(DELETE_KEY, () => this.clipboard.delete());
   }
 
   private setControlKeyShortcuts(): void {
-    this.controlKeyShortcuts.set(this.SELECT_ALL_KEY, () => {
+    this.controlKeyShortcuts.set(SELECT_ALL_KEY, () => {
       this.toolManager._activeTool = Tools.Selector;
       this.objectSelector.selectAll(RendererSingleton.canvas);
     });
-    this.controlKeyShortcuts.set(this.NEW_DRAWING_KEY, () => this.modalManagerService.showCreateDrawingDialog());
-    this.controlKeyShortcuts.set(this.SAVE_DRAWING_KEY, () => this.modalManagerService.showSaveDrawingDialog());
-    this.controlKeyShortcuts.set(this.OPEN_DRAWING_KEY, () => this.modalManagerService.showOpenDrawingDialog());
+    this.controlKeyShortcuts.set(NEW_DRAWING_KEY, () => this.modalManagerService.showCreateDrawingDialog());
+    this.controlKeyShortcuts.set(SAVE_DRAWING_KEY, () => this.modalManagerService.showSaveDrawingDialog());
+    this.controlKeyShortcuts.set(OPEN_DRAWING_KEY, () => this.modalManagerService.showOpenDrawingDialog());
     // clipboard shortcuts
-    //if (this.toolManager._activeTool === Tools.Selector) {
-    this.controlKeyShortcuts.set(this.COPY_KEY, () => this.clipboard.copy());
-    this.controlKeyShortcuts.set(this.CUT_KEY, () => this.clipboard.cut());
-    this.controlKeyShortcuts.set(this.DUPLICATE_KEY, () => this.clipboard.duplicate());
-    this.controlKeyShortcuts.set(this.PASTE_KEY, () => this.clipboard.paste());
+    this.controlKeyShortcuts.set(COPY_KEY, () => this.clipboard.copy());
+    this.controlKeyShortcuts.set(CUT_KEY, () => this.clipboard.cut());
+    this.controlKeyShortcuts.set(DUPLICATE_KEY, () => this.clipboard.duplicate());
+    this.controlKeyShortcuts.set(PASTE_KEY, () => this.clipboard.paste());
   }
 }
