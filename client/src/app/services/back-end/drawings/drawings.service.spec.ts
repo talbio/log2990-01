@@ -2,9 +2,12 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Renderer2} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
+import { OpenDrawingDialogComponent } from 'src/app/components/modals/open-drawing-dialog/open-drawing-dialog.component';
 import {RendererSingleton} from '../../renderer-singleton';
 import {ToolManagerService} from '../../tools/tool-manager/tool-manager.service';
 import { DrawingsService } from './drawings.service';
+
+const MINIMUM_DRAWING_SVGELEMENTS = '<defs></defs><rect></rect>';
 
 const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['post', 'get']);
@@ -79,6 +82,25 @@ describe('DrawingsService', () => {
       jasmine.createSpyObj('Node', ['baseURI', 'nodeValue']);
     node.nodeValue = FAKE_SVG_MINIATURE;
     expect(saveDrawingService.getMiniature()).toBe(FAKE_SVG_MINIATURE);
+  });
+
+  it('file saved locally should be of correct format to be opened locally by the application', () => {
+    // make a fake drawing
+    const drawingService: jasmine.SpyObj<DrawingsService> =
+      jasmine.createSpyObj('DrawingService', ['makeDrawing', 'getSvgElements', 'getMiniature', 'getCanvasWidth', 'getCanvasHeight']);
+    drawingService.getSvgElements.and.returnValue(MINIMUM_DRAWING_SVGELEMENTS);
+    drawingService.getMiniature.and.returnValue(MINIMUM_DRAWING_SVGELEMENTS);
+    drawingService.getCanvasWidth.and.returnValue(1);
+    drawingService.getCanvasHeight.and.returnValue(1);
+    const emptyTags = [''];
+    const fakeDrawing = drawingService.makeDrawing('fakename', emptyTags);
+
+    // Now we validate the fake drawing as a string
+    const openComponent: jasmine.SpyObj<OpenDrawingDialogComponent> =
+      jasmine.createSpyObj('OpenDrawingDialogComponent', ['validateJSONDrawing']);
+    const fakeDrawingStr = JSON.stringify(fakeDrawing, null, 2);
+    const testFunction = () => openComponent.validateJSONDrawing(fakeDrawingStr);
+    expect(testFunction).not.toThrow();
   });
 
 });

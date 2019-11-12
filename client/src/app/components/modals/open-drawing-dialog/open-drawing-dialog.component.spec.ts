@@ -8,6 +8,7 @@ import {DemoMaterialModule} from '../../../material.module';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {DialogData} from '../create-drawing-dialog/create-drawing-dialog.component';
+import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 import {FilterByTags} from './filter-by-tags.pipe';
 import {OpenDrawingDialogComponent} from './open-drawing-dialog.component';
 
@@ -30,6 +31,9 @@ drawingsServiceSpy.httpGetDrawings.and.returnValue(of());
 
 const notifierServiceSpy: jasmine.SpyObj<NotifierService> =
   jasmine.createSpyObj('NotifierService', ['notify']);
+
+const gridTogglerSpy: jasmine.SpyObj<GridTogglerService> =
+  jasmine.createSpyObj('GridTogglerService', ['_grid', '_gridPattern']);
 
 const fakeCanvas = {innerHTML: ''};
 
@@ -64,6 +68,7 @@ describe('OpenDrawingDialogComponent', () => {
         {provide: MatDialog, useValue: mockMatDialog},
         {provide: MAT_DIALOG_DATA, useValue: mockDialogData},
         { provide: NotifierService, useValue: notifierServiceSpy },
+        { provide: GridTogglerService, useValue: gridTogglerSpy },
       ],
     }).compileComponents().then(() => {
         fixture = TestBed.createComponent(OpenDrawingDialogComponent);
@@ -141,7 +146,7 @@ describe('OpenDrawingDialogComponent', () => {
   describe('openLocalDrawing', () => {
     it('should be able to open a file of correct format', () => {
       const passFileValidationSpy = spyOn(component, 'validateFileType').and.callFake(() => {
-        // Do not send back an error, do nothing
+        // Do not throw an error, do nothing
       });
       const fakeDrawingString =
       `{
@@ -163,7 +168,6 @@ describe('OpenDrawingDialogComponent', () => {
       component.openLocalDrawing(fakeHtmlInputElement);
       expect(passFileValidationSpy).toHaveBeenCalled();
       expect(loadFileCorrectly).toHaveBeenCalled();
-      // TODO somehow check value of drawing
     });
   });
 

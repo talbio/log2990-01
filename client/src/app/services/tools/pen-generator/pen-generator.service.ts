@@ -4,6 +4,7 @@ const DEFAULT_MIN_WIDTH = 0.1;
 const DEFAULT_MAX_WIDTH = 15;
 const SPEED_ARRAY_SIZE = 10;
 const SPEED_CONSTANT = 6;
+const MIN_TIME_PASSED = 0.001;
 
 import { Injectable } from '@angular/core';
 import { AbstractWritingTool } from '../../../data-structures/abstract-writing-tool';
@@ -24,13 +25,15 @@ export class PenGeneratorService extends AbstractWritingTool {
   speedArray: number [];
 
   constructor(protected undoRedoService: UndoRedoService,
-              protected mousePosition: MousePositionService) {
-      super(mousePosition, undoRedoService);
+              protected mouse: MousePositionService) {
+      super(mouse, undoRedoService);
       this.strokeWidthMinimum = DEFAULT_MIN_WIDTH;
       this.strokeWidthMaximum = DEFAULT_MAX_WIDTH;
       this.date = new Date();
       this.pathArray = [];
       this.speedArray = new Array<number>(SPEED_ARRAY_SIZE);
+      this.positionX = this.xPos;
+      this.positionY = this.yPos;
   }
 
   createElement(primaryColor: string) {
@@ -47,7 +50,7 @@ export class PenGeneratorService extends AbstractWritingTool {
       const properties: [string, string][] = [];
       properties.push(
           ['id', `penPath${this.currentElementsNumber}`],
-          ['d', `M ${(this.positionX)} ${(this.positionY)} L ${(this.positionX)} ${(this.positionY)}`],
+          ['d', `M ${(this.xPos)} ${(this.yPos)} L ${(this.xPos)} ${(this.yPos)}`],
           ['stroke', `${this.color}`],
           ['stroke-width', `${width}`],
           ['stroke-linecap', `round`],
@@ -57,7 +60,7 @@ export class PenGeneratorService extends AbstractWritingTool {
       this.pathArray.push(this.currentElement);
   }
 
-  updateElement(currentChildPosition: number) {
+  updateElement() {
       if (this.mouseDown) {
           const currentPositionX = this.xPos;
           const currentPositionY = this.yPos;
@@ -91,9 +94,9 @@ export class PenGeneratorService extends AbstractWritingTool {
       }
   }
 
-  finishElement() {
+  finishElement(): void {
       if (this.mouseDown) {
-          this.currentElementsNumber++;
+          this.currentElementsNumber += 1;
           this.pushGeneratorCommand(...this.pathArray);
           this.pathArray = [];
           this.speedArray = [];
@@ -106,7 +109,7 @@ export class PenGeneratorService extends AbstractWritingTool {
       const movementInY = Math.pow((currentPositionY - this.positionY), 2);
       const distance = Math.sqrt(movementInX + movementInY);
       let timePassed = currentTime - this.time;
-      if (timePassed === 0) {timePassed = 0.001; }
+      if (timePassed === 0) {timePassed = MIN_TIME_PASSED; }
       return distance / timePassed;
   }
 

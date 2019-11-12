@@ -22,11 +22,7 @@ export class DrawingsService {
   constructor(private httpClient: HttpClient) {}
 
   httpPostDrawing(name: string, tags: string[]): Promise<boolean> {
-    const svgElements: string = this.getSvgElements();
-    const miniature: string = this.getMiniature();
-    const canvasWidth: number = this.getCanvasWidth();
-    const canvasHeight: number = this.getCanvasHeight();
-    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature, canvasWidth, canvasHeight};
+    const drawing: Drawing = this.makeDrawing(name, tags);
     return this.httpClient.post<{httpCode: number}>(this.BASE_URL, {data: drawing}, this.HTTP_OPTIONS)
       .toPromise()
       .then( (response: {httpCode: number}) => {
@@ -88,11 +84,7 @@ export class DrawingsService {
     }
   }
   localPostDrawing(name: string, tags: string[]): Promise<boolean> {
-    const svgElements: string = this.getSvgElements();
-    const miniature: string = this.getMiniature();
-    const canvasWidth: number = this.getCanvasWidth();
-    const canvasHeight: number = this.getCanvasHeight();
-    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature, canvasWidth, canvasHeight};
+    const drawing = this.makeDrawing(name, tags);
     return this.saveFileToLocation(drawing)
       .then( () => {
         return true;
@@ -110,7 +102,16 @@ export class DrawingsService {
     link.href = URL.createObjectURL(myBlob);
     link.download = `${drawing.name}.json`;
     link.click();
-    // TODO manage cases
+
     return Promise.resolve(true);
+  }
+
+  makeDrawing(name: string, tags: string[]): Drawing {
+    const svgElements: string = this.getSvgElements();
+    const miniature: string = this.getMiniature();
+    const canvasWidth: number = this.getCanvasWidth();
+    const canvasHeight: number = this.getCanvasHeight();
+    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature, canvasWidth, canvasHeight};
+    return drawing;
   }
 }

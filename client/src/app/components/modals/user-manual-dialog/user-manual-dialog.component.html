@@ -1,0 +1,34 @@
+<mat-dialog-content>
+
+    <p> Bienvenue à Polydessin! Voici les raccourcis que vous pouvez utiliser: </p>
+
+    <div>
+        <div class='section-title'>Options de fichier</div>
+        <table>
+            <tr *ngFor="let shortcut of FILE_SHORTCUTS ">
+                <td>{{shortcut.description}}</td>
+                <td class="keys">{{shortcut.keys}}</td>
+            </tr>
+        </table>
+        <div class="section-title">Manipulations de sélection</div>
+        <table>
+            <tr *ngFor="let shortcut of MANIPULATION_SHORTCUTS ">
+                <td>{{shortcut.description}}</td>
+                <td class="keys">{{shortcut.keys}}</td>
+            </tr>
+        </table>
+        <div class="section-title">Sélection d'outils</div>
+        <table>
+            <tr *ngFor="let shortcut of TOOL_SHORTCUTS ">
+                <td>{{shortcut.description}}</td>
+                <td class="keys">{{shortcut.keys}}</td>
+            </tr>
+        </table>
+    </div>
+
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button class="mat-raised-button mat-warn" (click)="close()">
+        Ok
+    </button>
+</mat-dialog-actions>
