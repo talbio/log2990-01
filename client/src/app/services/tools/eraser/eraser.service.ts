@@ -158,12 +158,17 @@ export class EraserService {
     }
 
     setEraserSquare(): void {
-        RendererSingleton.canvas.innerHTML +=
-            `<rect id="eraser"
-        x="${(this.mousePosition.canvasMousePositionX - this.eraseSize / 2)}"
-        y="${(this.mousePosition.canvasMousePositionY - this.eraseSize / 2)}"
-        width="${(this.eraseSize)}" height="${(this.eraseSize)}" stroke="black"
-        fill="transparent"></rect>`;
+        const eraser = RendererSingleton.renderer.createElement('rect', 'svg');
+        RendererSingleton.renderer.setAttribute(eraser, 'id', 'eraser');
+        RendererSingleton.renderer.setAttribute(eraser, 'x',
+            (this.mousePosition.canvasMousePositionX - this.eraseSize / 2) as unknown as string);
+        RendererSingleton.renderer.setAttribute(eraser, 'y',
+            (this.mousePosition.canvasMousePositionY - this.eraseSize / 2) as unknown as string);
+        RendererSingleton.renderer.setAttribute(eraser, 'width', this.eraseSize as unknown as string);
+        RendererSingleton.renderer.setAttribute(eraser, 'height', this.eraseSize as unknown as string);
+        RendererSingleton.renderer.setAttribute(eraser, 'stroke', 'black');
+        RendererSingleton.renderer.setAttribute(eraser, 'fill', 'transparent');
+        RendererSingleton.renderer.appendChild(RendererSingleton.canvas, eraser);
     }
 
     pushAction(drawings: SVGElement[]): void {
