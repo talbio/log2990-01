@@ -68,7 +68,6 @@ const DRAWING_SERVICES = [
   PenGeneratorService,
 ];
 describe('DrawingViewComponent', () => {
-//   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -98,7 +97,6 @@ describe('DrawingViewComponent', () => {
        DrawingViewComponent] } },
     ).compileComponents().then(() => {
       fixture = TestBed.createComponent(DrawingViewComponent);
-    //   component = fixture.componentInstance;
       fixture.detectChanges();
     });
   }));

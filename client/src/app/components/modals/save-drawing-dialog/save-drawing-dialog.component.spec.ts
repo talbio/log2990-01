@@ -114,7 +114,6 @@ describe('SaveDrawingDialogComponent', () => {
   });
   describe('submitLocal', () => {
     it('should set localPosting variable to true while executing and set it back to false when done executing ', async () => {
-    // component = fixture.componentInstance;
     // @ts-ignore changing return type of promise to void for testing purposes
     drawingsServiceSpy.localPostDrawing.and.callFake( () => Promise.resolve(expect(component.isPostingLocally).toBe(true)));
     await component.submitLocal();

@@ -117,8 +117,6 @@ export class ClipboardService {
   }
 
   resetCounters() {
-    // this.consecutiveDuplicates = 1;
-    // this.consecutivePastes = 1;
     this.xSliding = 0;
     this.ySliding = 0;
   }

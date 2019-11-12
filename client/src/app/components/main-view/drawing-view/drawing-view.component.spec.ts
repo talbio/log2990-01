@@ -772,8 +772,7 @@ describe('DrawingViewComponent', () => {
     expect(polyLineChild.getAttribute('stroke-dasharray'))
     .toEqual(`1, ${lineGeneratorService._strokeWidth * 2}`);
 
-    // // End line
-    // component.workZoneComponent.onDoubleClick(doubleClick);
+    // End line
 
   });
 
@@ -833,8 +832,7 @@ describe('DrawingViewComponent', () => {
     expect(polyLineChild.getAttribute('marker-mid')).toEqual(markerId);
     expect(polyLineChild.getAttribute('marker-end')).toEqual(markerId);
 
-    // // End line
-    // component.workZoneComponent.onDoubleClick(doubleClick);
+    // End line
 
   });
 
@@ -1143,7 +1141,6 @@ describe('DrawingViewComponent', () => {
     const sizeSlider = new MatSliderChange();
     sizeSlider.value = 75;
     gridToggler.adjustGridSize(sizeSlider);
-    // const htmlGridSize: number = parseFloat(gridPattern.getAttribute('width'));
     const htmlGridSize = gridPattern.getAttribute('width');
     expect(htmlGridSize).toBe('75');
 
@@ -1488,11 +1485,9 @@ describe('DrawingViewComponent', () => {
     // Case 1 => (NbOfApex) % 2 === 1
     polygonGenerator._nbOfApex = 3;
     const canvas = fixture.debugElement.nativeElement.querySelector(`#canvas`);
-    // component.workZoneComponent.onMouseDown(mouseDownEvent);
     canvas.dispatchEvent(mouseDownEvent);
     const triangle = workChilds.item(workChilds.length - 2) as SVGElement;
     const tempRect1 = workChilds.item(workChilds.length - 1) as SVGElement;
-    // component.workZoneComponent.onMouseMove(mouseMoveEvent);
     canvas.dispatchEvent(mouseMoveEvent);
 
     const pointsTriangle = verifiePolygonIsRegular(triangle, polygonGenerator._nbOfApex);
@@ -1503,11 +1498,9 @@ describe('DrawingViewComponent', () => {
 
     // Case 2 => (NbOfApex) % 4 === 0
     polygonGenerator._nbOfApex = 8;
-    // component.workZoneComponent.onMouseDown(mouseDownEvent);
     canvas.dispatchEvent(mouseDownEvent);
     const octogon = workChilds.item(workChilds.length - 2) as SVGElement;
     const tempRect2 = workChilds.item(workChilds.length - 1) as SVGElement;
-    // component.workZoneComponent.onMouseMove(mouseMoveEvent);
     canvas.dispatchEvent(mouseMoveEvent);
 
     const pointsOctogon = verifiePolygonIsRegular(octogon, polygonGenerator._nbOfApex);
@@ -1518,11 +1511,9 @@ describe('DrawingViewComponent', () => {
 
     // Case 3 => (NbOfApex) % 2 === 0 && (NbOfApex) % 4 !== 0
     polygonGenerator._nbOfApex = 6;
-    // component.workZoneComponent.onMouseDown(mouseDownEvent);
     canvas.dispatchEvent(mouseDownEvent);
     const hexagon = workChilds.item(workChilds.length - 2) as SVGElement;
     const tempRect3 = workChilds.item(workChilds.length - 1) as SVGElement;
-    // component.workZoneComponent.onMouseMove(mouseMoveEvent);
     canvas.dispatchEvent(mouseMoveEvent);
 
     const pointsHexagon = verifiePolygonIsRegular(hexagon, polygonGenerator._nbOfApex);

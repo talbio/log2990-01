@@ -1,4 +1,4 @@
-/*import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DemoMaterialModule } from 'src/app/material.module';
 import { MousePositionService } from 'src/app/services/mouse-position/mouse-position.service';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
@@ -23,4 +23,4 @@ describe('EmojiToolsComponent', () => {
     const emojiService = fixture.debugElement.injector.get(EmojiGeneratorService);
     expect(emojiService.getEmojis().length).toBeGreaterThanOrEqual(5);
   });
-});*/
+});

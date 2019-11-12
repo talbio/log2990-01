@@ -16,7 +16,6 @@ export class GridTogglerService {
   }
 
   toggleGrid() {
-    console.log('toggle');
     if ( this.grid.getAttribute('visibility') === 'visible') {
       this.grid.setAttribute('visibility', 'hidden');
     } else {

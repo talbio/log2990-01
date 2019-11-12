@@ -115,7 +115,6 @@ export class PolygonGeneratorService extends AbstractClosedShape {
       if ((w / h) > this.aspectRatio ) {
         center[1] = y + radius;
       } else {
-        // center[1] = y + h / 2 + radius / 2 * this.adjustment[0];
         center[1] = y + h * this.adjustment[0];
       }
     }

@@ -259,7 +259,6 @@ describe('DrawingViewComponent', () => {
 
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
     const itemToBeCut = workChilds[2] as SVGElement;
-    // selector.selectedElements.push(itemToBeCut);
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
 
     toolManagerService._activeTool = Tools.Selector;
@@ -298,7 +297,6 @@ describe('DrawingViewComponent', () => {
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
     const itemToBeDuplicated = workChilds[2] as SVGElement;
 
-    // selector.selectedElements.push(itemToBeDuplicated);
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
 
     toolManagerService._activeTool = Tools.Selector;
@@ -354,7 +352,6 @@ describe('DrawingViewComponent', () => {
     const selector = fixture.debugElement.injector.get(ObjectSelectorService);
     const itemToBeDuplicated = workChilds[2] as SVGElement;
 
-    // selector.selectedElements.push(itemToBeDuplicated);
     const clipboardService = fixture.debugElement.injector.get(ClipboardService);
 
     toolManagerService._activeTool = Tools.Selector;

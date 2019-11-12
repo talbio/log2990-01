@@ -227,13 +227,10 @@ export class LineGeneratorService extends AbstractGenerator {
     if (this.isMarkersActive) {
       this.addMarkersToNewLine(marker, canvas);
     }
-    // reload
-    // canvas.innerHTML = canvas.innerHTML;
     return marker;
   }
 
   addMarkersToNewLine(markers: SVGElement, canvas: HTMLElement) {
-    // const newLine = canvas.children[canvas.children.length - 1];
     const markersAddress = `url(#${markers.id})`;
     RendererSingleton.renderer.setAttribute(this.currentElement, 'marker-start', markersAddress);
     RendererSingleton.renderer.setAttribute(this.currentElement, 'marker-mid', markersAddress);
