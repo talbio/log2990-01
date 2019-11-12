@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Colors } from 'src/app/data-structures/colors';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
-import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 import { setTranslationAttribute } from '../../utilitary-functions/transform-functions';
+import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 
 const STROKE_COLOR = Colors.BLACK;
 
@@ -237,13 +237,17 @@ export class ObjectSelectorService {
     RendererSingleton.renderer.appendChild(RendererSingleton.canvas, boundingRect);
   }
 
-  selectAll(canvas: SVGElement): void {
+  selectAll(): void {
+    const canvas = RendererSingleton.canvas;
     const drawings = canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
     drawings.forEach((svgElement: SVGElement) => {
       if (this.isSvgDrawing(svgElement)) {
         this.selectedElements.push(svgElement);
       }
     });
+    if (this.selectedElements.length !== 0) {
+      this.addBoundingRect();
+    }
   }
   translate() {
     const xMove = this.mousePosition.canvasMousePositionX - this.startX;
