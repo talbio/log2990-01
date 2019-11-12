@@ -36,3 +36,5 @@ export const OPEN_DRAWING_KEY = 'g';
 export const PEN_KEY = 'y';
 export const SELECTION_KEY = 's';
 export const ERASER_KEY = 'e';
+export const UNDO_KEY = 'z';
+export const REDO_KEY = 'z';

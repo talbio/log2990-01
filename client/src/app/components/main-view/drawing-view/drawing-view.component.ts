@@ -43,7 +43,11 @@ export class DrawingViewComponent implements AfterViewInit {
     if (!modalManager._isModalActive) {
       if (keyboardEvent.ctrlKey) {
         keyboardEvent.preventDefault();
-        this.executeShortcutFunction(this.keyBoardShortcuts.getControlKeyShortcuts, keyboardEvent.key);
+        if (keyboardEvent.shiftKey) {
+          this.executeShortcutFunction(this.keyBoardShortcuts.getControlShiftKeyShortcuts, keyboardEvent.key);
+        } else {
+          this.executeShortcutFunction(this.keyBoardShortcuts.getControlKeyShortcuts, keyboardEvent.key);
+        }
       } else {
         this.executeShortcutFunction(this.keyBoardShortcuts.getOneKeyShortcuts, keyboardEvent.key);
       }
@@ -66,7 +70,7 @@ export class DrawingViewComponent implements AfterViewInit {
   }
 
   private executeShortcutFunction(shortcutsToFunction: Map<string, () => void>, key: string): void {
-    const shortcutFunction: (() => void) | undefined = shortcutsToFunction.get(key);
+    const shortcutFunction: (() => void) | undefined = shortcutsToFunction.get(key.toLowerCase());
     if (shortcutFunction) {
       shortcutFunction();
     }
