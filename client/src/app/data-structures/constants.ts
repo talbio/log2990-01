@@ -33,3 +33,6 @@ export const DELETE_KEY = 'Delete';
 export const PASTE_KEY = 'v';
 export const SAVE_DRAWING_KEY = 's';
 export const OPEN_DRAWING_KEY = 'g';
+export const PEN_KEY = 'y';
+export const SELECTION_KEY = 's';
+export const ERASER_KEY = 'e';
