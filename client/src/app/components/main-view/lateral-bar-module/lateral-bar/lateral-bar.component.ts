@@ -26,6 +26,11 @@ const REDO_ICON_PATH = '../../../../assets/svg-icons/right-arrow.svg';
 const UNDO_ICON_PATH = '../../../../assets/svg-icons/left-arrow.svg';
 const ERASER_ICON_PATH = '../../../../assets/svg-icons/eraser.svg';
 const PEN_ICON_PATH = '../../../../assets/svg-icons/pen.svg';
+const CUT_ICON_PATH = '../../../../assets/svg-icons/cut.svg';
+const DUPLICATE_ICON_PATH = '../../../../assets/svg-icons/duplicate.svg';
+const PASTE_ICON_PATH = '../../../../assets/svg-icons/paste.svg';
+const DELETE_ICON_PATH = '../../../../assets/svg-icons/delete.svg';
+const COPY_ICON_PATH = '../../../../assets/svg-icons/copy.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -90,6 +95,11 @@ export class LateralBarComponent {
       ['undo', UNDO_ICON_PATH],
       ['redo', REDO_ICON_PATH],
       ['pen', PEN_ICON_PATH],
+      ['cut', CUT_ICON_PATH],
+      ['duplicate', DUPLICATE_ICON_PATH],
+      ['copy', COPY_ICON_PATH],
+      ['paste', PASTE_ICON_PATH],
+      ['delete', DELETE_ICON_PATH],
     );
     icons.forEach( (icon: [string, string]) =>
       this.matIconRegistry.addSvgIcon(icon[0], this.domSanitizer.bypassSecurityTrustResourceUrl(icon[1])));
@@ -135,11 +145,11 @@ export class LateralBarComponent {
     this.clipboardButtonsProperties = [];
     const propertyTable: [() => void, string, string, boolean][] = [];
     propertyTable.push(
-      [() => {this.clipboard.copy(); }, 'Copier', 'Copier', false],
-      [() => this.clipboard.cut(), 'Couper', 'Couper', false],
-      [() => this.clipboard.delete(), 'Supprimer', 'Supprimer', false],
-      [() => this.clipboard.duplicate(), 'Dupliquer', 'Dupliquer', false],
-      [() => this.clipboard.paste(), 'Coller', 'Coller', false],
+      [() => {this.clipboard.copy(); }, 'Copier', 'copy', true],
+      [() => this.clipboard.cut(), 'Couper', 'cut', true],
+      [() => this.clipboard.delete(), 'Supprimer', 'delete', true],
+      [() => this.clipboard.duplicate(), 'Dupliquer', 'duplicate', true],
+      [() => this.clipboard.paste(), 'Coller', 'paste', true],
     );
     propertyTable.forEach( (property: [() => void, string, string, boolean]) => {
       this.clipboardButtonsProperties.push(
