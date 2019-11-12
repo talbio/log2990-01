@@ -19,6 +19,7 @@ export class EllipseGeneratorService extends AbstractClosedShape {
               protected undoRedoService: UndoRedoService,
               protected mouse: MousePositionService) {
     super(mouse, undoRedoService);
+    this.idPrefix = 'ellipse';
   }
 
   get tempRect(): SVGElement {

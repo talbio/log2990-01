@@ -10,6 +10,7 @@ export class PencilGeneratorService extends AbstractWritingTool {
   constructor(protected mouse: MousePositionService,
               protected undoRedoService: UndoRedoService) {
     super(mouse, undoRedoService);
+    this.idPrefix = 'pencilPath';
   }
 
   // Initializes the path

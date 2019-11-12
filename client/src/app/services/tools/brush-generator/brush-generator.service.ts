@@ -15,6 +15,7 @@ export class BrushGeneratorService extends AbstractWritingTool {
     super(mouse, undoRedoService);
     this.currentBrushPattern = this.DEFAULT_BRUSH_PATTERN;
     this.currentElementsNumber = 0;
+    this.idPrefix = 'brushPath';
   }
 
   set _currentBrushPattern(pattern: string) {

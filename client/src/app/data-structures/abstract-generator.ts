@@ -10,6 +10,7 @@ export abstract class AbstractGenerator implements CommandGenerator {
 
   currentElementsNumber: number;
   currentElement: SVGElement;
+  idPrefix: string;
 
   protected constructor(protected mouse: MousePositionService,
                         protected undoRedoService: UndoRedoService) {

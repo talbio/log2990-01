@@ -41,6 +41,7 @@ export class EmojiGeneratorService extends AbstractGenerator {
       this.angle = MIN_ROTATION_ANGLE;
       this.scalingFactor = DEFAULT_SCALING_FACTOR;
       this.rotationStep = MAX_ROTATION_STEP;
+      this.idPrefix = 'emoji';
   }
 
   getEmojis() {
