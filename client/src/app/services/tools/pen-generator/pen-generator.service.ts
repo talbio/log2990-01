@@ -1,6 +1,6 @@
 import {MousePositionService} from '../../mouse-position/mouse-position.service';
 
-const DEFAULT_MIN_WIDTH = 1;
+const DEFAULT_MIN_WIDTH = 0.1;
 const DEFAULT_MAX_WIDTH = 15;
 const SPEED_ARRAY_SIZE = 10;
 const SPEED_CONSTANT = 6;
@@ -31,6 +31,8 @@ export class PenGeneratorService extends AbstractWritingTool {
       this.date = new Date();
       this.pathArray = [];
       this.speedArray = new Array<number>(SPEED_ARRAY_SIZE);
+      this.positionX = this.xPos;
+      this.positionY = this.yPos;
   }
 
   createElement(primaryColor: string) {
