@@ -250,23 +250,23 @@ export class ToolManagerService {
       case 'rect':
         return this.rectangleGenerator;
       case 'ellipse':
-        return this.rectangleGenerator;
+        return this.ellipseGenerator;
       case 'polygon':
-        return this.rectangleGenerator;
+        return this.polygonGenerator;
       case 'path':
         if (svgElement.id.startsWith('pencil')) {
-          return this.rectangleGenerator;
+          return this.pencilGenerator;
         } else if (svgElement.id.startsWith('brush')) {
-          return this.rectangleGenerator;
+          return this.brushGenerator;
         } else if (svgElement.id.startsWith('penPath')) {
-          return this.rectangleGenerator;
+          return this.penGenerator;
         } else {
           return undefined;
         }
       case 'polyline':
-        return this.rectangleGenerator;
-      case 'img':
-        return this.rectangleGenerator;
+        return this.lineGenerator;
+      case 'image':
+        return this.emojiGenerator;
       default:
         return undefined;
     }

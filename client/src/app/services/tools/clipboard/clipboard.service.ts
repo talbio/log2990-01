@@ -3,6 +3,7 @@ import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import {Command, CommandGenerator} from '../../../data-structures/command';
 import { RendererSingleton } from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
+import { setTranslationAttribute } from '../../utilitary-functions/transform-functions';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import {ToolManagerService} from '../tool-manager/tool-manager.service';
 
@@ -37,33 +38,8 @@ export class ClipboardService implements CommandGenerator {
   }
 
   slide(item: SVGElement) {
-    const transformation = item.getAttribute('transform');
-    let newTransform = '';
-    let foundTranslate = false;
     this.getSlideLength(item);
-    if (transformation === null) {
-      newTransform = 'translate(' + this.xSliding + ' ' + this.ySliding + ')';
-    } else if (!transformation.includes('translate')) {
-      newTransform = 'translate(' + this.xSliding + ' ' + this.ySliding + ') ';
-      newTransform += transformation;
-    } else {
-      const eachTrans = transformation.split(' ');
-      for (const slot of eachTrans) {
-        if (slot.includes('translate(')) {
-          const xCord = slot.split('(', 2);
-          xCord[1] = (parseFloat(xCord[1]) + this.xSliding) as unknown as string;
-          foundTranslate = true;
-          newTransform += 'translate(' + xCord[1] + ' ';
-        } else if (foundTranslate) {
-          const yCord = slot.split(')');
-          yCord[0] = (parseFloat(yCord[0]) + this.ySliding) as unknown as string;
-          newTransform += yCord[0] + ') ';
-        } else {
-          newTransform += slot + ' ';
-        }
-      }
-    }
-    item.setAttribute('transform', newTransform);
+    setTranslationAttribute(item, this.xSliding, this.ySliding);
   }
 
   getSlideLength(item: SVGElement) {
