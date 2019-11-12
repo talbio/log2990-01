@@ -245,45 +245,51 @@ export class ToolManagerService {
     this.emojiGenerator.rotateEmoji(mouseEvent);
   }
 
+  returnGeneratorFromElement(svgElement: SVGElement): AbstractGenerator | undefined {
+    switch (svgElement.tagName) {
+      case 'rect':
+        return this.rectangleGenerator;
+      case 'ellipse':
+        return this.rectangleGenerator;
+      case 'polygon':
+        return this.rectangleGenerator;
+      case 'path':
+        if (svgElement.id.startsWith('pencil')) {
+          return this.rectangleGenerator;
+        } else if (svgElement.id.startsWith('brush')) {
+          return this.rectangleGenerator;
+        } else if (svgElement.id.startsWith('penPath')) {
+          return this.rectangleGenerator;
+        } else {
+          return undefined;
+        }
+      case 'polyline':
+        return this.rectangleGenerator;
+      case 'img':
+        return this.rectangleGenerator;
+      default:
+        return undefined;
+    }
+  }
+
   synchronizeAllCounters() {
     const counters: Map<AbstractGenerator, number> = new Map<AbstractGenerator, number>();
     this.generators.forEach( (generator: AbstractGenerator) => counters.set(generator, 0));
     const penIdList = [''];
     for (const child of [].slice.call(RendererSingleton.canvas.children)) {
       const childCast = child as SVGElement;
-      switch (childCast.tagName) {
-        case 'rect':
-          this.incrementCounter(counters, this.rectangleGenerator);
-          break;
-        case 'ellipse':
-          this.incrementCounter(counters, this.ellipseGenerator);
-          break;
-        case 'polygon':
-          this.incrementCounter(counters, this.polygonGenerator);
-          break;
-        case 'path':
-          if (childCast.id.startsWith('pencil')) {
-            this.incrementCounter(counters, this.pencilGenerator);
-          } else if (childCast.id.startsWith('brush')) {
-            this.incrementCounter(counters, this.brushGenerator);
-          } else if (childCast.id.startsWith('penPath')) {
-            const index = penIdList.indexOf(childCast.id);
-            if (index === -1) {
-              // This is a new pen path
-              this.incrementCounter(counters, this.penGenerator);
-              penIdList.push(childCast.id);
-            }
-          } else {
-            this.incrementCounter(counters, this.penGenerator);
-          }
-          break;
-        case 'polyline':
-          this.incrementCounter(counters, this.lineGenerator);
-          break;
-        case 'image':
-          break;
-        default:
-          break;
+      const generator: AbstractGenerator | undefined = this.returnGeneratorFromElement(childCast);
+      if (generator) {
+        if (generator === this.penGenerator) {
+          const index = penIdList.indexOf(childCast.id);
+          if (index === -1) {
+            // This is a new pen path
+            this.incrementCounter(counters, generator);
+            penIdList.push(childCast.id);
+        }
+      } else {
+          this.incrementCounter(counters, generator);
+        }
       }
     }
     // Always remove 1 from rect since the grid is a rectangle

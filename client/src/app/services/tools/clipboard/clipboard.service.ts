@@ -1,37 +1,24 @@
 import { Injectable } from '@angular/core';
-import { Command } from '../../../data-structures/command';
+import {AbstractGenerator} from '../../../data-structures/abstract-generator';
+import {Command, CommandGenerator} from '../../../data-structures/command';
 import { RendererSingleton } from '../../renderer-singleton';
-import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
-import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.service';
-import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
-import { LineGeneratorService } from '../line-generator/line-generator.service';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
-import { PenGeneratorService } from '../pen-generator/pen-generator.service';
-import { PencilGeneratorService } from '../pencil-generator/pencil-generator.service';
-import { PolygonGeneratorService } from '../polygon-generator/polygon-generator.service';
-import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
-import { UndoRedoService } from './../../undo-redo/undo-redo.service';
+import {ToolManagerService} from '../tool-manager/tool-manager.service';
 
 @Injectable()
-export class ClipboardService {
+export class ClipboardService implements CommandGenerator {
 
   memorizedElements: SVGElement[];
   selectedItems: SVGElement[];
   newItems: SVGElement[];
   private xSliding: number;
   private ySliding: number;
-  private sideImpacts: boolean[];
+  private readonly sideImpacts: boolean[];
 
   constructor(private selector: ObjectSelectorService,
-              private ellipseGenerator: EllipseGeneratorService,
-              private lineGenerator: LineGeneratorService,
-              private pencilGenerator: PencilGeneratorService,
-              private penGenerator: PenGeneratorService,
-              private polygonGenerator: PolygonGeneratorService,
-              private brushGenerator: BrushGeneratorService,
-              private emojiGenerator: EmojiGeneratorService,
-              private rectangleGenerator: RectangleGeneratorService,
-              private undoRedo: UndoRedoService) {
+              private toolManager: ToolManagerService,
+              private undoRedoService: UndoRedoService) {
     this.selectedItems = [];
     this.memorizedElements = [];
     this.sideImpacts = [false, false];
@@ -122,38 +109,9 @@ export class ClipboardService {
   }
 
   clone(item: SVGElement): SVGElement {
-    const type = item.tagName;
     const newItem = item.cloneNode() as SVGElement;
-    switch (type) {
-      case 'rect':
-        newItem.setAttribute('id', type + (this.rectangleGenerator.currentElementsNumber++ as unknown as string));
-        break;
-      case 'ellipse':
-        newItem.setAttribute('id', type + (this.ellipseGenerator.currentElementsNumber++ as unknown as string));
-        break;
-      case 'polygon':
-        newItem.setAttribute('id', type + (this.polygonGenerator.currentElementsNumber++ as unknown as string));
-        break;
-      case 'path':
-        if (item.id.includes('brushPath')) {
-          newItem.setAttribute('id', 'brushPath' + (this.brushGenerator.currentElementsNumber++ as unknown as string));
-          break;
-        } else if (item.id.includes('pencilPath')) {
-          newItem.setAttribute('id', 'pencilPath' + (this.pencilGenerator.currentElementsNumber++ as unknown as string));
-          break;
-        } else {
-          newItem.setAttribute('id', 'penPath' + (this.penGenerator.currentElementsNumber++ as unknown as string));
-          break;
-        }
-        case 'polyline':
-        newItem.setAttribute('id', type + (this.lineGenerator.currentElementsNumber++ as unknown as string));
-        break;
-        case 'image':
-        newItem.setAttribute('id', type + (this.emojiGenerator.currentElementsNumber++ as unknown as string));
-        break;
-        default :
-        break;
-    }
+    const generator: AbstractGenerator = this.toolManager.returnGeneratorFromElement(item) as AbstractGenerator;
+    newItem.setAttribute('id', generator.idPrefix + (generator.currentElementsNumber++).toString());
     return newItem;
   }
 
@@ -234,7 +192,7 @@ export class ClipboardService {
           RendererSingleton.canvas.removeChild(svgElement));
       },
     };
-    this.undoRedo.pushCommand(command);
+    this.pushCommand(command);
   }
 
   pushCutCommand(svgElements: SVGElement[]): void {
@@ -248,6 +206,10 @@ export class ClipboardService {
           RendererSingleton.canvas.appendChild(svgElement));
       },
     };
-    this.undoRedo.pushCommand(command);
+    this.pushCommand(command);
+  }
+
+  pushCommand(command: Command): void {
+    this.undoRedoService.pushCommand(command);
   }
 }
