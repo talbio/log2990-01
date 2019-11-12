@@ -42,11 +42,9 @@ export class ClipboardService {
     this.selectedItems = this.selector.selectedElements;
   }
 
-  // hasSelectedElements(): boolean {
-  //   return this.selector.selectedElements.length === 0;
-  // }
-
-  // Removes and stores in clipboard
+  hasMemorizedElements(): boolean {
+    return this.memorizedElements.length !== 0;
+  }
 
   slide(item: SVGElement, consecultive: number) {
     const transformation = item.getAttribute('transform');
@@ -139,6 +137,8 @@ export class ClipboardService {
     }
     return newItem;
   }
+
+  // Removes and stores in clipboard
 
   cut() {
     this.resetCounters();

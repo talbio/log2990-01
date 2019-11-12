@@ -8,3 +8,6 @@ app-abstract-clipboard > .mat-menu-item > .mat-icon {
 .mat-menu-item {
     padding:0;
 }
+.noSelection {
+    filter:opacity(50%);  
+}
