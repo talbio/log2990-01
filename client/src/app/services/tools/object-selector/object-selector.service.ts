@@ -107,6 +107,8 @@ export class ObjectSelectorService {
         this.selectedElements.push(svgElement);
 
         if (svgElement.id.startsWith('penPath')) {
+                  // Remove this instance since it will be pushed with foreach
+                  this.selectedElements.pop();
                   drawings.forEach((element) => {
                     if (element.id === svgElement.id) {
                       this.selectedElements.push(element as SVGElement);
