@@ -38,12 +38,12 @@ export class PolygonGeneratorService extends AbstractClosedShape {
   }
 
   // First layer functions
-  createElement(primaryColor: string, secondaryColor: string) {
+  createElement(mainColors: [string, string]) {
     // Setup of the service's parameters
     this.setUpAttributes();
 
     // Setup of the children's HTML in canvas
-    this.injectInitialHTML(primaryColor, secondaryColor);
+    this.injectInitialHTML(mainColors[0], mainColors[1]);
     this.currentPolygonID = '#polygon' + this.currentElementsNumber;
     this.rectangleGenerator.createTemporaryRectangle(this.TEMP_RECT_ID);
     this.mouseDown = true;

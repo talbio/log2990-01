@@ -13,7 +13,7 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
     super(mouse, undoRedoService);
   }
 
-  createElement(primaryColor: string, secondaryColor: string) {
+  createElement(mainColors: [string, string]) {
     const rect = RendererSingleton.renderer.createElement('rect', 'svg');
     const properties: [string, string][] = [];
     properties.push(
@@ -25,7 +25,7 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
       ['data-start-x', `${this.xPos}`],
       ['data-start-y', `${this.yPos}`],
     );
-    this.drawElement(rect, properties, primaryColor, secondaryColor);
+    this.drawElement(rect, properties, mainColors[0], mainColors[1]);
     this.mouseDown = true;
   }
 
@@ -47,7 +47,7 @@ export class RectangleGeneratorService extends AbstractClosedShape  {
 
   createTemporaryRectangle(id: string) {
     this.plotType = PlotType.Contour;
-    this.createElement('black', 'black');
+    this.createElement(['black', 'black']);
     this.currentElement.setAttribute('id', id);
     this.currentElement.setAttribute('stroke-dasharray', '4');
   }

@@ -36,9 +36,9 @@ export class PenGeneratorService extends AbstractWritingTool {
       this.positionY = this.yPos;
   }
 
-  createElement(primaryColor: string) {
+  createElement(mainColors: string[]) {
       this.strokeWidth = this.strokeWidthMinimum;
-      this.color = primaryColor;
+      this.color = mainColors[1];
       this.time = this.date.getTime();
       this.speed = 0;
       this.addPath(this.DEFAULT_WIDTH);

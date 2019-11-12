@@ -104,14 +104,14 @@ export class LineGeneratorService extends AbstractGenerator {
   }
 
   // Initializes the path
-  createElement(primaryColor: string) {
+  createElement(mainColors: [string, string]) {
     if (!this.isMakingLine) {
       // Initiate the line
       const polyline: SVGElement = RendererSingleton.renderer.createElement('polyline', 'svg');
       RendererSingleton.renderer.setAttribute(polyline, 'id', `line${this.currentElementsNumber}`);
       RendererSingleton.renderer.setAttribute(polyline, 'stroke-width', `${this.strokeWidth}`);
       RendererSingleton.renderer.setAttribute(polyline, 'stroke-linecap', `${this.lineCap}`);
-      RendererSingleton.renderer.setAttribute(polyline, 'stroke', `${primaryColor}`);
+      RendererSingleton.renderer.setAttribute(polyline, 'stroke', `${mainColors[1]}`);
       RendererSingleton.renderer.setAttribute(polyline, 'stroke-dasharray', `${this.dashArray}`);
       RendererSingleton.renderer.setAttribute(polyline, 'fill', `none`);
       RendererSingleton.renderer.setAttribute(polyline, 'stroke-linejoin', `${this.lineJoin}`);
@@ -119,7 +119,7 @@ export class LineGeneratorService extends AbstractGenerator {
       RendererSingleton.renderer.appendChild(RendererSingleton.canvas, polyline);
 
       this.currentElement = polyline;
-      this.createMarkers(primaryColor);
+      this.createMarkers(mainColors[1]);
       this.isMakingLine = true;
       this.currentPolylineStartX = this.xPos;
       this.currentPolylineStartY = this.yPos;
