@@ -4,6 +4,8 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {GiveUpChangesDialogComponent} from '../give-up-changes-dialog/give-up-changes-dialog.component';
 import { ModalManagerSingleton } from '../modal-manager-singleton';
+import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
+import { UndoRedoService } from './../../../services/undo-redo/undo-redo.service';
 
 export interface DialogData {
   drawingNonEmpty: boolean;
@@ -32,6 +34,8 @@ export class CreateDrawingDialogComponent implements OnInit {
               private dialog: MatDialog,
               private renderer: Renderer2,
               private toolManager: ToolManagerService,
+              private clipboard: ClipboardService,
+              private undoRedo: UndoRedoService,
               @Inject(MAT_DIALOG_DATA) private data: DialogData) {
                 this.modalManager._isModalActive = true;
   }
@@ -102,6 +106,7 @@ export class CreateDrawingDialogComponent implements OnInit {
       await this.openConfirmGiveUpChangesDialog().then((confirm) => {
         if (confirm) {
           this.toolManager.deleteAllDrawings();
+          this.setupNewDrawing();
           this.dialogRef.close(this.drawingForm.value);
           this.modalManager._isModalActive = false;
         }
@@ -126,5 +131,10 @@ export class CreateDrawingDialogComponent implements OnInit {
     this.height.setValue(this.canvasHeight);
     this.width.setValue(this.canvasWidth);
   }
-
+  setupNewDrawing(): void {
+    // Empty the clipboard
+    this.clipboard.reset();
+    // Empty the undo and redo commands
+    this.undoRedo.reset();
+  }
 }

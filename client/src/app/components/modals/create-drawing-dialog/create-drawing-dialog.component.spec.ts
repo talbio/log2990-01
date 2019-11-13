@@ -6,6 +6,8 @@ import {of} from 'rxjs';
 import {CreateDrawingFormValues} from '../../../data-structures/create-drawing-form-values';
 import {DemoMaterialModule} from '../../../material.module';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
+import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
+import { UndoRedoService } from './../../../services/undo-redo/undo-redo.service';
 import {CreateDrawingDialogComponent, DialogData} from './create-drawing-dialog.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -19,6 +21,12 @@ spyDialog.close.and.callThrough();
 const spyToolManager: jasmine.SpyObj<ToolManagerService> =
   jasmine.createSpyObj('ToolManagerService', ['deleteAllDrawings']);
 spyToolManager.deleteAllDrawings.and.callThrough();
+
+const clipboardSpy: jasmine.SpyObj<ClipboardService> =
+  jasmine.createSpyObj('ClipboardService', ['reset']);
+
+const undoRedoSpy: jasmine.SpyObj<UndoRedoService> =
+  jasmine.createSpyObj('UndoRedoService', ['reset']);
 
 const mockDialogData: DialogData = {drawingNonEmpty: true};
 
@@ -67,6 +75,8 @@ describe('CreateDrawingDialogComponent', () => {
         { provide: MatDialog, useValue: mockMatDialog },
         { provide: ToolManagerService, useValue: spyToolManager},
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
+        { provide: ClipboardService, useValue: clipboardSpy },
+        { provide: UndoRedoService, useValue: undoRedoSpy },
       ],
       imports: [DemoMaterialModule],
       declarations: [CreateDrawingDialogComponent],
