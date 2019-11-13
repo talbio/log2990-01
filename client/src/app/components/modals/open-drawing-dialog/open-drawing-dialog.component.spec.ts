@@ -3,11 +3,13 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import { NotifierService } from 'angular-notifier';
 import {Observable, of} from 'rxjs';
+import { UndoRedoService } from 'src/app/services/undo-redo/undo-redo.service';
 import {Drawing} from '../../../../../../common/communication/Drawing';
 import {DemoMaterialModule} from '../../../material.module';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {DialogData} from '../create-drawing-dialog/create-drawing-dialog.component';
+import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 import {FilterByTags} from './filter-by-tags.pipe';
 import {OpenDrawingDialogComponent} from './open-drawing-dialog.component';
@@ -34,6 +36,12 @@ const notifierServiceSpy: jasmine.SpyObj<NotifierService> =
 
 const gridTogglerSpy: jasmine.SpyObj<GridTogglerService> =
   jasmine.createSpyObj('GridTogglerService', ['_grid', '_gridPattern']);
+
+const clipboardSpy: jasmine.SpyObj<ClipboardService> =
+  jasmine.createSpyObj('ClipboardService', ['reset']);
+
+const undoRedoSpy: jasmine.SpyObj<UndoRedoService> =
+  jasmine.createSpyObj('UndoRedoService', ['reset']);
 
 const fakeCanvas = {innerHTML: ''};
 
@@ -69,6 +77,8 @@ describe('OpenDrawingDialogComponent', () => {
         {provide: MAT_DIALOG_DATA, useValue: mockDialogData},
         { provide: NotifierService, useValue: notifierServiceSpy },
         { provide: GridTogglerService, useValue: gridTogglerSpy },
+        { provide: UndoRedoService, useValue: undoRedoSpy },
+        { provide: ClipboardService, useValue: clipboardSpy },
       ],
     }).compileComponents().then(() => {
         fixture = TestBed.createComponent(OpenDrawingDialogComponent);

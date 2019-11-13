@@ -44,4 +44,9 @@ export class UndoRedoService {
     }
     this.undoCommands.push(command);
   }
+
+  reset(): void {
+    this.undoCommands = [];
+    this.redoCommands = [];
+  }
 }

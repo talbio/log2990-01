@@ -188,4 +188,8 @@ export class ClipboardService implements CommandGenerator {
   pushCommand(command: Command): void {
     this.undoRedoService.pushCommand(command);
   }
+
+  reset(): void {
+    this.memorizedElements = [];
+  }
 }

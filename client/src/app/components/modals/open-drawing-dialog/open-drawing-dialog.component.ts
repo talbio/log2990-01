@@ -11,7 +11,9 @@ import { Drawing } from '../../../../../../common/communication/Drawing';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
 import {GiveUpChangesDialogComponent} from '../give-up-changes-dialog/give-up-changes-dialog.component';
 import { ModalManagerSingleton } from '../modal-manager-singleton';
+import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
+import { UndoRedoService } from './../../../services/undo-redo/undo-redo.service';
 
 export interface DialogData {
   drawingNonEmpty: boolean;
@@ -39,6 +41,8 @@ export class OpenDrawingDialogComponent implements OnInit {
               private renderer: Renderer2,
               private notifier: NotifierService,
               private gridManager: GridTogglerService,
+              private clipboard: ClipboardService,
+              private undoRedo: UndoRedoService,
               @Inject(MAT_DIALOG_DATA) private data: DialogData) {
 
     this.modalManagerSingleton._isModalActive = true;
@@ -80,12 +84,12 @@ export class OpenDrawingDialogComponent implements OnInit {
         .then( (confirm: boolean) => {
           if (confirm) {
             this.loadDrawingAndCloseDialog(drawing);
-            this.linkGrid();
+            this.setupNewDrawing();
           }
         });
     } else {
       this.loadDrawingAndCloseDialog(drawing);
-      this.linkGrid();
+      this.setupNewDrawing();
     }
   }
 
@@ -215,5 +219,13 @@ export class OpenDrawingDialogComponent implements OnInit {
   linkGrid(): void {
     this.gridManager._grid = this.renderer.selectRootElement('#backgroundGrid', true);
     this.gridManager._gridPattern = this.renderer.selectRootElement('#backgroundGridPattern', true);
+  }
+  setupNewDrawing(): void {
+    // Empty the clipboard
+    this.clipboard.reset();
+    // Empty the undo and redo commands
+    this.undoRedo.reset();
+    // Fix the link to the grid
+    this.linkGrid();
   }
 }
