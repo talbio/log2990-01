@@ -31,6 +31,7 @@ const DUPLICATE_ICON_PATH = '../../../../assets/svg-icons/duplicate.svg';
 const PASTE_ICON_PATH = '../../../../assets/svg-icons/paste.svg';
 const DELETE_ICON_PATH = '../../../../assets/svg-icons/delete.svg';
 const COPY_ICON_PATH = '../../../../assets/svg-icons/copy.svg';
+const FEATHER_ICON_PATH = '../../../../assets/svg-icons/feather.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -100,6 +101,7 @@ export class LateralBarComponent {
       ['copy', COPY_ICON_PATH],
       ['paste', PASTE_ICON_PATH],
       ['delete', DELETE_ICON_PATH],
+      ['feather', FEATHER_ICON_PATH],
     );
     icons.forEach( (icon: [string, string]) =>
       this.matIconRegistry.addSvgIcon(icon[0], this.domSanitizer.bypassSecurityTrustResourceUrl(icon[1])));
@@ -116,6 +118,7 @@ export class LateralBarComponent {
       [Tools.Selector, 'Outil de sélection', 'select_all', false],
       [Tools.Eyedropper, 'Pipette', 'colorize', false],
       [Tools.Eraser, 'Efface', 'eraser', true],
+      [Tools.Feather, 'Plume', 'feather', true],
     );
     propertyTable.forEach( (property: [Tools, string, string, boolean]) => {
       this.pencilToolsButtonsProperties.push(
