@@ -39,6 +39,7 @@ export const ERASER_KEY = 'e';
 export const UNDO_KEY = 'z';
 export const REDO_KEY = 'z';
 export const FEATHER_KEY = 'p';
+export const AEROSOL_KEY = 'a';
 export const DEFAULT_FEATHER_STROKE_WIDTH = 15;
 export const DEFAULT_FEATHER_ANGLE = 90;
 export const MIN_ROTATION_STEP = 1;
