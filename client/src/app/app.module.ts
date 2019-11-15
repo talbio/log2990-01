@@ -16,6 +16,7 @@ import { AbstractToolButtonComponent } from './components/main-view/lateral-bar-
 import { ColorToolButtonsComponent } from './components/main-view/lateral-bar-module/color-tool-buttons/color-tool-buttons.component';
 import { LateralBarComponent } from './components/main-view/lateral-bar-module/lateral-bar/lateral-bar.component';
 import { ToolsAttributesBarComponent } from './components/main-view/tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
+import { AerosolToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/aerosol/aerosol-tools.component';
 import { BrushToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/brush/brush-tools.component';
 import { ColorApplicatorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/color-applicator/color-applicator-tools.component';
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
@@ -45,6 +46,7 @@ import { DrawingsService } from './services/back-end/drawings/drawings.service';
 import { MousePositionService } from './services/mouse-position/mouse-position.service';
 import { RendererSingleton } from './services/renderer-singleton';
 import { StorageService } from './services/storage/storage.service';
+import { AerosolGeneratorService } from './services/tools/aerosol-generator/aerosol-generator.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
 import { ClipboardService } from './services/tools/clipboard/clipboard.service';
 import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
@@ -127,6 +129,7 @@ const customNotifierOptions: NotifierOptions = {
     RectangleToolsComponent,
     LineToolsComponent,
     EllipseToolsComponent,
+    AerosolToolsComponent,
     EmojiToolsComponent,
     EraserToolsComponent,
     BrushToolsComponent,
@@ -163,6 +166,7 @@ const customNotifierOptions: NotifierOptions = {
     BrushGeneratorService,
     ColorApplicatorService,
     ColorService,
+    AerosolGeneratorService,
     DrawingsService,
     ObjectSelectorService,
     GridTogglerService,
@@ -191,6 +195,7 @@ const customNotifierOptions: NotifierOptions = {
     EmojiToolsComponent,
     EraserToolsComponent,
     BrushToolsComponent,
+    AerosolToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
     OpenDrawingDialogComponent,
