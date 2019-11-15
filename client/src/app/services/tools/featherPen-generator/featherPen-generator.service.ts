@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+// tslint:disable-next-line: max-line-length
 import { BOTTOM_AFTER, BOTTOM_BEFORE, DEFAULT_ANGLE, MAX_ROTATION_STEP, MIN_ROTATION_STEP, TOP_AFTER, TOP_BEFORE, X, Y } from 'src/app/data-structures/constants';
 import { AbstractWritingTool } from '../../../data-structures/abstract-writing-tool';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
@@ -115,7 +116,7 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
 
   producePolygon() {
       let points = '';
-      this.polygonPoints.forEach((element) => {
+      this.polygonPoints.forEach((element: number[]) => {
           points += ('' + element[X] + ',' + element[Y] + ' ');
       });
       const polygon = RendererSingleton.renderer.createElement('polygon', 'svg');

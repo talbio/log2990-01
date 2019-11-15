@@ -38,6 +38,7 @@ export const SELECTION_KEY = 's';
 export const ERASER_KEY = 'e';
 export const UNDO_KEY = 'z';
 export const REDO_KEY = 'z';
+export const FEATHER_KEY = 'p';
 export const DEFAULT_STROKE_WIDTH = 1;
 export const DEFAULT_ANGLE = 90;
 export const MIN_ROTATION_STEP = 1;

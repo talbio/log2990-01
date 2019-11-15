@@ -34,6 +34,7 @@ import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-at
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { EraserService } from './../../../services/tools/eraser/eraser.service';
+import { FeatherPenGeneratorService } from './../../../services/tools/featherPen-generator/featherPen-generator.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -68,6 +69,7 @@ const DRAWING_SERVICES = [
   ObjectSelectorService,
   GridTogglerService,
   PolygonGeneratorService,
+  FeatherPenGeneratorService,
   EraserService,
   PenGeneratorService,
 ];
