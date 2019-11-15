@@ -23,8 +23,12 @@ export class ColorApplicatorService implements CommandGenerator {
   changePrimaryColor(targetObject: SVGElement, newColor: string) {
     if (this.TREATED_ELEMENTS.includes(targetObject.nodeName)) {
       if (this.isClosedForm(targetObject.nodeName)) {
-        this.pushColorApplicatorCommand(targetObject, 'fill', newColor, targetObject.getAttribute('fill') as string);
-        targetObject.setAttribute('fill', newColor);
+        if (targetObject.nodeName === 'polygon') {
+          this.changePolygonColor(targetObject, newColor);
+        } else {
+          this.pushColorApplicatorCommand(targetObject, 'fill', newColor, targetObject.getAttribute('fill') as string);
+          targetObject.setAttribute('fill', newColor);
+        }
       } else if (targetObject.nodeName === 'path') {
         this.changePathColor(targetObject, newColor);
       } else if (targetObject.nodeName === 'polyline') {
@@ -51,7 +55,7 @@ export class ColorApplicatorService implements CommandGenerator {
   /**
    * @desc: find the markers and change color of the circles in the markers
    */
-  private changePolylineColor(targetObject: SVGElement, newColor: string) {
+  private changePolylineColor(targetObject: SVGElement, newColor: string): void {
     targetObject.setAttribute('stroke', newColor);
     const markers = this.lineGenerator.findMarkerFromPolyline(targetObject, RendererSingleton.defs);
     const ancientColor = markers.children[0].getAttribute('fill') as string;
@@ -63,7 +67,7 @@ export class ColorApplicatorService implements CommandGenerator {
   /**
    * @desc: change the color of the path element, depending whether it's a pencil path or a brush path
    */
-  private changePathColor(targetObject: SVGElement, newColor: string) {
+  private changePathColor(targetObject: SVGElement, newColor: string): void {
     const id = targetObject.getAttribute('id') as string;
     if (id.startsWith('pencil')) {
       this.pushColorApplicatorCommand(targetObject, 'stroke', newColor, targetObject.getAttribute('stroke') as string);
@@ -78,7 +82,7 @@ export class ColorApplicatorService implements CommandGenerator {
   /**
    * @desc: Change color of the fill attribute of all children of the pattern
    */
-  private changeBrushPatternsColor(targetObject: SVGElement, newColor: string, property: string) {
+  private changeBrushPatternsColor(targetObject: SVGElement, newColor: string, property: string): void {
     const ancientColor = this.getBrushPatternColor(targetObject, property);
     const pattern = this.brushGenerator.findPatternFromBrushPath(targetObject, RendererSingleton.defs);
     if (pattern) {
@@ -104,14 +108,37 @@ export class ColorApplicatorService implements CommandGenerator {
     return defaultColor;
   }
 
-  private changePenColor(targetObject: SVGElement, newColor: string) {
-    const paths = RendererSingleton.canvas.querySelectorAll('path');
+  private changePenColor(targetObject: SVGElement, newColor: string): void {
+    const paths: NodeListOf<SVGElement> = RendererSingleton.canvas.querySelectorAll('path');
+    const penTable: SVGElement[] = [];
+    const ancientColor: string = targetObject.getAttribute('fill') as string;
     paths.forEach((path) => {
         if (path.id === targetObject.id) {
             path.setAttribute('stroke', newColor);
             path.setAttribute('fill', newColor);
+            penTable.push(path);
         }
     });
+    this.pushMultipleObjectsColorChangedCommand(penTable, newColor, ancientColor);
+  }
+
+  private changePolygonColor(targetObject: SVGElement, newColor: string): void {
+    if (targetObject.id.startsWith('polygon')) {
+      this.pushColorApplicatorCommand(targetObject, 'fill', newColor, targetObject.getAttribute('fill') as string);
+      targetObject.setAttribute('fill', newColor);
+    } else if (targetObject.id.startsWith('featherPenPath')) {
+      const polygons: NodeListOf<SVGElement> = RendererSingleton.canvas.querySelectorAll('polygon');
+      const featherTable: SVGElement[] = [];
+      const ancientColor: string = targetObject.getAttribute('fill') as string;
+      polygons.forEach((polygon) => {
+        if (polygon.id === targetObject.id) {
+            polygon.setAttribute('stroke', newColor);
+            polygon.setAttribute('fill', newColor);
+            featherTable.push(polygon);
+        }
+      });
+      this.pushMultipleObjectsColorChangedCommand(featherTable, newColor, ancientColor);
+    }
   }
 
   private isClosedForm(nodeName: string): boolean {
@@ -159,6 +186,23 @@ export class ColorApplicatorService implements CommandGenerator {
             child.setAttribute(property, ancientColor);
           }
         }
+      },
+    };
+    this.pushCommand(command);
+  }
+  pushMultipleObjectsColorChangedCommand(targetObjects: SVGElement[], newColor: string, ancientColor: string) {
+    const command: Command = {
+      execute(): void {
+        targetObjects.forEach((element: SVGElement) => {
+          element.setAttribute('fill', newColor);
+          element.setAttribute('stroke', newColor);
+        });
+      },
+      unexecute(): void {
+        targetObjects.forEach((element: SVGElement) => {
+          element.setAttribute('fill', ancientColor);
+          element.setAttribute('stroke', ancientColor);
+        });
       },
     };
     this.pushCommand(command);

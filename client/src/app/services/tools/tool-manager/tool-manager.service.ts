@@ -260,7 +260,13 @@ export class ToolManagerService {
       case 'ellipse':
         return this.ellipseGenerator;
       case 'polygon':
-        return this.polygonGenerator;
+        if (svgElement.id.startsWith('polygon')) {
+          return this.polygonGenerator;
+        } else if (svgElement.id.startsWith('featherPenPath')) {
+          return this.featherGenerator;
+        } else {
+          return undefined;
+        }
       case 'path':
         if (svgElement.id.startsWith('pencil')) {
           return this.pencilGenerator;
@@ -283,17 +289,17 @@ export class ToolManagerService {
   synchronizeAllCounters() {
     const counters: Map<AbstractGenerator, number> = new Map<AbstractGenerator, number>();
     this.generators.forEach( (generator: AbstractGenerator) => counters.set(generator, 0));
-    const penIdList = [''];
+    const multiplePartItemsIdList: string[] = [''];
     for (const child of [].slice.call(RendererSingleton.canvas.children)) {
       const childCast = child as SVGElement;
       const generator: AbstractGenerator | undefined = this.returnGeneratorFromElement(childCast);
       if (generator) {
-        if (generator === this.penGenerator) {
-          const index = penIdList.indexOf(childCast.id);
+        if (generator === this.penGenerator || generator === this.featherGenerator) {
+          const index = multiplePartItemsIdList.indexOf(childCast.id);
           if (index === -1) {
             // This is a new pen path
             this.incrementCounter(counters, generator);
-            penIdList.push(childCast.id);
+            multiplePartItemsIdList.push(childCast.id);
         }
       } else {
           this.incrementCounter(counters, generator);
