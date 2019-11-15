@@ -156,11 +156,13 @@ export class ToolManagerService {
   }
   changeElementAltDown() {
     this.emojiGenerator.lowerRotationStep();
-  }
+    this.featherGenerator.lowerRotationStep();
+  } // To extract??
 
   changeElementAltUp() {
     this.emojiGenerator.higherRotationStep();
-  }
+    this.featherGenerator.higherRotationStep();
+  } // To extract??
 
   changeElementShiftDown() {
     this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);

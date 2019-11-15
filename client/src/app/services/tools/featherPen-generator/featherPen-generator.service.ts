@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BOTTOM_AFTER, BOTTOM_BEFORE, DEFAULT_ANGLE, MAX_ROTATION_STEP, MIN_ROTATION_ANGLE, MIN_ROTATION_STEP, TOP_AFTER, TOP_BEFORE, X, Y } from 'src/app/data-structures/constants';
+import { BOTTOM_AFTER, BOTTOM_BEFORE, DEFAULT_ANGLE, MAX_ROTATION_STEP, MIN_ROTATION_STEP, TOP_AFTER, TOP_BEFORE, X, Y } from 'src/app/data-structures/constants';
 import { AbstractWritingTool } from '../../../data-structures/abstract-writing-tool';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
@@ -25,6 +25,11 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
       this.strokeWidth = 15;
       this.pathArray = [];
       this.subpathIndex = 0;
+      this.rotationStep = MAX_ROTATION_STEP;
+  }
+
+  degreesToRadians(angle: number) {
+    return angle * (Math.PI / 180);
   }
 
   get rotationAngle() {
@@ -32,7 +37,7 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
   }
 
   set rotationAngle(angle: number) {
-    if(angle > 180) {
+    if (angle > 180) {
       angle = 0;
     } else if (angle < 0) {
       angle = 180;
@@ -50,11 +55,13 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
   }
 
   rotateFeather(mouseEvent: WheelEvent): void {
-    if (mouseEvent.deltaY < MIN_ROTATION_ANGLE) {
+    if (mouseEvent.deltaY < 0) {
         this.angle  += this.rotationStep;
     } else { this.angle  -= this.rotationStep; }
-    // if (this.angle > MAX_ROTATION_ANGLE) {this.angle  = MAX_ROTATION_ANGLE; }
-    // if (this.angle  < MIN_ROTATION_ANGLE) {this.angle  = MIN_ROTATION_ANGLE; }
+    if (this.angle > 180) {
+      console.log(`I'm here`);
+      this.angle  = 0; }
+    if (this.angle  < 0) {this.angle  = 180; }
 
   }
 
@@ -86,17 +93,17 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
   }
 
   initializePoints() {
-      this.polygonPoints[TOP_BEFORE][X] = this.xPos + Math.cos(this.angle) * (this.strokeWidth / 2);
-      this.polygonPoints[TOP_BEFORE][Y] = this.yPos + Math.sin(this.angle) * (this.strokeWidth / 2);
-      this.polygonPoints[BOTTOM_BEFORE][X] = this.xPos - Math.cos(this.angle) * (this.strokeWidth / 2);
-      this.polygonPoints[BOTTOM_BEFORE][Y] = this.yPos - Math.sin(this.angle) * (this.strokeWidth / 2);
+      this.polygonPoints[TOP_BEFORE][X] = this.xPos + Math.cos(this.degreesToRadians(this.angle)) * (this.strokeWidth / 2);
+      this.polygonPoints[TOP_BEFORE][Y] = this.yPos + Math.sin(this.degreesToRadians(this.angle)) * (this.strokeWidth / 2);
+      this.polygonPoints[BOTTOM_BEFORE][X] = this.xPos - Math.cos(this.degreesToRadians(this.angle)) * (this.strokeWidth / 2);
+      this.polygonPoints[BOTTOM_BEFORE][Y] = this.yPos - Math.sin(this.degreesToRadians(this.angle)) * (this.strokeWidth / 2);
   }
 
   getNewPoints() {
-      this.polygonPoints[TOP_AFTER][X] = this.xPos + Math.cos(this.angle) * (this.strokeWidth / 2);
-      this.polygonPoints[TOP_AFTER][Y] = this.yPos + Math.sin(this.angle) * (this.strokeWidth / 2);
-      this.polygonPoints[BOTTOM_AFTER][X] = this.xPos - Math.cos(this.angle) * (this.strokeWidth / 2);
-      this.polygonPoints[BOTTOM_AFTER][Y] = this.yPos - Math.sin(this.angle) * (this.strokeWidth / 2);
+      this.polygonPoints[TOP_AFTER][X] = this.xPos + Math.cos(this.degreesToRadians(this.angle)) * (this.strokeWidth / 2);
+      this.polygonPoints[TOP_AFTER][Y] = this.yPos + Math.sin(this.degreesToRadians(this.angle)) * (this.strokeWidth / 2);
+      this.polygonPoints[BOTTOM_AFTER][X] = this.xPos - Math.cos(this.degreesToRadians(this.angle)) * (this.strokeWidth / 2);
+      this.polygonPoints[BOTTOM_AFTER][Y] = this.yPos - Math.sin(this.degreesToRadians(this.angle)) * (this.strokeWidth / 2);
   }
 
   actualizePoints() {
