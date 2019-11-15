@@ -32,11 +32,11 @@ export class ObjectSelectorService {
   private readonly BOUNDING_RECT_ID = 'boundingRect';
 
   selectedElements: SVGElement[];
-
   hasBoundingRect: boolean;
-  private mouseDown: boolean;
   startX: number;
   startY: number;
+
+  private mouseDown: boolean;
 
   constructor(private mousePosition: MousePositionService,
               private rectangleGenerator: RectangleGeneratorService) {
@@ -47,7 +47,7 @@ export class ObjectSelectorService {
     this.startY = 0;
   }
 
-  get canvasBoxRect(): BoundingRect {
+  get canvasBoundingRect(): BoundingRect {
     return {
       left: RendererSingleton.canvas.getBoundingClientRect().left,
       right: RendererSingleton.canvas.getBoundingClientRect().right,
@@ -87,7 +87,7 @@ export class ObjectSelectorService {
       if (this.hasBoundingRect && !this.isMouseOutsideOfBoundingRect()) {
         this.translate();
       } else {
-        this.updateSelection(currentChildPosition, mouseEvent);
+        this.updateSelectorRect(currentChildPosition, mouseEvent);
       }
     }
   }
@@ -101,7 +101,7 @@ export class ObjectSelectorService {
     }
   }
 
-  updateSelection(currentChildPosition: number, mouseEvent: MouseEvent) {
+  updateSelectorRect(currentChildPosition: number, mouseEvent: MouseEvent) {
     if (this.mouseDown) {
       this.rectangleGenerator.updateElement(currentChildPosition, mouseEvent);
     }
@@ -148,24 +148,15 @@ export class ObjectSelectorService {
 
   isMouseOutsideOfBoundingRect(): boolean {
     const boundingClientRect = this.boundingRect.getBoundingClientRect();
-    return this.mousePosition.canvasMousePositionX < boundingClientRect.left - this.canvasBoxRect.left ||
-      this.mousePosition.canvasMousePositionX > boundingClientRect.right - this.canvasBoxRect.left ||
-      this.mousePosition.canvasMousePositionY < boundingClientRect.top - this.canvasBoxRect.top ||
-      this.mousePosition.canvasMousePositionY > boundingClientRect.bottom - this.canvasBoxRect.top;
-  }
-
-  getWidthRect(rect: DOMRect): number {
-    return rect.left - rect.right;
-  }
-
-  getHeightRect(rect: DOMRect): number {
-    return rect.top - rect.bottom;
+    return this.mousePosition.canvasMousePositionX < boundingClientRect.left - this.canvasBoundingRect.left ||
+      this.mousePosition.canvasMousePositionX > boundingClientRect.right - this.canvasBoundingRect.left ||
+      this.mousePosition.canvasMousePositionY < boundingClientRect.top - this.canvasBoundingRect.top ||
+      this.mousePosition.canvasMousePositionY > boundingClientRect.bottom - this.canvasBoundingRect.top;
   }
 
   removeBoundingRect(): void {
     this.hasBoundingRect = false;
-    const boundingRect: SVGElement = RendererSingleton.renderer.selectRootElement('#boundingRect', true) as SVGElement;
-    RendererSingleton.canvas.removeChild(boundingRect);
+    RendererSingleton.canvas.removeChild(this.boundingRect);
   }
 
   addBoundingRect(): void {
@@ -201,8 +192,8 @@ export class ObjectSelectorService {
       }
     });
 
-    boundingRect.left -= this.canvasBoxRect.left;
-    boundingRect.right -= this.canvasBoxRect.left;
+    boundingRect.left -= this.canvasBoundingRect.left;
+    boundingRect.right -= this.canvasBoundingRect.left;
 
     return {
       x: boundingRect.left,
@@ -214,7 +205,7 @@ export class ObjectSelectorService {
 
   private drawBoundingRect(boundingBox: Box) {
     const boundingRect: SVGElement = RendererSingleton.renderer.createElement('svg', 'svg');
-    boundingRect.setAttribute('id', 'boundingRect');
+    boundingRect.setAttribute('id', this.BOUNDING_RECT_ID);
     boundingRect.innerHTML +=
       `<defs>
             <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5">
@@ -232,9 +223,11 @@ export class ObjectSelectorService {
         ${boundingBox.x},${boundingBox.y + (boundingBox.height / 2)}
         ${boundingBox.x},${boundingBox.y}"
         stroke="${STROKE_COLOR}" fill="transparent"
-        marker-start="url(#dot)" marker-mid="url(#dot)">
+        marker-start="url(#dot)" marker-mid="url(#dot)" onclick="console.log('hey')">
       </polyline>`;
     RendererSingleton.renderer.appendChild(RendererSingleton.canvas, boundingRect);
+    const polyLine: SVGPolylineElement = this.boundingRect.children[1] as SVGPolylineElement;
+    // polyLine.points.getItem(0).
   }
 
   selectAll(): void {
@@ -249,6 +242,7 @@ export class ObjectSelectorService {
       this.addBoundingRect();
     }
   }
+
   translate() {
     const xMove = this.mousePosition.canvasMousePositionX - this.startX;
     const yMove = this.mousePosition.canvasMousePositionY - this.startY;
