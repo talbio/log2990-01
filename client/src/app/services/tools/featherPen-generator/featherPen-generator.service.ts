@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 // tslint:disable-next-line: max-line-length
-import { BOTTOM_AFTER, BOTTOM_BEFORE, DEFAULT_ANGLE, MAX_ROTATION_STEP, MIN_ROTATION_STEP, TOP_AFTER, TOP_BEFORE, X, Y } from 'src/app/data-structures/constants';
+import { BOTTOM_AFTER, BOTTOM_BEFORE, DEFAULT_FEATHER_ANGLE, DEFAULT_FEATHER_STROKE_WIDTH, MAX_ROTATION_STEP, MIN_ROTATION_STEP, TOP_AFTER, TOP_BEFORE, X, Y } from 'src/app/data-structures/constants';
 import { AbstractWritingTool } from '../../../data-structures/abstract-writing-tool';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
@@ -20,10 +20,10 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
   constructor(protected undoRedoService: UndoRedoService,
               protected mouse: MousePositionService) {
       super(mouse, undoRedoService);
-      this.angle = DEFAULT_ANGLE;
+      this.angle = DEFAULT_FEATHER_ANGLE;
       this.idPrefix = 'featherPenPath';
       this.polygonPoints = [[0, 0], [0, 0], [0, 0], [0, 0]];
-      this.strokeWidth = 15;
+      this.strokeWidth = DEFAULT_FEATHER_STROKE_WIDTH;
       this.pathArray = [];
       this.subpathIndex = 0;
       this.rotationStep = MAX_ROTATION_STEP;
