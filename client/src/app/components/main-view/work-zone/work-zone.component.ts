@@ -86,7 +86,7 @@ export class WorkZoneComponent implements OnInit {
   }
 
   onMouseWheel(mouseEvent: WheelEvent) {
-    this.toolManager.rotateEmoji(mouseEvent);
+    this.toolManager.rotateGenerator(mouseEvent);
   }
 
   protected setBackGroundColor(): { 'background-color': string } {

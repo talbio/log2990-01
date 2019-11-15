@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { AbstractWritingTool } from '../../../data-structures/abstract-writing-tool';
 import { RendererSingleton } from '../../renderer-singleton';
 import { UndoRedoService } from '../../undo-redo/undo-redo.service';
-import { DEFAULT_ANGLE, TOP_BEFORE, X, BOTTOM_BEFORE, Y, TOP_AFTER, BOTTOM_AFTER, MIN_ROTATION_STEP, MAX_ROTATION_STEP } from 'src/app/data-structures/constants';
+import { DEFAULT_ANGLE, TOP_BEFORE, X, BOTTOM_BEFORE, Y, TOP_AFTER, BOTTOM_AFTER, MIN_ROTATION_STEP, MAX_ROTATION_STEP, MAX_ROTATION_ANGLE, MIN_ROTATION_ANGLE } from 'src/app/data-structures/constants';
 
 @Injectable()
 export class FeatherPenGeneratorService extends AbstractWritingTool {
@@ -22,7 +22,7 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
       this.angle = DEFAULT_ANGLE;
       this.idPrefix = 'featherPenPath';
       this.polygonPoints = [[0, 0], [0, 0], [0, 0], [0, 0]];
-      this.strokeWidth = 6;
+      this.strokeWidth = 15;
       this.pathArray = [];
       this.subpathIndex = 0;
   }
@@ -41,6 +41,15 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
 
   higherRotationStep(): void {
       this.rotationStep = MAX_ROTATION_STEP;
+  }
+
+  rotateFeather(mouseEvent: WheelEvent): void {
+    if (mouseEvent.deltaY < MIN_ROTATION_ANGLE) {
+        this.angle  += this.rotationStep;
+    } else {this.angle  -= this.rotationStep; }
+    if (this.angle > MAX_ROTATION_ANGLE) {this.angle  = MAX_ROTATION_ANGLE; }
+    if (this.angle  < MIN_ROTATION_ANGLE) {this.angle  = MIN_ROTATION_ANGLE; }
+
   }
 
   createElement(mainColors: string[]) {
@@ -82,9 +91,7 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
       this.polygonPoints[TOP_AFTER][Y] = this.yPos + Math.sin(this.angle) * (this.strokeWidth / 2);
       this.polygonPoints[BOTTOM_AFTER][X] = this.xPos - Math.cos(this.angle) * (this.strokeWidth / 2);
       this.polygonPoints[BOTTOM_AFTER][Y] = this.yPos - Math.sin(this.angle) * (this.strokeWidth / 2);
-      console.log(this.polygonPoints[2][0]);
       console.log(this.polygonPoints[2][1]);
-      console.log(this.polygonPoints[3][0]);
       console.log(this.polygonPoints[3][1]);
       console.log(Math.sin(this.angle) * (this.strokeWidth / 2));
   }
@@ -93,7 +100,7 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
     this.polygonPoints[TOP_BEFORE][X] = this.polygonPoints[TOP_AFTER][X];
     this.polygonPoints[TOP_BEFORE][Y] = this.polygonPoints[TOP_AFTER][Y];
     this.polygonPoints[BOTTOM_BEFORE][X] = this.polygonPoints[BOTTOM_AFTER][X];
-    this.polygonPoints[BOTTOM_BEFORE][Y] = this.polygonPoints[BOTTOM_AFTER][X];
+    this.polygonPoints[BOTTOM_BEFORE][Y] = this.polygonPoints[BOTTOM_AFTER][Y];
   }
 
   producePolygon() {

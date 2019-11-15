@@ -243,8 +243,12 @@ export class ToolManagerService {
     }
   }
 
-  rotateEmoji(mouseEvent: WheelEvent): void {
-    this.emojiGenerator.rotateEmoji(mouseEvent);
+  rotateGenerator(mouseEvent: WheelEvent): void {
+    if (this.activeGenerator === this.emojiGenerator) {
+      this.emojiGenerator.rotateEmoji(mouseEvent);
+    } else if (this.activeGenerator === this.featherGenerator) {
+      this.featherGenerator.rotateFeather(mouseEvent);
+    }
   }
 
   returnGeneratorFromElement(svgElement: SVGElement): AbstractGenerator | undefined {
