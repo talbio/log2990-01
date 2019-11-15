@@ -1,8 +1,11 @@
 <mat-dialog-content>
 
-    <p> Bienvenue à Polydessin! Voici les raccourcis que vous pouvez utiliser: </p>
-
-    <div>
+    <p> Bienvenue à Polydessin! Veuillez choisir une option: </p>
+    <div *ngFor = "let section of userManualSections">
+<div *ngIf="!showUserManualSection.get(section)" > {{section}} <mat-icon (click) = "showUserManualSection.set(section, true)">chevron_right</mat-icon></div>
+<div *ngIf="showUserManualSection.get(section)" > {{section}} <mat-icon (click) = "showUserManualSection.set(section, false)">expand_more</mat-icon></div>
+</div>
+    <div *ngIf = "showUserManualSection.get('shortcuts')">
         <div class='section-title'>Options de fichier</div>
         <table>
             <tr *ngFor="let shortcut of FILE_SHORTCUTS ">
@@ -25,6 +28,13 @@
             </tr>
         </table>
     </div>
+    
+   
+    <div *ngIf = "showUserManualSection.get('pencil')">
+        <p>L'outil crayon permet de dessiner sur le canvas avec un trait constant. Le trait peut être modifié dans la barre d'attribut et peut avoir une taille en pixels de 1 à 50. </p>
+    </div>
+    
+
 
 </mat-dialog-content>
 <mat-dialog-actions>

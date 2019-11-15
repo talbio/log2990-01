@@ -7,6 +7,8 @@ interface IShortcut {
     keys: string;
 }
 
+
+
 @Component({
     selector: 'app-user-manual-dialog',
     templateUrl: './user-manual-dialog.component.html',
@@ -15,6 +17,7 @@ interface IShortcut {
 
 export class UserManualDialogComponent {
     protected readonly DIALOG_TITLE = 'Manuel d\'instructions';
+    protected readonly userManualSections: string[] = ['shortcuts', 'pencil', 'pen', 'rectangle']
     protected readonly FILE_SHORTCUTS: IShortcut[] =
         [{ description: 'Créer un nouveau dessin', keys: 'Ctrl-O' },
         { description: 'Sauvegarder le dessin', keys: 'Ctrl-S' },
@@ -49,11 +52,16 @@ export class UserManualDialogComponent {
         { description: 'Sélection', keys: 'S' },
         ];
 
+    protected showUserManualSection: Map<string, boolean>;
     private modalManager = ModalManagerSingleton.getInstance();
 
     constructor(private dialogRef: MatDialogRef<UserManualDialogComponent>,
     ) {
         this.modalManager._isModalActive = true;
+        this.showUserManualSection = new Map();
+        this.userManualSections.forEach((section) => {
+            this.showUserManualSection.set(section, false);
+        });
     }
 
     close(): void {
