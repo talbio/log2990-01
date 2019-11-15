@@ -31,6 +31,7 @@ import { ModalManagerSingleton } from '../../modals/modal-manager-singleton';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { EraserService } from './../../../services/tools/eraser/eraser.service';
+import { FeatherPenGeneratorService } from './../../../services/tools/featherPen-generator/featherPen-generator.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -63,6 +64,7 @@ const DRAWING_SERVICES = [
   MousePositionService,
   ObjectSelectorService,
   GridTogglerService,
+  FeatherPenGeneratorService,
   PolygonGeneratorService,
   EraserService,
   PenGeneratorService,
