@@ -222,26 +222,18 @@ export class ToolManagerService {
   }
 
   escapePress() {
-    switch (this._activeTool) {
-      case Tools.Line:
-        this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
-        this.lineGenerator.deleteLineBlock(this.canvasElement, this.numberOfElements);
-        this.numberOfElements = this.canvasElement.children.length;
-        break;
-      default:
-        return;
+    if (this._activeTool === Tools.Line) {
+      this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
+      this.lineGenerator.deleteLineBlock(this.canvasElement, this.numberOfElements);
+      this.numberOfElements = this.canvasElement.children.length;
     }
   }
 
   backSpacePress() {
-    switch (this._activeTool) {
-      case Tools.Line:
+    if (this._activeTool === Tools.Line) {
         this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
         this.lineGenerator.deleteLine();
         this.lineGenerator.updateElement(this.numberOfElements);
-        break;
-      default:
-        return;
     }
   }
 
