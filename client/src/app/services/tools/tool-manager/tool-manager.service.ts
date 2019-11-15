@@ -9,6 +9,7 @@ import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.
 import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
 import { EraserService } from '../eraser/eraser.service';
 import { EyedropperService } from '../eyedropper/eyedropper.service';
+import { FeatherPenGeneratorService } from '../featherPen-generator/featherPen-generator.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import { PenGeneratorService } from '../pen-generator/pen-generator.service';
@@ -54,6 +55,7 @@ export class ToolManagerService {
               private polygonGenerator: PolygonGeneratorService,
               private eyedropper: EyedropperService,
               private eraser: EraserService,
+              private featherGenerator: FeatherPenGeneratorService,
               protected colorService: ColorService) {
     this._activeTool = Tools.Pencil;
     this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
@@ -154,11 +156,13 @@ export class ToolManagerService {
   }
   changeElementAltDown() {
     this.emojiGenerator.lowerRotationStep();
-  }
+    this.featherGenerator.lowerRotationStep();
+  } // To extract??
 
   changeElementAltUp() {
     this.emojiGenerator.higherRotationStep();
-  }
+    this.featherGenerator.higherRotationStep();
+  } // To extract??
 
   changeElementShiftDown() {
     this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
@@ -241,8 +245,12 @@ export class ToolManagerService {
     }
   }
 
-  rotateEmoji(mouseEvent: WheelEvent): void {
-    this.emojiGenerator.rotateEmoji(mouseEvent);
+  rotateGenerator(mouseEvent: WheelEvent): void {
+    if (this.activeGenerator === this.emojiGenerator) {
+      this.emojiGenerator.rotateEmoji(mouseEvent);
+    } else if (this.activeGenerator === this.featherGenerator) {
+      this.featherGenerator.rotateFeather(mouseEvent);
+    }
   }
 
   returnGeneratorFromElement(svgElement: SVGElement): AbstractGenerator | undefined {
@@ -319,7 +327,8 @@ export class ToolManagerService {
       this.penGenerator,
       this.brushGenerator,
       this.lineGenerator,
-      this.polygonGenerator);
+      this.polygonGenerator,
+      this.featherGenerator);
   }
 
   private setCurrentGenerator(tool: Tools): void {
@@ -347,6 +356,9 @@ export class ToolManagerService {
         break;
       case Tools.Pen:
         this.activeGenerator = this.penGenerator;
+        break;
+      case Tools.Feather:
+        this.activeGenerator = this.featherGenerator;
         break;
       default:
         this.activeGenerator = undefined;

@@ -32,6 +32,7 @@ import { LastTenColorsComponent } from '../../modals/color-picker-module/last-te
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
+import { FeatherPenGeneratorService } from './../../../services/tools/featherPen-generator/featherPen-generator.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -62,6 +63,7 @@ const DRAWING_SERVICES = [
   ColorService,
   MousePositionService,
   ObjectSelectorService,
+  FeatherPenGeneratorService,
   GridTogglerService,
   PolygonGeneratorService,
   EraserService,
