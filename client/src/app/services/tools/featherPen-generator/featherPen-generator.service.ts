@@ -1,9 +1,9 @@
-import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { Injectable } from '@angular/core';
+import { BOTTOM_AFTER, BOTTOM_BEFORE, DEFAULT_ANGLE, MAX_ROTATION_STEP, MIN_ROTATION_ANGLE, MIN_ROTATION_STEP, TOP_AFTER, TOP_BEFORE, X, Y } from 'src/app/data-structures/constants';
 import { AbstractWritingTool } from '../../../data-structures/abstract-writing-tool';
+import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
 import { UndoRedoService } from '../../undo-redo/undo-redo.service';
-import { DEFAULT_ANGLE, TOP_BEFORE, X, BOTTOM_BEFORE, Y, TOP_AFTER, BOTTOM_AFTER, MIN_ROTATION_STEP, MAX_ROTATION_STEP, MAX_ROTATION_ANGLE, MIN_ROTATION_ANGLE } from 'src/app/data-structures/constants';
 
 @Injectable()
 export class FeatherPenGeneratorService extends AbstractWritingTool {
@@ -32,7 +32,13 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
   }
 
   set rotationAngle(angle: number) {
+    if(angle > 180) {
+      angle = 0;
+    } else if (angle < 0) {
+      angle = 180;
+    } else {
       this.angle = angle;
+    }
   }
 
   lowerRotationStep(): void {
@@ -46,9 +52,9 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
   rotateFeather(mouseEvent: WheelEvent): void {
     if (mouseEvent.deltaY < MIN_ROTATION_ANGLE) {
         this.angle  += this.rotationStep;
-    } else {this.angle  -= this.rotationStep; }
-    if (this.angle > MAX_ROTATION_ANGLE) {this.angle  = MAX_ROTATION_ANGLE; }
-    if (this.angle  < MIN_ROTATION_ANGLE) {this.angle  = MIN_ROTATION_ANGLE; }
+    } else { this.angle  -= this.rotationStep; }
+    // if (this.angle > MAX_ROTATION_ANGLE) {this.angle  = MAX_ROTATION_ANGLE; }
+    // if (this.angle  < MIN_ROTATION_ANGLE) {this.angle  = MIN_ROTATION_ANGLE; }
 
   }
 
@@ -91,9 +97,6 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
       this.polygonPoints[TOP_AFTER][Y] = this.yPos + Math.sin(this.angle) * (this.strokeWidth / 2);
       this.polygonPoints[BOTTOM_AFTER][X] = this.xPos - Math.cos(this.angle) * (this.strokeWidth / 2);
       this.polygonPoints[BOTTOM_AFTER][Y] = this.yPos - Math.sin(this.angle) * (this.strokeWidth / 2);
-      console.log(this.polygonPoints[2][1]);
-      console.log(this.polygonPoints[3][1]);
-      console.log(Math.sin(this.angle) * (this.strokeWidth / 2));
   }
 
   actualizePoints() {
@@ -105,7 +108,7 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
 
   producePolygon() {
       let points = '';
-      this.polygonPoints.forEach(element => {
+      this.polygonPoints.forEach((element) => {
           points += ('' + element[X] + ',' + element[Y] + ' ');
       });
       const polygon = RendererSingleton.renderer.createElement('polygon', 'svg');
