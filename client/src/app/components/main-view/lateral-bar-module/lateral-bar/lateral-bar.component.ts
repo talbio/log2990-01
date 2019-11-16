@@ -32,6 +32,7 @@ const PASTE_ICON_PATH = '../../../../assets/svg-icons/paste.svg';
 const DELETE_ICON_PATH = '../../../../assets/svg-icons/delete.svg';
 const COPY_ICON_PATH = '../../../../assets/svg-icons/copy.svg';
 const FEATHER_ICON_PATH = '../../../../assets/svg-icons/feather.svg';
+const MAGNETISM_ICON_PATH = '../../../../assets/svg-icons/magnetism.svg';
 
 @Component({
   selector: 'app-lateral-bar',
@@ -102,6 +103,7 @@ export class LateralBarComponent {
       ['paste', PASTE_ICON_PATH],
       ['delete', DELETE_ICON_PATH],
       ['feather', FEATHER_ICON_PATH],
+      ['magnetism', MAGNETISM_ICON_PATH],
     );
     icons.forEach( (icon: [string, string]) =>
       this.matIconRegistry.addSvgIcon(icon[0], this.domSanitizer.bypassSecurityTrustResourceUrl(icon[1])));
@@ -137,6 +139,7 @@ export class LateralBarComponent {
       [Tools.Ellipse, 'Ellipse', 'ellipse', true],
       [Tools.Stamp, 'Étampe', 'sentiment_satisfied_alt', false],
       [Tools.Grid, 'Grille', 'grid_on', false],
+      [Tools.Magnetism, 'Magnétisme', 'magnetism', true],
     );
     propertyTable.forEach( (property: [Tools, string, string, boolean]) => {
       this.shapeToolsButtonsProperties.push(

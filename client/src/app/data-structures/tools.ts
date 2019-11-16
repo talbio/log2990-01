@@ -10,11 +10,10 @@ export enum Tools {
   Line,
   Text,
   ColorApplicator,
-  PaintBucket,
   Eraser,
   Stamp,
   Eyedropper,
   Selector,
   Grid,
-  // non exhaustive list
+  Magnetism,
 }

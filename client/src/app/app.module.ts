@@ -22,8 +22,10 @@ import { EllipseToolsComponent } from './components/main-view/tools-attributes-m
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
 import { EraserToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eraser/eraser-tools.component';
 import { EyedropperToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eyedropper/eyedropper-tools.component';
+import { FeatherPenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/featherPen/featherPen-tools.component';
 import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
+import { MagnetismToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/magnetism/magnetism-tools.component';
 import { PenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pen/pen-tools.component';
 import { PencilToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pencil/pencil-tools.component';
 import { PolygonToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/polygon/polygon-tools.component';
@@ -53,16 +55,16 @@ import { EllipseGeneratorService } from './services/tools/ellipse-generator/elli
 import { EmojiGeneratorService } from './services/tools/emoji-generator/emoji-generator.service';
 import { EraserService } from './services/tools/eraser/eraser.service';
 import { EyedropperService } from './services/tools/eyedropper/eyedropper.service';
+import { FeatherPenGeneratorService } from './services/tools/featherPen-generator/featherPen-generator.service';
 import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
+import { MagnetismGeneratorService } from './services/tools/magnetism/magnetism-generator.service';
 import { ObjectSelectorService } from './services/tools/object-selector/object-selector.service';
 import { PenGeneratorService } from './services/tools/pen-generator/pen-generator.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from './services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
-import { FeatherPenGeneratorService } from './services/tools/featherPen-generator/featherPen-generator.service';
-import { FeatherPenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/featherPen/featherPen-tools.component';
 
 const customNotifierOptions: NotifierOptions = {
   position: {
@@ -140,6 +142,7 @@ const customNotifierOptions: NotifierOptions = {
     OpenDrawingDialogComponent,
     FilterByTags,
     UserManualDialogComponent,
+    MagnetismToolsComponent,
   ],
   imports: [
     BrowserModule,
@@ -178,6 +181,7 @@ const customNotifierOptions: NotifierOptions = {
     EraserService,
     PenGeneratorService,
     FeatherPenGeneratorService,
+    MagnetismGeneratorService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [
@@ -200,6 +204,7 @@ const customNotifierOptions: NotifierOptions = {
     OpenDrawingDialogComponent,
     PolygonToolsComponent,
     GridComponent,
+    MagnetismToolsComponent,
   ],
 })
 export class AppModule {
