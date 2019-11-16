@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import {Tools} from '../../../data-structures/tools';
 import {RendererSingleton} from '../../renderer-singleton';
+import { AerosolGeneratorService } from '../aerosol-generator/aerosol-generator.service';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
 import { ColorService } from '../color/color.service';
@@ -53,6 +54,7 @@ export class ToolManagerService {
               private objectSelector: ObjectSelectorService,
               private lineGenerator: LineGeneratorService,
               private polygonGenerator: PolygonGeneratorService,
+              private aerosolGenerator: AerosolGeneratorService,
               private eyedropper: EyedropperService,
               private eraser: EraserService,
               private featherGenerator: FeatherPenGeneratorService,
@@ -328,7 +330,8 @@ export class ToolManagerService {
       this.brushGenerator,
       this.lineGenerator,
       this.polygonGenerator,
-      this.featherGenerator);
+      this.featherGenerator,
+      this.aerosolGenerator);
   }
 
   private setCurrentGenerator(tool: Tools): void {
@@ -359,6 +362,9 @@ export class ToolManagerService {
         break;
       case Tools.Feather:
         this.activeGenerator = this.featherGenerator;
+        break;
+      case Tools.Aerosol:
+        this.activeGenerator = this.aerosolGenerator;
         break;
       default:
         this.activeGenerator = undefined;

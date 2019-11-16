@@ -50,3 +50,6 @@ export const BOTTOM_AFTER = 2;
 export const TOP_AFTER = 3;
 export const X = 0;
 export const Y = 1;
+export const DEFAULT_AEROSOL_SPRAY_DIAMETER = 20;
+export const DEFAULT_AEROSOL_DOT_RADIUS = 2;
+export const DEFAULT_SPRAY_INTERVAL_SPEED = 5;
