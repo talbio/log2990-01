@@ -25,7 +25,6 @@ import { EyedropperToolsComponent } from './components/main-view/tools-attribute
 import { FeatherPenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/featherPen/featherPen-tools.component';
 import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
-import { MagnetismToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/magnetism/magnetism-tools.component';
 import { PenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pen/pen-tools.component';
 import { PencilToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pencil/pencil-tools.component';
 import { PolygonToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/polygon/polygon-tools.component';
@@ -142,7 +141,6 @@ const customNotifierOptions: NotifierOptions = {
     OpenDrawingDialogComponent,
     FilterByTags,
     UserManualDialogComponent,
-    MagnetismToolsComponent,
   ],
   imports: [
     BrowserModule,
@@ -204,7 +202,6 @@ const customNotifierOptions: NotifierOptions = {
     OpenDrawingDialogComponent,
     PolygonToolsComponent,
     GridComponent,
-    MagnetismToolsComponent,
   ],
 })
 export class AppModule {
