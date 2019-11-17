@@ -17,6 +17,7 @@ import {EllipseGeneratorService} from '../../../services/tools/ellipse-generator
 import {EmojiGeneratorService} from '../../../services/tools/emoji-generator/emoji-generator.service';
 import {EraserService} from '../../../services/tools/eraser/eraser.service';
 import {EyedropperService} from '../../../services/tools/eyedropper/eyedropper.service';
+import { FeatherPenGeneratorService } from '../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
 import {GridTogglerService} from '../../../services/tools/grid/grid-toggler.service';
 import {LineGeneratorService} from '../../../services/tools/line-generator/line-generator.service';
 import {ObjectSelectorService} from '../../../services/tools/object-selector/object-selector.service';
@@ -32,7 +33,6 @@ import {ColorSliderComponent} from '../../modals/color-picker-module/color-slide
 import {LastTenColorsComponent} from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import {ToolsAttributesBarComponent} from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
-import { FeatherPenGeneratorService } from './../../../services/tools/featherPen-generator/featherPen-generator.service';
 import {DrawingViewComponent} from './drawing-view.component';
 
 export const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =

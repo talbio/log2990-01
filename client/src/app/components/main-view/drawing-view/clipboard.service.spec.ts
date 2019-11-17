@@ -32,7 +32,7 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
-import { FeatherPenGeneratorService } from './../../../services/tools/featherPen-generator/featherPen-generator.service';
+import { FeatherPenGeneratorService } from './../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
 import { UndoRedoService } from './../../../services/undo-redo/undo-redo.service';
 import { DrawingViewComponent } from './drawing-view.component';
 

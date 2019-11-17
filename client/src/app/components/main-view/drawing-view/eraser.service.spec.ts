@@ -19,6 +19,7 @@ import { ColorService } from '../../../services/tools/color/color.service';
 import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
 import { EraserService } from '../../../services/tools/eraser/eraser.service';
 import { EyedropperService } from '../../../services/tools/eyedropper/eyedropper.service';
+import { FeatherPenGeneratorService } from '../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
 import { PencilGeneratorService } from '../../../services/tools/pencil-generator/pencil-generator.service';
@@ -32,7 +33,6 @@ import { LastTenColorsComponent } from '../../modals/color-picker-module/last-te
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
-import { FeatherPenGeneratorService } from './../../../services/tools/featherPen-generator/featherPen-generator.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/

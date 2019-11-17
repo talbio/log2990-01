@@ -15,7 +15,7 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
   idPrefix: string;
   pathArray: SVGElement[];
   polygonPoints: number[][];
-  subPathIndex: number;
+  private subPathIndex: number;
 
   constructor(protected undoRedoService: UndoRedoService,
               protected mouse: MousePositionService) {

@@ -9,7 +9,7 @@ import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.
 import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
 import { EraserService } from '../eraser/eraser.service';
 import { EyedropperService } from '../eyedropper/eyedropper.service';
-import { FeatherPenGeneratorService } from '../featherPen-generator/featherPen-generator.service';
+import { FeatherPenGeneratorService } from '../feather-Pen-generator/feather-Pen-generator.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import { PenGeneratorService } from '../pen-generator/pen-generator.service';
@@ -62,7 +62,7 @@ export class ToolManagerService {
     this.initializeGenerators();
   }
 
-  createElement(mouseEvent: MouseEvent, canvas: SVGElement) {
+  createElement(canvas: SVGElement) {
     if (this.activeGenerator && this.activeGenerator !== this.lineGenerator) {
       this.activeGenerator.createElement(
         [this.colorService.getPrimaryColor(),
@@ -101,9 +101,9 @@ export class ToolManagerService {
     }
   }
 
-  finishElement(mouseEvent: MouseEvent) {
+  finishElement() {
     if (this.activeGenerator && this.activeGenerator !== this.lineGenerator) {
-      this.activeGenerator.finishElement(mouseEvent);
+      this.activeGenerator.finishElement();
     } else {
       switch (this._activeTool) {
         case Tools.Selector:

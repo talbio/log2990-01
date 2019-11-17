@@ -61,8 +61,8 @@ import { PencilGeneratorService } from './services/tools/pencil-generator/pencil
 import { PolygonGeneratorService } from './services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
-import { FeatherPenGeneratorService } from './services/tools/featherPen-generator/featherPen-generator.service';
-import { FeatherPenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/featherPen/featherPen-tools.component';
+import { FeatherPenGeneratorService } from './services/tools/feather-Pen-generator/feather-Pen-generator.service';
+import { FeatherPenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/feather-Pen/feather-Pen-tools.component';
 
 const customNotifierOptions: NotifierOptions = {
   position: {

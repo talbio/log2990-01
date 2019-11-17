@@ -59,7 +59,7 @@ export class WorkZoneComponent implements OnInit {
   }
 
   onMouseDown(mouseEvent: MouseEvent) {
-    this.toolManager.createElement(mouseEvent, this.canvasElement);
+    this.toolManager.createElement(this.canvasElement);
   }
 
   onMouseMove(mouseEvent: MouseEvent) {
@@ -67,7 +67,7 @@ export class WorkZoneComponent implements OnInit {
   }
 
   onMouseUp(mouseEvent: MouseEvent) {
-    this.toolManager.finishElement(mouseEvent);
+    this.toolManager.finishElement();
   }
 
   onLeftClick(mouseEvent: MouseEvent) {
