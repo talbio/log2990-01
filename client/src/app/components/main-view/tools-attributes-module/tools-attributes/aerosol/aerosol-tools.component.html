@@ -1,1 +1,23 @@
 <p mat-card-title>Paramètres d'Aérosol</p>
+
+<mat-label>
+    Diamètre du jet en pixels: {{this.aerosol._sprayDiameter}}
+</mat-label>
+<mat-slider [(ngModel)]="this.aerosol._sprayDiameter"
+            min="5"
+            max="50"
+            step="0.5"
+            thumbLabel
+            tickInterval="1">
+</mat-slider>
+
+<mat-label>
+    Vitesse des intervales de jet de peinture: {{this.aerosol.sprayIntervalSpeed}}
+</mat-label>
+<mat-slider [(ngModel)]="this.aerosol.sprayIntervalSpeed"
+            min="5"
+            max="50"
+            step="0.5"
+            thumbLabel
+            tickInterval="1">
+</mat-slider>

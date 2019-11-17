@@ -11,22 +11,31 @@ import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 export class AerosolGeneratorService extends AbstractWritingTool {
 
   sprayDiameter: number;
-  sprayInterval: number;
+  sprayIntervalTimer: number;
+  secondSprayIntervalTimer: number;
   dotRadius: number;
   dotArray: SVGElement[];
   sprayIntervalSpeed: number;
   private subpathIndex: number;
 
+  get _sprayDiameter(): number {
+    return this.sprayDiameter;
+  }
+  set _sprayDiameter(diameter: number) {
+    this.sprayDiameter = diameter;
+    this.dotRadius = diameter / 4;
+  }
   constructor(protected undoRedoService: UndoRedoService,
               protected mouse: MousePositionService) {
-      super(mouse, undoRedoService);
-      this.sprayDiameter = DEFAULT_AEROSOL_SPRAY_DIAMETER;
-      this.sprayInterval = 0; // Does not mean anything, set to 0 to be initialized
-      this.dotArray = [];
-      this.subpathIndex = 0;
-      this.dotRadius = DEFAULT_AEROSOL_DOT_RADIUS;
-      this.sprayIntervalSpeed = DEFAULT_SPRAY_INTERVAL_SPEED;
-     }
+    super(mouse, undoRedoService);
+    this.sprayDiameter = DEFAULT_AEROSOL_SPRAY_DIAMETER;
+    this.sprayIntervalTimer = 0; // Does not mean anything, set to 0 to be initialized
+    this.secondSprayIntervalTimer = 0;
+    this.dotArray = [];
+    this.subpathIndex = 0;
+    this.dotRadius = DEFAULT_AEROSOL_DOT_RADIUS;
+    this.sprayIntervalSpeed = DEFAULT_SPRAY_INTERVAL_SPEED;
+  }
 
   createElement(mainColors: [string, string]): void {
     this.mouseDown = true;
@@ -46,13 +55,27 @@ export class AerosolGeneratorService extends AbstractWritingTool {
   }
 
   spray(color: string) {
-    this.sprayInterval = window.setInterval(() => {
-      this.generateDot(color);
-    } , this.sprayIntervalSpeed);
+    if (this.sprayIntervalSpeed >= 10) {
+      this.sprayIntervalTimer = window.setInterval(() => {
+        this.generateDot(color);
+      } , this.sprayIntervalSpeed);
+    } else {
+      // interval speed limit is 10 ms, so we start a second interval to force a faster spray
+      this.sprayIntervalTimer = window.setInterval(() => {
+        this.generateDot(color);
+      } , this.sprayIntervalSpeed * 2);
+      this.secondSprayIntervalTimer = window.setInterval(() => {
+        this.generateDot(color);
+      } , this.sprayIntervalSpeed * 2);
+    }
   }
 
   stopSpray() {
-    clearInterval(this.sprayInterval);
+    window.clearInterval(this.sprayIntervalTimer);
+    if (this.sprayIntervalSpeed < 10) {
+      window.clearInterval(this.secondSprayIntervalTimer);
+    }
+
   }
 
   randomPointInRadius(): number[] {
