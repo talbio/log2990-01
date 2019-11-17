@@ -122,7 +122,7 @@ describe('DrawingViewComponent', () => {
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     mousePositionService.canvasMousePositionX = x1;
     mousePositionService.canvasMousePositionY = y1;
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    component.workZoneComponent.onMouseDown();
     mouseEvent = new MouseEvent('mousemove', {
     clientX: x2,
     clientY: y2,
@@ -131,7 +131,7 @@ describe('DrawingViewComponent', () => {
     mousePositionService.canvasMousePositionX = x2;
     mousePositionService.canvasMousePositionY = y2;
     component.workZoneComponent.onMouseMove(mouseEvent);
-    component.workZoneComponent.onMouseUp(mouseEvent);
+    component.workZoneComponent.onMouseUp();
   };
 
   it('should react properly to cut', () => {
@@ -150,12 +150,7 @@ describe('DrawingViewComponent', () => {
     mouse.canvasMousePositionX = 100;
     mouse.canvasMousePositionY = 100;
 
-    const mouseEvent0 = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: 100,
-      clientY: 100,
-    });
-    component.workZoneComponent.onMouseDown(mouseEvent0);
+    component.workZoneComponent.onMouseDown();
 
     const mouseEvent1 = new MouseEvent('mousemove', {
       button: 0,
@@ -163,7 +158,7 @@ describe('DrawingViewComponent', () => {
       clientY: 200,
     });
     component.workZoneComponent.onMouseMove(mouseEvent1);
-    component.workZoneComponent.onMouseUp(mouseEvent1);
+    component.workZoneComponent.onMouseUp();
 
     const itemToBeCut = workChilds[2] as SVGElement;
 
@@ -190,13 +185,8 @@ describe('DrawingViewComponent', () => {
 
     mouse.canvasMousePositionX = 210;
     mouse.canvasMousePositionY = 210;
-    const mouseEvent0 = new MouseEvent('mousemove', {
-      button: 0,
-      clientX: 210,
-      clientY: 210,
-    });
 
-    component.workZoneComponent.onMouseDown(mouseEvent0);
+    component.workZoneComponent.onMouseDown();
 
     const mouseEvent1 = new MouseEvent('mousemove', {
       button: 0,
@@ -204,7 +194,7 @@ describe('DrawingViewComponent', () => {
       clientY: 450,
     });
     component.workZoneComponent.onMouseMove(mouseEvent1);
-    component.workZoneComponent.onMouseUp(mouseEvent1);
+    component.workZoneComponent.onMouseUp();
 
     clipboardService.copy();
     // The clipboard contains the item copied
@@ -226,13 +216,8 @@ describe('DrawingViewComponent', () => {
 
     mouse.canvasMousePositionX = 210;
     mouse.canvasMousePositionY = 210;
-    const mouseEvent0 = new MouseEvent('mousemove', {
-      button: 0,
-      clientX: 210,
-      clientY: 210,
-    });
 
-    component.workZoneComponent.onMouseDown(mouseEvent0);
+    component.workZoneComponent.onMouseDown();
 
     const mouseEvent1 = new MouseEvent('mousemove', {
       button: 0,
@@ -241,7 +226,7 @@ describe('DrawingViewComponent', () => {
     });
 
     component.workZoneComponent.onMouseMove(mouseEvent1);
-    component.workZoneComponent.onMouseUp(mouseEvent1);
+    component.workZoneComponent.onMouseUp();
     clipboardService.delete();
     // The clipboard contains only one element and it is not the one that was deleted
     expect(clipboardService.memorizedElements.length).toEqual(0);

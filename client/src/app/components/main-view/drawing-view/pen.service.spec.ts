@@ -122,12 +122,7 @@ describe('PenGeneratorService', () => {
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
     // Setting up the event
-    const mouseDown = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: 100,
-      clientY: 100,
-    });
-    component.workZoneComponent.onMouseDown(mouseDown);
+    component.workZoneComponent.onMouseDown();
     // Step 3. Expect un penPath
     expect(workChilds.length).toBeGreaterThan(initialChildsLength);
     const child = workChilds[workChilds.length - 1];
@@ -141,8 +136,7 @@ describe('PenGeneratorService', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
 
-    const mouseDown = new MouseEvent('mousedown', {});
-    component.workZoneComponent.onMouseDown(mouseDown);
+    component.workZoneComponent.onMouseDown();
     const penPathBeginning = workChilds[workChilds.length - 1];
     const initialStrokeWidth = penPathBeginning.getAttribute('stroke-width');
 
@@ -166,8 +160,7 @@ describe('PenGeneratorService', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
 
-    const mouseDown = new MouseEvent('mousedown', {});
-    component.workZoneComponent.onMouseDown(mouseDown);
+    component.workZoneComponent.onMouseDown();
     const penPathBeginning = workChilds[workChilds.length - 1];
     const initialStrokeWidth = penPathBeginning.getAttribute('stroke-width');
 

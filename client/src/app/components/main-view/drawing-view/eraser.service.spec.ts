@@ -120,27 +120,20 @@ describe('EraserService', () => {
     const workChilds = svgHandle.children;
     const initialNumberOfChildren = workChilds.length;
     // Setting up the event
-    const offsetX = 64;
-    const mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: 10 + offsetX,
-      clientY: 10,
-    });
-
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     mousePositionService.canvasMousePositionX = 10;
     mousePositionService.canvasMousePositionY = 10;
 
     // Adding 3 rectangles in the same place
-    component.workZoneComponent.onMouseDown(mouseEvent);
-    component.workZoneComponent.onMouseDown(mouseEvent);
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    component.workZoneComponent.onMouseDown();
+    component.workZoneComponent.onMouseDown();
+    component.workZoneComponent.onMouseDown();
     expect(workChilds.length).toBe(initialNumberOfChildren + 3);
 
     // erasing
     toolManagerService._activeTool = Tools.Eraser;
-    component.workZoneComponent.onMouseDown(mouseEvent);
-    component.workZoneComponent.onMouseUp(mouseEvent);
+    component.workZoneComponent.onMouseDown();
+    component.workZoneComponent.onMouseUp();
     // only one drawing missing
     expect(workChilds.length).toBe(initialNumberOfChildren + 2);
   });

@@ -115,35 +115,26 @@ describe('DrawingViewComponent', () => {
   const drawShapeOnCanvas = (x1: number, y1: number, x2: number, y2: number, toolType: Tools) => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = toolType;
-    let mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: x1,
-      clientY: y1,
-    });
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     mousePositionService.canvasMousePositionX = x1;
     mousePositionService.canvasMousePositionY = y1;
-    component.workZoneComponent.onMouseDown(mouseEvent);
-    mouseEvent = new MouseEvent('mousemove', {
-    clientX: x2,
-    clientY: y2,
+    component.workZoneComponent.onMouseDown();
+    const mouseEvent = new MouseEvent('mousemove', {
+      clientX: x2,
+      clientY: y2,
     });
     // update mouse position on the service
     mousePositionService.canvasMousePositionX = x2;
     mousePositionService.canvasMousePositionY = y2;
     component.workZoneComponent.onMouseMove(mouseEvent);
-    component.workZoneComponent.onMouseUp(mouseEvent);
+    component.workZoneComponent.onMouseUp();
   };
 
   // This returns the child at 'position' from the canvas's last position (1 for last)
   const getLastSvgElement = (svgHandle: SVGElement, position: number) => {
     return svgHandle.children.item(svgHandle.children.length - position) as SVGElement;
   };
-  // Step 1: Arrange
-  // Step 1.5: Assert that everything is ok
-  // Assert that there are no elements in the SVG
-  // Step 2: Execute (do the work to be test)
-  // Step 3: Assert that the work was correctly done
+
   it('should be able to draw an ellipse', () => {
     // Step 1. Select ellipse
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
@@ -159,12 +150,10 @@ describe('DrawingViewComponent', () => {
     const yInitial = 100;
     // Step 2. First click avec xInitial , yInitial
     // Step 2.1 Last click (release) -> save coordinates
-    const mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: xInitial,
-      clientY: yInitial,
-    });
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    const mouse = fixture.debugElement.injector.get(MousePositionService);
+    mouse.canvasMousePositionX = xInitial;
+    mouse.canvasMousePositionY = yInitial;
+    component.workZoneComponent.onMouseDown();
     expect(spy).toHaveBeenCalled();
     // Step 3. Expect un <ellipse>
     // Vu qu'une ellipse et un rectangle sont créés, on s'attend à une ellipse comme avant-dernier élément.
@@ -188,25 +177,20 @@ describe('DrawingViewComponent', () => {
     const yInitial = 100;
     // Step 2. First click avec xInitial , yInitial
     // Step 2.1 Last click (release) -> save coordinates
-    let mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: xInitial,
-      clientY: yInitial,
-    });
-    const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
-    mousePositionService.canvasMousePositionX = xInitial;
-    mousePositionService.canvasMousePositionY = yInitial;
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    const mouse = fixture.debugElement.injector.get(MousePositionService);
+    mouse.canvasMousePositionX = xInitial;
+    mouse.canvasMousePositionY = yInitial;
+    component.workZoneComponent.onMouseDown();
     expect(spy).toHaveBeenCalled();
     const newX = 200;
     const newY = 200;
-    mouseEvent = new MouseEvent('mousemove', {
+    const mouseEvent = new MouseEvent('mousemove', {
     clientX: newX,
     clientY: newY,
     });
     // update mouse position on the service
-    mousePositionService.canvasMousePositionX = newX;
-    mousePositionService.canvasMousePositionY = newY;
+    mouse.canvasMousePositionX = newX;
+    mouse.canvasMousePositionY = newY;
     component.workZoneComponent.onMouseMove(mouseEvent);
     // Step 3. Expect a <rect> and a <ellipse>
     // ellipse and rectangle should be created as the last children
@@ -233,7 +217,7 @@ describe('DrawingViewComponent', () => {
     expect(ellipseRight).toEqual(200);
     expect(ellipseBottom).toEqual(200);
     // call a mouseup event to finish the ellipse and remove the rectangle
-    component.workZoneComponent.onMouseUp(mouseEvent);
+    component.workZoneComponent.onMouseUp();
     expect(svgHandle.contains(rectangleChild)).toBeFalsy();
   });
 
@@ -316,21 +300,16 @@ describe('DrawingViewComponent', () => {
     toolManagerService._activeTool = Tools.Ellipse;
     const initialX = 100;
     const initialY = 100;
-    let mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: initialX,
-      clientY: initialY,
-    });
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     mousePositionService.canvasMousePositionX = initialX;
     mousePositionService.canvasMousePositionY = initialY;
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    component.workZoneComponent.onMouseDown();
     // make the mouseMove position unequal so we can test whether the ellipse changes into a circle
     const newX = 200;
     const newY = 150;
-    mouseEvent = new MouseEvent('mousemove', {
-    clientX: newX,
-    clientY: newY,
+    const mouseEvent = new MouseEvent('mousemove', {
+      clientX: newX,
+      clientY: newY,
     });
     // update mouse position on the service
     mousePositionService.canvasMousePositionX = newX;
@@ -383,8 +362,6 @@ describe('DrawingViewComponent', () => {
     const spy = spyOn(component.workZoneComponent, 'onLeftClick').and.callThrough();
     const xInitial = 100;
     const yInitial = 100;
-    // Step 2. First click avec xInitial , yInitial
-    // Step 2.1 Last click (release) -> save coordinates
     const mouseEvent = new MouseEvent('click', {
       button: 0,
       clientX: xInitial,
@@ -848,8 +825,7 @@ describe('DrawingViewComponent', () => {
     const workChilds = svgHandle.children;
     // Setting up the event
     const spy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
-    const mouseEvent = new MouseEvent('mousedown', {});
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    component.workZoneComponent.onMouseDown();
     expect(spy).toHaveBeenCalled();
     // Expect an emoji
     expect(workChilds.length).toEqual(initialChildsLength + 1);
@@ -869,9 +845,8 @@ describe('DrawingViewComponent', () => {
       deltaY: -500,
     });
     const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
-    const mouseEvent = new MouseEvent('mousedown', {});
     component.workZoneComponent.onMouseWheel(wheelEvent);
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    component.workZoneComponent.onMouseDown();
     expect(wheelSpy).toHaveBeenCalled();
     expect(mouseSpy).toHaveBeenCalled();
     const emoji = svgHandle.childNodes[children.length - 1] as Element;
@@ -891,16 +866,15 @@ describe('DrawingViewComponent', () => {
     deltaY: -500,
   });
   const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
-  const mouseEvent = new MouseEvent('mousedown', {});
   component.workZoneComponent.onMouseWheel(wheelEvent);
-  component.workZoneComponent.onMouseDown(mouseEvent);
+  component.workZoneComponent.onMouseDown();
   expect(wheelSpy).toHaveBeenCalled();
   expect(mouseSpy).toHaveBeenCalled();
   // It shouldn't be possible to increase the angle over 360
   for (let i = 0; i < 100; i++) {
   component.workZoneComponent.onMouseWheel(wheelEvent);
   }
-  component.workZoneComponent.onMouseDown(mouseEvent);
+  component.workZoneComponent.onMouseDown();
   let emoji = svgHandle.childNodes[children.length - 1] as Element;
   let angle = (emoji.getAttribute('transform') as string).substr(7, 3) ;
   expect(angle).toEqual('360');
@@ -912,7 +886,7 @@ describe('DrawingViewComponent', () => {
   for (let i = 0; i < 100; i++) {
     component.workZoneComponent.onMouseWheel(wheelEvent);
     }
-  component.workZoneComponent.onMouseDown(mouseEvent);
+  component.workZoneComponent.onMouseDown();
   emoji = svgHandle.childNodes[children.length - 1] as Element;
   angle = (emoji.getAttribute('transform') as string).substr(7, 1) ;
   expect(angle).toEqual('0');
@@ -932,10 +906,9 @@ describe('DrawingViewComponent', () => {
   });
   const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
   const mouseSpy = spyOn(component.workZoneComponent, 'onMouseDown').and.callThrough();
-  const mouseEvent = new MouseEvent('mousedown', {});
   component.workZoneComponent.keyDownEvent(altEvent);
   component.workZoneComponent.onMouseWheel(wheelEvent);
-  component.workZoneComponent.onMouseDown(mouseEvent);
+  component.workZoneComponent.onMouseDown();
   expect(altSpy).toHaveBeenCalled();
   expect(wheelSpy).toHaveBeenCalled();
   expect(mouseSpy).toHaveBeenCalled();
@@ -951,8 +924,7 @@ describe('DrawingViewComponent', () => {
   const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
   const children = svgHandle.childNodes;
   const initialChildsLength = svgHandle.children.length;
-  const mouseEvent = new MouseEvent('mousedown', {});
-  component.workZoneComponent.onMouseDown(mouseEvent);
+  component.workZoneComponent.onMouseDown();
   expect(children.length).toEqual(initialChildsLength);
 });
 
@@ -978,20 +950,15 @@ describe('DrawingViewComponent', () => {
     const xInitial = 100;
     const yInitial = 100;
 
-    let mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: xInitial,
-      clientY: yInitial,
-    });
     // Also change the positions on the mouse position service
     mousePositionService.canvasMousePositionX = xInitial;
     mousePositionService.canvasMousePositionY = yInitial;
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    component.workZoneComponent.onMouseDown();
 
     // Make the rectangle cover a space so we can click it
     let newX = 200;
     let newY = 200;
-    mouseEvent = new MouseEvent('mousemove', {
+    let mouseEvent = new MouseEvent('mousemove', {
       clientX: newX,
       clientY: newY,
     });
@@ -999,7 +966,7 @@ describe('DrawingViewComponent', () => {
     mousePositionService.canvasMousePositionX = newX;
     mousePositionService.canvasMousePositionY = newY;
     component.workZoneComponent.onMouseMove(mouseEvent);
-    component.workZoneComponent.onMouseUp(mouseEvent);
+    component.workZoneComponent.onMouseUp();
     // Expect a <rectangle>
     // Since the rectangle was just created it should be the last element
     const rectangle = getLastSvgElement(svgHandle, 1);
@@ -1181,13 +1148,10 @@ describe('DrawingViewComponent', () => {
     const xInitial = 100;
     const yInitial = 100;
     // Step 2. First click avec xInitial , yInitial
-    // Step 2.1 Last click (release) -> save coordinates
-    const mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: xInitial,
-      clientY: yInitial,
-    });
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    const mouse = fixture.debugElement.injector.get(MousePositionService);
+    mouse.canvasMousePositionX = xInitial;
+    mouse.canvasMousePositionY = yInitial;
+    component.workZoneComponent.onMouseDown();
     const currentNumberOfChildren = svgHandle.children.length;
     expect(spy).toHaveBeenCalled();
     // Step 3. Expect a <polygon>
@@ -1198,7 +1162,7 @@ describe('DrawingViewComponent', () => {
     const expectedPolygon = getLastSvgElement(svgHandle, 2);
     expect(expectedPolygon.tagName).toEqual('polygon');
 
-    component.workZoneComponent.onMouseUp(mouseEvent);
+    component.workZoneComponent.onMouseUp();
 
     // Verify if tempRect disapeared
     expect(workChilds.length).toEqual(currentNumberOfChildren - 1);
@@ -1220,12 +1184,6 @@ describe('DrawingViewComponent', () => {
     const xInitial = 100;
     const yInitial = 100;
     // Step 2. First click avec xInitial , yInitial
-    // Step 2.1 Last click (release) -> save coordinates
-    const mouseDownEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: xInitial,
-      clientY: yInitial,
-    });
 
     const movedX = 200;
     const movedY = 200;
@@ -1236,15 +1194,18 @@ describe('DrawingViewComponent', () => {
       clientY: movedY,
     });
 
-    mousePosition.canvasMousePositionX = movedX;
-    mousePosition.canvasMousePositionY = movedY;
+    mousePosition.canvasMousePositionX = xInitial;
+    mousePosition.canvasMousePositionY = yInitial;
 
     // Setting up the event
     polygonGenerator.plotType = PlotType.Contour;
     polygonGenerator._nbOfApex = 3;
     polygonGenerator.strokeWidth = 1;
-    component.workZoneComponent.onMouseDown(mouseDownEvent);
+    component.workZoneComponent.onMouseDown();
     const defaultPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
+
+    mousePosition.canvasMousePositionX = movedX;
+    mousePosition.canvasMousePositionY = movedY;
     component.workZoneComponent.onMouseMove(mouseMoveEvent);
     expect(spy).toHaveBeenCalled();
 
@@ -1258,93 +1219,25 @@ describe('DrawingViewComponent', () => {
     expect(points.length).toEqual(3);
     expect(defaultPolygon.getAttribute('stroke-width')).toEqual('1');
 
-    component.workZoneComponent.onMouseUp(mouseMoveEvent);
+    component.workZoneComponent.onMouseUp();
 
     polygonGenerator.plotType = PlotType.Full;
     polygonGenerator._nbOfApex = 11;
     polygonGenerator.strokeWidth = 5;
 
-    component.workZoneComponent.onMouseDown(mouseDownEvent);
+    mousePosition.canvasMousePositionX = xInitial;
+    mousePosition.canvasMousePositionY = yInitial;
+    component.workZoneComponent.onMouseDown();
     const changedPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
-    component.workZoneComponent.onMouseMove(mouseMoveEvent);
-
-    // Getting number of apex
-    const changedPointsHTML = changedPolygon.getAttribute('points') as string;
-    const changedPoints = changedPointsHTML.split(' ', 11);
-
-    expect(changedPolygon.getAttribute('fill')).toEqual(colorService.primaryColor);
-    expect(changedPolygon.getAttribute('stroke')).toEqual('transparent');
-    expect(changedPoints.length).toEqual(11);
-    expect(changedPolygon.getAttribute('stroke-width')).toEqual('5');
-  });
-
-  it('should let the user choose plotType, strokeWidth and number of apex', () => {
-    // Step 1. Select polygon
-    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-    toolManagerService._activeTool = Tools.Polygon;
-    const polygonGenerator = fixture.debugElement.injector.get(PolygonGeneratorService);
-    const mousePosition = fixture.debugElement.injector.get(MousePositionService);
-    const colorService = fixture.debugElement.injector.get(ColorService);
-
-    // Create the work-zone
-    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-    const workChilds = svgHandle.children;
-
-    const spy = spyOn(component.workZoneComponent, 'onMouseMove').and.callThrough();
-    const xInitial = 100;
-    const yInitial = 100;
-    // Step 2. First click avec xInitial , yInitial
-    // Step 2.1 Last click (release) -> save coordinates
-    const mouseDownEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: xInitial,
-      clientY: yInitial,
-    });
-
-    const movedX = 200;
-    const movedY = 200;
-
-    const mouseMoveEvent = new MouseEvent('mousemove', {
-      button: 0,
-      clientX: movedX,
-      clientY: movedY,
-    });
 
     mousePosition.canvasMousePositionX = movedX;
     mousePosition.canvasMousePositionY = movedY;
-
-    // Setting up the event
-    polygonGenerator.plotType = PlotType.Contour;
-    polygonGenerator._nbOfApex = 3;
-    polygonGenerator.strokeWidth = 1;
-    component.workZoneComponent.onMouseDown(mouseDownEvent);
-    const defaultPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
-    component.workZoneComponent.onMouseMove(mouseMoveEvent);
-    expect(spy).toHaveBeenCalled();
-
-    // Getting the number of vertex
-    const pointsHTML = defaultPolygon.getAttribute('points') as string;
-    const points = pointsHTML.split(' ', 12);
-
-    // If next 2 pass, plotType is really Contour
-    expect(defaultPolygon.getAttribute('fill')).toEqual('transparent');
-    expect(defaultPolygon.getAttribute('stroke')).toEqual(colorService.secondaryColor);
-    expect(points.length).toEqual(3);
-    expect(defaultPolygon.getAttribute('stroke-width')).toEqual('1');
-
-    component.workZoneComponent.onMouseUp(mouseMoveEvent);
-
-    polygonGenerator.plotType = PlotType.Full;
-    polygonGenerator._nbOfApex = 11;
-    polygonGenerator.strokeWidth = 5;
-
-    component.workZoneComponent.onMouseDown(mouseDownEvent);
-    const changedPolygon = workChilds.item(workChilds.length - 2) as SVGElement;
     component.workZoneComponent.onMouseMove(mouseMoveEvent);
 
     // Getting number of apex
     const changedPointsHTML = changedPolygon.getAttribute('points') as string;
     const changedPoints = changedPointsHTML.split(' ', 11);
+
     expect(changedPolygon.getAttribute('fill')).toEqual(colorService.primaryColor);
     expect(changedPolygon.getAttribute('stroke')).toEqual('transparent');
     expect(changedPoints.length).toEqual(11);
@@ -1496,7 +1389,7 @@ describe('DrawingViewComponent', () => {
     verifiePolygonIsBiggest(pointsTriangle, tempRect1, polygonGenerator._aspectRatio);
     verifiePointsInRectangle(pointsTriangle, tempRect1, polygonGenerator._aspectRatio);
 
-    component.workZoneComponent.onMouseUp(mouseMoveEvent);
+    component.workZoneComponent.onMouseUp();
 
     // Case 2 => (NbOfApex) % 4 === 0
     polygonGenerator._nbOfApex = 8;
@@ -1509,7 +1402,7 @@ describe('DrawingViewComponent', () => {
     verifiePolygonIsBiggest(pointsOctogon, tempRect2, polygonGenerator._aspectRatio);
     verifiePointsInRectangle(pointsOctogon, tempRect2, polygonGenerator._aspectRatio);
 
-    component.workZoneComponent.onMouseUp(mouseMoveEvent);
+    component.workZoneComponent.onMouseUp();
 
     // Case 3 => (NbOfApex) % 2 === 0 && (NbOfApex) % 4 !== 0
     polygonGenerator._nbOfApex = 6;
@@ -1522,7 +1415,7 @@ describe('DrawingViewComponent', () => {
     verifiePolygonIsBiggest(pointsHexagon, tempRect3, polygonGenerator._aspectRatio);
     verifiePointsInRectangle(pointsHexagon, tempRect3, polygonGenerator._aspectRatio);
 
-    component.workZoneComponent.onMouseUp(mouseMoveEvent);
+    component.workZoneComponent.onMouseUp();
   });
 
   it('should have the polygon be drawn using the primary and secondary colors', () => {

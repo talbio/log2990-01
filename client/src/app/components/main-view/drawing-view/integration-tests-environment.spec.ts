@@ -72,16 +72,12 @@ export class CanvasDrawer {
   drawShapeOnCanvas(x1: number, y1: number, x2: number, y2: number, toolType: Tools)  {
     const toolManagerService = this.fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = toolType;
-    let mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: x1,
-      clientY: y1,
-    });
+
     const mousePositionService = this.fixture.debugElement.injector.get(MousePositionService);
     mousePositionService.canvasMousePositionX = x1;
     mousePositionService.canvasMousePositionY = y1;
-    this.component.workZoneComponent.onMouseDown(mouseEvent);
-    mouseEvent = new MouseEvent('mousemove', {
+    this.component.workZoneComponent.onMouseDown();
+    const mouseEvent = new MouseEvent('mousemove', {
       clientX: x2,
       clientY: y2,
     });
@@ -89,7 +85,7 @@ export class CanvasDrawer {
     mousePositionService.canvasMousePositionX = x2;
     mousePositionService.canvasMousePositionY = y2;
     this.component.workZoneComponent.onMouseMove(mouseEvent);
-    this.component.workZoneComponent.onMouseUp(mouseEvent);
+    this.component.workZoneComponent.onMouseUp();
   }
 
   // This returns the child at 'position' from the canvas's last position (1 for last)
