@@ -67,7 +67,14 @@ export class EyedropperService {
           .removeChild(appworkzone, canvElem);
         break;
       case 'polygon':
-        foundColor = object.getAttribute('fill') as string;
+        if (object.id.startsWith('polygon')) {
+          // Polygon
+          foundColor = object.getAttribute('fill') as string;
+        } else if (object.id.startsWith('featherPenPath')) {
+          foundColor = object.getAttribute('stroke') as string;
+        } else {
+          alert(`Object id is "${object.id}" and this case is not treated!`);
+        }
         break;
       case 'svg':
         // Canvas

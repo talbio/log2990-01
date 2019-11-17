@@ -15,7 +15,7 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
   idPrefix: string;
   pathArray: SVGElement[];
   polygonPoints: number[][];
-  private subpathIndex: number;
+  subPathIndex: number;
 
   constructor(protected undoRedoService: UndoRedoService,
               protected mouse: MousePositionService) {
@@ -25,7 +25,7 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
       this.polygonPoints = [[0, 0], [0, 0], [0, 0], [0, 0]];
       this.strokeWidth = DEFAULT_FEATHER_STROKE_WIDTH;
       this.pathArray = [];
-      this.subpathIndex = 0;
+      this.subPathIndex = 0;
       this.rotationStep = MAX_ROTATION_STEP;
   }
 
@@ -59,10 +59,9 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
     if (mouseEvent.deltaY < 0) {
         this.angle  += this.rotationStep;
     } else { this.angle  -= this.rotationStep; }
-    if (this.angle > 180) {
-      console.log(`I'm here`);
+    if (this.angle > 179) {
       this.angle  = 0; }
-    if (this.angle  < 0) {this.angle  = 180; }
+    if (this.angle  < 0) {this.angle  = 179; }
 
   }
 
@@ -89,7 +88,7 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
           this.pushGeneratorCommand(...this.pathArray);
           this.pathArray = [];
           this.mouseDown = false;
-          this.subpathIndex = 0;
+          this.subPathIndex = 0;
       }
   }
 
@@ -115,20 +114,25 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
   }
 
   producePolygon() {
-      let points = '';
-      this.polygonPoints.forEach((element: number[]) => {
-          points += ('' + element[X] + ',' + element[Y] + ' ');
-      });
-      const polygon = RendererSingleton.renderer.createElement('polygon', 'svg');
-      const properties: [string, string][] = [];
-      properties.push(
-        ['id', this.idPrefix + this.currentElementsNumber],
-        ['points', points],
-        ['stroke', this.color],
-        ['stroke-width', '2'],
-        ['fill', this.color],
-      );
-      this.drawElement(polygon, properties);
-      this.pathArray[this.subpathIndex++] = polygon;
+    const polygon = RendererSingleton.renderer.createElement('polygon', 'svg');
+    const properties = this.getProperties();
+    this.drawElement(polygon, properties);
+    this.pathArray[this.subPathIndex++] = polygon;
+  }
+
+  getProperties(): [string, string][] {
+    let points = '';
+    this.polygonPoints.forEach((element: number[]) => {
+        points += ('' + element[X] + ',' + element[Y] + ' ');
+    });
+    const properties: [string, string][] = [];
+    properties.push(
+      ['id', this.idPrefix + this.currentElementsNumber],
+      ['points', points],
+      ['stroke', this.color],
+      ['stroke-width', '2'],
+      ['fill', this.color],
+    );
+    return properties;
   }
 }
