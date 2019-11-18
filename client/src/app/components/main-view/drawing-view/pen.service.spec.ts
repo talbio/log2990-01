@@ -20,6 +20,7 @@ import { ColorService } from '../../../services/tools/color/color.service';
 import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
 import { EraserService } from '../../../services/tools/eraser/eraser.service';
 import { EyedropperService } from '../../../services/tools/eyedropper/eyedropper.service';
+import { FeatherPenGeneratorService } from '../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
 import { PencilGeneratorService } from '../../../services/tools/pencil-generator/pencil-generator.service';
@@ -32,7 +33,6 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
-import { FeatherPenGeneratorService } from './../../../services/tools/featherPen-generator/featherPen-generator.service';
 import { DrawingViewComponent } from './drawing-view.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -122,12 +122,7 @@ describe('PenGeneratorService', () => {
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
     // Setting up the event
-    const mouseDown = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: 100,
-      clientY: 100,
-    });
-    component.workZoneComponent.onMouseDown(mouseDown);
+    component.workZoneComponent.onMouseDown();
     // Step 3. Expect un penPath
     expect(workChilds.length).toBeGreaterThan(initialChildsLength);
     const child = workChilds[workChilds.length - 1];
@@ -141,8 +136,7 @@ describe('PenGeneratorService', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
 
-    const mouseDown = new MouseEvent('mousedown', {});
-    component.workZoneComponent.onMouseDown(mouseDown);
+    component.workZoneComponent.onMouseDown();
     const penPathBeginning = workChilds[workChilds.length - 1];
     const initialStrokeWidth = penPathBeginning.getAttribute('stroke-width');
 
@@ -166,8 +160,7 @@ describe('PenGeneratorService', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
 
-    const mouseDown = new MouseEvent('mousedown', {});
-    component.workZoneComponent.onMouseDown(mouseDown);
+    component.workZoneComponent.onMouseDown();
     const penPathBeginning = workChilds[workChilds.length - 1];
     const initialStrokeWidth = penPathBeginning.getAttribute('stroke-width');
 
