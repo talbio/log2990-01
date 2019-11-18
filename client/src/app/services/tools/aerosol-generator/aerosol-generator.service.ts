@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { AbstractWritingTool } from 'src/app/data-structures/abstract-writing-tool';
 import { DEFAULT_AEROSOL_DOT_RADIUS,
          DEFAULT_AEROSOL_SPRAY_DIAMETER,
-         DEFAULT_SPRAY_INTERVAL_SPEED } from 'src/app/data-structures/constants';
+         DEFAULT_SPRAY_INTERVAL_SPEED,
+         DOT_RADIUS_RATIO} from 'src/app/data-structures/constants';
 import { RendererSingleton } from 'src/app/services/renderer-singleton';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { UndoRedoService } from '../../undo-redo/undo-redo.service';
@@ -23,7 +24,7 @@ export class AerosolGeneratorService extends AbstractWritingTool {
   }
   set _sprayDiameter(diameter: number) {
     this.sprayDiameter = diameter;
-    this.dotRadius = diameter / 4;
+    this.dotRadius = diameter / DOT_RADIUS_RATIO;
   }
   constructor(protected undoRedoService: UndoRedoService,
               protected mouse: MousePositionService) {

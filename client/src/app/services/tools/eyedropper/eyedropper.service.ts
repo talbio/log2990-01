@@ -41,6 +41,8 @@ export class EyedropperService {
           alert(`Object id is "${object.id}" and this case is not treated!`);
         }
         break;
+      case 'circle':
+        // Same as ellipse
       case 'ellipse':
         foundColor = object.getAttribute('fill') as string;
         break;

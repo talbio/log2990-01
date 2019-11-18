@@ -9,7 +9,7 @@ import { LineGeneratorService } from '../line-generator/line-generator.service';
 export class ColorApplicatorService implements CommandGenerator {
 
   private readonly CLOSED_FORMS = ['rect', 'polygon', 'ellipse'];
-  private readonly TREATED_ELEMENTS = ['path', 'polyline'].concat(this.CLOSED_FORMS);
+  private readonly TREATED_ELEMENTS = ['path', 'polyline', 'circle'].concat(this.CLOSED_FORMS);
 
   constructor(private lineGenerator: LineGeneratorService,
               private brushGenerator: BrushGeneratorService,
@@ -29,6 +29,8 @@ export class ColorApplicatorService implements CommandGenerator {
         this.changePathColor(targetObject, newColor);
       } else if (targetObject.nodeName === 'polyline') {
         this.changePolylineColor(targetObject, newColor);
+      } else if (targetObject.nodeName === 'circle') {
+        // this.changeAerosolColor(targetObject, newColor);
       }
     }
   }
