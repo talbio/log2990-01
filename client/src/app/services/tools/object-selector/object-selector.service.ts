@@ -112,17 +112,18 @@ export class ObjectSelectorService {
     drawings.forEach((svgElement: SVGElement) => {
       if (this.isElementInsideSelection(svgElement) && !this.selectedElements.includes(svgElement)) {
         this.selectedElements.push(svgElement);
-
-        if (svgElement.id.startsWith('penPath')) {
-                  // Remove this instance since it will be pushed with foreach
-                  this.selectedElements.pop();
-                  drawings.forEach((element) => {
-                    if (element.id === svgElement.id) {
-                      this.selectedElements.push(element as SVGElement);
-                    }
-                  }); }
-    }});
-}
+        if (svgElement.id.startsWith('penPath') || svgElement.id.startsWith('featherPenPath')) {
+          // Remove this instance since it will be pushed with foreach
+          this.selectedElements.pop();
+          drawings.forEach((element) => {
+            if (element.id === svgElement.id) {
+              this.selectedElements.push(element as SVGElement);
+            }
+          });
+        }
+      }
+    });
+  }
 
   isElementInsideSelection(element: SVGElement): boolean {
     const selectionRectangle = this.selectorRect.getBoundingClientRect();
