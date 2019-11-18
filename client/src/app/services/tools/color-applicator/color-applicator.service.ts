@@ -34,7 +34,7 @@ export class ColorApplicatorService implements CommandGenerator {
       } else if (targetObject.nodeName === 'polyline') {
         this.changePolylineColor(targetObject, newColor);
       } else if (targetObject.nodeName === 'circle') {
-        // this.changeAerosolColor(targetObject, newColor);
+        this.changeAerosolColor(targetObject, newColor);
       }
     }
   }
@@ -132,7 +132,7 @@ export class ColorApplicatorService implements CommandGenerator {
       const polygons: NodeListOf<SVGElement> = RendererSingleton.canvas.querySelectorAll('polygon');
       const featherTable: SVGElement[] = [];
       const ancientColor: string = targetObject.getAttribute('fill') as string;
-      polygons.forEach((polygon) => {
+      polygons.forEach((polygon: SVGElement) => {
         if (polygon.id === targetObject.id) {
             polygon.setAttribute('stroke', newColor);
             polygon.setAttribute('fill', newColor);
@@ -141,6 +141,20 @@ export class ColorApplicatorService implements CommandGenerator {
       });
       this.pushMultipleObjectsColorChangedCommand(featherTable, newColor, ancientColor);
     }
+  }
+
+  changeAerosolColor(targetObject: SVGElement, newColor: string): void {
+    const circles: NodeListOf<SVGElement> = RendererSingleton.canvas.querySelectorAll('circle');
+    const aerosolTable: SVGElement[] = [];
+    const ancientColor: string = targetObject.getAttribute('fill') as string;
+    circles.forEach((circle: SVGElement) => {
+      if (circle.id === targetObject.id) {
+        circle.setAttribute('stroke', newColor);
+        circle.setAttribute('fill', newColor);
+        aerosolTable.push(circle);
+      }
+    });
+    this.pushMultipleObjectsColorChangedCommand(aerosolTable, newColor, ancientColor);
   }
 
   private isClosedForm(nodeName: string): boolean {

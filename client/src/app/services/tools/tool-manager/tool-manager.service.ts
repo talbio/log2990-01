@@ -283,6 +283,8 @@ export class ToolManagerService {
         return this.lineGenerator;
       case 'image':
         return this.emojiGenerator;
+      case 'circle':
+        return this.aerosolGenerator;
       default:
         return undefined;
     }
@@ -296,7 +298,7 @@ export class ToolManagerService {
       const childCast = child as SVGElement;
       const generator: AbstractGenerator | undefined = this.returnGeneratorFromElement(childCast);
       if (generator) {
-        if (generator === this.penGenerator || generator === this.featherGenerator) {
+        if (this.isMultiplePartItemsGenerator(generator)) {
           const index = multiplePartItemsIdList.indexOf(childCast.id);
           if (index === -1) {
             // This is a new pen path
@@ -376,5 +378,19 @@ export class ToolManagerService {
         this.activeGenerator = undefined;
         break;
     }
+  }
+  isMultiplePartItemsGenerator(generator: AbstractGenerator): boolean {
+    let isMultiplePart = false;
+    const multiplePartItemGenerators: AbstractGenerator[] = [
+      this.featherGenerator,
+      this.penGenerator,
+      this.aerosolGenerator,
+    ];
+    multiplePartItemGenerators.forEach((multiplePartItemGenerator: AbstractGenerator) => {
+      if (generator === multiplePartItemGenerator) {
+        isMultiplePart = true;
+      }
+    });
+    return isMultiplePart;
   }
 }

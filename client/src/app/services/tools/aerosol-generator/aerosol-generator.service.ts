@@ -50,6 +50,7 @@ export class AerosolGeneratorService extends AbstractWritingTool {
   finishElement(): void {
     this.mouseDown = false;
     this.stopSpray();
+    this.currentElementsNumber += 1;
     this.pushGeneratorCommand(...this.dotArray);
     this.dotArray = [];
     this.subpathIndex = 0;
@@ -108,7 +109,7 @@ export class AerosolGeneratorService extends AbstractWritingTool {
       ['r', `${this.dotRadius}`],
       ['cx', `${coordinates[0]}`],
       ['cy', `${coordinates[1]}`],
-      ['stroke', 'transparent'],
+      ['stroke', `${color}`],
       ['fill', `${color}`],
     );
     this.drawElement(dot, properties);
