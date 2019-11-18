@@ -18,14 +18,15 @@
             tickInterval="1">
 </mat-slider>
 
-<mat-checkbox>Activer le magnétisme: </mat-checkbox>
+<div>
+<mat-checkbox [(ngModel)]="this.gridService._isMagnetic" >Magnétisme </mat-checkbox>
+</div>
 
+<div>
 <mat-label>Sélection du point de magnétisme:</mat-label>
-
-<div style = "padding-top: 20px">
 <svg >
     <rect x="10" y="10" width="100" height="50" stroke = "black" fill = "transparent" />
     <circle *ngFor="let dot of selectionDots; let i = index" attr.cx="{{dot.x}}" attr.cy="{{dot.y}}" r="5" stroke="black" attr.fill= "{{dot.color}}" 
-    (click) = "setMagneticDot(i)" />
+    (click) = "showSelectedMagneticDot(i); this.gridService.setMagneticDot(i)" />
   </svg>
 </div>

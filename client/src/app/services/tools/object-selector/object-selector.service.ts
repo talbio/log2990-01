@@ -3,7 +3,8 @@ import { Colors } from 'src/app/data-structures/colors';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
 import { setTranslationAttribute } from '../../utilitary-functions/transform-functions';
-import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
+import { GridTogglerService } from '../grid/grid-toggler.service';
+import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 
 const STROKE_COLOR = Colors.BLACK;
 
@@ -39,7 +40,8 @@ export class ObjectSelectorService {
   startY: number;
 
   constructor(private mousePosition: MousePositionService,
-              private rectangleGenerator: RectangleGeneratorService) {
+              private rectangleGenerator: RectangleGeneratorService,
+              private grid: GridTogglerService) {
     this.hasBoundingRect = false;
     this.mouseDown = false;
     this.selectedElements = [];
@@ -77,8 +79,8 @@ export class ObjectSelectorService {
         this.startY = this.mousePosition.canvasMousePositionY;
       }
     } else {
-        this.selectedElements = [];
-        this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
+      this.selectedElements = [];
+      this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
     }
   }
 
@@ -114,15 +116,17 @@ export class ObjectSelectorService {
         this.selectedElements.push(svgElement);
 
         if (svgElement.id.startsWith('penPath')) {
-                  // Remove this instance since it will be pushed with foreach
-                  this.selectedElements.pop();
-                  drawings.forEach((element) => {
-                    if (element.id === svgElement.id) {
-                      this.selectedElements.push(element as SVGElement);
-                    }
-                  }); }
-    }});
-}
+          // Remove this instance since it will be pushed with foreach
+          this.selectedElements.pop();
+          drawings.forEach((element) => {
+            if (element.id === svgElement.id) {
+              this.selectedElements.push(element as SVGElement);
+            }
+          });
+        }
+      }
+    });
+  }
 
   isElementInsideSelection(element: SVGElement): boolean {
     const selectionRectangle = this.selectorRect.getBoundingClientRect();
@@ -182,12 +186,12 @@ export class ObjectSelectorService {
       top: MAX_CANVAS_HEIGHT,
     };
 
-    this.selectedElements.forEach( (svgElement: SVGElement) => {
+    this.selectedElements.forEach((svgElement: SVGElement) => {
       const elementClientRectLeft = svgElement.getBoundingClientRect().left;
       const elementClientRectRight = svgElement.getBoundingClientRect().right;
       const elementClientRectTop = svgElement.getBoundingClientRect().top;
       const elementClientRectBottom = svgElement.getBoundingClientRect().bottom;
-      if (elementClientRectLeft < boundingRect.left ) {
+      if (elementClientRectLeft < boundingRect.left) {
         boundingRect.left = elementClientRectLeft;
       }
       if (elementClientRectRight > boundingRect.right) {
@@ -250,14 +254,59 @@ export class ObjectSelectorService {
     }
   }
   translate() {
-    const xMove = this.mousePosition.canvasMousePositionX - this.startX;
-    const yMove = this.mousePosition.canvasMousePositionY - this.startY;
+    if (this.grid.isMagnetic) {
+      this.translateWithMagnetism();
+    } else {
+      const xMove = this.mousePosition.canvasMousePositionX - this.startX;
+      const yMove = this.mousePosition.canvasMousePositionY - this.startY;
+      this.selectedElements.forEach((svgElement: SVGElement) => {
+        setTranslationAttribute(svgElement, xMove, yMove);
+        this.startX = this.mousePosition.canvasMousePositionX;
+        this.startY = this.mousePosition.canvasMousePositionY;
+      });
+      setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
+    }
+  }
+
+  translateWithMagnetism() {
+    const newPosition: [number, number] = this.calculateNewPosition();
+    const xMove = newPosition[0] - this.startX;
+    const yMove = newPosition[1] - this.startY;
     this.selectedElements.forEach((svgElement: SVGElement) => {
       setTranslationAttribute(svgElement, xMove, yMove);
-      this.startX = this.mousePosition.canvasMousePositionX;
-      this.startY = this.mousePosition.canvasMousePositionY;
+      this.startX = this.grid.magneticDot.x - this.startX;
+      this.startY = this.grid.magneticDot.y - this.startY;
     });
     setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
   }
 
+  calculateNewPosition(): [number , number ] {
+    this.grid.setSelectedDotPosition(this.getBoundingRectDimensions() as DOMRect);
+    const movement: [number , number] = [0, 0];
+    const distToClosestVerticalLine = this.grid.getDistanceToClosestVerticalLine();
+    const distToClosestHorizontalLine = this.grid.getDistanceToClosestHorizontalLine();
+    if (this.isClosestLineVertical(distToClosestVerticalLine, distToClosestHorizontalLine) &&
+      this.isCloseEnough(distToClosestVerticalLine)) {
+      movement[0] = this.grid.getClosestVerticalLine();
+      movement[1] = this.grid.magneticDot.y;
+    }
+    if (this.isClosestLineHorizontal(distToClosestVerticalLine, distToClosestHorizontalLine) &&
+      this.isCloseEnough(distToClosestHorizontalLine)) {
+      movement[0] = this.grid.magneticDot.x;
+      movement[1] = this.grid.getClosestHorizontalLine();
+    }
+    return movement;
+  }
+
+  isCloseEnough(distance: number): boolean {
+    return (distance < (this.grid._gridSize / 2));
+  }
+
+  isClosestLineVertical(distToClosestVerticalLine: number, distToClosestHorizontalLine: number): boolean {
+    return (Math.abs(distToClosestVerticalLine) < Math.abs(distToClosestHorizontalLine));
+  }
+
+  isClosestLineHorizontal(distToClosestVerticalLine: number, distToClosestHorizontalLine: number): boolean {
+    return (Math.abs(distToClosestVerticalLine) > Math.abs(distToClosestHorizontalLine));
+  }
 }
