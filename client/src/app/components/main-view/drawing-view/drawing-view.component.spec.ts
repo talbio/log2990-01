@@ -8,6 +8,7 @@ import { MatSliderChange } from '@angular/material';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/line-styles';
 import { PlotType } from 'src/app/data-structures/plot-type';
+import { AerosolGeneratorService } from 'src/app/services/tools/aerosol-generator/aerosol-generator.service';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
@@ -54,6 +55,7 @@ const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['get', 'post']);
 
 const DRAWING_SERVICES = [
+  AerosolGeneratorService,
   RectangleGeneratorService,
   EllipseGeneratorService,
   EmojiGeneratorService,

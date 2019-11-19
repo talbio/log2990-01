@@ -5,6 +5,7 @@ import {ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2} from '@angula
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { AerosolGeneratorService } from 'src/app/services/tools/aerosol-generator/aerosol-generator.service';
 import { ClipboardService } from 'src/app/services/tools/clipboard/clipboard.service';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
@@ -50,6 +51,7 @@ const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['get', 'post']);
 
 const DRAWING_SERVICES = [
+  AerosolGeneratorService,
   RectangleGeneratorService,
   EllipseGeneratorService,
   EmojiGeneratorService,

@@ -6,6 +6,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { RendererSingleton } from 'src/app/services/renderer-singleton';
+import { AerosolGeneratorService } from 'src/app/services/tools/aerosol-generator/aerosol-generator.service';
 import { EraserService } from 'src/app/services/tools/eraser/eraser.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
 import { Tools } from '../../../data-structures/tools';
@@ -19,6 +20,7 @@ import { ColorService } from '../../../services/tools/color/color.service';
 import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
 import { EmojiGeneratorService } from '../../../services/tools/emoji-generator/emoji-generator.service';
 import { EyedropperService } from '../../../services/tools/eyedropper/eyedropper.service';
+import { FeatherPenGeneratorService } from '../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
 import { ObjectSelectorService } from '../../../services/tools/object-selector/object-selector.service';
@@ -34,7 +36,6 @@ import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-at
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 // import { UndoRedoService } from './../../../services/undo-redo/undo-redo.service';
 import { DrawingViewComponent } from './drawing-view.component';
-import { FeatherPenGeneratorService } from '../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
@@ -51,6 +52,7 @@ const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['get', 'post']);
 
 const DRAWING_SERVICES = [
+  AerosolGeneratorService,
   RectangleGeneratorService,
   EllipseGeneratorService,
   EmojiGeneratorService,

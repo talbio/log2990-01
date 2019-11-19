@@ -6,6 +6,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { RendererSingleton } from 'src/app/services/renderer-singleton';
+import { AerosolGeneratorService } from 'src/app/services/tools/aerosol-generator/aerosol-generator.service';
 import { EraserService } from 'src/app/services/tools/eraser/eraser.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
 import { Tools } from '../../../data-structures/tools';
@@ -52,6 +53,7 @@ const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['get', 'post']);
 
 const DRAWING_SERVICES = [
+  AerosolGeneratorService,
   RectangleGeneratorService,
   EllipseGeneratorService,
   EmojiGeneratorService,
