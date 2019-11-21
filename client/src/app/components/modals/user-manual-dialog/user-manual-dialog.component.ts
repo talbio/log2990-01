@@ -7,8 +7,6 @@ interface IShortcut {
     keys: string;
 }
 
-
-
 @Component({
     selector: 'app-user-manual-dialog',
     templateUrl: './user-manual-dialog.component.html',
@@ -17,7 +15,8 @@ interface IShortcut {
 
 export class UserManualDialogComponent {
     protected readonly DIALOG_TITLE = 'Manuel d\'instructions';
-    protected readonly userManualSections: string[] = ['shortcuts', 'pencil', 'pen', 'rectangle']
+    protected readonly userManualSections: string[] = ['Barre latérale', 'Outils d\'écriture',
+    'Outils de formes', 'Liste des raccourcis'];
     protected readonly FILE_SHORTCUTS: IShortcut[] =
         [{ description: 'Créer un nouveau dessin', keys: 'Ctrl-O' },
         { description: 'Sauvegarder le dessin', keys: 'Ctrl-S' },
