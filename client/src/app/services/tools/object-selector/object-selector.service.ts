@@ -270,45 +270,44 @@ export class ObjectSelectorService {
 
   translateWithMagnetism() {
     const newPosition: [number, number] =
-    this.getTranslationWithMagnetismValue(this.mousePosition.canvasMousePositionX, this.mousePosition.canvasMousePositionY);
+    this.getTranslationWithMagnetismValue();
     const xMove = newPosition[0] - this.startX;
     const yMove = newPosition[1] - this.startY;
     this.selectedElements.forEach((svgElement: SVGElement) => {
       setTranslationAttribute(svgElement, xMove, yMove);
 
-      // doit representer le centre de la boite peut importe le point choisi
+      // doit representer le centre de la boite peu importe le point choisi
       this.startX = this.grid.magneticDot.x + (this.getBoundingRectDimensions().width / 2 );
       this.startY = this.grid.magneticDot.y + (this.getBoundingRectDimensions().width / 2 );
     });
     setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
   }
 
-  getTranslationWithMagnetismValue( xMove: number, yMove: number): [number , number ] {
-
+  getTranslationWithMagnetismValue(): [number , number ] {
     // constantly ajust selected dot position to know where it is (works)
     this.grid.setSelectedDotPosition(this.getBoundingRectDimensions() as DOMRect);
     // set default position to initial position
     const movement: [number , number] = [this.grid.magneticDot.x, this.grid.magneticDot.y];
 
-    const distToClosestVerticalLine = this.grid.getDistanceToClosestVerticalLine();
-    const distToClosestHorizontalLine = this.grid.getDistanceToClosestHorizontalLine();
-    if (this.isCloseEnough(distToClosestVerticalLine) && this.isMovingInRightDirection(xMove, distToClosestVerticalLine)) {
-      movement[0] = (this.grid.getClosestVerticalLine() * this.grid._gridSize);
-    }
-    if (this.isClosestLineHorizontal(distToClosestVerticalLine, distToClosestHorizontalLine) &&
-      this.isCloseEnough(distToClosestHorizontalLine) && this.isMovingInRightDirection(yMove, distToClosestHorizontalLine)) {
-      movement[1] = (this.grid.getClosestHorizontalLine() * this.grid._gridSize);
-    }
+    // const distToClosestVerticalLine = this.grid.getDistanceToClosestVerticalLine();
+    // const distToClosestHorizontalLine = this.grid.getDistanceToClosestHorizontalLine();
+
+    movement[0] = (this.grid.getClosestVerticalLine());
+    movement[1] = (this.grid.getClosestHorizontalLine());
+
+    console.log(movement);
     return movement;
   }
 
-  isMovingInRightDirection(xMove: number, distance: number): boolean {
-    return ((xMove > 0 && distance > 0) || (xMove < 0 && distance < 0));
-  }
+  // isMovingInRightDirection(initialPosition: number, distance: number): boolean {
+  //   // not working
+  //   const direction = this.mousePosition.canvasMousePositionX - initialPosition;
+  //   return ((direction > 0 && distance > 0) || (direction < 0 && distance < 0));
+  // }
 
-  isCloseEnough(distance: number): boolean {
-    return (distance < (this.grid._gridSize / 2));
-  }
+  // isCloseEnough(distance: number): boolean {
+  //   return (distance < (this.grid._gridSize / 2));
+  // }
 
   isClosestLineVertical(distToClosestVerticalLine: number, distToClosestHorizontalLine: number): boolean {
     return (Math.abs(distToClosestVerticalLine) < Math.abs(distToClosestHorizontalLine));

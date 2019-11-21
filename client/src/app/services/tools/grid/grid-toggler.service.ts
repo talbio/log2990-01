@@ -81,21 +81,23 @@ export class GridTogglerService {
   }
 
   getClosestVerticalLine(): number {
-    return Math.round(this.magneticDot.x / this.gridSize);
+    console.log(Math.round(this.magneticDot.x / this.gridSize) * this.gridSize)
+    return Math.round(this.magneticDot.x / this.gridSize) * this.gridSize;
   }
+
   getDistanceToClosestVerticalLine(): number {
     const closestVerticalLine = this.getClosestVerticalLine();
-    const distanceToLine = (closestVerticalLine - (this.magneticDot.x / this.gridSize));
+    const distanceToLine = (closestVerticalLine - this.magneticDot.x);
     return distanceToLine;
   }
 
   getClosestHorizontalLine(): number {
-    return Math.round(this.magneticDot.y / this.gridSize);
+    return Math.round(this.magneticDot.y / this.gridSize) * this.gridSize;
   }
 
   getDistanceToClosestHorizontalLine(): number {
     const closestHorizontalLine = this.getClosestHorizontalLine();
-    const distanceToLine = (closestHorizontalLine - (this.magneticDot.y / this.gridSize));
+    const distanceToLine = (closestHorizontalLine - this.magneticDot.y );
     return distanceToLine;
   }
 
