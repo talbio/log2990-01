@@ -269,37 +269,36 @@ export class ObjectSelectorService {
   }
 
   translateWithMagnetism() {
-    let xMove: number = this.mousePosition.canvasMousePositionX  - this.startX;
-    let yMove: number = this.mousePosition.canvasMousePositionY - this.startY; //movement without magnetism
-    const newPosition: [number, number] = this.addMagnetismEffect(xMove, yMove); //position wanted by magnetism
-    xMove = newPosition[0] - this.startX;
-    yMove = newPosition[1] - this.startY;
+    const newPosition: [number, number] =
+    this.getTranslationWithMagnetismValue(this.mousePosition.canvasMousePositionX, this.mousePosition.canvasMousePositionY);
+    const xMove = newPosition[0] - this.startX;
+    const yMove = newPosition[1] - this.startY;
     this.selectedElements.forEach((svgElement: SVGElement) => {
       setTranslationAttribute(svgElement, xMove, yMove);
-      this.startX = this.grid.magneticDot.x + (this.getBoundingRectDimensions().width / 2 ); // doit representer le centre de la boite
+
+      // doit representer le centre de la boite peut importe le point choisi
+      this.startX = this.grid.magneticDot.x + (this.getBoundingRectDimensions().width / 2 );
       this.startY = this.grid.magneticDot.y + (this.getBoundingRectDimensions().width / 2 );
     });
     setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
-    console.log(this.grid.magneticDot);
   }
 
-  addMagnetismEffect( xMove: number, yMove: number): [number , number ] {
-    //debugger
-    this.grid.setSelectedDotPosition(this.getBoundingRectDimensions() as DOMRect); //ajust selected dot position (works)
+  getTranslationWithMagnetismValue( xMove: number, yMove: number): [number , number ] {
+
+    // constantly ajust selected dot position to know where it is (works)
+    this.grid.setSelectedDotPosition(this.getBoundingRectDimensions() as DOMRect);
+    // set default position to initial position
     const movement: [number , number] = [this.grid.magneticDot.x, this.grid.magneticDot.y];
+
     const distToClosestVerticalLine = this.grid.getDistanceToClosestVerticalLine();
     const distToClosestHorizontalLine = this.grid.getDistanceToClosestHorizontalLine();
-    if (this.isClosestLineVertical(distToClosestVerticalLine, distToClosestHorizontalLine) &&
-      this.isCloseEnough(distToClosestVerticalLine) && this.isMovingInRightDirection(xMove, distToClosestVerticalLine)) {
+    if (this.isCloseEnough(distToClosestVerticalLine) && this.isMovingInRightDirection(xMove, distToClosestVerticalLine)) {
       movement[0] = (this.grid.getClosestVerticalLine() * this.grid._gridSize);
-      movement[1] = this.grid.magneticDot.y;
     }
     if (this.isClosestLineHorizontal(distToClosestVerticalLine, distToClosestHorizontalLine) &&
       this.isCloseEnough(distToClosestHorizontalLine) && this.isMovingInRightDirection(yMove, distToClosestHorizontalLine)) {
-      movement[0] = this.grid.magneticDot.x; //ajust to center dot
       movement[1] = (this.grid.getClosestHorizontalLine() * this.grid._gridSize);
     }
-
     return movement;
   }
 
