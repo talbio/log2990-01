@@ -8,7 +8,17 @@
         <mat-icon (click)="showUserManualSection.set('Barre latérale', false)">expand_more</mat-icon> Présentation de l'espace de travail
     </div>
     <div class="section" *ngIf="showUserManualSection.get('Barre latérale')">
-        <p>Présentation de l'espace de travail </p>
+        <p>Voici le rôle des différents onglets de la barre d'outils:</p>
+
+        <li><img src= {{PENCIL}} alt ="pencil" width="40" height="40"> Affiche la liste d'outils d'écriture.</li>
+        <li> <img src= {{SHAPE}} alt ="pencil" width="40" height="40"> Affiche la liste d'outils d'ajout de formes.</li>
+        <li> <img src= {{CLIPBOARD}} alt ="pencil" width="40" height="40"> Affiche les options du presse-papier; copier, coller, couper, supprimer et dupliquer</li>
+        <li> <img src= {{UNDO}} alt ="pencil" width="40" height="40"> Cet onglet permet d'annuler la dernière modification de l'espace de travail</li>
+        <li> <img src= {{REDO}} alt ="pencil" width="40" height="40"> Cet onglet permet de refaire la dernière modification si le bouton 'annuler' a été utilisé.</li>
+        <li><img src= {{COLOR}} alt ="pencil" width="40" height="80"> Ceci représente la couleur primaire et secondaire. Sélectionner une de ces couleurs a comme effet d'ouvrir l'outil de sélection de couleurs. Puis, l'icône en forme de goutte permet l'inversion des couleurs primaires et secondaires. </li>
+        <li><img src= {{NEW}} alt ="pencil" width="40" height="40"> Cet onglet permet de modifier les paramètres par défaut de la zone de travail.</li>
+        <li> <img src= {{SAVE}} alt ="pencil" width="40" height="40"> Cet onglet permet de sauvegarder un dessin.</li>
+        <li> <img src= {{OPEN}} alt ="pencil" width="40" height="40"> Cet onglet permet d'ouvrir un dessin.</li>
     </div>
 
     <div class="section-title" *ngIf="!showUserManualSection.get('Outils d\'écriture')">

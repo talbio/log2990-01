@@ -7,6 +7,8 @@ interface IShortcut {
     keys: string;
 }
 
+
+
 @Component({
     selector: 'app-user-manual-dialog',
     templateUrl: './user-manual-dialog.component.html',
@@ -14,6 +16,15 @@ interface IShortcut {
 })
 
 export class UserManualDialogComponent {
+    protected readonly PENCIL = '../../../../assets/user-manual-icons/pencil.png';
+    protected readonly SHAPE = '../../../../assets/user-manual-icons/shape.png';
+    protected readonly UNDO = '../../../../assets/user-manual-icons/undo.png';
+    protected readonly REDO = '../../../../assets/user-manual-icons/redo.png';
+    protected readonly COLOR = '../../../../assets/user-manual-icons/color.png';
+    protected readonly NEW = '../../../../assets/user-manual-icons/newDrawing.png';
+    protected readonly SAVE = '../../../../assets/user-manual-icons/saveDrawing.png';
+    protected readonly OPEN = '../../../../assets/user-manual-icons/openDrawing.png';
+    protected readonly CLIPBOARD = '../../../../assets/user-manual-icons/clipboard.png';
     protected readonly DIALOG_TITLE = 'Manuel d\'instructions';
     protected readonly userManualSections: string[] = ['Barre latérale', 'Outils d\'écriture',
     'Outils de formes', 'Liste des raccourcis'];
