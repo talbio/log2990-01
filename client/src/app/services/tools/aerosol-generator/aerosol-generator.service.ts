@@ -8,6 +8,7 @@ import { RendererSingleton } from 'src/app/services/renderer-singleton';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 
+const SPRAY_URL = 'url(#spray)';
 @Injectable()
 export class AerosolGeneratorService extends AbstractWritingTool {
 
@@ -100,7 +101,6 @@ export class AerosolGeneratorService extends AbstractWritingTool {
   }
 
   generateDot(color: string): void {
-    // TODO
     const dot: SVGElement = RendererSingleton.renderer.createElement('circle', 'svg');
     const coordinates: number[] = this.randomPointInRadius();
     const properties: [string, string][] = [];
@@ -111,6 +111,7 @@ export class AerosolGeneratorService extends AbstractWritingTool {
       ['cy', `${coordinates[1]}`],
       ['stroke', `${color}`],
       ['fill', `${color}`],
+      ['filter', `${SPRAY_URL}`],
     );
     this.drawElement(dot, properties);
     this.dotArray[this.subpathIndex++] = dot;

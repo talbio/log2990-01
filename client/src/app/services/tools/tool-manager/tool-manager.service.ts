@@ -22,7 +22,7 @@ import { RectangleGeneratorService } from '../rectangle-generator/rectangle-gene
 export class ToolManagerService {
 
   private readonly DEFAULT_NUMBER_OF_ELEMENTS: number = 2;
-  private readonly DEFAULT_NUMBER_OF_DEFINITIONS: number = 7;
+  private readonly DEFAULT_NUMBER_OF_DEFINITIONS: number = 8;
   private numberOfElements: number;
   private canvasElement: SVGElement;
   private activeTool: Tools;
