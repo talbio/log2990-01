@@ -16,10 +16,10 @@ export class GridTogglerService {
   // Defined at onInit in workzone component
   private grid: SVGElement;
   private gridPattern: SVGElement;
-  private selectedDot: number;
+  selectedDot: number;
 
   constructor() {
-    this.gridSize = 50;
+    this.gridSize = 100;
     this.gridOpacity = 0.4;
     this.isMagnetic = true;
     this.selectedDot = 0;
@@ -80,26 +80,33 @@ export class GridTogglerService {
     this.selectedDot = dotNumber;
   }
 
-  getClosestVerticalLine(): number {
-    console.log(Math.round(this.magneticDot.x / this.gridSize) * this.gridSize)
-    return Math.round(this.magneticDot.x / this.gridSize) * this.gridSize;
+  getClosestVerticalLine(direction: boolean): number {
+    if (!direction) {
+      console.log('Je cherche la ligne a gauche');
+      return Math.floor(this.magneticDot.x / this.gridSize) * this.gridSize;
+    } else {
+      console.log('Je cherche la ligne a droite');
+      return Math.ceil(this.magneticDot.x / this.gridSize) * this.gridSize;
+    }
   }
 
-  getDistanceToClosestVerticalLine(): number {
-    const closestVerticalLine = this.getClosestVerticalLine();
-    const distanceToLine = (closestVerticalLine - this.magneticDot.x);
-    return distanceToLine;
+  getClosestHorizontalLine(direction: boolean): number {
+    if (!direction) {
+      console.log('Je cherche la ligne en haut');
+      return Math.floor(this.magneticDot.y / this.gridSize) * this.gridSize;
+    } else {
+      console.log('Je cherche la ligne en bas');
+      return Math.ceil(this.magneticDot.y / this.gridSize) * this.gridSize;
+    }
   }
 
-  getClosestHorizontalLine(): number {
-    return Math.round(this.magneticDot.y / this.gridSize) * this.gridSize;
-  }
+  // getDistanceToClosestVerticalLine(): number {
+  //   return (this.getClosestVerticalLine() - this.magneticDot.x);
+  // }
 
-  getDistanceToClosestHorizontalLine(): number {
-    const closestHorizontalLine = this.getClosestHorizontalLine();
-    const distanceToLine = (closestHorizontalLine - this.magneticDot.y );
-    return distanceToLine;
-  }
+  // getDistanceToClosestHorizontalLine(): number {
+  //   return (this.getClosestHorizontalLine() - this.magneticDot.y );
+  // }
 
   setSelectedDotPosition(selectionBox: DOMRect): void {
     let x = 0;

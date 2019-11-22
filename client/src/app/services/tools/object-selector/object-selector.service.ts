@@ -38,6 +38,8 @@ export class ObjectSelectorService {
   private mouseDown: boolean;
   startX: number;
   startY: number;
+  initialY: number;
+  initialX: number;
 
   constructor(private mousePosition: MousePositionService,
               private rectangleGenerator: RectangleGeneratorService,
@@ -47,6 +49,8 @@ export class ObjectSelectorService {
     this.selectedElements = [];
     this.startX = 0;
     this.startY = 0;
+    this.initialX = 0;
+    this.initialY = 0;
   }
 
   get canvasBoxRect(): BoundingRect {
@@ -77,6 +81,8 @@ export class ObjectSelectorService {
         // translate
         this.startX = this.mousePosition.canvasMousePositionX;
         this.startY = this.mousePosition.canvasMousePositionY;
+        this.initialY = this.mousePosition.canvasMousePositionY;
+        this.initialX = this.mousePosition.canvasMousePositionX;
       }
     } else {
       this.selectedElements = [];
@@ -87,6 +93,7 @@ export class ObjectSelectorService {
   onMouseMove(currentChildPosition: number, mouseEvent: MouseEvent) {
     if (this.mouseDown) {
       if (this.hasBoundingRect && !this.isMouseOutsideOfBoundingRect()) {
+        this.directionOfMouvement();
         this.translate();
       } else {
         this.updateSelection(currentChildPosition, mouseEvent);
@@ -269,41 +276,61 @@ export class ObjectSelectorService {
   }
 
   translateWithMagnetism() {
-    const newPosition: [number, number] =
+    console.log(this.grid.magneticDot);
+    const newPosition: number[] =
     this.getTranslationWithMagnetismValue();
-    const xMove = newPosition[0] - this.startX;
-    const yMove = newPosition[1] - this.startY;
+    const xMove = newPosition[0];
+    const yMove = newPosition[1];
     this.selectedElements.forEach((svgElement: SVGElement) => {
       setTranslationAttribute(svgElement, xMove, yMove);
-
-      // doit representer le centre de la boite peu importe le point choisi
-      this.startX = this.grid.magneticDot.x + (this.getBoundingRectDimensions().width / 2 );
-      this.startY = this.grid.magneticDot.y + (this.getBoundingRectDimensions().width / 2 );
     });
     setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
   }
 
-  getTranslationWithMagnetismValue(): [number , number ] {
+  getTranslationWithMagnetismValue(): number[] {
     // constantly ajust selected dot position to know where it is (works)
     this.grid.setSelectedDotPosition(this.getBoundingRectDimensions() as DOMRect);
     // set default position to initial position
-    const movement: [number , number] = [this.grid.magneticDot.x, this.grid.magneticDot.y];
-
-    // const distToClosestVerticalLine = this.grid.getDistanceToClosestVerticalLine();
-    // const distToClosestHorizontalLine = this.grid.getDistanceToClosestHorizontalLine();
-
-    movement[0] = (this.grid.getClosestVerticalLine());
-    movement[1] = (this.grid.getClosestHorizontalLine());
-
-    console.log(movement);
-    return movement;
+    const xMagnetic = this.grid.magneticDot.x;
+    const yMagnetic = this.grid.magneticDot.y;
+    const directions = this.directionOfMouvement();
+    const vertical = this.grid.getClosestVerticalLine(directions[0]);
+    const horizontal = this.grid.getClosestHorizontalLine(directions[1]);
+    let xMove: number;
+    let yMove: number;
+    if (directions[0]) {
+      xMove = -(xMagnetic - vertical);
+    } else {
+      xMove = -(vertical - xMagnetic);
+    }
+    if (directions[1]) {
+      yMove = -(yMagnetic - horizontal);
+    } else {
+      yMove = -(horizontal - yMagnetic);
+    }
+    const translationToDo = [xMove, yMove];
+    return translationToDo;
   }
 
-  // isMovingInRightDirection(initialPosition: number, distance: number): boolean {
-  //   // not working
-  //   const direction = this.mousePosition.canvasMousePositionX - initialPosition;
-  //   return ((direction > 0 && distance > 0) || (direction < 0 && distance < 0));
-  // }
+  directionOfMouvement(): boolean[] {
+    const directionX = this.mousePosition.canvasMousePositionX - this.initialX;
+    const directionY = this.mousePosition.canvasMousePositionY - this.initialY;
+    console.log(this.mousePosition.canvasMousePositionX);
+    console.log(this.mousePosition.canvasMousePositionY);
+    if (directionX < 0) {
+      if (directionY < 0) {
+        return [false, false];
+      } else {
+        return [false, true];
+      }
+    } else {
+      if (directionY < 0) {
+        return [true, false];
+      } else {
+        return [true, true];
+      }
+    }
+  }
 
   // isCloseEnough(distance: number): boolean {
   //   return (distance < (this.grid._gridSize / 2));
