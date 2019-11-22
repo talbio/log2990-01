@@ -22,6 +22,7 @@ import { EllipseToolsComponent } from './components/main-view/tools-attributes-m
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
 import { EraserToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eraser/eraser-tools.component';
 import { EyedropperToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eyedropper/eyedropper-tools.component';
+import { FeatherPenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/feather-Pen/feather-Pen-tools.component';
 import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
 import { PenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pen/pen-tools.component';
@@ -53,6 +54,7 @@ import { EllipseGeneratorService } from './services/tools/ellipse-generator/elli
 import { EmojiGeneratorService } from './services/tools/emoji-generator/emoji-generator.service';
 import { EraserService } from './services/tools/eraser/eraser.service';
 import { EyedropperService } from './services/tools/eyedropper/eyedropper.service';
+import { FeatherPenGeneratorService } from './services/tools/feather-Pen-generator/feather-Pen-generator.service';
 import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
 import { ObjectSelectorService } from './services/tools/object-selector/object-selector.service';
@@ -61,8 +63,7 @@ import { PencilGeneratorService } from './services/tools/pencil-generator/pencil
 import { PolygonGeneratorService } from './services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
-import { FeatherPenGeneratorService } from './services/tools/feather-Pen-generator/feather-Pen-generator.service';
-import { FeatherPenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/feather-Pen/feather-Pen-tools.component';
+import { TransformationService } from './services/transformation/transformation.service';
 
 const customNotifierOptions: NotifierOptions = {
   position: {
@@ -172,6 +173,7 @@ const customNotifierOptions: NotifierOptions = {
     NotifierService,
     LineGeneratorService,
     MousePositionService,
+    TransformationService,
     EyedropperService,
     ClipboardService,
     RendererSingleton,
