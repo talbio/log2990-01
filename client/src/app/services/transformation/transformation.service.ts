@@ -23,6 +23,9 @@ setTranslationAttribute = (element: SVGElement, xTranslation: number, yTranslati
 }
 findTransformValues = (transformation: string, attribute: string): number[] => {
     const attributeIndex = transformation.indexOf(`${attribute}(`);
+    if (attributeIndex === -1) {
+        return [0, 0];
+    }
     const spaceIndex = transformation.indexOf(' ', attributeIndex);
     const endOfAttribute = transformation.indexOf(')', spaceIndex);
     const xValue = transformation.substring(attributeIndex + 10, spaceIndex);
