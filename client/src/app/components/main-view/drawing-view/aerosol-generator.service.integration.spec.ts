@@ -21,13 +21,20 @@ import {
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
+
+// const doNothing = () => {
+//   // Do nothing
+// };
+let timerCallBack: jasmine.Spy<InferableFunction>;
+
 describe('Aerosol integrations tests', () => {
     let component: DrawingViewComponent;
     let fixture: ComponentFixture<DrawingViewComponent>;
     // let canvasDrawer: CanvasDrawer;
 
     beforeEach(async(() => {
-    //   jasmine.clock().install();
+      timerCallBack = jasmine.createSpy('timerCallBack');
+      jasmine.clock().install();
       TestBed.configureTestingModule({
         declarations: [COMPONENTS, STUB_COMPONENTS],
         imports: [IMPORTS],
@@ -45,12 +52,11 @@ describe('Aerosol integrations tests', () => {
         // canvasDrawer = new CanvasDrawer(fixture, component);
         fixture.detectChanges();
       });
-    //   jasmine.clock().tick(1000);
     }));
-    // afterEach(() => {
-    //     jasmine.clock().uninstall();
-    // });
-    it('should create', () => {
+    afterEach(() => {
+        jasmine.clock().uninstall();
+    });
+    it('should create', async () => {
       expect(component).toBeTruthy();
     });
 
@@ -66,8 +72,11 @@ describe('Aerosol integrations tests', () => {
         const aerosolService = fixture.debugElement.injector.get(AerosolGeneratorService);
         const spraySpy = spyOn(aerosolService, 'spray').and.callThrough();
         component.workZoneComponent.onMouseDown();
+        setTimeout(() => {
+          timerCallBack();
+        }, 2000);
         // Wait since this works on an interval
-        // jasmine.clock().tick(2000);
+        jasmine.clock().tick(2001);
         component.workZoneComponent.onMouseUp();
         expect(spraySpy).toHaveBeenCalled();
         // Step 3. Expect un aerosol
