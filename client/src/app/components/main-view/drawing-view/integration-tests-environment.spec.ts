@@ -2,6 +2,7 @@ import {PortalModule} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {ComponentFixture} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
+import { TransformationService } from 'src/app/services/transformation/transformation.service';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import {AbstractWritingTool} from '../../../data-structures/abstract-writing-tool';
@@ -109,6 +110,7 @@ export const DRAWING_SERVICES = [
   ClipboardService,
   UndoRedoService,
   FeatherPenGeneratorService,
+  TransformationService,
   MousePositionService,
   ObjectSelectorService,
   GridTogglerService,

@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Colors } from 'src/app/data-structures/colors';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
-import { setTranslationAttribute } from '../../utilitary-functions/transform-functions';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
+import { TransformationService } from './../../transformation/transformation.service';
 
 const STROKE_COLOR = Colors.BLACK;
 
@@ -39,7 +39,8 @@ export class ObjectSelectorService {
   startY: number;
 
   constructor(private mousePosition: MousePositionService,
-              private rectangleGenerator: RectangleGeneratorService) {
+              private rectangleGenerator: RectangleGeneratorService,
+              private transform: TransformationService) {
     this.hasBoundingRect = false;
     this.mouseDown = false;
     this.selectedElements = [];
@@ -254,11 +255,11 @@ export class ObjectSelectorService {
     const xMove = this.mousePosition.canvasMousePositionX - this.startX;
     const yMove = this.mousePosition.canvasMousePositionY - this.startY;
     this.selectedElements.forEach((svgElement: SVGElement) => {
-      setTranslationAttribute(svgElement, xMove, yMove);
+      this.transform.setTranslationAttribute(svgElement, xMove, yMove);
       this.startX = this.mousePosition.canvasMousePositionX;
       this.startY = this.mousePosition.canvasMousePositionY;
     });
-    setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
+    this.transform.setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
   }
 
 }
