@@ -6,27 +6,12 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { RendererSingleton } from 'src/app/services/renderer-singleton';
-import { AerosolGeneratorService } from 'src/app/services/tools/aerosol-generator/aerosol-generator.service';
-import { EraserService } from 'src/app/services/tools/eraser/eraser.service';
-import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
 import { Tools } from '../../../data-structures/tools';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
-import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
-import { ClipboardService } from '../../../services/tools/clipboard/clipboard.service';
-import { ColorApplicatorService } from '../../../services/tools/color-applicator/color-applicator.service';
 import { ColorService } from '../../../services/tools/color/color.service';
-import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
-import { EmojiGeneratorService } from '../../../services/tools/emoji-generator/emoji-generator.service';
-import { EyedropperService } from '../../../services/tools/eyedropper/eyedropper.service';
 import { FeatherPenGeneratorService } from '../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
-import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
-import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
-import { ObjectSelectorService } from '../../../services/tools/object-selector/object-selector.service';
-import { PencilGeneratorService } from '../../../services/tools/pencil-generator/pencil-generator.service';
-import { PolygonGeneratorService } from '../../../services/tools/polygon-generator/polygon-generator.service';
-import { RectangleGeneratorService } from '../../../services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { ColorPaletteComponent } from '../../modals/color-picker-module/color-palette/color-palette.component';
 import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
@@ -36,6 +21,7 @@ import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-at
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 // import { UndoRedoService } from './../../../services/undo-redo/undo-redo.service';
 import { DrawingViewComponent } from './drawing-view.component';
+import { DRAWING_SERVICES } from './integration-tests-environment.spec';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
@@ -50,27 +36,6 @@ const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =
   jasmine.createSpyObj('ModalManagerService', ['showCreateDrawingDialog']);
 const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['get', 'post']);
-
-const DRAWING_SERVICES = [
-  AerosolGeneratorService,
-  RectangleGeneratorService,
-  EllipseGeneratorService,
-  EmojiGeneratorService,
-  PencilGeneratorService,
-  BrushGeneratorService,
-  ColorApplicatorService,
-  LineGeneratorService,
-  EyedropperService,
-  ClipboardService,
-  EraserService,
-  PenGeneratorService,
-  FeatherPenGeneratorService,
-  ColorService,
-  MousePositionService,
-  ObjectSelectorService,
-  GridTogglerService,
-  PolygonGeneratorService,
-];
 
 describe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;

@@ -8,23 +8,16 @@ import { MatSliderChange } from '@angular/material';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { LineDashStyle, LineJoinStyle } from 'src/app/data-structures/line-styles';
 import { PlotType } from 'src/app/data-structures/plot-type';
-import { AerosolGeneratorService } from 'src/app/services/tools/aerosol-generator/aerosol-generator.service';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
-import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
-import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
 import { Tools } from '../../../data-structures/tools';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
-import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
-import { ColorApplicatorService } from '../../../services/tools/color-applicator/color-applicator.service';
 import { ColorService } from '../../../services/tools/color/color.service';
 import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
 import { EyedropperService } from '../../../services/tools/eyedropper/eyedropper.service';
-import { FeatherPenGeneratorService } from '../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
-import { PencilGeneratorService } from '../../../services/tools/pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from '../../../services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from '../../../services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
@@ -34,9 +27,8 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
-import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
-import { EraserService } from './../../../services/tools/eraser/eraser.service';
 import { DrawingViewComponent } from './drawing-view.component';
+import { DRAWING_SERVICES } from './integration-tests-environment.spec';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
@@ -54,27 +46,6 @@ const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =
 const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['get', 'post']);
 
-const DRAWING_SERVICES = [
-  AerosolGeneratorService,
-  RectangleGeneratorService,
-  EllipseGeneratorService,
-  EmojiGeneratorService,
-  ClipboardService,
-  PencilGeneratorService,
-  BrushGeneratorService,
-  ColorApplicatorService,
-  LineGeneratorService,
-  EyedropperService,
-  ColorService,
-  ClipboardService,
-  MousePositionService,
-  ObjectSelectorService,
-  GridTogglerService,
-  PolygonGeneratorService,
-  FeatherPenGeneratorService,
-  EraserService,
-  PenGeneratorService,
-];
 describe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;

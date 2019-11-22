@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Colors } from 'src/app/data-structures/colors';
+import { Command } from 'src/app/data-structures/command';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
-import { setTranslationAttribute } from '../../utilitary-functions/transform-functions';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
+import { TransformationService } from './../../transformation/transformation.service';
+import { UndoRedoService } from './../../undo-redo/undo-redo.service';
 
 const STROKE_COLOR = Colors.BLACK;
 
@@ -32,16 +34,21 @@ export class ObjectSelectorService {
   private readonly BOUNDING_RECT_ID = 'boundingRect';
 
   selectedElements: SVGElement[];
-
+  private isTranslating: boolean;
+  private initialTranslateValues: Map<SVGElement, string>;
   hasBoundingRect: boolean;
   private mouseDown: boolean;
   startX: number;
   startY: number;
 
   constructor(private mousePosition: MousePositionService,
-              private rectangleGenerator: RectangleGeneratorService) {
+              private rectangleGenerator: RectangleGeneratorService,
+              private transform: TransformationService,
+              private undoRedoService: UndoRedoService) {
     this.hasBoundingRect = false;
     this.mouseDown = false;
+    this.isTranslating = false;
+    this.initialTranslateValues = new Map<SVGElement, string>();
     this.selectedElements = [];
     this.startX = 0;
     this.startY = 0;
@@ -72,7 +79,8 @@ export class ObjectSelectorService {
         this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
         this.removeBoundingRect();
       } else {
-        // translate
+        // initiate translation
+        this.beginTranslation();
         this.startX = this.mousePosition.canvasMousePositionX;
         this.startY = this.mousePosition.canvasMousePositionY;
       }
@@ -84,7 +92,7 @@ export class ObjectSelectorService {
 
   onMouseMove(currentChildPosition: number, mouseEvent: MouseEvent) {
     if (this.mouseDown) {
-      if (this.hasBoundingRect && !this.isMouseOutsideOfBoundingRect()) {
+      if (this.hasBoundingRect && this.isTranslating) {
         this.translate();
       } else {
         this.updateSelection(currentChildPosition, mouseEvent);
@@ -96,7 +104,7 @@ export class ObjectSelectorService {
     if (!this.hasBoundingRect) {
       this.finishSelection();
     } else {
-      // finishTranslation
+      this.finishTranslation();
       this.mouseDown = false;
     }
   }
@@ -216,25 +224,46 @@ export class ObjectSelectorService {
   private drawBoundingRect(boundingBox: Box) {
     const boundingRect: SVGElement = RendererSingleton.renderer.createElement('svg', 'svg');
     boundingRect.setAttribute('id', 'boundingRect');
-    boundingRect.innerHTML +=
-      `<defs>
-            <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5">
-                <circle cx="5" cy="5" r="20" fill="red" />
-            </marker>
-      </defs>
-      <polyline
-        points="${boundingBox.x},${boundingBox.y}
-        ${boundingBox.x + (boundingBox.width / 2)},${boundingBox.y}
-        ${boundingBox.x + boundingBox.width},${boundingBox.y}
-        ${boundingBox.x + boundingBox.width},${boundingBox.y + (boundingBox.height / 2)}
-        ${boundingBox.x + boundingBox.width},${boundingBox.y + boundingBox.height}
-        ${boundingBox.x + (boundingBox.width / 2)},${boundingBox.y + boundingBox.height}
-        ${boundingBox.x},${boundingBox.y + boundingBox.height}
-        ${boundingBox.x},${boundingBox.y + (boundingBox.height / 2)}
-        ${boundingBox.x},${boundingBox.y}"
-        stroke="${STROKE_COLOR}" fill="transparent"
-        marker-start="url(#dot)" marker-mid="url(#dot)">
-      </polyline>`;
+    const defs: SVGElement = RendererSingleton.renderer.createElement('defs', 'svg');
+    const marker: SVGElement = RendererSingleton.renderer.createElement('marker', 'svg');
+    const circle: SVGElement = RendererSingleton.renderer.createElement('circle', 'svg');
+    const polyline: SVGElement = RendererSingleton.renderer.createElement('polyline', 'svg');
+
+    // circle attributes
+    RendererSingleton.renderer.setAttribute(circle, 'cx', '5');
+    RendererSingleton.renderer.setAttribute(circle, 'cy', '5');
+    RendererSingleton.renderer.setAttribute(circle, 'r', '20');
+    RendererSingleton.renderer.setAttribute(circle, 'fill', 'red');
+
+    // marker attributes
+    RendererSingleton.renderer.setAttribute(marker, 'id', 'dot');
+    RendererSingleton.renderer.setAttribute(marker, 'viewBox', '0 0 10 10');
+    RendererSingleton.renderer.setAttribute(marker, 'refX', '5');
+    RendererSingleton.renderer.setAttribute(marker, 'refY', '5');
+    RendererSingleton.renderer.setAttribute(marker, 'markerWidth', '5');
+    RendererSingleton.renderer.setAttribute(marker, 'markerHeight', '5');
+
+    // polyline attributes
+    RendererSingleton.renderer.setAttribute(polyline, 'points',
+      `${boundingBox.x},${boundingBox.y}
+      ${boundingBox.x + (boundingBox.width / 2)},${boundingBox.y}
+      ${boundingBox.x + boundingBox.width},${boundingBox.y}
+      ${boundingBox.x + boundingBox.width},${boundingBox.y + (boundingBox.height / 2)}
+      ${boundingBox.x + boundingBox.width},${boundingBox.y + boundingBox.height}
+      ${boundingBox.x + (boundingBox.width / 2)},${boundingBox.y + boundingBox.height}
+      ${boundingBox.x},${boundingBox.y + boundingBox.height}
+      ${boundingBox.x},${boundingBox.y + (boundingBox.height / 2)}
+      ${boundingBox.x},${boundingBox.y}`);
+    RendererSingleton.renderer.setAttribute(polyline, 'stroke', `${STROKE_COLOR}`);
+    RendererSingleton.renderer.setAttribute(polyline, 'fill', 'transparent');
+    RendererSingleton.renderer.setAttribute(polyline, 'marker-start', 'url(#dot)');
+    RendererSingleton.renderer.setAttribute(polyline, 'marker-mid', 'url(#dot)');
+
+    // nesting children
+    RendererSingleton.renderer.appendChild(marker, circle);
+    RendererSingleton.renderer.appendChild(defs, marker);
+    RendererSingleton.renderer.appendChild(boundingRect, defs);
+    RendererSingleton.renderer.appendChild(boundingRect, polyline);
     RendererSingleton.renderer.appendChild(RendererSingleton.canvas, boundingRect);
   }
 
@@ -250,15 +279,58 @@ export class ObjectSelectorService {
       this.addBoundingRect();
     }
   }
-  translate() {
+
+  translate(): void {
     const xMove = this.mousePosition.canvasMousePositionX - this.startX;
     const yMove = this.mousePosition.canvasMousePositionY - this.startY;
     this.selectedElements.forEach((svgElement: SVGElement) => {
-      setTranslationAttribute(svgElement, xMove, yMove);
+      this.transform.setTranslationAttribute(svgElement, xMove, yMove);
       this.startX = this.mousePosition.canvasMousePositionX;
       this.startY = this.mousePosition.canvasMousePositionY;
     });
-    setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
+    this.transform.setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
+  }
+
+  beginTranslation(): void {
+    this.isTranslating = true;
+    this.initialTranslateValues = this.createTranslateMap(this.selectedElements);
+  }
+
+  finishTranslation(): void {
+    this.isTranslating = false;
+    const newTranslates: Map<SVGElement, string> = this.createTranslateMap(this.selectedElements);
+    this.pushTranslateCommand(newTranslates, this.initialTranslateValues);
+  }
+  pushTranslateCommand(newTranslates: Map<SVGElement, string>, oldTranslates: Map<SVGElement, string>): void {
+    const svgElements: SVGElement[] = [...this.selectedElements];
+    svgElements.push(this.boundingRect.children[1] as SVGElement);
+    const command: Command = {
+      execute(): void {
+        svgElements.forEach((svgElement: SVGElement) =>
+          svgElement.setAttribute('transform', `${newTranslates.get(svgElement)}`));
+        },
+      unexecute(): void {
+        svgElements.forEach((svgElement: SVGElement) =>
+        svgElement.setAttribute('transform', `${oldTranslates.get(svgElement)}`));
+      },
+    };
+    this.undoRedoService.pushCommand(command);
+  }
+
+  createTranslateMap(elements: SVGElement[]): Map<SVGElement, string> {
+    const map: Map<SVGElement, string> = new Map<SVGElement, string>();
+    // Add the bounding rect line
+    const elementsWithBoundingRect: SVGElement[] = [...elements];
+    elementsWithBoundingRect.push(this.boundingRect.children[1] as SVGElement);
+    // Iterate for each elements and the bounding line
+    elementsWithBoundingRect.forEach((element: SVGElement) => {
+      // Make sure that the element has a transform attribute
+      if (!element.getAttribute('transform')) {
+        element.setAttribute('transform', '');
+      }
+      map.set(element, element.getAttribute('transform') as string);
+    });
+    return map;
   }
 
 }
