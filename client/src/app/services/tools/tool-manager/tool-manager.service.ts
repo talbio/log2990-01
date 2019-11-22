@@ -31,7 +31,7 @@ export class ToolManagerService {
   set _activeTool(tool: Tools) {
     if (this.activeTool === Tools.Selector && tool !== Tools.Selector) {
       if (this.objectSelector.hasBoundingRect) {
-        this.objectSelector.removeBoundingRect();
+        this.objectSelector.removeGBoundingRect();
         this.objectSelector.selectedElements = [];
       }
     }
