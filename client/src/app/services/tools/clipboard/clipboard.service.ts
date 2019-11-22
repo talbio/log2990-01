@@ -102,7 +102,7 @@ export class ClipboardService implements CommandGenerator {
     for (const item of this.selectedItems) {
       RendererSingleton.canvas.removeChild(item);
     }
-    this.selector.removeBoundingRect();
+    this.selector.removeGBoundingRect();
     this.selector.selectedElements = [];
     this.pushCutCommand(this.selectedItems);
   }
@@ -151,7 +151,7 @@ export class ClipboardService implements CommandGenerator {
     for (const item of this.selector.selectedElements) {
       RendererSingleton.canvas.removeChild(item);
     }
-    this.selector.removeBoundingRect();
+    this.selector.removeGBoundingRect();
     this.selector.selectedElements = [];
 
     this.pushCutCommand(this.selectedItems);
