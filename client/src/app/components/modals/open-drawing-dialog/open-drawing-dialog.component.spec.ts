@@ -20,8 +20,9 @@ import {OpenDrawingDialogComponent} from './open-drawing-dialog.component';
 /* -------------------------------- MOCK ENVIRONMENT ----------------------------------------- */
 
 const spyDialog: jasmine.SpyObj<MatDialogRef<OpenDrawingDialogComponent>> =
-  jasmine.createSpyObj('MatDialogRef', ['close']);
+  jasmine.createSpyObj('MatDialogRef', ['close', 'afterClosed']);
 spyDialog.close.and.callThrough();
+spyDialog.afterClosed.and.callFake(() => of(true));
 
 const toolManagerServiceSpy: jasmine.SpyObj<ToolManagerService> =
   jasmine.createSpyObj('ToolManagerService', ['deleteAllDrawings', 'synchronizeAllCounters']);
