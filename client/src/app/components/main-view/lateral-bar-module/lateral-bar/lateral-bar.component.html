@@ -21,7 +21,7 @@
   <!-- Tools Buttons -->
   <mat-list-item>
     <button mat-icon-button [matMenuTriggerFor]="pencilToolButton">
-      <mat-icon>create</mat-icon>
+      <mat-icon [svgIcon]="this.findActivePencilIcon(this.toolManager._activeTool)"></mat-icon>
     </button>
   </mat-list-item>
 
@@ -29,7 +29,7 @@
 
   <mat-list-item>
     <button mat-icon-button [matMenuTriggerFor]="shapeToolButton">
-      <mat-icon svgIcon="rectangle"></mat-icon>
+      <mat-icon [svgIcon]="this.findActiveShapeIcon(this.toolManager._activeTool)"></mat-icon>
     </button>
   </mat-list-item>
 
