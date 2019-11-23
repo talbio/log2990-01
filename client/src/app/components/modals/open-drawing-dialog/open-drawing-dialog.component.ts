@@ -28,6 +28,7 @@ export class OpenDrawingDialogComponent implements OnInit {
 
   protected readonly separatorKeysCodes: number[] = [ENTER, COMMA, SPACE];
   protected readonly LOCAL_OPEN_DRAWING_SUCCEEDED_MSG = `Votre dessin a bien été chargé!`;
+  protected readonly SERVER_NOT_FOUND_MSG = `L'accès au serveur est impossible. Veuillez ouvrir des dessins sauvegardés localement.`;
 
   protected selectedTags: string[];
   protected drawings: Drawing[];
@@ -55,6 +56,8 @@ export class OpenDrawingDialogComponent implements OnInit {
     this.drawingsService.httpGetDrawings().toPromise().then( (drawings: Drawing[]) => {
       if (drawings) {
         this.drawings = drawings;
+      } else {
+        this.notifier.notify('error', this.SERVER_NOT_FOUND_MSG);
       }
     });
   }
