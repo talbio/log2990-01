@@ -38,6 +38,7 @@ export class CreateDrawingDialogComponent implements OnInit {
               private undoRedo: UndoRedoService,
               @Inject(MAT_DIALOG_DATA) private data: DialogData) {
                 this.modalManager._isModalActive = true;
+                this.afterClose();
   }
 
   ngOnInit(): void {
@@ -98,7 +99,6 @@ export class CreateDrawingDialogComponent implements OnInit {
 
   close(): void {
     this.dialogRef.close();
-    this.modalManager._isModalActive = false;
   }
 
   async submit(): Promise<void> {
@@ -136,5 +136,10 @@ export class CreateDrawingDialogComponent implements OnInit {
     this.clipboard.reset();
     // Empty the undo and redo commands
     this.undoRedo.reset();
+  }
+  afterClose(): void {
+    this.dialogRef.afterClosed().subscribe(() => {
+      this.modalManager._isModalActive = false;
+    });
   }
 }

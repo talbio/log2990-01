@@ -48,6 +48,7 @@ export class OpenDrawingDialogComponent implements OnInit {
     this.modalManagerSingleton._isModalActive = true;
     this.drawings = [];
     this.selectedTags = [];
+    this.afterClose();
   }
 
   ngOnInit() {
@@ -104,7 +105,6 @@ export class OpenDrawingDialogComponent implements OnInit {
 
   protected close(): void {
     this.dialogRef.close();
-    this.modalManagerSingleton._isModalActive = false;
   }
 
   protected setMiniature(index: number): void {
@@ -227,5 +227,10 @@ export class OpenDrawingDialogComponent implements OnInit {
     this.undoRedo.reset();
     // Fix the link to the grid
     this.linkGrid();
+  }
+  afterClose(): void {
+    this.dialogRef.afterClosed().subscribe(() => {
+      this.modalManagerSingleton._isModalActive = false;
+    });
   }
 }

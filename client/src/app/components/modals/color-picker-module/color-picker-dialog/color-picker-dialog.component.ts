@@ -23,10 +23,10 @@ export class ColorPickerDialogComponent {
   constructor(private dialogRef: MatDialogRef<ColorPickerDialogComponent>, protected colorService: ColorService,
               @Inject(MAT_DIALOG_DATA) private data: DialogData) {
                 this.modalManager._isModalActive = true;
+                this.afterClose();
                }
 
   close(): void {
-    this.modalManager._isModalActive = false;
     this.dialogRef.close();
   }
 
@@ -79,5 +79,10 @@ export class ColorPickerDialogComponent {
       return this.selectedColor;
     }
     return this.selectedColor;
+  }
+  afterClose(): void {
+    this.dialogRef.afterClosed().subscribe(() => {
+      this.modalManager._isModalActive = false;
+    });
   }
 }
