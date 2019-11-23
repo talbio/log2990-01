@@ -21,8 +21,8 @@ export class WelcomeModalComponent {
     this.modalManager._isModalActive = true;
   }
 
-  onChange(event: Event): void {
-    this.storage.setWelcomeModalStatus(event.returnValue);
+  onChange(): void {
+    this.storage.setWelcomeModalStatus(!this.storage.getWelcomeModalStatus());
   }
 
   closeDialog(): void {
