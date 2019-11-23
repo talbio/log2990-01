@@ -49,3 +49,5 @@ export const BOTTOM_AFTER = 2;
 export const TOP_AFTER = 3;
 export const X = 0;
 export const Y = 1;
+export const DEFAULT_PENCIL_ICON = 'create';
+export const DEFAULT_SHAPE_ICON = 'rectangle';
