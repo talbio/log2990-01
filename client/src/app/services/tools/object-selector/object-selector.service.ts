@@ -83,14 +83,16 @@ export class ObjectSelectorService {
         this.selectedElements = [];
         this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
         this.removeGBoundingRect();
+        this.initialLeft = -1;
       } else {
         // translate
         this.startX = this.mousePosition.canvasMousePositionX;
         this.startY = this.mousePosition.canvasMousePositionY;
       }
     } else {
-        this.selectedElements = [];
-        this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
+      this.selectedElements = [];
+      this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
+      this.initialLeft = -1;
     }
   }
 
@@ -119,6 +121,7 @@ export class ObjectSelectorService {
     } else {
       // finishTranslation
       this.mouseDown = false;
+      this.initialLeft = -1;
     }
   }
 
@@ -135,15 +138,15 @@ export class ObjectSelectorService {
         this.selectedElements.push(svgElement);
 
         if (svgElement.id.startsWith('penPath')) {
-                  // Remove this instance since it will be pushed with foreach
-                  this.selectedElements.pop();
-                  drawings.forEach((element) => {
-                    if (element.id === svgElement.id) {
-                      this.selectedElements.push(element as SVGElement);
-                    }
-                  }); }
-    }});
-}
+          // Remove this instance since it will be pushed with foreach
+          this.selectedElements.pop();
+          drawings.forEach((element) => {
+            if (element.id === svgElement.id) {
+              this.selectedElements.push(element as SVGElement);
+            }
+          }); }
+      }});
+  }
 
   isElementInsideSelection(element: SVGElement): boolean {
     const selectionRectangle = this.selectorRect.getBoundingClientRect();
@@ -164,6 +167,11 @@ export class ObjectSelectorService {
     RendererSingleton.canvas.removeChild(this.selectorRect);
     if (this.selectedElements.length !== 0) {
       this.addBoundingRect();
+      if (this.initialLeft === -1) {
+        this.initialLeft = this.boundingRect.getBoundingClientRect().left - this.canvasBoundingRect.left;
+        console.log(`Setting initialLeft to ${this.initialLeft}`)
+        this.initialBB = this.boundingRect.getBoundingClientRect();
+      }
     }
     this.mouseDown = false;
   }
@@ -272,22 +280,46 @@ export class ObjectSelectorService {
         ['height', `${POINT_CONTROL_SIZE}`],
         ['width', `${POINT_CONTROL_SIZE}`],
         ['fill', `${STROKE_COLOR}`],
-        ['z-index', `555555`],
+        ['z-index', `123`],
         // ['pointer-events', `visible`],
       ];
       const controlPoint: SVGElement = RendererSingleton.renderer.createElement('rect', 'svg');
       properties.forEach( (property: [string, string]) => controlPoint.setAttribute(property[0], property[1]));
-      controlPoint.addEventListener('click', () => {this.isScaling = true; console.log('hey'); });
+      controlPoint.addEventListener('mousemove', () => {
+
+        this.isScaling = true;
+        console.log('hey');
+      });
       gBoundingRect.appendChild(controlPoint);
     });
   }
-
+  initialLeft: number = -1;
+  initialBB: ClientRect | undefined;
   scale(): void {
-    this.isScaling = true;
     const width = this.boundingRect.getBoundingClientRect().width;
-    const scalingFactor = 1 + (this.mousePosition.canvasMousePositionX - this.startX) / width;
+    const scalingFactor = 1 + Math.max(0, (this.mousePosition.canvasMousePositionX - this.startX) / width);
+    const dimensions = this.getBoundingRectDimensions();
+    const x = dimensions.width  * scalingFactor / 2; // * scalingFactor / 2;
+    const y = dimensions.height  * scalingFactor / 2; //  * scalingFactor / 2;
+    console.log(' x : ' + dimensions.x, 'y: ' + dimensions.y);
+    // console.log(x, y);
+    setTranslationAttribute(this.boundingRect, -dimensions.x, -dimensions.y);
+    setTranslationAttribute(this.boundingRect, x, y);
+    setScaleAttribute(this.boundingRect, scalingFactor, 1);
+    setTranslationAttribute(this.boundingRect, -x, -y);
+    debugger;
+    setTranslationAttribute(this.boundingRect, dimensions.x, dimensions.y);
+
+    /*
     console.log('called');
-    setScaleAttribute(this.gBoundingRect, scalingFactor, 1);
+    // const newLeft = parseFloat(this.boundingRect.getAttribute('x') as string) - (this.initialLeft / scalingFactor);
+    const newLeft = this.initialLeft / scalingFactor;
+    const resultingWidth = this.initialBB!.width * scalingFactor;
+    // this.boundingRect.setAttribute('width', resultingWidth.toString())
+    // this.boundingRect.setAttribute('x', newLeft.toString())
+    console.log(`Start X: ${this.startX}`)
+    console.log(`[L ${this.initialLeft}, S ${scalingFactor}] Setting to ${newLeft}. BB is ${this.initialBB!.width} and new width ${resultingWidth}. MP ${this.mousePosition.canvasMousePositionX}, ${this.mousePosition.canvasMousePositionY}`)
+    */
   }
 
   selectAll(): void {

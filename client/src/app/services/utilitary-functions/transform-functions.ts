@@ -12,9 +12,8 @@ export const setTranslationAttribute = (element: SVGElement, xTranslation: numbe
         const translateBegin = transformation.indexOf('translate');
         const translateEnd = transformation.indexOf(')', translateBegin);
         newTransform =
-          transformation.substr(0, translateBegin) +
           'translate(' + (oldTranslation[0] + xTranslation) + ' ' + (oldTranslation[1] + yTranslation) + ') ' +
-          transformation.substr(translateEnd + 1);
+          transformation.substr(0, translateBegin) + transformation.substr(translateEnd + 1);
     }
     element.setAttribute('transform', newTransform);
 };
@@ -33,17 +32,14 @@ export const setScaleAttribute = (element: SVGElement, xScale: number, yScale: n
     newTransform = 'scale(' + xScale + ' ' + yScale + ') ';
     newTransform += transformation;
   } else {
-    const oldTranslation: number[] = findScaleValues(transformation);
+    // const oldTranslation: number[] = findScaleValues(transformation);
     const scaleBegin = transformation.indexOf('scale');
     const scaleEnd = transformation.indexOf(')', scaleBegin);
     newTransform =
-      transformation.substr(0, scaleBegin) +
-      'scale(' + (oldTranslation[0] * xScale) + ' ' + (oldTranslation[1] * yScale) + ') ' +
-      transformation.substr(scaleEnd + 1);
+      transformation.substr(0, scaleBegin) + transformation.substr(scaleEnd + 1) +
+      'scale(' + (xScale) + ' ' + (yScale) + ') ';
   }
-  console.log(newTransform);
   element.setAttribute('transform', newTransform);
-
 };
 
 export const findScaleValues = (transformAttribute: string): number[] => {
