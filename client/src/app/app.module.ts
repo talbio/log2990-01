@@ -37,6 +37,7 @@ import { LastTenColorsComponent } from './components/modals/color-picker-module/
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
 import { FilterByTags } from './components/modals/open-drawing-dialog/filter-by-tags.pipe';
+import { LoaderComponent } from './components/modals/open-drawing-dialog/loader/loader/loader.component';
 import { OpenDrawingDialogComponent } from './components/modals/open-drawing-dialog/open-drawing-dialog.component';
 import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import { UserManualDialogComponent } from './components/modals/user-manual-dialog/user-manual-dialog.component';
@@ -111,6 +112,7 @@ const customNotifierOptions: NotifierOptions = {
     WelcomeModalComponent,
     CreateDrawingDialogComponent,
     WorkZoneComponent,
+    LoaderComponent,
     DrawingViewComponent,
     WelcomeModalComponent,
     ColorToolButtonsComponent,
@@ -200,6 +202,7 @@ const customNotifierOptions: NotifierOptions = {
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
     OpenDrawingDialogComponent,
+    LoaderComponent,
     PolygonToolsComponent,
     GridComponent,
   ],

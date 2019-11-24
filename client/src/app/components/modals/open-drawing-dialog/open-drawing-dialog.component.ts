@@ -32,6 +32,7 @@ export class OpenDrawingDialogComponent implements OnInit {
 
   protected selectedTags: string[];
   protected drawings: Drawing[];
+  protected isLoading: boolean;
 
   private modalManagerSingleton = ModalManagerSingleton.getInstance();
 
@@ -50,15 +51,18 @@ export class OpenDrawingDialogComponent implements OnInit {
     this.drawings = [];
     this.selectedTags = [];
     this.afterClose();
+    this.isLoading = false;
   }
 
   ngOnInit() {
+    this.isLoading = true;
     this.drawingsService.httpGetDrawings().toPromise().then( (drawings: Drawing[]) => {
       if (drawings) {
         this.drawings = drawings;
       } else {
         this.notifier.notify('error', this.SERVER_NOT_FOUND_MSG);
       }
+      this.isLoading = false;
     });
   }
 
