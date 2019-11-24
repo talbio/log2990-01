@@ -12,6 +12,7 @@ import {DialogData} from '../create-drawing-dialog/create-drawing-dialog.compone
 import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 import {FilterByTags} from './filter-by-tags.pipe';
+import { LoaderComponent } from './loader/loader/loader.component';
 import {OpenDrawingDialogComponent} from './open-drawing-dialog.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -67,7 +68,7 @@ describe('OpenDrawingDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [OpenDrawingDialogComponent, FilterByTags],
+      declarations: [OpenDrawingDialogComponent, FilterByTags, LoaderComponent, ],
       imports: [DemoMaterialModule],
       providers: [
         Renderer2,

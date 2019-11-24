@@ -1,4 +1,5 @@
 <p mat-dialog-title>Ouvrir un dessin</p>
+<app-loader *ngIf="this.isLoading"></app-loader>
 <mat-dialog-content>
   <mat-form-field>
     <mat-chip-list #chipList aria-label="Tag selection">
