@@ -20,9 +20,13 @@ export class ColorApplicatorService implements CommandGenerator {
     this.undoRedoService.pushCommand(command);
   }
 
-  changePrimaryColor(targetObject: SVGElement, newColor: string) {
+  changePrimaryColor(targetObject: SVGElement, newColor: string): void {
     if (this.TREATED_ELEMENTS.includes(targetObject.nodeName)) {
       if (this.isClosedForm(targetObject.nodeName)) {
+        if (targetObject.id === RendererSingleton.grid.id) {
+          // The grid should be treated as background
+          return;
+        }
         if (targetObject.nodeName === 'polygon') {
           this.changePolygonColor(targetObject, newColor);
         } else {
@@ -40,7 +44,10 @@ export class ColorApplicatorService implements CommandGenerator {
   changeSecondaryColor(targetObject: SVGElement, newColor: string) {
 
     if (this.TREATED_ELEMENTS.includes(targetObject.nodeName)) {
-
+      if (targetObject.id === RendererSingleton.grid.id) {
+        // The grid should be treated as background
+        return;
+      }
       if (this.isClosedForm(targetObject.nodeName)) {
         this.pushColorApplicatorCommand(targetObject, 'stroke', newColor, targetObject.getAttribute('stroke') as string);
         targetObject.setAttribute('stroke', newColor);
