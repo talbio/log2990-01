@@ -7,8 +7,6 @@ interface IShortcut {
     keys: string;
 }
 
-
-
 @Component({
     selector: 'app-user-manual-dialog',
     templateUrl: './user-manual-dialog.component.html',
