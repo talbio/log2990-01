@@ -80,33 +80,31 @@ export class GridTogglerService {
     this.selectedDot = dotNumber;
   }
 
-  getClosestVerticalLine(direction: boolean): number {
-    if (!direction) {
-      console.log('Je cherche la ligne a gauche');
+  getClosestVerticalLine(isMovingLeft: boolean, isMovingRight: boolean): number {
+    const isOnALine: boolean = ((this.magneticDot.x % this.gridSize) === 0);
+    if (isMovingLeft) {
+      if (isOnALine) { return (this.magneticDot.x - this.gridSize); }
       return Math.floor(this.magneticDot.x / this.gridSize) * this.gridSize;
-    } else {
-      console.log('Je cherche la ligne a droite');
+    }
+    if (isMovingRight) {
+      if (isOnALine) { return (this.magneticDot.x + this.gridSize); }
       return Math.ceil(this.magneticDot.x / this.gridSize) * this.gridSize;
     }
+    return 0;
   }
 
-  getClosestHorizontalLine(direction: boolean): number {
-    if (!direction) {
-      console.log('Je cherche la ligne en haut');
+  getClosestHorizontalLine(isMovingUp: boolean, isMovingDown: boolean): number {
+    const isOnALine: boolean = ((this.magneticDot.y % this.gridSize) === 0);
+    if (isMovingUp) {
+      if (isOnALine) { return (this.magneticDot.y - this.gridSize); }
       return Math.floor(this.magneticDot.y / this.gridSize) * this.gridSize;
-    } else {
-      console.log('Je cherche la ligne en bas');
+    }
+    if (isMovingDown) {
+      if (isOnALine) { return (this.magneticDot.y + this.gridSize); }
       return Math.ceil(this.magneticDot.y / this.gridSize) * this.gridSize;
     }
+    return 0;
   }
-
-  // getDistanceToClosestVerticalLine(): number {
-  //   return (this.getClosestVerticalLine() - this.magneticDot.x);
-  // }
-
-  // getDistanceToClosestHorizontalLine(): number {
-  //   return (this.getClosestHorizontalLine() - this.magneticDot.y );
-  // }
 
   setSelectedDotPosition(selectionBox: DOMRect): void {
     let x = 0;
