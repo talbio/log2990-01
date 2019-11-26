@@ -26,8 +26,11 @@
   width: 4em;
   align-items: center;
   display: flex;
+  overflow-x: hidden;
 }
 
 #attributes-side-nav {
   width: 9em;
+  overflow-x: hidden;
 }
+
