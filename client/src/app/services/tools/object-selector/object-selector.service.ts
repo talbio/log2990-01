@@ -4,15 +4,14 @@ import { Command } from 'src/app/data-structures/command';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
 import { GridTogglerService } from '../grid/grid-toggler.service';
+import { MagnetismGeneratorService } from '../magnetism-generator/magnetism-generator.service';
 import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 import { TransformationService } from './../../transformation/transformation.service';
 import { UndoRedoService } from './../../undo-redo/undo-redo.service';
-
 const STROKE_COLOR = Colors.BLACK;
 
 const MAX_CANVAS_WIDTH = 2000;
 const MAX_CANVAS_HEIGHT = 2000;
-const GRID_OFFSET = 65;
 
 interface Box {
   x: number;
@@ -42,12 +41,12 @@ export class ObjectSelectorService {
   private mouseDown: boolean;
   startX: number;
   startY: number;
-  movementMap: Map<string, boolean> = new Map();
 
   constructor(private mousePosition: MousePositionService,
               private rectangleGenerator: RectangleGeneratorService,
-              private grid: GridTogglerService,
+              private magnetism: MagnetismGeneratorService,
               private transform: TransformationService,
+              private grid: GridTogglerService,
               private undoRedoService: UndoRedoService) {
     this.hasBoundingRect = false;
     this.mouseDown = false;
@@ -56,10 +55,6 @@ export class ObjectSelectorService {
     this.selectedElements = [];
     this.startX = 0;
     this.startY = 0;
-    this.movementMap.set('left', false);
-    this.movementMap.set('right', false);
-    this.movementMap.set('up', false);
-    this.movementMap.set('down', false);
   }
 
   get canvasBoxRect(): BoundingRect {
@@ -101,7 +96,7 @@ export class ObjectSelectorService {
   onMouseMove(currentChildPosition: number, mouseEvent: MouseEvent) {
     if (this.mouseDown) {
       if (this.hasBoundingRect && this.isTranslating) {
-        this.directionOfMouvement(mouseEvent);
+        this.magnetism.directionOfMouvement(mouseEvent);
         this.translate();
       } else {
         this.updateSelection(currentChildPosition, mouseEvent);
@@ -305,7 +300,8 @@ export class ObjectSelectorService {
   }
 
   translateWithMagnetism() {
-    const newPosition: number[] = this.getTranslationWithMagnetismValue();
+    this.grid.setSelectedDotPosition(this.getBoundingRectDimensions() as DOMRect);
+    const newPosition: number[] = this.magnetism.getTranslationWithMagnetismValue();
     const xMove = newPosition[0];
     const yMove = newPosition[1];
     this.selectedElements.forEach((svgElement: SVGElement) => {
@@ -354,63 +350,6 @@ export class ObjectSelectorService {
       map.set(element, element.getAttribute('transform') as string);
     });
     return map;
-  }
-
-  getTranslationWithMagnetismValue(): number[] {
-    this.grid.setSelectedDotPosition(this.getBoundingRectDimensions() as DOMRect);
-    const vertical = this.grid.getClosestVerticalLine(this.movementMap.get('left') as boolean, this.movementMap.get('right') as boolean);
-    const horizontal = this.grid.getClosestHorizontalLine(this.movementMap.get('up') as boolean, this.movementMap.get('down') as boolean);
-    let xMove = 0;
-    let yMove = 0;
-    const distanceToClosestXLine = Math.abs(this.mousePosition.canvasMousePositionX - vertical);
-    const distanceToClosestYLine = Math.abs(this.mousePosition.canvasMousePositionY - horizontal);
-    if (this.isCloseEnough(distanceToClosestXLine) && !this.isOutOfCanvasBounderies('horizontal', vertical, this.grid.magneticDot.x)) {
-      xMove = (vertical - this.grid.magneticDot.x);
-    }
-    if (this.isCloseEnough(distanceToClosestYLine) && !this.isOutOfCanvasBounderies('vertical', horizontal, this.grid.magneticDot.y)) {
-      yMove = (horizontal - this.grid.magneticDot.y);
-    }
-    const newPosition = [xMove, yMove];
-    return newPosition;
-  }
-
-isCloseEnough(distance: number): boolean {
-  return distance < (this.grid._gridSize / 2 );
-}
-
-isOutOfCanvasBounderies(direction: string, closestLine: number, currentPosition: number): boolean {
-  const selector = this.boundingRect.getBoundingClientRect() as DOMRect;
-  const gridSize = RendererSingleton.renderer.selectRootElement('#backgroundGrid', true).getBoundingClientRect();
-  const gridHeight = Math.round(gridSize.height);
-  const gridWidth = Math.round(gridSize.width);
-  const movement = closestLine - currentPosition;
-  let isOutOfCanvas = false;
-  if (direction === 'horizontal') {
-  isOutOfCanvas = (( selector.right - GRID_OFFSET + movement) > gridWidth || (selector.left - GRID_OFFSET + movement) < 0 ) ;
-  } else {
-    isOutOfCanvas = ((selector.bottom + movement) > gridHeight) || ((selector.top + movement) < 0); }
-  return isOutOfCanvas;
-}
-
-  directionOfMouvement(mouseEvent: MouseEvent): void {
-    if (mouseEvent.movementX < 0) {
-      this.movementMap.set('left', true);
-      this.movementMap.set('right', false);
-    } else {
-      if (mouseEvent.movementX > 0) {
-        this.movementMap.set('right', true);
-        this.movementMap.set('left', false);
-      }
-    }
-    if (mouseEvent.movementY < 0) {
-      this.movementMap.set('up', true);
-      this.movementMap.set('down', false);
-    } else {
-      if (mouseEvent.movementY > 0) {
-        this.movementMap.set('down', true);
-        this.movementMap.set('up', false);
-      }
-    }
   }
 
 }
