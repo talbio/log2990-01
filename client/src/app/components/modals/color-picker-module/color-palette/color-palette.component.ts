@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Colors} from 'src/app/data-structures/colors';
-
 @Component({
   selector: 'app-color-palette',
   templateUrl: './color-palette.component.html',

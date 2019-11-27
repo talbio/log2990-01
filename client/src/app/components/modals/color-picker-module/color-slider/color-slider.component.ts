@@ -1,5 +1,8 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
-
+const MIN_HUE_X_VALUE = 3;
+const MAX_HUE_X_VALUE = 16;
+const MIN_HUE_Y_VALUE = 0;
+const MAX_HUE_Y_VALUE = 149;
 @Component({
     selector: 'app-color-slider',
     templateUrl: './color-slider.component.html',
@@ -82,6 +85,9 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Outpu
     }
 
     getColorAtPosition(x: number, y: number) {
+      // make sure the values are within maximal and minimal bounds
+      x = Math.max(MIN_HUE_X_VALUE, Math.min(x, MAX_HUE_X_VALUE));
+      y = Math.max(MIN_HUE_Y_VALUE, Math.min(y, MAX_HUE_Y_VALUE));
       const imageData = this.ctx.getImageData(x, y, 1, 1).data;
       return 'rgba(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
     }
