@@ -28,9 +28,11 @@ export class OpenDrawingDialogComponent implements OnInit {
 
   protected readonly separatorKeysCodes: number[] = [ENTER, COMMA, SPACE];
   protected readonly LOCAL_OPEN_DRAWING_SUCCEEDED_MSG = `Votre dessin a bien été chargé!`;
+  protected readonly SERVER_NOT_FOUND_MSG = `L'accès au serveur est impossible. Veuillez ouvrir des dessins sauvegardés localement.`;
 
   protected selectedTags: string[];
   protected drawings: Drawing[];
+  protected isLoading: boolean;
 
   private modalManagerSingleton = ModalManagerSingleton.getInstance();
 
@@ -48,13 +50,19 @@ export class OpenDrawingDialogComponent implements OnInit {
     this.modalManagerSingleton._isModalActive = true;
     this.drawings = [];
     this.selectedTags = [];
+    this.afterClose();
+    this.isLoading = false;
   }
 
   ngOnInit() {
+    this.isLoading = true;
     this.drawingsService.httpGetDrawings().toPromise().then( (drawings: Drawing[]) => {
       if (drawings) {
         this.drawings = drawings;
+      } else {
+        this.notifier.notify('error', this.SERVER_NOT_FOUND_MSG);
       }
+      this.isLoading = false;
     });
   }
 
@@ -104,7 +112,6 @@ export class OpenDrawingDialogComponent implements OnInit {
 
   protected close(): void {
     this.dialogRef.close();
-    this.modalManagerSingleton._isModalActive = false;
   }
 
   protected setMiniature(index: number): void {
@@ -227,5 +234,10 @@ export class OpenDrawingDialogComponent implements OnInit {
     this.undoRedo.reset();
     // Fix the link to the grid
     this.linkGrid();
+  }
+  afterClose(): void {
+    this.dialogRef.afterClosed().subscribe(() => {
+      this.modalManagerSingleton._isModalActive = false;
+    });
   }
 }

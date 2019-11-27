@@ -1,4 +1,5 @@
 <p mat-dialog-title>Ouvrir un dessin</p>
+<app-loader *ngIf="this.isLoading"></app-loader>
 <mat-dialog-content>
   <mat-form-field>
     <mat-chip-list #chipList aria-label="Tag selection">
@@ -19,7 +20,7 @@
     <mat-list-option>
       <mat-list-item>
         <button mat-icon-button matTooltip="supprimer le dessin" (click)="deleteDrawing(drawing)"><mat-icon>delete</mat-icon></button>
-        <img matTooltip="ouvrir le dessin" (click)="openDrawing(drawing)" mat-list-avatar id="miniature{{i}}" class="miniatures"/>
+        <img matTooltip="Ouvrir le dessin" (click)="openDrawing(drawing)" mat-list-avatar id="miniature{{i}}" class="miniatures"/>
           {{this.setMiniature(i)}}
         <h3 matLine>{{drawing.name}}</h3>
         <p matLine *ngIf="drawing.tags">
@@ -39,7 +40,7 @@
 <mat-dialog-actions>
   <button class="mat-raised-button mat-warn"
           (click)="close()">
-    Fermer
+    Annuler
   </button>
   <div class="divider"></div>
   <button class="mat-raised-button mat-primary"

@@ -6,6 +6,5 @@
                       || (!this.clipboard.hasMemorizedElements() && clipboardProperties.matToolTip == 'Coller')"
           [ngClass]="{'noSelection':(!this.selection.hasBoundingRect && clipboardProperties.matToolTip != 'Coller')
                                     || (!this.clipboard.hasMemorizedElements() && clipboardProperties.matToolTip == 'Coller')}">
-  <mat-icon *ngIf="!clipboardProperties.isSvgIcon">{{clipboardProperties.icon}}</mat-icon>
-  <mat-icon *ngIf="clipboardProperties.isSvgIcon" svgIcon="{{clipboardProperties.icon}}" ></mat-icon>
+  <mat-icon svgIcon="{{clipboardProperties.icon}}" ></mat-icon>
 </button>
