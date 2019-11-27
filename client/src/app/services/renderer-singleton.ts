@@ -25,4 +25,8 @@ export class RendererSingleton {
   static get defs(): SVGElement {
     return this.renderer.selectRootElement('#definitions', true);
   }
+
+  static get grid(): SVGElement {
+    return this.renderer.selectRootElement('#backgroundGrid', true);
+  }
 }
