@@ -74,9 +74,14 @@ export class EraserService {
     }
 
     erase(drawing: SVGGElement): void {
-        if (drawing.id.startsWith('penPath')) {
-            const paths = RendererSingleton.canvas.querySelectorAll('path');
-            paths.forEach((path) => {
+        if (drawing.id.startsWith('penPath') || drawing.id.startsWith('featherPenPath')) {
+            let paths;
+            if (drawing.id.startsWith('featherPenPath')) {
+                paths = RendererSingleton.canvas.querySelectorAll('polygon');
+            } else {
+                paths = RendererSingleton.canvas.querySelectorAll('path');
+            }
+            paths.forEach((path: SVGElement) => {
                 if (path.id === drawing.id) {
                     path.setAttribute('filter', '');
                     this.erasedDrawings.push(path);
