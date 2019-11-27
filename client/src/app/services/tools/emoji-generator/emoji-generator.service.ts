@@ -6,7 +6,7 @@ import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 const MIN_ROTATION_STEP = 1;
 const MAX_ROTATION_STEP = 15;
 const MIN_ROTATION_ANGLE = 0;
-const MAX_ROTATION_ANGLE = 360;
+const MAX_ROTATION_ANGLE = 359;
 const DEFAULT_SCALING_FACTOR = 1;
 
 export enum Emojis {
@@ -36,36 +36,42 @@ export class EmojiGeneratorService extends AbstractGenerator {
 
   constructor(protected mouse: MousePositionService,
               protected undoRedoService: UndoRedoService) {
-      super(mouse, undoRedoService);
-      this.emoji = Emojis.SMILEY;
-      this.angle = MIN_ROTATION_ANGLE;
-      this.scalingFactor = DEFAULT_SCALING_FACTOR;
-      this.rotationStep = MAX_ROTATION_STEP;
-      this.idPrefix = 'emoji';
+    super(mouse, undoRedoService);
+    this.emoji = Emojis.SMILEY;
+    this.angle = MIN_ROTATION_ANGLE;
+    this.scalingFactor = DEFAULT_SCALING_FACTOR;
+    this.rotationStep = MAX_ROTATION_STEP;
+    this.idPrefix = 'emoji';
   }
 
   getEmojis() {
-      return this.emojis;
+    return this.emojis;
   }
 
   set _emoji(emoji: string) {
-      this.emoji = emoji;
+    this.emoji = emoji;
   }
 
-  get _rotationAngle() {
-      return this.angle;
+  get rotationAngle() {
+    return this.angle;
   }
 
-  set _rotationAngle(angle: number) {
+  set rotationAngle(angle: number) {
+    if (angle > 360) {
+      angle = 0;
+    } else if (angle < 0) {
+      angle = 360;
+    } else {
       this.angle = angle;
+    }
   }
 
   get _scalingFactor() {
-      return this.scalingFactor;
+    return this.scalingFactor;
   }
 
   set _scalingFactor(factor: number) {
-      this.scalingFactor = factor;
+    this.scalingFactor = factor;
   }
 
   createElement() {
@@ -85,10 +91,12 @@ export class EmojiGeneratorService extends AbstractGenerator {
   }
 
   updateElement(currentChildPosition: number, mouseEvent?: MouseEvent | undefined): void {
+    // Needs to be implemented, do nothing
     return;
   }
 
   finishElement(mouseEvent?: MouseEvent | undefined): void {
+    // Needs to be implemented, do nothing
     return;
   }
 
@@ -96,8 +104,8 @@ export class EmojiGeneratorService extends AbstractGenerator {
     if (mouseEvent.deltaY < MIN_ROTATION_ANGLE) {
         this.angle  += this.rotationStep;
     } else {this.angle  -= this.rotationStep; }
-    if (this.angle > MAX_ROTATION_ANGLE) {this.angle  = MAX_ROTATION_ANGLE; }
-    if (this.angle  < MIN_ROTATION_ANGLE) {this.angle  = MIN_ROTATION_ANGLE; }
+    if (this.angle > MAX_ROTATION_ANGLE) {this.angle  = MIN_ROTATION_ANGLE; }
+    if (this.angle  < MIN_ROTATION_ANGLE) {this.angle  = MAX_ROTATION_ANGLE; }
 
   }
 
