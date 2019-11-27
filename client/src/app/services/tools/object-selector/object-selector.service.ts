@@ -12,6 +12,7 @@ const STROKE_COLOR = Colors.BLACK;
 
 const MAX_CANVAS_WIDTH = 2000;
 const MAX_CANVAS_HEIGHT = 2000;
+const GRID_OFFSET = 65;
 
 interface Box {
   x: number;
@@ -44,10 +45,10 @@ export class ObjectSelectorService {
   movementMap: Map<string, boolean> = new Map();
 
   constructor(private mousePosition: MousePositionService,
-    private rectangleGenerator: RectangleGeneratorService,
-    private grid: GridTogglerService,
-    private transform: TransformationService,
-    private undoRedoService: UndoRedoService) {
+              private rectangleGenerator: RectangleGeneratorService,
+              private grid: GridTogglerService,
+              private transform: TransformationService,
+              private undoRedoService: UndoRedoService) {
     this.hasBoundingRect = false;
     this.mouseDown = false;
     this.isTranslating = false;
@@ -363,15 +364,33 @@ export class ObjectSelectorService {
     let yMove = 0;
     const distanceToClosestXLine = Math.abs(this.mousePosition.canvasMousePositionX - vertical);
     const distanceToClosestYLine = Math.abs(this.mousePosition.canvasMousePositionY - horizontal);
-    if (distanceToClosestXLine < (this.grid._gridSize / 2)) {
+    if (this.isCloseEnough(distanceToClosestXLine) && !this.isOutOfCanvasBounderies('horizontal', vertical, this.grid.magneticDot.x)) {
       xMove = (vertical - this.grid.magneticDot.x);
     }
-    if (distanceToClosestYLine < (this.grid._gridSize / 2)) {
+    if (this.isCloseEnough(distanceToClosestYLine) && !this.isOutOfCanvasBounderies('vertical', horizontal, this.grid.magneticDot.y)) {
       yMove = (horizontal - this.grid.magneticDot.y);
     }
     const newPosition = [xMove, yMove];
     return newPosition;
   }
+
+isCloseEnough(distance: number): boolean {
+  return distance < (this.grid._gridSize / 2 );
+}
+
+isOutOfCanvasBounderies(direction: string, closestLine: number, currentPosition: number): boolean {
+  const selector = this.boundingRect.getBoundingClientRect() as DOMRect;
+  const gridSize = RendererSingleton.renderer.selectRootElement('#backgroundGrid', true).getBoundingClientRect();
+  const gridHeight = Math.round(gridSize.height);
+  const gridWidth = Math.round(gridSize.width);
+  const movement = closestLine - currentPosition;
+  let isOutOfCanvas = false;
+  if (direction === 'horizontal') {
+  isOutOfCanvas = (( selector.right - GRID_OFFSET + movement) > gridWidth || (selector.left - GRID_OFFSET + movement) < 0 ) ;
+  } else {
+    isOutOfCanvas = ((selector.bottom + movement) > gridHeight) || ((selector.top + movement) < 0); }
+  return isOutOfCanvas;
+}
 
   directionOfMouvement(mouseEvent: MouseEvent): void {
     if (mouseEvent.movementX < 0) {
