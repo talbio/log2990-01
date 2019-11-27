@@ -850,7 +850,7 @@ describe('DrawingViewComponent', () => {
   component.workZoneComponent.onMouseDown();
   let emoji = svgHandle.childNodes[children.length - 1] as Element;
   let angle = (emoji.getAttribute('transform') as string).substr(7, 3) ;
-  expect(angle).toEqual('360');
+  expect(parseFloat(angle)).toBeLessThanOrEqual(360);
 
   // It shouldn't be possible to lower the angle under 0
   wheelEvent = new WheelEvent('mousewheel', {
@@ -862,7 +862,7 @@ describe('DrawingViewComponent', () => {
   component.workZoneComponent.onMouseDown();
   emoji = svgHandle.childNodes[children.length - 1] as Element;
   angle = (emoji.getAttribute('transform') as string).substr(7, 1) ;
-  expect(angle).toEqual('0');
+  expect(parseFloat(angle)).toBeGreaterThanOrEqual(0);
 });
 
   it('should be possible to modify an emoji rotation step from 15 to 1 with the ALT button', () => {
