@@ -63,7 +63,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes[this.hue]) {
+    if (changes.hue && (changes.hue.currentValue !== changes.hue.previousValue)) {
       this.draw();
       const pos = this.selectedPosition;
       if (pos) {
@@ -103,7 +103,9 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   }
 
   enterColorManually(): void {
-    this.colorSelected.emit(this.convertFormValuesToRgbaString());
+    if (this.rgbComponentsForm.valid) {
+      this.colorSelected.emit(this.convertFormValuesToRgbaString());
+    }
   }
 
   draw() {

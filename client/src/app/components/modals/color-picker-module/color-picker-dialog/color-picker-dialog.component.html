@@ -1,6 +1,7 @@
 <mat-dialog-content>
-
-  <app-color-palette [hue]="_hue"
+  <!-- <span class="message">Entrez une valeur hexadécimale manuellement 
+    ou utilisez le sélecteur plus bas: </span> -->
+  <app-color-palette [hue]="hue"
                      (colorSelected)="onColorSelected($event)">
   </app-color-palette>
 

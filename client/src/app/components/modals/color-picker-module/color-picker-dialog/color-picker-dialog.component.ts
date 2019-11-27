@@ -17,7 +17,7 @@ export class ColorPickerDialogComponent {
 
   private opacity: number;
   private selectedColor: string;
-  private hue: string;
+  protected hue: string;
   private modalManager = ModalManagerSingleton.getInstance();
 
   constructor(private dialogRef: MatDialogRef<ColorPickerDialogComponent>, protected colorService: ColorService,
@@ -42,10 +42,6 @@ export class ColorPickerDialogComponent {
 
   get _selectedColor(): string {
     return this.selectedColor;
-  }
-
-  get _hue(): string {
-    return this.hue;
   }
 
   isColorModified(): boolean {
