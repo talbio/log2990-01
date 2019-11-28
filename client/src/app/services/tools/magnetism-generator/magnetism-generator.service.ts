@@ -35,7 +35,15 @@ export class MagnetismGeneratorService {
         return newPosition;
       }
 
-      directionOfMouvement(mouseEvent: MouseEvent): void {
+      setMovementDirection(mouseEvent: MouseEvent): void {
+        if (mouseEvent.movementX === 0) {
+          this.movementMap.set('left', false);
+          this.movementMap.set('right', false);
+        }
+        if (mouseEvent.movementX === 0) {
+          this.movementMap.set('left', false);
+          this.movementMap.set('right', false);
+        }
         if (mouseEvent.movementX < 0) {
           this.movementMap.set('left', true);
           this.movementMap.set('right', false);
@@ -59,16 +67,20 @@ export class MagnetismGeneratorService {
       isOutOfCanvasBounderies(direction: string, closestLine: number, currentPosition: number): boolean {
         const boundingRect = RendererSingleton.canvas.querySelector('#' + this.BOUNDING_RECT_ID) as SVGElement;
         const selector = boundingRect.getBoundingClientRect() as DOMRect;
+        const movement = closestLine - currentPosition;
         const gridSize = RendererSingleton.renderer.selectRootElement('#backgroundGrid', true).getBoundingClientRect();
         const gridHeight = Math.round(gridSize.height);
         const gridWidth = Math.round(gridSize.width);
-        const movement = closestLine - currentPosition;
         let isOutOfCanvas = false;
         if (direction === 'horizontal') {
-        isOutOfCanvas = (( selector.right + movement) > gridWidth || (selector.left + movement) < 0 ) ;
+        isOutOfCanvas = this.isOutOfBounderies(selector.right, selector.left, movement, gridWidth) ;
         } else {
-          isOutOfCanvas = ((selector.bottom + movement) > gridHeight) || ((selector.top + movement) < 0); }
+          isOutOfCanvas = this.isOutOfBounderies(selector.bottom, selector.top, movement, gridHeight) ; }
         return isOutOfCanvas;
+      }
+
+      isOutOfBounderies(bottom: number, top: number, movement: number, length: number): boolean {
+        return (  (bottom + movement) < 0 || (top + movement) > length );
       }
 
     isCloseEnough(distance: number): boolean {

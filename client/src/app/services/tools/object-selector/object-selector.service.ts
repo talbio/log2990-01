@@ -96,7 +96,7 @@ export class ObjectSelectorService {
   onMouseMove(currentChildPosition: number, mouseEvent: MouseEvent) {
     if (this.mouseDown) {
       if (this.hasBoundingRect && this.isTranslating) {
-        this.magnetism.directionOfMouvement(mouseEvent);
+        this.magnetism.setMovementDirection(mouseEvent);
         this.translate();
       } else {
         this.updateSelection(currentChildPosition, mouseEvent);
