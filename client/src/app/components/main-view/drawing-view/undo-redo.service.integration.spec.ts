@@ -111,6 +111,10 @@ describe('UndoRedoService integrations tests', () => {
       await expectCreationToBeUndoable(Tools.Brush, 'brushPath0');
       await expectCreationToBeRedoable('brushPath0');
     });
+
+    it('should be able to undo and redo an aerosol spray', async () => {
+      // TODO
+    });
   });
 
   describe('ColorApplicator', () => {
