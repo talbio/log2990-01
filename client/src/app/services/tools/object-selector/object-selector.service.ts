@@ -7,8 +7,8 @@ import {RectangleGeneratorService} from '../rectangle-generator/rectangle-genera
 
 const MAX_CANVAS_WIDTH = 2000;
 const MAX_CANVAS_HEIGHT = 2000;
-const POINT_CONTROL_SIZE = 20;
-const STROKE_COLOR = Colors.BLACK;
+const POINT_CONTROL_SIZE = 10;
+const STROKE_COLOR = Colors.BLUE;
 
 interface Dimensions {
   x: number;
@@ -37,6 +37,7 @@ export class ObjectSelectorService {
   startY: number;
 
   private isScaling: boolean;
+  private currentMarker: string;
   private mouseDown: boolean;
 
   constructor(private mousePosition: MousePositionService,
@@ -70,65 +71,58 @@ export class ObjectSelectorService {
     return RendererSingleton.canvas.querySelector('#' + this.G_BOUNDING_RECT_ID) as SVGGElement;
   }
 
+  updateStartPos(): void {
+    this.startX = this.mousePosition.canvasMousePositionX;
+    this.startY = this.mousePosition.canvasMousePositionY;
+  }
+
   onMouseDown() {
-    console.log('down');
     this.mouseDown = true;
     if (this.hasBoundingRect) {
-      if (this.isScaling) {
-        this.startX = this.mousePosition.canvasMousePositionX;
-        this.startY = this.mousePosition.canvasMousePositionY;
-        return;
-      }
-      if (this.isMouseOutsideBoundingRect()) {
+      if (this.isMouseOutsideGBoundingRect()) {
         this.selectedElements = [];
         this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
         this.removeGBoundingRect();
-        this.initialLeft = -1;
+      }
+      if (this.isScaling) {
+        this.updateStartPos();
+        return;
       } else {
         // translate
-        this.startX = this.mousePosition.canvasMousePositionX;
-        this.startY = this.mousePosition.canvasMousePositionY;
+        this.updateStartPos();
       }
     } else {
       this.selectedElements = [];
       this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
-      this.initialLeft = -1;
     }
   }
 
-  onMouseMove(currentChildPosition: number, mouseEvent: MouseEvent) {
+  onMouseMove(currentChildPosition: number, mouseEvent: MouseEvent): void {
     if (this.mouseDown) {
-      if (this.isScaling) {
-        this.scale();
-        return;
-      }
-      if (this.hasBoundingRect && !this.isMouseOutsideBoundingRect()) {
-        this.translate();
+      if (this.hasBoundingRect) {
+        if (this.isScaling) {
+          this.scale();
+          return;
+        }
+        if (!this.isMouseOutsideGBoundingRect()) {
+          this.translate();
+          return;
+        }
       } else {
-        this.updateSelectorRect(currentChildPosition, mouseEvent);
+        this.rectangleGenerator.updateElement(currentChildPosition, mouseEvent);
+        return;
       }
     }
   }
 
   onMouseUp(): void {
-    if (this.isScaling) {
-      this.isScaling = false;
-      this.mouseDown = false;
-      return;
-    }
     if (!this.hasBoundingRect) {
       this.finishSelection();
-    } else {
-      // finishTranslation
-      this.mouseDown = false;
-      this.initialLeft = -1;
     }
-  }
-
-  updateSelectorRect(currentChildPosition: number, mouseEvent: MouseEvent) {
-    if (this.mouseDown) {
-      this.rectangleGenerator.updateElement(currentChildPosition, mouseEvent);
+    if (this.isScaling) {
+      this.isScaling = false;
     }
+    this.mouseDown = false;
   }
 
   updateSelectedItems(): void {
@@ -167,16 +161,10 @@ export class ObjectSelectorService {
     RendererSingleton.canvas.removeChild(this.selectorRect);
     if (this.selectedElements.length !== 0) {
       this.addBoundingRect();
-      if (this.initialLeft === -1) {
-        this.initialLeft = this.boundingRect.getBoundingClientRect().left - this.canvasBoundingRect.left;
-        console.log(`Setting initialLeft to ${this.initialLeft}`)
-        this.initialBB = this.boundingRect.getBoundingClientRect();
-      }
     }
-    this.mouseDown = false;
   }
 
-  isMouseOutsideBoundingRect(): boolean {
+  isMouseOutsideGBoundingRect(): boolean {
     const clientRect = this.boundingRect.getBoundingClientRect();
     return this.mousePosition.canvasMousePositionX < clientRect.left - this.canvasBoundingRect.left ||
       this.mousePosition.canvasMousePositionX > clientRect.right - this.canvasBoundingRect.left ||
@@ -192,6 +180,7 @@ export class ObjectSelectorService {
   addBoundingRect(): void {
     this.hasBoundingRect = true;
     const boundingBox = this.getBoundingRectDimensions();
+    this.currentBoundingRectDimensions = boundingBox;
     this.drawGBoundingRect(boundingBox);
   }
 
@@ -258,68 +247,93 @@ export class ObjectSelectorService {
   }
 
   private appendControlPoints(rectDimensions: Dimensions, gBoundingRect: SVGGElement): void {
-    const markers: string[] = [
-      `${rectDimensions.x},${rectDimensions.y}`,
-      `${rectDimensions.x + (rectDimensions.width / 2)},${rectDimensions.y}`,
-      `${rectDimensions.x + rectDimensions.width},${rectDimensions.y}`,
-      `${rectDimensions.x + rectDimensions.width},${rectDimensions.y + (rectDimensions.height / 2)}`,
-      `${rectDimensions.x + rectDimensions.width},${rectDimensions.y + rectDimensions.height}`,
-      `${rectDimensions.x + (rectDimensions.width / 2)},${rectDimensions.y + rectDimensions.height}`,
-      `${rectDimensions.x},${rectDimensions.y + rectDimensions.height}`,
-      `${rectDimensions.x},${rectDimensions.y + (rectDimensions.height / 2)}`,
-      `${rectDimensions.x},${rectDimensions.y}`,
+    const markers: [string, string][] = [
+      [`${rectDimensions.x},${rectDimensions.y}`, 'top-left'],
+      [`${rectDimensions.x + (rectDimensions.width / 2)},${rectDimensions.y}`, 'top-middle'],
+      [`${rectDimensions.x + rectDimensions.width},${rectDimensions.y}`, 'top-right'],
+      [`${rectDimensions.x + rectDimensions.width},${rectDimensions.y + (rectDimensions.height / 2)}`, 'right-middle'],
+      [`${rectDimensions.x + rectDimensions.width},${rectDimensions.y + rectDimensions.height}`, 'bottom-right'],
+      [`${rectDimensions.x + (rectDimensions.width / 2)},${rectDimensions.y + rectDimensions.height}`, 'bottom-middle'],
+      [`${rectDimensions.x},${rectDimensions.y + rectDimensions.height}`, 'bottom-left'],
+      [`${rectDimensions.x},${rectDimensions.y + (rectDimensions.height / 2)}`, 'left-middle'],
     ];
 
-    markers.forEach( (marker: string) => {
-      const commaIndex = marker.indexOf(',');
-      const x: number = parseFloat(marker.substr(0, commaIndex));
-      const y: number = parseFloat(marker.substr(commaIndex + 1, marker.length));
+    markers.forEach( (marker: [string, string]) => {
+      const commaIndex = marker[0].indexOf(',');
+      const x: number = parseFloat(marker[0].substr(0, commaIndex));
+      const y: number = parseFloat(marker[0].substr(commaIndex + 1, marker[0].length));
       const properties: [string, string][] = [
+        ['id', marker[1]],
         ['x', `${x - POINT_CONTROL_SIZE / 2}`],
         ['y', `${y - POINT_CONTROL_SIZE / 2}`],
         ['height', `${POINT_CONTROL_SIZE}`],
         ['width', `${POINT_CONTROL_SIZE}`],
         ['fill', `${STROKE_COLOR}`],
-        ['z-index', `123`],
-        // ['pointer-events', `visible`],
       ];
       const controlPoint: SVGElement = RendererSingleton.renderer.createElement('rect', 'svg');
       properties.forEach( (property: [string, string]) => controlPoint.setAttribute(property[0], property[1]));
       controlPoint.addEventListener('mousemove', () => {
-
         this.isScaling = true;
-        console.log('hey');
+        this.currentMarker = controlPoint.id;
       });
       gBoundingRect.appendChild(controlPoint);
     });
   }
-  initialLeft: number = -1;
-  initialBB: ClientRect | undefined;
-  scale(): void {
-    const width = this.boundingRect.getBoundingClientRect().width;
-    const scalingFactor = 1 + Math.max(0, (this.mousePosition.canvasMousePositionX - this.startX) / width);
-    const dimensions = this.getBoundingRectDimensions();
-    const x = dimensions.width  * scalingFactor / 2; // * scalingFactor / 2;
-    const y = dimensions.height  * scalingFactor / 2; //  * scalingFactor / 2;
-    console.log(' x : ' + dimensions.x, 'y: ' + dimensions.y);
-    // console.log(x, y);
-    setTranslationAttribute(this.boundingRect, -dimensions.x, -dimensions.y);
-    setTranslationAttribute(this.boundingRect, x, y);
-    setScaleAttribute(this.boundingRect, scalingFactor, 1);
-    setTranslationAttribute(this.boundingRect, -x, -y);
-    debugger;
-    setTranslationAttribute(this.boundingRect, dimensions.x, dimensions.y);
 
-    /*
-    console.log('called');
-    // const newLeft = parseFloat(this.boundingRect.getAttribute('x') as string) - (this.initialLeft / scalingFactor);
-    const newLeft = this.initialLeft / scalingFactor;
-    const resultingWidth = this.initialBB!.width * scalingFactor;
-    // this.boundingRect.setAttribute('width', resultingWidth.toString())
-    // this.boundingRect.setAttribute('x', newLeft.toString())
-    console.log(`Start X: ${this.startX}`)
-    console.log(`[L ${this.initialLeft}, S ${scalingFactor}] Setting to ${newLeft}. BB is ${this.initialBB!.width} and new width ${resultingWidth}. MP ${this.mousePosition.canvasMousePositionX}, ${this.mousePosition.canvasMousePositionY}`)
-    */
+  private currentBoundingRectDimensions: Dimensions;
+  scale(): void {
+    // const width = this.boundingRect.getBoundingClientRect().width;
+    // const height = this.boundingRect.getBoundingClientRect().height;
+    // const dimensions = this.getBoundingRectDimensions();
+    let scalingFactorX: number;
+    let scalingFactorY: number;
+
+    scalingFactorY = 1;
+    scalingFactorX = 1;
+
+    switch (this.currentMarker) {
+      case 'top-left':
+        break;
+      case 'top-middle':
+        scalingFactorX = 1;
+        scalingFactorY = 1;
+        break;
+      case 'top-right':
+        break;
+      case 'right-middle':
+        scalingFactorX = 1 + (this.mousePosition.canvasMousePositionX - this.startX) / this.currentBoundingRectDimensions.width;
+        scalingFactorY = 1;
+        break;
+      case 'bottom-right':
+        scalingFactorX = 1 + (this.mousePosition.canvasMousePositionX - this.startX) / this.currentBoundingRectDimensions.width;
+        scalingFactorY = 1 + (this.mousePosition.canvasMousePositionY - this.startY) / this.currentBoundingRectDimensions.height;
+        break;
+      case 'bottom-middle':
+        scalingFactorX = 1;
+        scalingFactorY = 1 + (this.mousePosition.canvasMousePositionY - this.startY) / this.currentBoundingRectDimensions.height;
+        break;
+        default:
+          break;
+    }
+
+    console.log(' x : ' + this.currentBoundingRectDimensions.x, 'y: ' + this.currentBoundingRectDimensions.y);
+
+    console.log('canvasY: ' + (this.mousePosition.canvasMousePositionY));
+    console.log('startY: ' + (this.startY));
+    console.log(this.currentBoundingRectDimensions.height);
+
+    setScaleAttribute(this.gBoundingRect, scalingFactorX, scalingFactorY);
+    setTranslationAttribute(this.gBoundingRect,
+      - (this.currentBoundingRectDimensions.x * scalingFactorX - this.currentBoundingRectDimensions.x),
+      - (this.currentBoundingRectDimensions.y * scalingFactorY - this.currentBoundingRectDimensions.y), true);
+
+    this.selectedElements.forEach( (svgElement: SVGElement) => {
+      setScaleAttribute(svgElement, scalingFactorX, scalingFactorY);
+      setTranslationAttribute(svgElement,
+        - (this.currentBoundingRectDimensions.x * scalingFactorX - this.currentBoundingRectDimensions.x),
+        - (this.currentBoundingRectDimensions.y * scalingFactorY - this.currentBoundingRectDimensions.y),
+        true);
+    });
   }
 
   selectAll(): void {
@@ -336,7 +350,6 @@ export class ObjectSelectorService {
   }
 
   translate() {
-    return;
     const xMove = this.mousePosition.canvasMousePositionX - this.startX;
     const yMove = this.mousePosition.canvasMousePositionY - this.startY;
     this.selectedElements.forEach((svgElement: SVGElement) => {
