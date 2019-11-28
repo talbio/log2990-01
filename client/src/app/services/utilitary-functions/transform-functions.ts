@@ -1,5 +1,5 @@
 // This finds out whether the element has a transform value and adapts the translation
-export const setTranslationAttribute = (element: SVGElement, xTranslation: number, yTranslation: number): void => {
+export const setTranslationAttribute = (element: SVGElement, xTranslation: number, yTranslation: number, erase?: boolean): void => {
     const transformation = element.getAttribute('transform');
     let newTransform = '';
     if (!transformation) {
@@ -12,10 +12,11 @@ export const setTranslationAttribute = (element: SVGElement, xTranslation: numbe
         const translateBegin = transformation.indexOf('translate');
         const translateEnd = transformation.indexOf(')', translateBegin);
         newTransform =
-          'translate(' + (oldTranslation[0] + xTranslation) + ' ' + (oldTranslation[1] + yTranslation) + ') ' +
+          'translate(' + ( (erase ? 0 : oldTranslation[0]) + xTranslation) + ' ' +
+                         ( (erase ? 0 : oldTranslation[1]) + yTranslation) + ') ' +
           transformation.substr(0, translateBegin) + transformation.substr(translateEnd + 1);
     }
-    element.setAttribute('transform', newTransform);
+    element.setAttribute('transform', newTransform) ;
 };
 
 export const findTransformValues = (transformAttribute: string): number[] => {
