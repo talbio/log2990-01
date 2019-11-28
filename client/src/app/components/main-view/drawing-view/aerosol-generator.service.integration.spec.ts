@@ -31,7 +31,7 @@ const doNothing = ((ms: number) => {
   });
 });
 
-describe('Aerosol integrations tests', () => {
+fdescribe('Aerosol integrations tests', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
   // let canvasDrawer: CanvasDrawer;
@@ -60,10 +60,17 @@ describe('Aerosol integrations tests', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should be possible to use the Aerosol', async () => {
-    // Step 1. Select pen tool
+  // Function to spray on the canvas for timeInMs milliseconds at mousePosition, must be called with await
+  const sprayOnCanvas = async (timeInMs: number) => {
     const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = Tools.Aerosol;
+    component.workZoneComponent.onMouseDown();
+    await doNothing(timeInMs);
+    // Wait since this works on an interval
+    component.workZoneComponent.onMouseUp();
+  };
+
+  it('should be possible to use the Aerosol', async () => {
     // Create the work-zone
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
@@ -71,10 +78,7 @@ describe('Aerosol integrations tests', () => {
     // Setting up the event
     const aerosolService = fixture.debugElement.injector.get(AerosolGeneratorService);
     const spraySpy = spyOn(aerosolService, 'spray').and.callThrough();
-    component.workZoneComponent.onMouseDown();
-    await doNothing(500);
-    // Wait since this works on an interval
-    component.workZoneComponent.onMouseUp();
+    await sprayOnCanvas(500);
     expect(spraySpy).toHaveBeenCalled();
     // Step 3. Expect un aerosol
     expect(workChilds.length).toBeGreaterThan(initialChildsLength);
@@ -83,11 +87,60 @@ describe('Aerosol integrations tests', () => {
   });
 
   it('paint emissions should be done at a regular interval', async () => {
-    // TODO
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+    const aerosolService = fixture.debugElement.injector.get(AerosolGeneratorService);
+    const spraySpy = spyOn(aerosolService, 'spray').and.callThrough();
+    await sprayOnCanvas(500);
+    expect(spraySpy).toHaveBeenCalled();
+    spraySpy.calls.reset();
+    const firstSprayChildren: number = workChilds.length - initialChildsLength;
+    // now spray again and expect a similar amount of children
+    await sprayOnCanvas(500);
+    expect(spraySpy).toHaveBeenCalled();
+    const secondSprayChildren: number = workChilds.length - (initialChildsLength + firstSprayChildren);
+    // We allow for a difference of up to 2 on each side in case interval was stopped midway
+    // This is a safety measure, first and second spray always had the same amount of children during test creation
+    expect(secondSprayChildren).toBeGreaterThanOrEqual(firstSprayChildren - 2);
+    expect(secondSprayChildren).toBeLessThanOrEqual(firstSprayChildren + 2);
   });
 
   it('paint emission pattern should be random', async () => {
     // TODO
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+    const aerosolService = fixture.debugElement.injector.get(AerosolGeneratorService);
+    const spraySpy = spyOn(aerosolService, 'spray').and.callThrough();
+    await sprayOnCanvas(500);
+    expect(spraySpy).toHaveBeenCalled();
+    const firstSpray: SVGElement[] = [];
+    const firstSprayChildrenLength: number = workChilds.length - initialChildsLength;
+    for (let i = 0; i < firstSprayChildrenLength; i++) {
+      firstSpray[i] = workChilds[i + initialChildsLength] as SVGElement;
+    }
+    spraySpy.calls.reset();
+    await sprayOnCanvas(500);
+    expect(spraySpy).toHaveBeenCalled();
+    const secondSpray: SVGElement[] = [];
+    const secondSprayChildrenLength: number = workChilds.length - initialChildsLength;
+    for (let i = 0; i < secondSprayChildrenLength; i++) {
+      secondSpray[i] = workChilds[i + initialChildsLength + firstSprayChildrenLength] as SVGElement;
+    }
+    // Check that pattern isn't exactly the same.
+    // Should practically never happen since we let the spray go for a long time, but still possible.
+    // Running the test again should fix this issue.
+    let isSamePattern = true;
+    for (let i = 0; i < secondSpray.length; i++) {
+      if (firstSpray[i].getAttribute('cx') !== secondSpray[i].getAttribute('cx')
+      || firstSpray[i].getAttribute('cy') !== secondSpray[i].getAttribute('cy')) {
+        isSamePattern = false;
+        break;
+      }
+    }
+    expect(isSamePattern).toEqual(false);
   });
 
   it('should be possible to determine spray diameter', async () => {

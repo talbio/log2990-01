@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AbstractWritingTool } from 'src/app/data-structures/abstract-writing-tool';
-import { DEFAULT_AEROSOL_DOT_RADIUS,
-         DEFAULT_AEROSOL_SPRAY_DIAMETER,
+import { DEFAULT_AEROSOL_SPRAY_DIAMETER,
+         DEFAULT_DOTS_PER_SPRAY,
          DEFAULT_SPRAY_INTERVAL_SPEED,
          DOT_RADIUS_RATIO} from 'src/app/data-structures/constants';
 import { RendererSingleton } from 'src/app/services/renderer-singleton';
@@ -14,10 +14,10 @@ export class AerosolGeneratorService extends AbstractWritingTool {
 
   sprayDiameter: number;
   sprayIntervalTimer: number;
-  secondSprayIntervalTimer: number;
   dotRadius: number;
   dotArray: SVGElement[];
   sprayIntervalSpeed: number;
+  dotsPerSpray: number;
   private subpathIndex: number;
 
   get _sprayDiameter(): number {
@@ -25,18 +25,18 @@ export class AerosolGeneratorService extends AbstractWritingTool {
   }
   set _sprayDiameter(diameter: number) {
     this.sprayDiameter = diameter;
-    this.dotRadius = diameter / DOT_RADIUS_RATIO;
+    this.dotRadius = this.calculateSprayDotRadius(diameter);
   }
   constructor(protected undoRedoService: UndoRedoService,
               protected mouse: MousePositionService) {
     super(mouse, undoRedoService);
-    this.sprayDiameter = DEFAULT_AEROSOL_SPRAY_DIAMETER;
+    // we use the setter to also initiate dotRadius
+    this._sprayDiameter = DEFAULT_AEROSOL_SPRAY_DIAMETER;
     this.sprayIntervalTimer = 0; // Does not mean anything, set to 0 to be initialized
-    this.secondSprayIntervalTimer = 0;
     this.dotArray = [];
     this.subpathIndex = 0;
-    this.dotRadius = DEFAULT_AEROSOL_DOT_RADIUS;
     this.sprayIntervalSpeed = DEFAULT_SPRAY_INTERVAL_SPEED;
+    this.dotsPerSpray = DEFAULT_DOTS_PER_SPRAY;
   }
 
   createElement(mainColors: [string, string]): void {
@@ -58,27 +58,16 @@ export class AerosolGeneratorService extends AbstractWritingTool {
   }
 
   spray(color: string) {
-    if (this.sprayIntervalSpeed >= 10) {
-      this.sprayIntervalTimer = window.setInterval(() => {
+    this.sprayIntervalTimer = window.setInterval(() => {
+      for (let i = 0; i < this.dotsPerSpray; i++ ) {
         this.generateDot(color);
-      } , this.sprayIntervalSpeed);
-    } else {
-      // interval speed limit is 10 ms, so we start a second interval to force a faster spray
-      this.sprayIntervalTimer = window.setInterval(() => {
-        this.generateDot(color);
-      } , this.sprayIntervalSpeed * 2);
-      this.secondSprayIntervalTimer = window.setInterval(() => {
-        this.generateDot(color);
-      } , this.sprayIntervalSpeed * 2);
-    }
+      }
+
+    } , this.sprayIntervalSpeed);
   }
 
   stopSpray() {
     window.clearInterval(this.sprayIntervalTimer);
-    if (this.sprayIntervalSpeed < 10) {
-      window.clearInterval(this.secondSprayIntervalTimer);
-    }
-
   }
 
   randomPointInRadius(): number[] {
@@ -115,6 +104,10 @@ export class AerosolGeneratorService extends AbstractWritingTool {
     );
     this.drawElement(dot, properties);
     this.dotArray[this.subpathIndex++] = dot;
+  }
+
+  calculateSprayDotRadius(diameter: number): number {
+    return (diameter / 2) * DOT_RADIUS_RATIO;
   }
 
 }

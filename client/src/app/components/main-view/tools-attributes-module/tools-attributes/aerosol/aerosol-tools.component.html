@@ -14,10 +14,11 @@
 <mat-label>
     Vitesse des intervales de jet de peinture: {{this.aerosol.sprayIntervalSpeed}}
 </mat-label>
+<!-- Min speed is 10, as this is the fastest a setInterval can go -->
 <mat-slider [(ngModel)]="this.aerosol.sprayIntervalSpeed"
-            min="5"
-            max="50"
-            step="0.5"
+            min="10"
+            max="150"
+            step="5"
             thumbLabel
             tickInterval="1">
 </mat-slider>
