@@ -10,7 +10,8 @@
 
         </div>
         <footer class="modal-footer">
-            <input type="checkbox" (change)="onChange($event)">{{doNotShowAgain}}
+            <input type="checkbox" #checkbox (change)="onChange()">
+            <span class="noshowtext" (click)="checkbox.click()"> {{doNotShowAgain}} </span>
             <button (click)="closeDialog()">{{close}}</button>
         </footer>
     </dialog>

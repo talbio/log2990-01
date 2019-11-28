@@ -21,7 +21,7 @@
   <!-- Tools Buttons -->
   <mat-list-item>
     <button mat-icon-button [matMenuTriggerFor]="pencilToolButton">
-      <mat-icon>create</mat-icon>
+      <mat-icon [svgIcon]="this.findActivePencilIcon(this.toolManager._activeTool)"></mat-icon>
     </button>
   </mat-list-item>
 
@@ -29,7 +29,7 @@
 
   <mat-list-item>
     <button mat-icon-button [matMenuTriggerFor]="shapeToolButton">
-      <mat-icon svgIcon="rectangle"></mat-icon>
+      <mat-icon [svgIcon]="this.findActiveShapeIcon(this.toolManager._activeTool)"></mat-icon>
     </button>
   </mat-list-item>
 
@@ -48,14 +48,14 @@
       <button mat-icon-button
               (click)="this.undoRedoService.undo()"
               [disabled]="!this.undoRedoService.canUndo()"
-              class="btn" matTooltip="Annuler">
+              class="btn" matTooltip="Annuler (Ctrl + Z)">
         <mat-icon class="icon" [ngClass]="{'noCommands':!this.undoRedoService.canUndo()}" svgIcon="undo"></mat-icon>
       </button>
       <mat-divider [vertical]="true"></mat-divider>
       <button mat-icon-button
               (click)="this.undoRedoService.redo()"
               [disabled]="!this.undoRedoService.canRedo()"
-              class="btn" matTooltip="Refaire">
+              class="btn" matTooltip="Refaire (Ctrl + Shift + Z)">
         <mat-icon class="icon" [ngClass]="{'noCommands':!this.undoRedoService.canRedo()}" svgIcon="redo"></mat-icon>
       </button>
     </div>

@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {FormBuilder} from '@angular/forms';
 import { MatDialogRef} from '@angular/material/dialog';
 import {NotifierModule, NotifierService} from 'angular-notifier';
+import { of } from 'rxjs';
 import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
 import {DemoMaterialModule} from '../../../material.module';
 import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
@@ -16,8 +17,9 @@ const HTTP_POST_DRAWING_FAILED_MSG = 'La sauvegarde du dessin a échoué! Veuill
 const HTTP_POST_DRAWING_SUCCEEDED_MSG = 'Votre dessin a bien été sauvegardé!';
 
 const spyDialog: jasmine.SpyObj<MatDialogRef<SaveDrawingDialogComponent>> =
-  jasmine.createSpyObj('MatDialogRef', ['close']);
+  jasmine.createSpyObj('MatDialogRef', ['close', 'afterClosed']);
 spyDialog.close.and.callThrough();
+spyDialog.afterClosed.and.callFake(() => of(true));
 
 const drawingsServiceSpy: jasmine.SpyObj<DrawingsService> =
   jasmine.createSpyObj('SaveDrawingService', ['httpPostDrawing', 'localPostDrawing']);

@@ -6,7 +6,6 @@ export interface ClipboardProperties {
   clipboardFunction: () => void;
   matToolTip: string;
   icon: string;
-  isSvgIcon: boolean;
 }
 @Component({
   selector: 'app-abstract-clipboard',
