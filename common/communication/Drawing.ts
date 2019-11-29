@@ -1,5 +1,5 @@
 export interface Drawing {
-    id: number;
+    id: string;
     name: string;
     svgElements: string;
     tags: string[];
