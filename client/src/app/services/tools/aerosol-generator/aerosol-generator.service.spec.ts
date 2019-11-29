@@ -23,7 +23,8 @@ describe('Service: AerosolGenerator', () => {
   }));
 
   describe('sprayDiameter getter/setter', () => {
-    it('should change both the spray diameter and the dot radius with the setter', (service: AerosolGeneratorService) => {
+    it('should change both the spray diameter and the dot radius with the setter',
+        inject([AerosolGeneratorService], (service: AerosolGeneratorService) => {
       service._sprayDiameter = 20;
       const initialDiameter: number = service.sprayDiameter;
       const initialDotRadius: number = service.dotRadius;
@@ -34,49 +35,55 @@ describe('Service: AerosolGenerator', () => {
       const newDotRadius: number = service.dotRadius;
       expect(newDiameter).toEqual(50);
       expect(newDotRadius).toEqual(service.calculateSprayDotRadius(newDiameter));
-    });
+    }));
   });
 
   describe('spray', () => {
-    it('should set the interval', (service: AerosolGeneratorService) => {
+    it('should set the interval', inject([AerosolGeneratorService],
+          (service: AerosolGeneratorService) => {
       const initialTimer: number = service.sprayIntervalTimer;
       service.spray('fakeColor');
       expect(initialTimer).not.toEqual(service.sprayIntervalTimer);
       service.stopSpray();
-    });
+    }));
   });
 
   describe('stopSpray', () => {
-    it('should stop the interval', (service: AerosolGeneratorService) => {
+    it('should stop the interval', inject([AerosolGeneratorService],
+      (service: AerosolGeneratorService) => {
       service.spray('fakeColor');
       const timerValue = service.sprayIntervalTimer;
       const spy = spyOn(global, 'clearInterval').and.callThrough();
       service.stopSpray();
       expect(spy).toHaveBeenCalledWith(timerValue);
-    });
+    }));
   });
 
   describe('randomPointInRadius', () => {
-    it('should return a random point within the spray radius of the mouse position', (service: AerosolGeneratorService) => {
+    it('should return a random point within the spray radius of the mouse position', inject([AerosolGeneratorService],
+      (service: AerosolGeneratorService) => {
       // TODO
-    });
+    }));
   });
 
   describe('randomLength', () => {
-    it('should return a random number between 0 and the spray radius', (service: AerosolGeneratorService) => {
+    it('should return a random number between 0 and the spray radius', inject([AerosolGeneratorService],
+      (service: AerosolGeneratorService) => {
       // TODO
-    });
+    }));
   });
 
   describe('randomAngle', () => {
-    it('should return a random number between 0 and 2*PI', (service: AerosolGeneratorService) => {
+    it('should return a random number between 0 and 2*PI', inject([AerosolGeneratorService],
+       (service: AerosolGeneratorService) => {
       // TODO
-    });
+    }));
   });
 
   describe('generateDot', () => {
-    it('should generate a dot with the correct properties', (service: AerosolGeneratorService) => {
+    it('should generate a dot with the correct properties', inject([AerosolGeneratorService],
+      (service: AerosolGeneratorService) => {
       // TODO
-    });
+    }));
   });
 });

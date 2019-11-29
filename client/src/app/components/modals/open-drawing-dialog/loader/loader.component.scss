@@ -13,10 +13,10 @@
     height: 10px;
     position: relative;
     margin: 5px;
-    animation-name: move-right, fade-out;
+    animation-name: move-right, fade-in-out;
     animation-duration: 2s;
     animation-iteration-count: infinite;
-    -webkit-animation-name: move-right, fade-out;
+    -webkit-animation-name: move-right, fade-in-out;
     -webkit-animation-duration: 2s;
     -webkit-animation-iteration-count: infinite;
 }
@@ -37,8 +37,11 @@
         left:95%;
     }
 }
-@keyframes fade-out {
+@keyframes fade-in-out {
     0%{
+        width:0%;
+    }
+    20%{
         width:20%;
     }
     42%{
@@ -48,8 +51,11 @@
         width:0%;
     }
 }
-@-webkit-keyframes fade-out {
+@-webkit-keyframes fade-in-out {
     0%{
+        width:0%;
+    }
+    20%{
         width:20%;
     }
     42%{
