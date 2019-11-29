@@ -2,12 +2,12 @@ import {ChangeDetectorRef, NO_ERRORS_SCHEMA, Renderer2} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { AerosolGeneratorService } from 'src/app/services/tools/aerosol-generator/aerosol-generator.service';
+import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { Tools } from '../../../data-structures/tools';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
-// import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
-// import {ColorService} from '../../../services/tools/color/color.service';
+import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
+import { ColorService } from '../../../services/tools/color/color.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
-// import {UndoRedoService} from '../../../services/undo-redo/undo-redo.service';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { DrawingViewComponent } from './drawing-view.component';
 import {STUB_COMPONENTS} from './drawing-view.component.spec';
@@ -31,7 +31,7 @@ const doNothing = ((ms: number) => {
   });
 });
 
-fdescribe('Aerosol integrations tests', () => {
+describe('Aerosol integrations tests', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
   // let canvasDrawer: CanvasDrawer;
@@ -108,10 +108,12 @@ fdescribe('Aerosol integrations tests', () => {
   });
 
   it('paint emission pattern should be random', async () => {
-    // TODO
+    // Create the work-zone
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
+
+    // Spray the canvas
     const aerosolService = fixture.debugElement.injector.get(AerosolGeneratorService);
     const spraySpy = spyOn(aerosolService, 'spray').and.callThrough();
     await sprayOnCanvas(500);
@@ -122,6 +124,8 @@ fdescribe('Aerosol integrations tests', () => {
       firstSpray[i] = workChilds[i + initialChildsLength] as SVGElement;
     }
     spraySpy.calls.reset();
+
+    // Spray a second time to compare patterns
     await sprayOnCanvas(500);
     expect(spraySpy).toHaveBeenCalled();
     const secondSpray: SVGElement[] = [];
@@ -144,19 +148,108 @@ fdescribe('Aerosol integrations tests', () => {
   });
 
   it('should be possible to determine spray diameter', async () => {
-    // TODO
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
+
+    // Spray
+    const aerosolService = fixture.debugElement.injector.get(AerosolGeneratorService);
+    const mouse = fixture.debugElement.injector.get(MousePositionService);
+    const spraySpy = spyOn(aerosolService, 'spray').and.callThrough();
+    mouse.canvasMousePositionX = 100;
+    mouse.canvasMousePositionY = 100;
+    const sprayDiameter = aerosolService._sprayDiameter;
+    await sprayOnCanvas(250);
+    expect(spraySpy).toHaveBeenCalled();
+
+    // Check that every dot is within the radius (diameter / 2)
+    const dots: SVGElement[] = [];
+    const sprayChildrenLength: number = workChilds.length - initialChildsLength;
+    for (let i = 0; i < sprayChildrenLength; i++) {
+      dots[i] = workChilds[i + initialChildsLength] as SVGElement;
+      expect(dots[i].getAttribute('cx')).toBeLessThanOrEqual(mouse.canvasMousePositionX + (sprayDiameter / 2));
+      expect(dots[i].getAttribute('cx')).toBeGreaterThanOrEqual(mouse.canvasMousePositionX - (sprayDiameter / 2));
+      expect(dots[i].getAttribute('cy')).toBeLessThanOrEqual(mouse.canvasMousePositionY + (sprayDiameter / 2));
+      expect(dots[i].getAttribute('cy')).toBeGreaterThanOrEqual(mouse.canvasMousePositionY - (sprayDiameter / 2));
+    }
   });
 
   it('should be able to change color for every dot in spray', async () => {
-    // TODO
-  });
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
 
-  it('should be able to erase', async () => {
-    // TODO
+    // Spray
+    const colorService = fixture.debugElement.injector.get(ColorService);
+    const initialColor = 'rgba(0,0,0,1)';
+    colorService.setPrimaryColor(initialColor);
+    colorService.assignPrimaryColor();
+    const aerosolService = fixture.debugElement.injector.get(AerosolGeneratorService);
+    const spraySpy = spyOn(aerosolService, 'spray').and.callThrough();
+    await sprayOnCanvas(250);
+    expect(spraySpy).toHaveBeenCalled();
+
+    // Change the color of the first dot
+    const firstDot: SVGElement = workChilds[initialChildsLength] as SVGElement;
+    expect(firstDot.getAttribute('fill')).toEqual(initialColor);
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.ColorApplicator;
+    const newColor = 'rgba(10,10,10,1)';
+    colorService.setPrimaryColor(newColor);
+    colorService.assignPrimaryColor();
+    const applyColor = new MouseEvent('click', {
+      button: 0,
+      clientX: parseFloat(firstDot.getAttribute('cx') as string),
+      clientY: parseFloat(firstDot.getAttribute('cy') as string),
+      bubbles: true,
+    });
+    firstDot.dispatchEvent(applyColor);
+    expect(firstDot.getAttribute('fill')).toEqual(newColor);
+    // Check that every dot had its color changed
+    const dots: SVGElement[] = [];
+    const sprayChildrenLength: number = workChilds.length - initialChildsLength;
+    for (let i = 0; i < sprayChildrenLength; i++) {
+      dots[i] = workChilds[i + initialChildsLength] as SVGElement;
+      expect(dots[i].getAttribute('fill')).toEqual(newColor);
+    }
   });
 
   it('should be able to select full spray from a single dot', async () => {
-    // TODO
-  });
+    // Create the work-zone
+    const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+    const initialChildsLength = svgHandle.children.length;
+    const workChilds = svgHandle.children;
 
+    // Spray
+    const aerosolService = fixture.debugElement.injector.get(AerosolGeneratorService);
+    const spraySpy = spyOn(aerosolService, 'spray').and.callThrough();
+    await sprayOnCanvas(250);
+    expect(spraySpy).toHaveBeenCalled();
+
+    const dots: SVGElement[] = [];
+    const sprayChildrenLength: number = workChilds.length - initialChildsLength;
+    for (let i = 0; i < sprayChildrenLength; i++) {
+      dots[i] = workChilds[i + initialChildsLength] as SVGElement;
+    }
+
+    // Select the first dot
+    const firstDot: SVGElement = dots[0];
+    const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Selector;
+    const mouse = fixture.debugElement.injector.get(MousePositionService);
+    const xPos: number = parseFloat(firstDot.getAttribute('cx') as string);
+    const yPos: number = parseFloat(firstDot.getAttribute('cy') as string);
+    mouse.canvasMousePositionX = xPos;
+    mouse.canvasMousePositionY = yPos;
+    const selector = fixture.debugElement.injector.get(ObjectSelectorService);
+    selector.onMouseDown();
+    selector.onMouseUp();
+
+    // Check that the selector has every dot
+    dots.forEach((dot: SVGElement) => {
+      expect(selector.selectedElements.indexOf(dot)).not.toBe(-1);
+    });
+  });
 });

@@ -113,7 +113,12 @@ describe('UndoRedoService integrations tests', () => {
     });
 
     it('should be able to undo and redo an aerosol spray', async () => {
-      // TODO
+      const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
+      await canvasDrawer.aerosolSpray();
+      const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
+      undoRedoService.undo();
+      await expect(svgCanvas.querySelector('#aerosolSpray0')).toBe(null);
+      await expectCreationToBeRedoable('aerosolSpray0');
     });
   });
 

@@ -71,6 +71,22 @@ export class CanvasDrawer {
     this.component.workZoneComponent.onDoubleClick(finalMouseEvent);
   }
 
+  async aerosolSpray() {
+      const toolManagerService = this.fixture.debugElement.injector.get(ToolManagerService);
+      toolManagerService._activeTool = Tools.Aerosol;
+      this.component.workZoneComponent.onMouseDown();
+      const doNothing = ((ms: number) => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+              resolve();
+          }, ms);
+        });
+      });
+      await doNothing(500);
+      // Wait since this works on an interval
+      this.component.workZoneComponent.onMouseUp();
+  }
+
   drawShapeOnCanvas(x1: number, y1: number, x2: number, y2: number, toolType: Tools)  {
     const toolManagerService = this.fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = toolType;
