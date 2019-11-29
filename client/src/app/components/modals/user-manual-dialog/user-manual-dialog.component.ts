@@ -70,9 +70,15 @@ export class UserManualDialogComponent {
         this.userManualSections.forEach((section) => {
             this.showUserManualSection.set(section, false);
         });
+        this.afterClose();
     }
 
     close(): void {
         this.dialogRef.close();
+    }
+    afterClose(): void {
+        this.dialogRef.afterClosed().subscribe(() => {
+        this.modalManager._isModalActive = false;
+    });
     }
 }

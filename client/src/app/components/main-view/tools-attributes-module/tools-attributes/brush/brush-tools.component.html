@@ -16,9 +16,12 @@
   <mat-label>
     Texture du pinceau:
   </mat-label>
-  <mat-select [(ngModel)]="this.brushGenerator._currentBrushPattern">
-    <mat-option *ngFor="let i of [1,2,3,4,5,6];" [value]="'url(#brushPattern'+i+')'">
-      Texture {{i}}
+  <mat-select (click)="this.previewRect(this.NUMBER_OF_TEXTURES)" [(ngModel)]="this.brushGenerator._currentBrushPattern">
+    <mat-option class="texture-option" *ngFor="let i of [1,2,3,4,5,6];" [value]="'url(#brushPattern'+i+')'">
+    <span class="texture-title"> Texture {{i}}</span> <img mat-list-avatar id="texturePreview{{i}}" class="texture-preview" matTooltip="Aperçu de la texture" />
     </mat-option>
   </mat-select>
 </mat-form-field>
+<svg width="20px" height="20px" id="brushPreview"></svg>
+
+

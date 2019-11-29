@@ -1,5 +1,9 @@
-// This finds out whether the element has a transform value and adapts the translation
-export const setTranslationAttribute = (element: SVGElement, xTranslation: number, yTranslation: number): void => {
+import { Injectable } from '@angular/core';
+
+@Injectable()
+export class TransformationService {
+
+setTranslationAttribute = (element: SVGElement, xTranslation: number, yTranslation: number): void => {
     const transformation = element.getAttribute('transform');
     let newTransform = '';
     if (!transformation) {
@@ -8,7 +12,7 @@ export const setTranslationAttribute = (element: SVGElement, xTranslation: numbe
         newTransform = 'translate(' + xTranslation + ' ' + yTranslation + ') ';
         newTransform += transformation;
     } else {
-        const oldTranslation: number[] = findTransformValues(transformation);
+        const oldTranslation: number[] = this.findTransformValues(transformation, 'translate');
         const translateBegin = transformation.indexOf('translate');
         const translateEnd = transformation.indexOf(')', translateBegin);
         newTransform = transformation.substr(0, translateBegin) +
@@ -16,13 +20,17 @@ export const setTranslationAttribute = (element: SVGElement, xTranslation: numbe
                     transformation.substr(translateEnd + 1);
     }
     element.setAttribute('transform', newTransform);
-};
-export const findTransformValues = (transformation: string): number[] => {
-    const translateIndex = transformation.indexOf('translate(');
-    const spaceIndex = transformation.indexOf(' ', translateIndex);
-    const endOfTranslation = transformation.indexOf(')', spaceIndex);
-    const xValue = transformation.substring(translateIndex + 10, spaceIndex);
-    const yValue = transformation.substring(spaceIndex + 1, endOfTranslation);
+}
+findTransformValues = (transformation: string, attribute: string): number[] => {
+    const attributeIndex = transformation.indexOf(`${attribute}(`);
+    if (attributeIndex === -1) {
+        return [0, 0];
+    }
+    const spaceIndex = transformation.indexOf(' ', attributeIndex);
+    const endOfAttribute = transformation.indexOf(')', spaceIndex);
+    const xValue = transformation.substring(attributeIndex + 10, spaceIndex);
+    const yValue = transformation.substring(spaceIndex + 1, endOfAttribute);
     const values: number[] = [parseFloat(xValue), parseFloat(yValue)];
     return values;
-};
+}
+}

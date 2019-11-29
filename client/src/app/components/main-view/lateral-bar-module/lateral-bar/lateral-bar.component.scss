@@ -1,7 +1,7 @@
 .bottomStick {
   align-content: center;
-  position: absolute;
-  bottom: 0
+  position: relative;
+  bottom: 0;
 }
 
 .bottomRelative {
@@ -15,6 +15,7 @@
 
 .color-tool{
   padding-top: 50px;
+  padding-bottom: 50px;
 }
 
 .icon {
@@ -32,3 +33,11 @@
 .mat-list-item {
   display: inline;
 }
+
+.mat-drawer-inner-container {
+  overflow-x: hidden; 
+  overflow-y: scroll;
+}
+.mat-drawer-inner-container::-webkit-scrollbar { 
+  display: none; 
+} 

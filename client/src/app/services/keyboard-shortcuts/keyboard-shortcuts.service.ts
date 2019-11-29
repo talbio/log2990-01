@@ -1,6 +1,30 @@
 import {Injectable} from '@angular/core';
-// tslint:disable-next-line: max-line-length
-import { COLOR_APPLICATOR_KEY, COPY_KEY, CUT_KEY, DELETE_FULL_ELEMENT_KEY, DELETE_KEY, DELETE_LAST_ELEMENT_KEY, DUPLICATE_KEY, ELLIPSE_KEY, ERASER_KEY, EYEDROPPER_KEY, GRID_KEY, LINE_KEY, NEW_DRAWING_KEY, OPEN_DRAWING_KEY, PAINTBRUSH_KEY, PASTE_KEY, PEN_KEY, PENCIL_KEY, POLYGON_KEY, RECTANGLE_KEY, REDO_KEY, SAVE_DRAWING_KEY, SELECT_ALL_KEY, SELECTION_KEY, UNDO_KEY } from 'src/app/data-structures/constants';
+import {
+  AEROSOL_KEY,
+  COLOR_APPLICATOR_KEY,
+  COPY_KEY,
+  CUT_KEY,
+  DELETE_FULL_ELEMENT_KEY,
+  DELETE_KEY, DELETE_LAST_ELEMENT_KEY,
+  DUPLICATE_KEY, ELLIPSE_KEY, EMOJI_KEY,
+  ERASER_KEY,
+  EYEDROPPER_KEY,
+  FEATHER_KEY,
+  GRID_KEY,
+  LINE_KEY,
+  NEW_DRAWING_KEY,
+  OPEN_DRAWING_KEY,
+  PAINTBRUSH_KEY,
+  PASTE_KEY,
+  PEN_KEY,
+  PENCIL_KEY,
+  POLYGON_KEY,
+  RECTANGLE_KEY,
+  REDO_KEY,
+  SAVE_DRAWING_KEY,
+  SELECT_ALL_KEY,
+  SELECTION_KEY,
+  UNDO_KEY } from 'src/app/data-structures/constants';
 import {Tools} from '../../data-structures/tools';
 import {ModalManagerService} from '../modal-manager/modal-manager.service';
 import {GridTogglerService} from '../tools/grid/grid-toggler.service';
@@ -57,10 +81,13 @@ export class KeyboardShortcutsService {
       [PEN_KEY, () => this.toolManager._activeTool = Tools.Pen],
       [ERASER_KEY, () => this.toolManager._activeTool = Tools.Eraser],
       [SELECTION_KEY, () => this.toolManager._activeTool = Tools.Selector],
+      [FEATHER_KEY, () => this.toolManager._activeTool = Tools.Feather],
+      [AEROSOL_KEY, () => this.toolManager._activeTool = Tools.Aerosol],
       // shape shortcuts
       [RECTANGLE_KEY, () => this.toolManager._activeTool = Tools.Rectangle],
       [ELLIPSE_KEY, () => this.toolManager._activeTool = Tools.Ellipse],
       [POLYGON_KEY, () => this.toolManager._activeTool = Tools.Polygon],
+      [EMOJI_KEY, () => this.toolManager._activeTool = Tools.Stamp],
       // personalization shortcuts
       [COLOR_APPLICATOR_KEY, () => this.toolManager._activeTool = Tools.ColorApplicator],
       [EYEDROPPER_KEY, () => this.toolManager._activeTool = Tools.Eyedropper],

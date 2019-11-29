@@ -44,6 +44,7 @@ export class SaveDrawingDialogComponent implements AfterViewInit {
     });
     this.httpPostDrawingFailed = false;
     this.modalManagerSingleton._isModalActive = true;
+    this.afterClose();
   }
 
   ngAfterViewInit(): void {
@@ -90,7 +91,6 @@ export class SaveDrawingDialogComponent implements AfterViewInit {
 
   close() {
     this.dialogRef.close();
-    this.modalManagerSingleton._isModalActive = false;
   }
 
   async submit() {
@@ -137,10 +137,15 @@ export class SaveDrawingDialogComponent implements AfterViewInit {
         },
         (error) => {
           return Promise.reject(error);
-        })
+      })
       .catch( (_) => {
         this.notifier.notify('error', this.LOCAL_POST_DRAWING_FAILED_MSG);
       })
       .finally(() => SaveDrawingDialogComponent.localPosting = false);
-    }
+  }
+  afterClose(): void {
+    this.dialogRef.afterClosed().subscribe(() => {
+      this.modalManagerSingleton._isModalActive = false;
+    });
+  }
 }

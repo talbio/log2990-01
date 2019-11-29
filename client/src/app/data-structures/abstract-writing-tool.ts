@@ -41,7 +41,7 @@ export abstract class AbstractWritingTool extends AbstractGenerator {
   /**
    * @desc Finalizes the path, sets up the next one
    */
-  finishElement(mouseEvent?: MouseEvent): void {
+  finishElement(): void {
     if (this.mouseDown) {
       this.currentElementsNumber += 1;
       this.pushGeneratorCommand(this.currentElement);

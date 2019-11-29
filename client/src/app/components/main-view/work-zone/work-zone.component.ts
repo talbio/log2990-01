@@ -58,16 +58,16 @@ export class WorkZoneComponent implements OnInit {
     }
   }
 
-  onMouseDown(mouseEvent: MouseEvent) {
-    this.toolManager.createElement(mouseEvent, this.canvasElement);
+  onMouseDown() {
+    this.toolManager.createElement(this.canvasElement);
   }
 
   onMouseMove(mouseEvent: MouseEvent) {
     this.toolManager.updateElement(mouseEvent);
   }
 
-  onMouseUp(mouseEvent: MouseEvent) {
-    this.toolManager.finishElement(mouseEvent);
+  onMouseUp() {
+    this.toolManager.finishElement();
   }
 
   onLeftClick(mouseEvent: MouseEvent) {
@@ -86,7 +86,7 @@ export class WorkZoneComponent implements OnInit {
   }
 
   onMouseWheel(mouseEvent: WheelEvent) {
-    this.toolManager.rotateEmoji(mouseEvent);
+    this.toolManager.rotateGenerator(mouseEvent);
   }
 
   protected setBackGroundColor(): { 'background-color': string } {

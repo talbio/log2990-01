@@ -7,24 +7,10 @@ import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { Tools } from 'src/app/data-structures/tools';
 import { RendererSingleton } from 'src/app/services/renderer-singleton';
-import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
-import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
-import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
-import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
-import { ClipboardService } from '../../../services/tools/clipboard/clipboard.service';
-import { ColorApplicatorService } from '../../../services/tools/color-applicator/color-applicator.service';
 import { ColorService } from '../../../services/tools/color/color.service';
-import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
-import { EraserService } from '../../../services/tools/eraser/eraser.service';
-import { EyedropperService } from '../../../services/tools/eyedropper/eyedropper.service';
-import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
-import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
-import { PencilGeneratorService } from '../../../services/tools/pencil-generator/pencil-generator.service';
-import { PolygonGeneratorService } from '../../../services/tools/polygon-generator/polygon-generator.service';
-import { RectangleGeneratorService } from '../../../services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { ColorPaletteComponent } from '../../modals/color-picker-module/color-palette/color-palette.component';
 import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
@@ -33,6 +19,7 @@ import { LastTenColorsComponent } from '../../modals/color-picker-module/last-te
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { DrawingViewComponent } from './drawing-view.component';
+import { DRAWING_SERVICES } from './integration-tests-environment.spec';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
@@ -49,24 +36,6 @@ const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =
 const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['get', 'post']);
 
-const DRAWING_SERVICES = [
-  RectangleGeneratorService,
-  EllipseGeneratorService,
-  EmojiGeneratorService,
-  PencilGeneratorService,
-  BrushGeneratorService,
-  ColorApplicatorService,
-  LineGeneratorService,
-  EyedropperService,
-  ColorService,
-  MousePositionService,
-  ObjectSelectorService,
-  GridTogglerService,
-  PolygonGeneratorService,
-  ClipboardService,
-  EraserService,
-  PenGeneratorService,
-];
 describe('PenGeneratorService', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
@@ -120,12 +89,7 @@ describe('PenGeneratorService', () => {
     const initialChildsLength = svgHandle.children.length;
     const workChilds = svgHandle.children;
     // Setting up the event
-    const mouseDown = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: 100,
-      clientY: 100,
-    });
-    component.workZoneComponent.onMouseDown(mouseDown);
+    component.workZoneComponent.onMouseDown();
     // Step 3. Expect un penPath
     expect(workChilds.length).toBeGreaterThan(initialChildsLength);
     const child = workChilds[workChilds.length - 1];
@@ -139,8 +103,7 @@ describe('PenGeneratorService', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
 
-    const mouseDown = new MouseEvent('mousedown', {});
-    component.workZoneComponent.onMouseDown(mouseDown);
+    component.workZoneComponent.onMouseDown();
     const penPathBeginning = workChilds[workChilds.length - 1];
     const initialStrokeWidth = penPathBeginning.getAttribute('stroke-width');
 
@@ -164,8 +127,7 @@ describe('PenGeneratorService', () => {
     const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
     const workChilds = svgHandle.children;
 
-    const mouseDown = new MouseEvent('mousedown', {});
-    component.workZoneComponent.onMouseDown(mouseDown);
+    component.workZoneComponent.onMouseDown();
     const penPathBeginning = workChilds[workChilds.length - 1];
     const initialStrokeWidth = penPathBeginning.getAttribute('stroke-width');
 

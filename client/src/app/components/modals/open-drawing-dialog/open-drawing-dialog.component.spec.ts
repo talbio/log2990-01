@@ -12,6 +12,7 @@ import {DialogData} from '../create-drawing-dialog/create-drawing-dialog.compone
 import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
 import { GridTogglerService } from './../../../services/tools/grid/grid-toggler.service';
 import {FilterByTags} from './filter-by-tags.pipe';
+import { LoaderComponent } from './loader/loader.component';
 import {OpenDrawingDialogComponent} from './open-drawing-dialog.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -20,8 +21,9 @@ import {OpenDrawingDialogComponent} from './open-drawing-dialog.component';
 /* -------------------------------- MOCK ENVIRONMENT ----------------------------------------- */
 
 const spyDialog: jasmine.SpyObj<MatDialogRef<OpenDrawingDialogComponent>> =
-  jasmine.createSpyObj('MatDialogRef', ['close']);
+  jasmine.createSpyObj('MatDialogRef', ['close', 'afterClosed']);
 spyDialog.close.and.callThrough();
+spyDialog.afterClosed.and.callFake(() => of(true));
 
 const toolManagerServiceSpy: jasmine.SpyObj<ToolManagerService> =
   jasmine.createSpyObj('ToolManagerService', ['deleteAllDrawings', 'synchronizeAllCounters']);
@@ -66,7 +68,7 @@ describe('OpenDrawingDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [OpenDrawingDialogComponent, FilterByTags],
+      declarations: [OpenDrawingDialogComponent, FilterByTags, LoaderComponent, ],
       imports: [DemoMaterialModule],
       providers: [
         Renderer2,

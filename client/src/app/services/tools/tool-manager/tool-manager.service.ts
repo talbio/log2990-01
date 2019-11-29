@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import {Tools} from '../../../data-structures/tools';
 import {RendererSingleton} from '../../renderer-singleton';
+import { AerosolGeneratorService } from '../aerosol-generator/aerosol-generator.service';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
 import { ColorService } from '../color/color.service';
@@ -9,6 +10,7 @@ import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.
 import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
 import { EraserService } from '../eraser/eraser.service';
 import { EyedropperService } from '../eyedropper/eyedropper.service';
+import { FeatherPenGeneratorService } from '../feather-Pen-generator/feather-Pen-generator.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import { PenGeneratorService } from '../pen-generator/pen-generator.service';
@@ -20,7 +22,7 @@ import { RectangleGeneratorService } from '../rectangle-generator/rectangle-gene
 export class ToolManagerService {
 
   private readonly DEFAULT_NUMBER_OF_ELEMENTS: number = 2;
-  private readonly DEFAULT_NUMBER_OF_DEFINITIONS: number = 7;
+  private readonly DEFAULT_NUMBER_OF_DEFINITIONS: number = 8;
   private numberOfElements: number;
   private canvasElement: SVGElement;
   private activeTool: Tools;
@@ -52,15 +54,17 @@ export class ToolManagerService {
               private objectSelector: ObjectSelectorService,
               private lineGenerator: LineGeneratorService,
               private polygonGenerator: PolygonGeneratorService,
+              private aerosolGenerator: AerosolGeneratorService,
               private eyedropper: EyedropperService,
               private eraser: EraserService,
+              private featherGenerator: FeatherPenGeneratorService,
               protected colorService: ColorService) {
     this._activeTool = Tools.Pencil;
     this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
     this.initializeGenerators();
   }
 
-  createElement(mouseEvent: MouseEvent, canvas: SVGElement) {
+  createElement(canvas: SVGElement) {
     if (this.activeGenerator && this.activeGenerator !== this.lineGenerator) {
       this.activeGenerator.createElement(
         [this.colorService.getPrimaryColor(),
@@ -99,9 +103,9 @@ export class ToolManagerService {
     }
   }
 
-  finishElement(mouseEvent: MouseEvent) {
+  finishElement() {
     if (this.activeGenerator && this.activeGenerator !== this.lineGenerator) {
-      this.activeGenerator.finishElement(mouseEvent);
+      this.activeGenerator.finishElement();
     } else {
       switch (this._activeTool) {
         case Tools.Selector:
@@ -154,11 +158,13 @@ export class ToolManagerService {
   }
   changeElementAltDown() {
     this.emojiGenerator.lowerRotationStep();
-  }
+    this.featherGenerator.lowerRotationStep();
+  } // To extract??
 
   changeElementAltUp() {
     this.emojiGenerator.higherRotationStep();
-  }
+    this.featherGenerator.higherRotationStep();
+  } // To extract??
 
   changeElementShiftDown() {
     this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
@@ -241,8 +247,12 @@ export class ToolManagerService {
     }
   }
 
-  rotateEmoji(mouseEvent: WheelEvent): void {
-    this.emojiGenerator.rotateEmoji(mouseEvent);
+  rotateGenerator(mouseEvent: WheelEvent): void {
+    if (this.activeGenerator === this.emojiGenerator) {
+      this.emojiGenerator.rotateEmoji(mouseEvent);
+    } else if (this.activeGenerator === this.featherGenerator) {
+      this.featherGenerator.rotateFeather(mouseEvent);
+    }
   }
 
   returnGeneratorFromElement(svgElement: SVGElement): AbstractGenerator | undefined {
@@ -252,7 +262,13 @@ export class ToolManagerService {
       case 'ellipse':
         return this.ellipseGenerator;
       case 'polygon':
-        return this.polygonGenerator;
+        if (svgElement.id.startsWith('polygon')) {
+          return this.polygonGenerator;
+        } else if (svgElement.id.startsWith('featherPenPath')) {
+          return this.featherGenerator;
+        } else {
+          return undefined;
+        }
       case 'path':
         if (svgElement.id.startsWith('pencil')) {
           return this.pencilGenerator;
@@ -267,6 +283,8 @@ export class ToolManagerService {
         return this.lineGenerator;
       case 'image':
         return this.emojiGenerator;
+      case 'circle':
+        return this.aerosolGenerator;
       default:
         return undefined;
     }
@@ -275,17 +293,17 @@ export class ToolManagerService {
   synchronizeAllCounters() {
     const counters: Map<AbstractGenerator, number> = new Map<AbstractGenerator, number>();
     this.generators.forEach( (generator: AbstractGenerator) => counters.set(generator, 0));
-    const penIdList = [''];
+    const multiplePartItemsIdList: string[] = [''];
     for (const child of [].slice.call(RendererSingleton.canvas.children)) {
       const childCast = child as SVGElement;
       const generator: AbstractGenerator | undefined = this.returnGeneratorFromElement(childCast);
       if (generator) {
-        if (generator === this.penGenerator) {
-          const index = penIdList.indexOf(childCast.id);
+        if (this.isMultiplePartItemsGenerator(generator)) {
+          const index = multiplePartItemsIdList.indexOf(childCast.id);
           if (index === -1) {
             // This is a new pen path
             this.incrementCounter(counters, generator);
-            penIdList.push(childCast.id);
+            multiplePartItemsIdList.push(childCast.id);
         }
       } else {
           this.incrementCounter(counters, generator);
@@ -319,7 +337,9 @@ export class ToolManagerService {
       this.penGenerator,
       this.brushGenerator,
       this.lineGenerator,
-      this.polygonGenerator);
+      this.polygonGenerator,
+      this.featherGenerator,
+      this.aerosolGenerator);
   }
 
   private setCurrentGenerator(tool: Tools): void {
@@ -348,9 +368,29 @@ export class ToolManagerService {
       case Tools.Pen:
         this.activeGenerator = this.penGenerator;
         break;
+      case Tools.Feather:
+        this.activeGenerator = this.featherGenerator;
+        break;
+      case Tools.Aerosol:
+        this.activeGenerator = this.aerosolGenerator;
+        break;
       default:
         this.activeGenerator = undefined;
         break;
     }
+  }
+  isMultiplePartItemsGenerator(generator: AbstractGenerator): boolean {
+    let isMultiplePart = false;
+    const multiplePartItemGenerators: AbstractGenerator[] = [
+      this.featherGenerator,
+      this.penGenerator,
+      this.aerosolGenerator,
+    ];
+    multiplePartItemGenerators.forEach((multiplePartItemGenerator: AbstractGenerator) => {
+      if (generator === multiplePartItemGenerator) {
+        isMultiplePart = true;
+      }
+    });
+    return isMultiplePart;
   }
 }

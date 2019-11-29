@@ -2,31 +2,26 @@
 <!-- rgb components entered manually (hex values input) -->
 <div class="input-container">
 <label> {{RED}}
-  <input [(ngModel)]="red">
+  <input (input)="enterColorManually()" ng-model="red" [(ngModel)]="red">
 </label>
 </div>
 
 <div class="input-container">
 <label> {{GREEN}}
-  <input [(ngModel)]="green">
+  <input (input)="enterColorManually()" ng-model="green" [(ngModel)]="green">
 </label>
 </div>
 
 <div class="input-container">
   <label> {{BLUE}}
-    <input [(ngModel)]="blue">
+    <input (input)="enterColorManually()" ng-model="blue" [(ngModel)]="blue">
   </label>
 </div>
 
-
-<button [disabled] ="rgbComponentsForm.invalid"
-        (click)="enterColorManually()">
-  {{OK}}
-</button>
-<br />
-
-<div class="warning"
-     *ngIf="rgbComponentsForm.invalid && rgbComponentsForm.touched">
+<div [ngStyle]="{'visibility':rgbComponentsForm.valid || 
+red.length==0 ||
+green.length==0 ||
+blue.length==0 ? 'hidden': 'visible'}" class="warning">
   <p>Nombres hexadécimaux de 0 à FF seulement!</p>
 </div>
 

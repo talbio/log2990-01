@@ -4,7 +4,6 @@ export interface DialogProperties {
   openDialog: () => void;
   matToolTip: string;
   icon: string;
-  isSvgIcon: boolean;
 }
 
 @Component({

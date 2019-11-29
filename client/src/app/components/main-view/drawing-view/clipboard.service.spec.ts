@@ -6,25 +6,13 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { RendererSingleton } from 'src/app/services/renderer-singleton';
-import { EraserService } from 'src/app/services/tools/eraser/eraser.service';
-import { PenGeneratorService } from 'src/app/services/tools/pen-generator/pen-generator.service';
 import { Tools } from '../../../data-structures/tools';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
-import { BrushGeneratorService } from '../../../services/tools/brush-generator/brush-generator.service';
 import { ClipboardService } from '../../../services/tools/clipboard/clipboard.service';
-import { ColorApplicatorService } from '../../../services/tools/color-applicator/color-applicator.service';
 import { ColorService } from '../../../services/tools/color/color.service';
-import { EllipseGeneratorService } from '../../../services/tools/ellipse-generator/ellipse-generator.service';
-import { EmojiGeneratorService } from '../../../services/tools/emoji-generator/emoji-generator.service';
-import { EyedropperService } from '../../../services/tools/eyedropper/eyedropper.service';
-import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
-import { LineGeneratorService } from '../../../services/tools/line-generator/line-generator.service';
 import { ObjectSelectorService } from '../../../services/tools/object-selector/object-selector.service';
-import { PencilGeneratorService } from '../../../services/tools/pencil-generator/pencil-generator.service';
-import { PolygonGeneratorService } from '../../../services/tools/polygon-generator/polygon-generator.service';
-import { RectangleGeneratorService } from '../../../services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { ColorPaletteComponent } from '../../modals/color-picker-module/color-palette/color-palette.component';
 import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
@@ -34,6 +22,7 @@ import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-at
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { UndoRedoService } from './../../../services/undo-redo/undo-redo.service';
 import { DrawingViewComponent } from './drawing-view.component';
+import { DRAWING_SERVICES } from './integration-tests-environment.spec';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
@@ -49,25 +38,6 @@ const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =
   jasmine.createSpyObj('ModalManagerService', ['showCreateDrawingDialog']);
 const httpClientSpy: jasmine.SpyObj<HttpClient> =
   jasmine.createSpyObj('HttpClient', ['get', 'post']);
-
-const DRAWING_SERVICES = [
-  RectangleGeneratorService,
-  EllipseGeneratorService,
-  EmojiGeneratorService,
-  PencilGeneratorService,
-  BrushGeneratorService,
-  ColorApplicatorService,
-  LineGeneratorService,
-  EyedropperService,
-  ClipboardService,
-  EraserService,
-  PenGeneratorService,
-  ColorService,
-  MousePositionService,
-  ObjectSelectorService,
-  GridTogglerService,
-  PolygonGeneratorService,
-];
 
 describe('DrawingViewComponent', () => {
   let component: DrawingViewComponent;
@@ -120,7 +90,7 @@ describe('DrawingViewComponent', () => {
     const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
     mousePositionService.canvasMousePositionX = x1;
     mousePositionService.canvasMousePositionY = y1;
-    component.workZoneComponent.onMouseDown(mouseEvent);
+    component.workZoneComponent.onMouseDown();
     mouseEvent = new MouseEvent('mousemove', {
     clientX: x2,
     clientY: y2,
@@ -129,7 +99,7 @@ describe('DrawingViewComponent', () => {
     mousePositionService.canvasMousePositionX = x2;
     mousePositionService.canvasMousePositionY = y2;
     component.workZoneComponent.onMouseMove(mouseEvent);
-    component.workZoneComponent.onMouseUp(mouseEvent);
+    component.workZoneComponent.onMouseUp();
   };
 
   it('should react properly to cut', () => {
@@ -148,12 +118,7 @@ describe('DrawingViewComponent', () => {
     mouse.canvasMousePositionX = 100;
     mouse.canvasMousePositionY = 100;
 
-    const mouseEvent0 = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: 100,
-      clientY: 100,
-    });
-    component.workZoneComponent.onMouseDown(mouseEvent0);
+    component.workZoneComponent.onMouseDown();
 
     const mouseEvent1 = new MouseEvent('mousemove', {
       button: 0,
@@ -161,7 +126,7 @@ describe('DrawingViewComponent', () => {
       clientY: 200,
     });
     component.workZoneComponent.onMouseMove(mouseEvent1);
-    component.workZoneComponent.onMouseUp(mouseEvent1);
+    component.workZoneComponent.onMouseUp();
 
     const itemToBeCut = workChilds[2] as SVGElement;
 
@@ -188,13 +153,8 @@ describe('DrawingViewComponent', () => {
 
     mouse.canvasMousePositionX = 210;
     mouse.canvasMousePositionY = 210;
-    const mouseEvent0 = new MouseEvent('mousemove', {
-      button: 0,
-      clientX: 210,
-      clientY: 210,
-    });
 
-    component.workZoneComponent.onMouseDown(mouseEvent0);
+    component.workZoneComponent.onMouseDown();
 
     const mouseEvent1 = new MouseEvent('mousemove', {
       button: 0,
@@ -202,7 +162,7 @@ describe('DrawingViewComponent', () => {
       clientY: 450,
     });
     component.workZoneComponent.onMouseMove(mouseEvent1);
-    component.workZoneComponent.onMouseUp(mouseEvent1);
+    component.workZoneComponent.onMouseUp();
 
     clipboardService.copy();
     // The clipboard contains the item copied
@@ -224,13 +184,8 @@ describe('DrawingViewComponent', () => {
 
     mouse.canvasMousePositionX = 210;
     mouse.canvasMousePositionY = 210;
-    const mouseEvent0 = new MouseEvent('mousemove', {
-      button: 0,
-      clientX: 210,
-      clientY: 210,
-    });
 
-    component.workZoneComponent.onMouseDown(mouseEvent0);
+    component.workZoneComponent.onMouseDown();
 
     const mouseEvent1 = new MouseEvent('mousemove', {
       button: 0,
@@ -239,7 +194,7 @@ describe('DrawingViewComponent', () => {
     });
 
     component.workZoneComponent.onMouseMove(mouseEvent1);
-    component.workZoneComponent.onMouseUp(mouseEvent1);
+    component.workZoneComponent.onMouseUp();
     clipboardService.delete();
     // The clipboard contains only one element and it is not the one that was deleted
     expect(clipboardService.memorizedElements.length).toEqual(0);

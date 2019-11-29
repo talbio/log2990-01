@@ -4,10 +4,12 @@ import {
   HostListener,
   Input,
   Output,
+  ViewEncapsulation,
 } from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {DomSanitizer} from '@angular/platform-browser';
+import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
 import {CreateDrawingFormValues} from '../../../../data-structures/create-drawing-form-values';
 import {Tools} from '../../../../data-structures/tools';
 import {ModalManagerService} from '../../../../services/modal-manager/modal-manager.service';
@@ -15,6 +17,7 @@ import {UndoRedoService} from '../../../../services/undo-redo/undo-redo.service'
 import { ClipboardProperties } from '../abstract-clipboard/abstract-clipboard.component';
 import {DialogProperties} from '../abstract-dialog-button/abstract-dialog-button.component';
 import {ToolProperties} from '../abstract-tool-button/abstract-tool-button.component';
+import { DEFAULT_PENCIL_ICON, DEFAULT_SHAPE_ICON } from './../../../../data-structures/constants';
 import { ClipboardService } from './../../../../services/tools/clipboard/clipboard.service';
 
 const RECTANGLE_ICON_PATH = '../../../../assets/svg-icons/rectangle-icon.svg';
@@ -31,11 +34,26 @@ const DUPLICATE_ICON_PATH = '../../../../assets/svg-icons/duplicate.svg';
 const PASTE_ICON_PATH = '../../../../assets/svg-icons/paste.svg';
 const DELETE_ICON_PATH = '../../../../assets/svg-icons/delete.svg';
 const COPY_ICON_PATH = '../../../../assets/svg-icons/copy.svg';
+const FEATHER_ICON_PATH = '../../../../assets/svg-icons/feather.svg';
+const AEROSOL_ICON_PATH = '../../../../assets/svg-icons/spray.svg';
+const PENCIL_ICON_PATH = '../../../../assets/svg-icons/create.svg';
+const BRUSH_ICON_PATH = '../../../../assets/svg-icons/brush.svg';
+const COLOR_APPLICATOR_ICON_PATH = '../../../../assets/svg-icons/format_paint.svg';
+const SELECTOR_ICON_PATH = '../../../../assets/svg-icons/mouse_cursor.svg';
+const EYEDROPPER_ICON_PATH = '../../../../assets/svg-icons/colorize.svg';
+const POLYLINE_ICON_PATH = '../../../../assets/svg-icons/timeline.svg';
+const EMOJI_ICON_PATH = '../../../../assets/svg-icons/sentiment_satisfied_alt.svg';
+const GRID_ICON_PATH = '../../../../assets/svg-icons/grid_on.svg';
+const NEW_DRAWING_ICON_PATH = '../../../../assets/svg-icons/add.svg';
+const SAVE_DRAWING_ICON_PATH = '../../../../assets/svg-icons/save.svg';
+const OPEN_DRAWING_ICON_PATH = '../../../../assets/svg-icons/folder_open.svg';
+const USER_GUIDE_ICON_PATH = '../../../../assets/svg-icons/contact_support.svg';
 
 @Component({
   selector: 'app-lateral-bar',
   templateUrl: './lateral-bar.component.html',
   styleUrls: ['./lateral-bar.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class LateralBarComponent {
   /* Need access to attributesSideNav to toggle when clicking on tool */
@@ -51,18 +69,25 @@ export class LateralBarComponent {
   shapeToolsButtonsProperties: ToolProperties[];
   clipboardButtonsProperties: ClipboardProperties[];
   dialogsButtonsProperties: DialogProperties[];
+  otherToolsButtonsProperties: ToolProperties[];
+  private lastPencilIcon: string;
+  private lastShapeIcon: string;
 
   constructor(private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
               private modalManagerService: ModalManagerService,
               private clipboard: ClipboardService,
-              protected undoRedoService: UndoRedoService) {
+              protected undoRedoService: UndoRedoService,
+              protected toolManager: ToolManagerService) {
     this.loadSVGIcons();
     this.setAppropriateIconsClass();
     this.initializeClipboardButtons();
     this.initializePencilToolsButtons();
     this.initializeShapeToolsButtons();
     this.initializeDialogsButtons();
+    this.initializeOtherToolsButtons();
+    this.lastPencilIcon = DEFAULT_PENCIL_ICON;
+    this.lastShapeIcon = DEFAULT_SHAPE_ICON;
   }
 
   protected get Tools() {
@@ -100,6 +125,20 @@ export class LateralBarComponent {
       ['copy', COPY_ICON_PATH],
       ['paste', PASTE_ICON_PATH],
       ['delete', DELETE_ICON_PATH],
+      ['feather', FEATHER_ICON_PATH],
+      ['aerosol', AEROSOL_ICON_PATH],
+      ['create', PENCIL_ICON_PATH],
+      ['brush', BRUSH_ICON_PATH],
+      ['format_paint', COLOR_APPLICATOR_ICON_PATH],
+      ['mouse_cursor', SELECTOR_ICON_PATH],
+      ['colorize', EYEDROPPER_ICON_PATH],
+      ['timeline', POLYLINE_ICON_PATH],
+      ['sentiment_satisfied_alt', EMOJI_ICON_PATH],
+      ['grid_on', GRID_ICON_PATH],
+      ['add', NEW_DRAWING_ICON_PATH],
+      ['save', SAVE_DRAWING_ICON_PATH],
+      ['folder_open', OPEN_DRAWING_ICON_PATH],
+      ['contact_support', USER_GUIDE_ICON_PATH],
     );
     icons.forEach( (icon: [string, string]) =>
       this.matIconRegistry.addSvgIcon(icon[0], this.domSanitizer.bypassSecurityTrustResourceUrl(icon[1])));
@@ -107,81 +146,116 @@ export class LateralBarComponent {
 
   private initializePencilToolsButtons() {
     this.pencilToolsButtonsProperties = [];
-    const propertyTable: [Tools, string, string, boolean][] = [];
+    const propertyTable: [Tools, string, string][] = [];
     propertyTable.push(
-      [Tools.Pencil, 'Crayon', 'create', false],
-      [Tools.Pen, 'Stylo', 'pen', true],
-      [Tools.Brush, 'Pinceau', 'brush', false],
-      [Tools.ColorApplicator, 'Applicateur de couleur', 'format_paint', false],
-      [Tools.Selector, 'Outil de sélection', 'select_all', false],
-      [Tools.Eyedropper, 'Pipette', 'colorize', false],
-      [Tools.Eraser, 'Efface', 'eraser', true],
+      [Tools.Pencil, 'Crayon (C)', 'create'],
+      [Tools.Pen, 'Stylo (Y)', 'pen'],
+      [Tools.Brush, 'Pinceau (W)', 'brush'],
+      [Tools.Feather, 'Plume (P)', 'feather'],
+      [Tools.Aerosol, 'Aérosol (A)', 'aerosol'],
+      [Tools.Eraser, 'Efface (E)', 'eraser'],
+      [Tools.ColorApplicator, 'Applicateur de couleur (R)', 'format_paint'],
+      [Tools.Eyedropper, 'Pipette (I)', 'colorize'],
     );
-    propertyTable.forEach( (property: [Tools, string, string, boolean]) => {
+    propertyTable.forEach( (property: [Tools, string, string]) => {
       this.pencilToolsButtonsProperties.push(
-        this.toolPropertiesFactory(property[0], property[1], property[2], property[3]),
+        this.toolPropertiesFactory(property[0], property[1], property[2], false),
       );
     });
   }
 
   private initializeShapeToolsButtons() {
     this.shapeToolsButtonsProperties = [];
-    const propertyTable: [Tools, string, string, boolean][] = [];
+    const propertyTable: [Tools, string, string][] = [];
     propertyTable.push(
-      [Tools.Polygon, 'Polygone', 'polygon', true],
-      [Tools.Rectangle, 'Rectangle', 'rectangle', true],
-      [Tools.Line, 'Ligne', 'timeline', false],
-      [Tools.Ellipse, 'Ellipse', 'ellipse', true],
-      [Tools.Stamp, 'Étampe', 'sentiment_satisfied_alt', false],
-      [Tools.Grid, 'Grille', 'grid_on', false],
+      [Tools.Line, 'Ligne (L)', 'timeline'],
+      [Tools.Rectangle, 'Rectangle (1)', 'rectangle'],
+      [Tools.Ellipse, 'Ellipse (2)', 'ellipse'],
+      [Tools.Polygon, 'Polygone (3)', 'polygon'],
+      [Tools.Stamp, 'Étampe (4)', 'sentiment_satisfied_alt'],
     );
-    propertyTable.forEach( (property: [Tools, string, string, boolean]) => {
+    propertyTable.forEach( (property: [Tools, string, string]) => {
       this.shapeToolsButtonsProperties.push(
-        this.toolPropertiesFactory(property[0], property[1], property[2], property[3]));
+        this.toolPropertiesFactory(property[0], property[1], property[2], false));
     });
   }
 
   private initializeClipboardButtons() {
     this.clipboardButtonsProperties = [];
-    const propertyTable: [() => void, string, string, boolean][] = [];
+    const propertyTable: [() => void, string, string][] = [];
     propertyTable.push(
-      [() => {this.clipboard.copy(); }, 'Copier', 'copy', true],
-      [() => this.clipboard.cut(), 'Couper', 'cut', true],
-      [() => this.clipboard.delete(), 'Supprimer', 'delete', true],
-      [() => this.clipboard.duplicate(), 'Dupliquer', 'duplicate', true],
-      [() => this.clipboard.paste(), 'Coller', 'paste', true],
+      [() => {this.clipboard.copy(); }, 'Copier (Ctrl + C)', 'copy'],
+      [() => this.clipboard.duplicate(), 'Dupliquer (Ctrl + D)', 'duplicate'],
+      [() => this.clipboard.cut(), 'Couper (Ctrl + X)', 'cut'],
+      [() => this.clipboard.delete(), 'Supprimer (Suppr.)', 'delete'],
+      [() => this.clipboard.paste(), 'Coller (Ctrl + V)', 'paste'],
     );
-    propertyTable.forEach( (property: [() => void, string, string, boolean]) => {
+    propertyTable.forEach( (property: [() => void, string, string]) => {
       this.clipboardButtonsProperties.push(
-        this.clipboardPropertiesFactory(property[0], property[1], property[2], property[3]));
+        this.clipboardPropertiesFactory(property[0], property[1], property[2]));
     });
   }
 
   private initializeDialogsButtons() {
     this.dialogsButtonsProperties = [];
-    const propertyTable: [() => void, string, string, boolean][] = [];
+    const propertyTable: [() => void, string, string][] = [];
     propertyTable.push(
-      [() => this.modalManagerService.showCreateDrawingDialog(), 'Nouveau Dessin', 'add', false],
-      [() => this.modalManagerService.showSaveDrawingDialog(), 'Sauvegarder Dessin', 'save', false],
-      [() => this.modalManagerService.showOpenDrawingDialog(), 'Ouvrir un Dessin', 'folder_open', false],
-      [() => this.modalManagerService.showUserManualDialog(), `Guide d'utilisation`, 'contact_support', false],
+      [() => this.modalManagerService.showCreateDrawingDialog(), 'Nouveau Dessin (Ctrl + O)', 'add'],
+      [() => this.modalManagerService.showSaveDrawingDialog(), 'Sauvegarder Dessin (Ctrl + S)', 'save'],
+      [() => this.modalManagerService.showOpenDrawingDialog(), 'Ouvrir un Dessin (Ctrl + G)', 'folder_open'],
+      [() => this.modalManagerService.showUserManualDialog(), `Guide d'utilisation`, 'contact_support'],
     );
-    propertyTable.forEach( (property: [() => void, string, string, boolean]) => {
+    propertyTable.forEach( (property: [() => void, string, string]) => {
       this.dialogsButtonsProperties.push(
-        this.dialogPropertiesFactory(property[0], property[1], property[2], property[3]));
+        this.dialogPropertiesFactory(property[0], property[1], property[2]));
     });
   }
 
-  private toolPropertiesFactory(tool: Tools, matToolTip: string, icon: string, isSvgIcon: boolean): ToolProperties {
-    return {tool, matToolTip, icon, isSvgIcon};
+  private initializeOtherToolsButtons() {
+    this.otherToolsButtonsProperties = [];
+    const propertyTable: [Tools, string, string][] = [];
+    propertyTable.push(
+      [Tools.Selector, 'Outil de sélection (S)', 'mouse_cursor'],
+      [Tools.Grid, 'Grille (G)', 'grid_on'],
+    );
+    propertyTable.forEach( (property: [Tools, string, string]) => {
+      this.otherToolsButtonsProperties.push(
+        this.toolPropertiesFactory(property[0], property[1], property[2], true));
+    });
   }
 
-  private dialogPropertiesFactory(onClickFunction: () => void, matToolTip: string, icon: string, isSvgIcon: boolean): DialogProperties {
-    return { openDialog: onClickFunction, matToolTip, icon, isSvgIcon};
+  private toolPropertiesFactory(tool: Tools, matToolTip: string, icon: string, isMainBarItem: boolean): ToolProperties {
+    return {tool, matToolTip, icon, isMainBarItem};
+  }
+
+  private dialogPropertiesFactory(onClickFunction: () => void, matToolTip: string, icon: string): DialogProperties {
+    return { openDialog: onClickFunction, matToolTip, icon};
   }
 
   private clipboardPropertiesFactory(onClickFunction: () => void,
-                                     matToolTip: string, icon: string, isSvgIcon: boolean): ClipboardProperties {
-    return { clipboardFunction: onClickFunction, matToolTip, icon, isSvgIcon};
+                                     matToolTip: string, icon: string): ClipboardProperties {
+    return { clipboardFunction: onClickFunction, matToolTip, icon};
+  }
+
+  protected findActivePencilIcon(activeTool: Tools): string {
+    let icon = this.lastPencilIcon;
+    this.pencilToolsButtonsProperties.forEach((toolProperty: ToolProperties) => {
+      if (toolProperty.tool === activeTool) {
+        this.lastPencilIcon = toolProperty.icon;
+        icon = toolProperty.icon;
+      }
+    });
+    return icon;
+  }
+
+  protected findActiveShapeIcon(activeTool: Tools): string {
+    let icon = this.lastShapeIcon;
+    this.shapeToolsButtonsProperties.forEach((toolProperty: ToolProperties) => {
+      if (toolProperty.tool === activeTool) {
+        this.lastShapeIcon = toolProperty.icon;
+        icon = toolProperty.icon;
+      }
+    });
+    return icon;
   }
 }
