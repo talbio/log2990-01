@@ -21,7 +21,7 @@ export class DrawingsController {
 
         this.router.post('/', (req: Request, res: Response, next: NextFunction) => {
             const drawing: Drawing = req.body.data as Drawing;
-            this.drawingsService.storeDrawing(drawing) ?
+            this.drawingsService.postDrawing(drawing) ?
                 res.send({httpCode: this.HTTP_CODE_SUCCESS}) :
                 res.send({httpCode: this.HTTP_CODE_BAD_REQUEST});
         });
