@@ -55,6 +55,8 @@ export class ObjectSelectorService {
     this.selectedElements = [];
     this.startX = 0;
     this.startY = 0;
+    this.angle = 0;
+    this.rotationStep = MAX_ROTATION_STEP;
   }
 
   get canvasBoxRect(): BoundingRect {
@@ -362,7 +364,7 @@ export class ObjectSelectorService {
     this.selectedElements.forEach((element: SVGElement) => {
       if (element.getAttribute('transform') !== null) {
         element.setAttribute('transform', newRotationString);
-      } else if (this.isRotating(element)) {
+      } else if (this.alreadyRotating(element)) {
         this.adaptRotation(element);
       } else {
         element.setAttribute('transform', element.getAttribute('transform') + newRotationString);
@@ -370,11 +372,23 @@ export class ObjectSelectorService {
     });
   }
 
-  isRotating(element: SVGElement): boolean {
+  alreadyRotating(element: SVGElement): boolean {
     const currentTransform = element.getAttribute('transform');
-    const lastRotation = currentTransform.lastIndexOf('rotate(');
-    const distanceFromNewest = currentTransform.length - lastRotation;
-    if (distanceFromNewest > 21) { return true; } else { return false; }
+    if (currentTransform.lastIndexOf('rotate(') !== -1) {
+      const lastRotation = currentTransform.lastIndexOf('rotate(');
+      const lastRotate = currentTransform.substr(lastRotation + 7);
+      const rotationAngle = lastRotate.split(' ');
+      const box = this.getBoundingRectDimensions();
+      const xCenter = box.x + box.width / 2;
+      const yCenter = box.y + box.height / 2;
+      if (parseFloat(rotationAngle[1]) === xCenter && rotationAngle[2] === yCenter as unknown as string + ')' ) {
+        return true;
+      } else { return false; }
+    } else {
+      return false;
+    }
+    // const distanceFromNewest = currentTransform.length - lastRotation;
+    // if (distanceFromNewest > 21) { return true; } else { return false; }
   }
 
   adaptRotation(element: SVGElement) {
@@ -383,5 +397,10 @@ export class ObjectSelectorService {
     const lastRotate = currentTransform.substr(lastRotation + 7);
     const rotationAngle = lastRotate.split(' ');
     rotationAngle[0] = this.angle as unknown as string;
+    let newTransform = currentTransform.substr(0, lastRotation + 7);
+    rotationAngle.forEach((part: string) => {
+      newTransform += part;
+    });
+    element.setAttribute('transform', newTransform);
   }
 }
