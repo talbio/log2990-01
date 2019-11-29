@@ -34,6 +34,7 @@ const PASTE_ICON_PATH = '../../../../assets/svg-icons/paste.svg';
 const DELETE_ICON_PATH = '../../../../assets/svg-icons/delete.svg';
 const COPY_ICON_PATH = '../../../../assets/svg-icons/copy.svg';
 const FEATHER_ICON_PATH = '../../../../assets/svg-icons/feather.svg';
+const AEROSOL_ICON_PATH = '../../../../assets/svg-icons/spray.svg';
 const PENCIL_ICON_PATH = '../../../../assets/svg-icons/create.svg';
 const BRUSH_ICON_PATH = '../../../../assets/svg-icons/brush.svg';
 const COLOR_APPLICATOR_ICON_PATH = '../../../../assets/svg-icons/format_paint.svg';
@@ -121,6 +122,7 @@ export class LateralBarComponent {
       ['paste', PASTE_ICON_PATH],
       ['delete', DELETE_ICON_PATH],
       ['feather', FEATHER_ICON_PATH],
+      ['aerosol', AEROSOL_ICON_PATH],
       ['create', PENCIL_ICON_PATH],
       ['brush', BRUSH_ICON_PATH],
       ['format_paint', COLOR_APPLICATOR_ICON_PATH],
@@ -150,6 +152,7 @@ export class LateralBarComponent {
       [Tools.Eyedropper, 'Pipette (I)', 'colorize'],
       [Tools.Eraser, 'Efface (E)', 'eraser'],
       [Tools.Feather, 'Plume (P)', 'feather'],
+      [Tools.Aerosol, 'Aérosol (A)', 'aerosol'],
     );
     propertyTable.forEach( (property: [Tools, string, string]) => {
       this.pencilToolsButtonsProperties.push(

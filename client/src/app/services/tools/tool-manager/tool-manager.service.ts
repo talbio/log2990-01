@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import {Tools} from '../../../data-structures/tools';
 import {RendererSingleton} from '../../renderer-singleton';
+import { AerosolGeneratorService } from '../aerosol-generator/aerosol-generator.service';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
 import { ColorService } from '../color/color.service';
@@ -21,7 +22,7 @@ import { RectangleGeneratorService } from '../rectangle-generator/rectangle-gene
 export class ToolManagerService {
 
   private readonly DEFAULT_NUMBER_OF_ELEMENTS: number = 2;
-  private readonly DEFAULT_NUMBER_OF_DEFINITIONS: number = 7;
+  private readonly DEFAULT_NUMBER_OF_DEFINITIONS: number = 8;
   private numberOfElements: number;
   private canvasElement: SVGElement;
   private activeTool: Tools;
@@ -53,6 +54,7 @@ export class ToolManagerService {
               private objectSelector: ObjectSelectorService,
               private lineGenerator: LineGeneratorService,
               private polygonGenerator: PolygonGeneratorService,
+              private aerosolGenerator: AerosolGeneratorService,
               private eyedropper: EyedropperService,
               private eraser: EraserService,
               private featherGenerator: FeatherPenGeneratorService,
@@ -281,6 +283,8 @@ export class ToolManagerService {
         return this.lineGenerator;
       case 'image':
         return this.emojiGenerator;
+      case 'circle':
+        return this.aerosolGenerator;
       default:
         return undefined;
     }
@@ -294,7 +298,7 @@ export class ToolManagerService {
       const childCast = child as SVGElement;
       const generator: AbstractGenerator | undefined = this.returnGeneratorFromElement(childCast);
       if (generator) {
-        if (generator === this.penGenerator || generator === this.featherGenerator) {
+        if (this.isMultiplePartItemsGenerator(generator)) {
           const index = multiplePartItemsIdList.indexOf(childCast.id);
           if (index === -1) {
             // This is a new pen path
@@ -334,7 +338,8 @@ export class ToolManagerService {
       this.brushGenerator,
       this.lineGenerator,
       this.polygonGenerator,
-      this.featherGenerator);
+      this.featherGenerator,
+      this.aerosolGenerator);
   }
 
   private setCurrentGenerator(tool: Tools): void {
@@ -366,9 +371,26 @@ export class ToolManagerService {
       case Tools.Feather:
         this.activeGenerator = this.featherGenerator;
         break;
+      case Tools.Aerosol:
+        this.activeGenerator = this.aerosolGenerator;
+        break;
       default:
         this.activeGenerator = undefined;
         break;
     }
+  }
+  isMultiplePartItemsGenerator(generator: AbstractGenerator): boolean {
+    let isMultiplePart = false;
+    const multiplePartItemGenerators: AbstractGenerator[] = [
+      this.featherGenerator,
+      this.penGenerator,
+      this.aerosolGenerator,
+    ];
+    multiplePartItemGenerators.forEach((multiplePartItemGenerator: AbstractGenerator) => {
+      if (generator === multiplePartItemGenerator) {
+        isMultiplePart = true;
+      }
+    });
+    return isMultiplePart;
   }
 }

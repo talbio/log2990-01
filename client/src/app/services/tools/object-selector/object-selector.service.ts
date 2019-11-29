@@ -116,14 +116,14 @@ export class ObjectSelectorService {
   }
 
   updateSelectedItems(): void {
-    const drawings = RendererSingleton.canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
+    const drawings = RendererSingleton.canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon, circle');
     drawings.forEach((svgElement: SVGElement) => {
       if (this.isElementInsideSelection(svgElement) && !this.selectedElements.includes(svgElement)) {
         this.selectedElements.push(svgElement);
-        if (svgElement.id.startsWith('penPath') || svgElement.id.startsWith('featherPenPath')) {
+        if (svgElement.id.startsWith('penPath') || svgElement.id.startsWith('featherPenPath') || svgElement.id.startsWith('aerosol')) {
           // Remove this instance since it will be pushed with foreach
           this.selectedElements.pop();
-          drawings.forEach((element) => {
+          drawings.forEach((element: SVGElement) => {
             if (element.id === svgElement.id) {
               this.selectedElements.push(element as SVGElement);
             }
