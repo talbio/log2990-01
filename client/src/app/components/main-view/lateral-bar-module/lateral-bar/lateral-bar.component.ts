@@ -4,6 +4,7 @@ import {
   HostListener,
   Input,
   Output,
+  ViewEncapsulation,
 } from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
@@ -52,6 +53,7 @@ const USER_GUIDE_ICON_PATH = '../../../../assets/svg-icons/contact_support.svg';
   selector: 'app-lateral-bar',
   templateUrl: './lateral-bar.component.html',
   styleUrls: ['./lateral-bar.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class LateralBarComponent {
   /* Need access to attributesSideNav to toggle when clicking on tool */
