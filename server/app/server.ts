@@ -23,7 +23,7 @@ export class Server {
         this.server.listen(this.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on('listening', () => this.onListening());
-        void this.mongoDb.connectDB();
+        this.mongoDb.connectDB();
     }
 
     private normalizePort(val: number | string): number | string | boolean {
