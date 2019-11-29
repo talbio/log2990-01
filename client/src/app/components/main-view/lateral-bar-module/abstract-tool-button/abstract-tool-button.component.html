@@ -1,8 +1,13 @@
-<button mat-menu-item
+<button mat-menu-item *ngIf="!toolProperties.isMainBarItem"
         (click)="toggleAttributesAndSetTool()"
         matTooltip="{{toolProperties.matToolTip}}"
         matTooltipPosition="right">
   <mat-icon svgIcon="{{toolProperties.icon}}" ></mat-icon>
 </button>
-
+<button mat-icon-button *ngIf="toolProperties.isMainBarItem"
+        (click)="toggleAttributesAndSetTool()"
+        matTooltip="{{toolProperties.matToolTip}}"
+        matTooltipPosition="right">
+  <mat-icon svgIcon="{{toolProperties.icon}}" ></mat-icon>
+</button>
 

@@ -38,7 +38,7 @@ const AEROSOL_ICON_PATH = '../../../../assets/svg-icons/spray.svg';
 const PENCIL_ICON_PATH = '../../../../assets/svg-icons/create.svg';
 const BRUSH_ICON_PATH = '../../../../assets/svg-icons/brush.svg';
 const COLOR_APPLICATOR_ICON_PATH = '../../../../assets/svg-icons/format_paint.svg';
-const SELECTOR_ICON_PATH = '../../../../assets/svg-icons/select_all.svg';
+const SELECTOR_ICON_PATH = '../../../../assets/svg-icons/mouse_cursor.svg';
 const EYEDROPPER_ICON_PATH = '../../../../assets/svg-icons/colorize.svg';
 const POLYLINE_ICON_PATH = '../../../../assets/svg-icons/timeline.svg';
 const EMOJI_ICON_PATH = '../../../../assets/svg-icons/sentiment_satisfied_alt.svg';
@@ -67,6 +67,7 @@ export class LateralBarComponent {
   shapeToolsButtonsProperties: ToolProperties[];
   clipboardButtonsProperties: ClipboardProperties[];
   dialogsButtonsProperties: DialogProperties[];
+  otherToolsButtonsProperties: ToolProperties[];
   private lastPencilIcon: string;
   private lastShapeIcon: string;
 
@@ -82,6 +83,7 @@ export class LateralBarComponent {
     this.initializePencilToolsButtons();
     this.initializeShapeToolsButtons();
     this.initializeDialogsButtons();
+    this.initializeOtherToolsButtons();
     this.lastPencilIcon = DEFAULT_PENCIL_ICON;
     this.lastShapeIcon = DEFAULT_SHAPE_ICON;
   }
@@ -126,7 +128,7 @@ export class LateralBarComponent {
       ['create', PENCIL_ICON_PATH],
       ['brush', BRUSH_ICON_PATH],
       ['format_paint', COLOR_APPLICATOR_ICON_PATH],
-      ['select_all', SELECTOR_ICON_PATH],
+      ['mouse_cursor', SELECTOR_ICON_PATH],
       ['colorize', EYEDROPPER_ICON_PATH],
       ['timeline', POLYLINE_ICON_PATH],
       ['sentiment_satisfied_alt', EMOJI_ICON_PATH],
@@ -147,16 +149,15 @@ export class LateralBarComponent {
       [Tools.Pencil, 'Crayon (C)', 'create'],
       [Tools.Pen, 'Stylo (Y)', 'pen'],
       [Tools.Brush, 'Pinceau (W)', 'brush'],
-      [Tools.ColorApplicator, 'Applicateur de couleur (R)', 'format_paint'],
-      [Tools.Selector, 'Outil de sélection (S)', 'select_all'],
-      [Tools.Eyedropper, 'Pipette (I)', 'colorize'],
-      [Tools.Eraser, 'Efface (E)', 'eraser'],
       [Tools.Feather, 'Plume (P)', 'feather'],
       [Tools.Aerosol, 'Aérosol (A)', 'aerosol'],
+      [Tools.Eraser, 'Efface (E)', 'eraser'],
+      [Tools.ColorApplicator, 'Applicateur de couleur (R)', 'format_paint'],
+      [Tools.Eyedropper, 'Pipette (I)', 'colorize'],
     );
     propertyTable.forEach( (property: [Tools, string, string]) => {
       this.pencilToolsButtonsProperties.push(
-        this.toolPropertiesFactory(property[0], property[1], property[2]),
+        this.toolPropertiesFactory(property[0], property[1], property[2], false),
       );
     });
   }
@@ -165,16 +166,15 @@ export class LateralBarComponent {
     this.shapeToolsButtonsProperties = [];
     const propertyTable: [Tools, string, string][] = [];
     propertyTable.push(
-      [Tools.Polygon, 'Polygone (3)', 'polygon'],
-      [Tools.Rectangle, 'Rectangle (1)', 'rectangle'],
       [Tools.Line, 'Ligne (L)', 'timeline'],
+      [Tools.Rectangle, 'Rectangle (1)', 'rectangle'],
       [Tools.Ellipse, 'Ellipse (2)', 'ellipse'],
-      [Tools.Stamp, 'Étampe', 'sentiment_satisfied_alt'],
-      [Tools.Grid, 'Grille (G)', 'grid_on'],
+      [Tools.Polygon, 'Polygone (3)', 'polygon'],
+      [Tools.Stamp, 'Étampe (4)', 'sentiment_satisfied_alt'],
     );
     propertyTable.forEach( (property: [Tools, string, string]) => {
       this.shapeToolsButtonsProperties.push(
-        this.toolPropertiesFactory(property[0], property[1], property[2]));
+        this.toolPropertiesFactory(property[0], property[1], property[2], false));
     });
   }
 
@@ -183,9 +183,9 @@ export class LateralBarComponent {
     const propertyTable: [() => void, string, string][] = [];
     propertyTable.push(
       [() => {this.clipboard.copy(); }, 'Copier (Ctrl + C)', 'copy'],
+      [() => this.clipboard.duplicate(), 'Dupliquer (Ctrl + D)', 'duplicate'],
       [() => this.clipboard.cut(), 'Couper (Ctrl + X)', 'cut'],
       [() => this.clipboard.delete(), 'Supprimer (Suppr.)', 'delete'],
-      [() => this.clipboard.duplicate(), 'Dupliquer (Ctrl + D)', 'duplicate'],
       [() => this.clipboard.paste(), 'Coller (Ctrl + V)', 'paste'],
     );
     propertyTable.forEach( (property: [() => void, string, string]) => {
@@ -209,8 +209,21 @@ export class LateralBarComponent {
     });
   }
 
-  private toolPropertiesFactory(tool: Tools, matToolTip: string, icon: string): ToolProperties {
-    return {tool, matToolTip, icon};
+  private initializeOtherToolsButtons() {
+    this.otherToolsButtonsProperties = [];
+    const propertyTable: [Tools, string, string][] = [];
+    propertyTable.push(
+      [Tools.Selector, 'Outil de sélection (S)', 'mouse_cursor'],
+      [Tools.Grid, 'Grille (G)', 'grid_on'],
+    );
+    propertyTable.forEach( (property: [Tools, string, string]) => {
+      this.otherToolsButtonsProperties.push(
+        this.toolPropertiesFactory(property[0], property[1], property[2], true));
+    });
+  }
+
+  private toolPropertiesFactory(tool: Tools, matToolTip: string, icon: string, isMainBarItem: boolean): ToolProperties {
+    return {tool, matToolTip, icon, isMainBarItem};
   }
 
   private dialogPropertiesFactory(onClickFunction: () => void, matToolTip: string, icon: string): DialogProperties {
