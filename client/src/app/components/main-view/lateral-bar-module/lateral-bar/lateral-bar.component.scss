@@ -35,9 +35,18 @@
 }
 
 .mat-drawer-inner-container {
-  overflow-x: hidden; 
+  overflow:hidden;
+}
+
+.mat-drawer-inner-container::-webkit-scrollbar
+{
+	width: 4px;
+}
+.mat-drawer-inner-container:hover {
   overflow-y: scroll;
 }
-.mat-drawer-inner-container::-webkit-scrollbar { 
-  display: none; 
-} 
+.mat-drawer-inner-container::-webkit-scrollbar-thumb
+{
+	background-color: #2b3840;
+	border-radius: 4px;
+}
