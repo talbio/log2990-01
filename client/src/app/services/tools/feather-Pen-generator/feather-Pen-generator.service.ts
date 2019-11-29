@@ -38,10 +38,10 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
   }
 
   set rotationAngle(angle: number) {
-    if (angle > 180) {
+    if (angle > 179) {
       angle = 0;
     } else if (angle < 0) {
-      angle = 180;
+      angle = 179;
     } else {
       this.angle = angle;
     }

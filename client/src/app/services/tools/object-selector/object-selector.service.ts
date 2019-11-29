@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Colors } from 'src/app/data-structures/colors';
 import { Command } from 'src/app/data-structures/command';
+import { MAX_ROTATION_STEP, MIN_ROTATION_STEP } from 'src/app/data-structures/constants';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
@@ -40,6 +41,8 @@ export class ObjectSelectorService {
   private mouseDown: boolean;
   startX: number;
   startY: number;
+  angle: number;
+  rotationStep: number;
 
   constructor(private mousePosition: MousePositionService,
               private rectangleGenerator: RectangleGeneratorService,
@@ -333,4 +336,52 @@ export class ObjectSelectorService {
     return map;
   }
 
+  lowerRotationStep(): void {
+      this.rotationStep = MIN_ROTATION_STEP;
+  }
+
+  higherRotationStep(): void {
+      this.rotationStep = MAX_ROTATION_STEP;
+  }
+
+  changeAngle(mouseWheel: WheelEvent) {
+    if (mouseWheel.deltaY < 0) {
+      this.angle  += this.rotationStep;
+    } else { this.angle  -= this.rotationStep; }
+    if (this.angle > 359) {
+      this.angle  = 0; }
+    if (this.angle  < 0) {this.angle  = 359; }
+  }
+
+  rotateSelectedElements(mouseWheel: WheelEvent) {
+    this.changeAngle(mouseWheel);
+    const box = this.getBoundingRectDimensions();
+    const xCenter = box.x + box.width / 2;
+    const yCenter = box.y + box.height / 2;
+    const newRotationString = ' rotate(' + this.angle + ' ' + xCenter + ' ' + yCenter + ')';
+    this.selectedElements.forEach((element: SVGElement) => {
+      if (element.getAttribute('transform') !== null) {
+        element.setAttribute('transform', newRotationString);
+      } else if (this.isRotating(element)) {
+        this.adaptRotation(element);
+      } else {
+        element.setAttribute('transform', element.getAttribute('transform') + newRotationString);
+      }
+    });
+  }
+
+  isRotating(element: SVGElement): boolean {
+    const currentTransform = element.getAttribute('transform');
+    const lastRotation = currentTransform.lastIndexOf('rotate(');
+    const distanceFromNewest = currentTransform.length - lastRotation;
+    if (distanceFromNewest > 21) { return true; } else { return false; }
+  }
+
+  adaptRotation(element: SVGElement) {
+    const currentTransform = element.getAttribute('transform');
+    const lastRotation = currentTransform.lastIndexOf('rotate(');
+    const lastRotate = currentTransform.substr(lastRotation + 7);
+    const rotationAngle = lastRotate.split(' ');
+    rotationAngle[0] = this.angle as unknown as string;
+  }
 }

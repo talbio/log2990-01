@@ -159,11 +159,13 @@ export class ToolManagerService {
   changeElementAltDown() {
     this.emojiGenerator.lowerRotationStep();
     this.featherGenerator.lowerRotationStep();
+    this.objectSelector.lowerRotationStep();
   } // To extract??
 
   changeElementAltUp() {
     this.emojiGenerator.higherRotationStep();
     this.featherGenerator.higherRotationStep();
+    this.objectSelector.higherRotationStep();
   } // To extract??
 
   changeElementShiftDown() {
@@ -247,11 +249,13 @@ export class ToolManagerService {
     }
   }
 
-  rotateGenerator(mouseEvent: WheelEvent): void {
+  rotateDispatcher(mouseEvent: WheelEvent): void {
     if (this.activeGenerator === this.emojiGenerator) {
       this.emojiGenerator.rotateEmoji(mouseEvent);
     } else if (this.activeGenerator === this.featherGenerator) {
       this.featherGenerator.rotateFeather(mouseEvent);
+    } else if (this.objectSelector.selectedElements !== null) {
+      this.objectSelector.rotateSelectedElements(mouseEvent);
     }
   }
 
