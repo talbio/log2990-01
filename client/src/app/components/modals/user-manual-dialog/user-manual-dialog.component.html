@@ -1,19 +1,19 @@
 <mat-dialog-content>
     <h1>{{DIALOG_TITLE}}</h1>
     <div class="menu">
-        <div class="section-title" *ngIf="!showUserManualSection.get('Barre latérale')"
-            (click)="showUserManualSection.set('Barre latérale', true)">
+        <div class="section-title" *ngIf="!showUserManualSection.get('Espace de travail')"
+            (click)="showUserManualSection.set('Espace de travail', true)">
             1. Présentation de
             l'espace de travail<mat-icon>chevron_right
             </mat-icon>
         </div>
-        <div class="section-title" *ngIf="showUserManualSection.get('Barre latérale')"
-            (click)="showUserManualSection.set('Barre latérale', false)">
+        <div class="section-title" *ngIf="showUserManualSection.get('Espace de travail')"
+            (click)="showUserManualSection.set('Espace de travail', false)">
             1. Présentation de
             l'espace de travail<mat-icon>expand_more</mat-icon>
         </div>
-        <div class="section" *ngIf="showUserManualSection.get('Barre latérale')"
-            (click)="showUserManualSection.set('Barre latérale', false)">
+        <div class="section" *ngIf="showUserManualSection.get('Espace de travail')"
+            (click)="showUserManualSection.set('Espace de travail', false)">
             <p>Voici le rôle des différents onglets de la barre d'outils:</p>
 
             <li>
@@ -287,14 +287,63 @@
     </li>
     </div>
 
+    <div class="section-title" *ngIf="!showUserManualSection.get('Presse-papier')"
+    (click)="showUserManualSection.set('Presse-papier', true)">
+    4. Options du presse-papier <mat-icon>chevron_right</mat-icon>
+</div>
+<div class="section-title" *ngIf="showUserManualSection.get('Presse-papier')"
+    (click)="showUserManualSection.set('Presse-papier', false)">
+    4. Options du presse-papier <mat-icon>expand_more
+    </mat-icon>
+</div>
+<div class="section" *ngIf="showUserManualSection.get('Presse-papier')"
+    (click)="showUserManualSection.set('Presse-papier', false)">
+    <li>
+        <div class=title>Copier</div>
+        <div class="clearfix"><p>Lorsque copier est activé, tous les objets présentement sélectionnés sont transférés vers le presse-papier. Les objets copiés ne disparaissent pas de la
+                surface de dessin. Ils sont seulement dupliqués dans le presse-papier. Avant de réaliser cette copie
+                d’objets, le presse-papier est au préalable vidé.
+            </p></div>
+</li>
+<li>
+        <div class=title>Dupliquer</div>
+        <div class="clearfix"><p>La duplication est une sorte de raccourci pour un copier-coller, mais avec une différence : le contenu
+                du presse-papier n’est pas altéré. Dupliquer prend donc la sélection, en crée une copie, puis la colle sur
+                la surface de dessin. Le décalage de position doit aussi s’appliquer. Quant au presse-papier, son contenu
+                reste le même.</p></div>
+</li>
+<li>
+        <div class=title>Couper</div>
+        <div class="clearfix"><p>Lorsque couper est activé, tous les objets présentement sélectionnés sont transférés vers le presse-papier. Concrètement, ces objets disparaissent de la surface de dessin pour être stockés dans le pressepapier. Avant de réaliser ce transfert d’objets, le presse-papier est au préalable vidé.
+            </p></div>
+</li>
+<li>
+        <div class=title>Supprimer</div>
+        <div class="clearfix"><p>Cette action retire les objets sélectionnés de la surface de dessin. Le contenu du presse-papier n’est pas
+                affecté par une action de suppression</p></div>
+</li>
+<li>
+        <div class=title>Coller</div>
+        <div class="clearfix"><p>Cette fonction crée une copie de chaque objet se trouvant dans le presse-papier et les ajoute à la surface
+                de dessin. Chaque nouvel objet est identique en tout point à celui d’origine sauf pour sa position qui est
+                légèrement décalée de l’originale. Le contenu du presse-papier n’est pas affecté par un collage. Quand
+                un collage est effectué, une sélection est créée avec l’ensemble des objets collés. S’il y avait déjà des
+                objets sélectionnés, ceux-ci deviennent non sélectionnés. Lorsque le contenu du presse-papier est finalement modifié par un nouveau couper ou
+                copier, la valeur de décalage retourne à son état initial.</p></div>
+</li>
+</div>
+    
+
+
+
     <div class="section-title" *ngIf="!showUserManualSection.get('Liste des raccourcis')"
         (click)="showUserManualSection.set('Liste des raccourcis', true)">
-        4. Liste des
+        5. Liste des
         raccourcis<mat-icon>chevron_right</mat-icon>
     </div>
     <div class="section-title" *ngIf="showUserManualSection.get('Liste des raccourcis')"
         (click)="showUserManualSection.set('Liste des raccourcis', false)">
-        4. Liste des
+        5. Liste des
         raccourcis <mat-icon>expand_more</mat-icon>
     </div>
 

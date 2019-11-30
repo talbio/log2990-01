@@ -26,8 +26,8 @@ export class UserManualDialogComponent {
     protected readonly OPEN = '../../../../assets/user-manual-icons/openDrawing.png';
     protected readonly CLIPBOARD = '../../../../assets/user-manual-icons/clipboard.png';
     protected readonly DIALOG_TITLE = 'Manuel d\'instructions';
-    protected readonly userManualSections: string[] = ['Barre latérale', 'Outils d\'écriture',
-    'Outils de formes', 'Liste des raccourcis'];
+    protected readonly userManualSections: string[] = ['Espace de travail', 'Outils d\'écriture',
+    'Outils de formes', 'Presse-papier', 'Liste des raccourcis'];
     protected readonly FILE_SHORTCUTS: IShortcut[] =
         [{ description: 'Créer un nouveau dessin', keys: 'Ctrl-O' },
         { description: 'Sauvegarder le dessin', keys: 'Ctrl-S' },
