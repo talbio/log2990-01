@@ -3,10 +3,11 @@ import { Colors } from 'src/app/data-structures/colors';
 import { Command } from 'src/app/data-structures/command';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
-import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
+import { GridTogglerService } from '../grid/grid-toggler.service';
+import { MagnetismGeneratorService } from '../magnetism-generator/magnetism-generator.service';
+import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
 import { TransformationService } from './../../transformation/transformation.service';
 import { UndoRedoService } from './../../undo-redo/undo-redo.service';
-
 const STROKE_COLOR = Colors.BLACK;
 
 const MAX_CANVAS_WIDTH = 2000;
@@ -43,7 +44,9 @@ export class ObjectSelectorService {
 
   constructor(private mousePosition: MousePositionService,
               private rectangleGenerator: RectangleGeneratorService,
+              private magnetism: MagnetismGeneratorService,
               private transform: TransformationService,
+              private grid: GridTogglerService,
               private undoRedoService: UndoRedoService) {
     this.hasBoundingRect = false;
     this.mouseDown = false;
@@ -85,14 +88,15 @@ export class ObjectSelectorService {
         this.startY = this.mousePosition.canvasMousePositionY;
       }
     } else {
-        this.selectedElements = [];
-        this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
+      this.selectedElements = [];
+      this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
     }
   }
 
   onMouseMove(currentChildPosition: number, mouseEvent: MouseEvent) {
     if (this.mouseDown) {
       if (this.hasBoundingRect && this.isTranslating) {
+        this.magnetism.setMovementDirection(mouseEvent);
         this.translate();
       } else {
         this.updateSelection(currentChildPosition, mouseEvent);
@@ -191,12 +195,12 @@ export class ObjectSelectorService {
       top: MAX_CANVAS_HEIGHT,
     };
 
-    this.selectedElements.forEach( (svgElement: SVGElement) => {
+    this.selectedElements.forEach((svgElement: SVGElement) => {
       const elementClientRectLeft = svgElement.getBoundingClientRect().left;
       const elementClientRectRight = svgElement.getBoundingClientRect().right;
       const elementClientRectTop = svgElement.getBoundingClientRect().top;
       const elementClientRectBottom = svgElement.getBoundingClientRect().bottom;
-      if (elementClientRectLeft < boundingRect.left ) {
+      if (elementClientRectLeft < boundingRect.left) {
         boundingRect.left = elementClientRectLeft;
       }
       if (elementClientRectRight > boundingRect.right) {
@@ -280,13 +284,28 @@ export class ObjectSelectorService {
     }
   }
 
-  translate(): void {
-    const xMove = this.mousePosition.canvasMousePositionX - this.startX;
-    const yMove = this.mousePosition.canvasMousePositionY - this.startY;
+  translate() {
+    if (this.grid.isMagnetic) {
+      this.translateWithMagnetism();
+    } else {
+      const xMove = this.mousePosition.canvasMousePositionX - this.startX;
+      const yMove = this.mousePosition.canvasMousePositionY - this.startY;
+      this.selectedElements.forEach((svgElement: SVGElement) => {
+        this.transform.setTranslationAttribute(svgElement, xMove, yMove);
+        this.startX = this.mousePosition.canvasMousePositionX;
+        this.startY = this.mousePosition.canvasMousePositionY;
+      });
+      this.transform.setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
+    }
+  }
+
+  translateWithMagnetism() {
+    this.grid.setSelectedDotPosition(this.getBoundingRectDimensions() as DOMRect);
+    const newPosition: number[] = this.magnetism.getTranslationWithMagnetismValue();
+    const xMove = newPosition[0];
+    const yMove = newPosition[1];
     this.selectedElements.forEach((svgElement: SVGElement) => {
       this.transform.setTranslationAttribute(svgElement, xMove, yMove);
-      this.startX = this.mousePosition.canvasMousePositionX;
-      this.startY = this.mousePosition.canvasMousePositionY;
     });
     this.transform.setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
   }
@@ -308,10 +327,10 @@ export class ObjectSelectorService {
       execute(): void {
         svgElements.forEach((svgElement: SVGElement) =>
           svgElement.setAttribute('transform', `${newTranslates.get(svgElement)}`));
-        },
+      },
       unexecute(): void {
         svgElements.forEach((svgElement: SVGElement) =>
-        svgElement.setAttribute('transform', `${oldTranslates.get(svgElement)}`));
+          svgElement.setAttribute('transform', `${oldTranslates.get(svgElement)}`));
       },
     };
     this.undoRedoService.pushCommand(command);

@@ -1,93 +1,64 @@
-import * as fs from 'fs';
-import {injectable} from 'inversify';
+import {inject, injectable} from 'inversify';
 import 'reflect-metadata';
 import {Drawing} from '../../../common/communication/Drawing';
+import Types from '../types';
+import {DrawingContent, FirebaseService} from './firebase.service';
+import {MongoDbDrawing, MongoDbService} from './mongo-db.service';
 
 @injectable()
 export class DrawingsService {
 
-    private readonly DIRECTORY_NAME  = './app/storage/';
-    private currentId: number;
-
-    private storeData = (data: Drawing, path: string) => {
-        try {
-            fs.writeFileSync(path, JSON.stringify(data, null, 2));
-        } catch (err) {
-            console.error(err);
-        }
+    constructor(@inject(Types.MongoDbService) private mongoDb: MongoDbService,
+                @inject(Types.FireBaseService) private firebaseService: FirebaseService) {
     }
 
-    private loadFile = (path: string) => {
-        try {
-            return JSON.parse(fs.readFileSync(path, 'utf8') as string);
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
-
-    constructor() {
-        this.currentId = 0;
-        void this.getIdFromLastSession();
-    }
-
-    async getIdFromLastSession() {
-        // the id is just the number of files
-        await this.getFiles()
-            .then((files: string[]) => this.currentId = files.length);
-    }
-
-    async getFiles(): Promise<string[]> {
-        const dir = './app/storage';
-        return new Promise((resolve, reject) => {
-            fs.readdir(dir, (err, files) => {
-                if (err) {
-                    console.error(err);
-                    reject(err);
-                } else if (files) {
-                    resolve(files.filter( (fileName: string) => fileName.includes('drawing')));
-                } else {
-                    resolve([]);
-                }
-            });
-        });
-    }
-
-    async getDrawings(): Promise<Drawing[]> {
+    async getDrawings(): Promise<Drawing[] | Error> {
         const drawings: Drawing[] = [];
-        return new Promise(async (resolve, reject) => {
-            await this.getFiles().then( (files: string[]) => {
-                if (files.length !== 0) {
-                    files.forEach((fileName: string) => drawings.push(this.loadFile(this.DIRECTORY_NAME + fileName)));
-                }
-                resolve(drawings);
-            });
-        });
+        await this.mongoDb.getDrawings().then(async (mongoDbDrawings: MongoDbDrawing[]) => {
+            await Promise.all(mongoDbDrawings.map(async (mongoDbDrawing: MongoDbDrawing) => {
+                await this.firebaseService.getDrawing(mongoDbDrawing).then(
+                    (drawingContent: DrawingContent) => {
+                        if (drawingContent) {
+                            const drawing: Drawing = {
+                                id: mongoDbDrawing._id.toHexString(),
+                                name: mongoDbDrawing.name,
+                                tags: mongoDbDrawing.tags,
+                                svgElements: drawingContent.svgElements,
+                                miniature: drawingContent.miniature,
+                                canvasWidth: mongoDbDrawing.canvasWidth,
+                                canvasHeight: mongoDbDrawing.canvasHeight,
+                            };
+                            drawings.push(drawing);
+                        }}).catch( (err: Error) => Promise.reject(err));
+            }));
+        }).catch( (err: Error) => Promise.reject(err));
+        return drawings;
     }
 
-    storeDrawing(drawing: Drawing): boolean {
+    async postDrawing(drawing: Drawing): Promise<boolean> {
+        let success = false;
         if (!drawing.name) {
-            return false;
+            return success;
         }
-        drawing.id = this.currentId;
-        this.storeData(drawing, this.DIRECTORY_NAME + 'drawing' + this.currentId + '.json');
-        this.generateNextId();
-        return true;
+
+        await this.mongoDb.postDrawing(drawing).then( async (id: string) => {
+            drawing.id = id;
+            await this.firebaseService.postDrawing(drawing)
+                .then( () => success = true)
+                .catch( () => success = false);
+        }).catch( () => success = false);
+
+        return success;
     }
 
-    async deleteDrawing(id: string): Promise<void> {
-        this.getFiles().then( (files: string[]) => files.forEach( (file: string) => {
-            if (file.includes(id)) {
-                fs.unlink(this.DIRECTORY_NAME + file, (err) => {
-                    if (err) {
-                        throw err;
-                    }
-                });
-            }
-        }));
-    }
-
-    private generateNextId() {
-        this.currentId++;
+    async deleteDrawing(id: string): Promise<boolean> {
+        let success = false;
+        await this.mongoDb.deleteDrawing(id)
+            .then( () => success = true)
+            .catch( () => success = false);
+        await this.firebaseService.deleteDrawing(id)
+            .then( () => success = true)
+            .catch( () => success = false);
+        return success;
     }
 }

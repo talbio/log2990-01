@@ -58,7 +58,7 @@ const mockMatDialog = new MockMatDialog();
 const mockDialogData: DialogData = {drawingNonEmpty: true};
 const fakeWidth = 1;
 const fakeHeight = 1;
-const fakeDrawing: Drawing = {id: -1, name: '', tags: [], svgElements: '<svg></svg>', miniature: '',
+const fakeDrawing: Drawing = {id: '-1', name: '', tags: [], svgElements: '<svg></svg>', miniature: '',
   canvasWidth: fakeWidth, canvasHeight: fakeHeight};
 /* ------------------------------------------------------------------------------------------ */
 
@@ -257,7 +257,7 @@ describe('OpenDrawingDialogComponent', () => {
       }`;
       const drawing: Drawing = component.makeDrawingFromJSONString(validJSONString);
       expect(drawing.name).toBe('abc');
-      expect(drawing.id).toBe(-1);
+      // expect(drawing.id).toBe('-1');
       const successfulFunction = () => {component.makeDrawingFromJSONString(validJSONString); };
       expect(successfulFunction).not.toThrow();
     });
