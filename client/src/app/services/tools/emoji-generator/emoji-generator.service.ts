@@ -15,19 +15,39 @@ export enum Emojis {
   CATPAW =  '../../../../assets/svg-icons/pawprint.svg',
   LEAF = '../../../../assets/svg-icons/leaf.svg',
   TURKEY = '../../../../assets/svg-icons/turkey.svg',
-  PUMPKIN = '../../../../assets/svg-icons/pumpkin.svg',
+  SNOWFLAKE = '../../../../assets/svg-icons/snowflake.svg',
+  LIGHTS = '../../../../assets/svg-icons/lights.svg',
+  CHRISTMAS_TREE = '../../../../assets/svg-icons/christmas-tree.svg',
+  BIRTHDAY = '../../../../assets/svg-icons/birthday.svg',
+  CONFETTI = '../../../../assets/svg-icons/confetti.svg',
+  BALLOON = '../../../../assets/svg-icons/balloon.svg',
+  REINDEER = '../../../../assets/svg-icons/reindeer.svg',
+  ELF = '../../../../assets/svg-icons/elf.svg',
+  SANTA_HAT = '../../../../assets/svg-icons/santa-hat.svg',
+  GIFT = '../../../../assets/svg-icons/gift.svg',
 }
 
 @Injectable()
 export class EmojiGeneratorService extends AbstractGenerator {
 
   private emoji: string;
-  protected emojis: string[] = [Emojis.NONE,
+  protected emojis: string[] = [
+      Emojis.LEAF,
+      Emojis.CHRISTMAS_TREE,
+      Emojis.SNOWFLAKE,
+      Emojis.REINDEER,
+      Emojis.ELF,
+      Emojis.GIFT,
+      Emojis.LIGHTS,
+      Emojis.SANTA_HAT,
+      Emojis.BIRTHDAY,
+      Emojis.CONFETTI,
+      Emojis.BALLOON,
       Emojis.SMILEY,
       Emojis.CATPAW,
-      Emojis.LEAF,
       Emojis.TURKEY,
-      Emojis.PUMPKIN];
+      Emojis.NONE,
+    ];
   private width = 100;
   private height = 100;
   private angle: number;
@@ -37,7 +57,7 @@ export class EmojiGeneratorService extends AbstractGenerator {
   constructor(protected mouse: MousePositionService,
               protected undoRedoService: UndoRedoService) {
     super(mouse, undoRedoService);
-    this.emoji = Emojis.SMILEY;
+    this.emoji = Emojis.LEAF;
     this.angle = MIN_ROTATION_ANGLE;
     this.scalingFactor = DEFAULT_SCALING_FACTOR;
     this.rotationStep = MAX_ROTATION_STEP;
