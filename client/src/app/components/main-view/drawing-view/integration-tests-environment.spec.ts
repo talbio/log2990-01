@@ -2,6 +2,7 @@ import {PortalModule} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {ComponentFixture} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
+import { AerosolGeneratorService } from 'src/app/services/tools/aerosol-generator/aerosol-generator.service';
 import { MagnetismGeneratorService } from 'src/app/services/tools/magnetism-generator/magnetism-generator.service';
 import { TransformationService } from 'src/app/services/transformation/transformation.service';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
@@ -71,6 +72,22 @@ export class CanvasDrawer {
     this.component.workZoneComponent.onDoubleClick(finalMouseEvent);
   }
 
+  async aerosolSpray() {
+      const toolManagerService = this.fixture.debugElement.injector.get(ToolManagerService);
+      toolManagerService._activeTool = Tools.Aerosol;
+      this.component.workZoneComponent.onMouseDown();
+      const doNothing = ((ms: number) => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+              resolve();
+          }, ms);
+        });
+      });
+      await doNothing(500);
+      // Wait since this works on an interval
+      this.component.workZoneComponent.onMouseUp();
+  }
+
   drawShapeOnCanvas(x1: number, y1: number, x2: number, y2: number, toolType: Tools)  {
     const toolManagerService = this.fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = toolType;
@@ -99,6 +116,7 @@ export const DRAWING_SERVICES = [
   AbstractGenerator,
   AbstractWritingTool,
   AbstractClosedShape,
+  AerosolGeneratorService,
   RectangleGeneratorService,
   EllipseGeneratorService,
   EmojiGeneratorService,

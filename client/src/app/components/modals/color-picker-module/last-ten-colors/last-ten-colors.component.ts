@@ -15,6 +15,6 @@ import { ColorService } from 'src/app/services/tools/color/color.service';
     constructor(protected colorService: ColorService) {}
 
     selectColor(color: string): void {
-        this.colorSelected.emit(color);
-      }
+      this.colorSelected.emit(color);
+    }
   }

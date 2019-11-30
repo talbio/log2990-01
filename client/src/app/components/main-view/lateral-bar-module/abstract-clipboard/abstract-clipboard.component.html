@@ -2,9 +2,9 @@
           matTooltip="{{clipboardProperties.matToolTip}}"
           matTooltipPosition="left"
           (click)="clipboardProperties.clipboardFunction()"
-          [disabled]="(!this.selection.hasBoundingRect && clipboardProperties.matToolTip != 'Coller')
-                      || (!this.clipboard.hasMemorizedElements() && clipboardProperties.matToolTip == 'Coller')"
-          [ngClass]="{'noSelection':(!this.selection.hasBoundingRect && clipboardProperties.matToolTip != 'Coller')
-                                    || (!this.clipboard.hasMemorizedElements() && clipboardProperties.matToolTip == 'Coller')}">
+          [disabled]="(!this.selection.hasBoundingRect && clipboardProperties.matToolTip != 'Coller (Ctrl + V)')
+                      || (!this.clipboard.hasMemorizedElements() && clipboardProperties.matToolTip == 'Coller (Ctrl + V)')"
+          [ngClass]="{'noSelection':(!this.selection.hasBoundingRect && clipboardProperties.matToolTip != 'Coller (Ctrl + V)')
+                                    || (!this.clipboard.hasMemorizedElements() && clipboardProperties.matToolTip == 'Coller (Ctrl + V)')}">
   <mat-icon svgIcon="{{clipboardProperties.icon}}" ></mat-icon>
 </button>

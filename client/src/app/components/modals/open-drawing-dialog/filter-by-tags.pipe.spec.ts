@@ -5,13 +5,13 @@ const pipe = new FilterByTags();
 const tags = ['tag1', 'tag2'];
 const defaultWidth = 1080;
 const defaultHeight = 500;
-const drawing1: Drawing = {id: -1, name: 'drawing1', miniature: '', svgElements: '', tags: ['tag1'],
+const drawing1: Drawing = {id: '-1', name: 'drawing1', miniature: '', svgElements: '', tags: ['tag1'],
   canvasWidth: defaultWidth, canvasHeight: defaultHeight};
-const drawing2: Drawing = {id: -1, name: 'drawing1', miniature: '', svgElements: '', tags: ['tag2'],
+const drawing2: Drawing = {id: '-1', name: 'drawing1', miniature: '', svgElements: '', tags: ['tag2'],
   canvasWidth: defaultWidth, canvasHeight: defaultHeight};
-const drawing3: Drawing = {id: -1, name: 'drawing1', miniature: '', svgElements: '', tags: ['otherTag'],
+const drawing3: Drawing = {id: '-1', name: 'drawing1', miniature: '', svgElements: '', tags: ['otherTag'],
   canvasWidth: defaultWidth, canvasHeight: defaultHeight};
-const drawing4: Drawing = {id: -1, name: 'drawing1', miniature: '', svgElements: '', tags: ['tag1', 'tag2'],
+const drawing4: Drawing = {id: '-1', name: 'drawing1', miniature: '', svgElements: '', tags: ['tag1', 'tag2'],
   canvasWidth: defaultWidth, canvasHeight: defaultHeight};
 
 describe('FilterByTags', () => {

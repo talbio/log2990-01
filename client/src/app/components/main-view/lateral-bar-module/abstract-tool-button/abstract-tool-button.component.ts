@@ -7,6 +7,7 @@ export interface ToolProperties {
   tool: Tools;
   matToolTip: string;
   icon: string;
+  isMainBarItem: boolean;
 }
 
 @Component({
