@@ -21,7 +21,7 @@ export class GridTogglerService {
   constructor() {
     this.gridSize = 100;
     this.gridOpacity = 0.4;
-    this.isMagnetic = true;
+    this.isMagnetic = false;
     this.selectedDot = 0;
     this.magneticDot = { x: 0, y: 0 };
   }
