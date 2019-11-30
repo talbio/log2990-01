@@ -1,6 +1,7 @@
 import * as http from 'http';
 import {inject, injectable} from 'inversify';
 import {Application} from './app';
+import {MongoDbService} from './services/mongo-db.service';
 import Types from './types';
 
 @injectable()
