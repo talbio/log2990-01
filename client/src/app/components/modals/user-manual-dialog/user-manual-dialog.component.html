@@ -1,103 +1,120 @@
 <mat-dialog-content>
     <h1>{{DIALOG_TITLE}}</h1>
+    <div class="menu">
+        <div class="section-title" *ngIf="!showUserManualSection.get('Barre latérale')"
+            (click)="showUserManualSection.set('Barre latérale', true)">
+            1. Présentation de
+            l'espace de travail<mat-icon>chevron_right
+            </mat-icon>
+        </div>
+        <div class="section-title" *ngIf="showUserManualSection.get('Barre latérale')"
+            (click)="showUserManualSection.set('Barre latérale', false)">
+            1. Présentation de
+            l'espace de travail<mat-icon>expand_more</mat-icon>
+        </div>
+        <div class="section" *ngIf="showUserManualSection.get('Barre latérale')"
+            (click)="showUserManualSection.set('Barre latérale', false)">
+            <p>Voici le rôle des différents onglets de la barre d'outils:</p>
 
-    <div class="section-title" *ngIf="!showUserManualSection.get('Barre latérale')">
-        <mat-icon (click)="showUserManualSection.set('Barre latérale', true)">chevron_right</mat-icon> Présentation de
-        l'espace de travail
-    </div>
-    <div class="section-title" *ngIf="showUserManualSection.get('Barre latérale')">
-        <mat-icon (click)="showUserManualSection.set('Barre latérale', false)">expand_more</mat-icon> Présentation de
-        l'espace de travail
-    </div>
-    <div class="section" *ngIf="showUserManualSection.get('Barre latérale')">
-        <p>Voici le rôle des différents onglets de la barre d'outils:</p>
+            <li>
+                <div class="clearfix"><img src={{PENCIL}} alt="outils d'écriture" width="40" height="40"> Affiche la
+                    liste
+                    d'outils d'écriture. Les outils d'écriture sont le crayon, le stylo, le pinceau, l'aérosol,
+                    l'efface,
+                    l'applicateur de couleur, et la pipette. Pour plus d'information, voir la section du manuel
+                    d'instructions sur les outils d'écriture.</div>
+            </li>
+            <li>
+                <div class="clearfix"><img src={{SHAPE}} alt="outils de formes" width="40" height="40"> Affiche la liste
+                    d'outils d'ajout de formes. Les outils de forme sont la ligne, le rectangle, l'ellipse, le polygone
+                    et
+                    l'étampe. Pour plus d'information, voir la section du manuel d'instructions sur les outils de forme.
+                </div>
+            </li>
+            <li>
+                <div class="clearfix"><img src={{CLIPBOARD}} alt="presse papier" width="40" height="40"> Affiche les
+                    options
+                    du presse-papier; copier, coller, couper, supprimer et dupliquer </div>
+            </li>
+            <li>
+                <div class="clearfix"><img src={{SELECTION}} alt="outil de sélection" width="40" height="40"> L'outil de
+                    sélection ...</div>
+            </li>
+            <li>
+                <div class="clearfix"><img src={{GRID}} alt="grille" width="40" height="40"> La grille...</div>
+            </li>
+            <li>
+                <div class="clearfix"> <img src={{UNDO}} alt="défaire" width="40" height="40"> Cet onglet permet
+                    d'annuler
+                    la dernière modification de l'espace de travail</div>
+            </li>
+            <li>
+                <div class="clearfix"><img src={{REDO}} alt="refaire" width="40" height="40"> Cet onglet permet de
+                    refaire
+                    la dernière modification si le bouton 'annuler' a été utilisé.</div>
+            </li>
+            <li>
+                <div class="clearfix"><img src={{COLOR}} alt="couleur" width="40" height="80"> Ceci représente la
+                    couleur
+                    primaire et secondaire. Sélectionner une de ces couleurs a comme effet d'ouvrir l'outil de sélection
+                    de
+                    couleurs. Puis, l'icône en forme de goutte permet l'inversion des couleurs primaires et secondaires.
+                </div>
+            </li>
+            <li>
+                <div class="clearfix"><img src={{NEW}} alt="nouveau dessin" width="40" height="40"> Cet onglet permet de
+                    modifier les paramètres par défaut de la zone de travail.</div>
+            </li>
+            <li>
+                <div class="clearfix"><img src={{SAVE}} alt="sauvegarder un dessin" width="40" height="40"> Cet onglet
+                    permet de sauvegarder un dessin.</div>
+            </li>
+            <li>
+                <div class="clearfix"> <img src={{OPEN}} alt="ouverture d'un dessin" width="40" height="40"> Cet onglet
+                    permet d'ouvrir un dessin.</div>
+            </li>
+        </div>
 
-        <li>
-            <div class="clearfix"><img src={{PENCIL}} alt="outils d'écriture" width="40" height="40"> Affiche la liste
-                d'outils d'écriture. Les outils d'écriture sont le crayon, le stylo, le pinceau, l'aérosol, l'efface,
-                l'applicateur de couleur, et la pipette. Pour plus d'information, voir la section du manuel
-                d'instructions sur les outils d'écriture.</div>
-        </li>
-        <li>
-            <div class="clearfix"><img src={{SHAPE}} alt="outils de formes" width="40" height="40"> Affiche la liste
-                d'outils d'ajout de formes. Les outils de forme sont la ligne, le rectangle, l'ellipse, le polygone et
-                l'étampe. Pour plus d'information, voir la section du manuel d'instructions sur les outils de forme.
-            </div>
-        </li>
-        <li>
-            <div class="clearfix"><img src={{CLIPBOARD}} alt="presse papier" width="40" height="40"> Affiche les options
-                du presse-papier; copier, coller, couper, supprimer et dupliquer </div>
-        </li>
-        <li>
-            <div class="clearfix"><img src={{SELECTION}} alt="outil de sélection" width="40" height="40"> L'outil de
-                sélection ...</div>
-        </li>
-        <li>
-            <div class="clearfix"><img src={{GRID}} alt="grille" width="40" height="40"> La grille...</div>
-        </li>
-        <li>
-            <div class="clearfix"> <img src={{UNDO}} alt="défaire" width="40" height="40"> Cet onglet permet d'annuler
-                la dernière modification de l'espace de travail</div>
-        </li>
-        <li>
-            <div class="clearfix"><img src={{REDO}} alt="refaire" width="40" height="40"> Cet onglet permet de refaire
-                la dernière modification si le bouton 'annuler' a été utilisé.</div>
-        </li>
-        <li>
-            <div class="clearfix"><img src={{COLOR}} alt="couleur" width="40" height="80"> Ceci représente la couleur
-                primaire et secondaire. Sélectionner une de ces couleurs a comme effet d'ouvrir l'outil de sélection de
-                couleurs. Puis, l'icône en forme de goutte permet l'inversion des couleurs primaires et secondaires.
-            </div>
-        </li>
-        <li>
-            <div class="clearfix"><img src={{NEW}} alt="nouveau dessin" width="40" height="40"> Cet onglet permet de
-                modifier les paramètres par défaut de la zone de travail.</div>
-        </li>
-        <li>
-            <div class="clearfix"><img src={{SAVE}} alt="sauvegarder un dessin" width="40" height="40"> Cet onglet
-                permet de sauvegarder un dessin.</div>
-        </li>
-        <li>
-            <div class="clearfix"> <img src={{OPEN}} alt="ouverture d'un dessin" width="40" height="40"> Cet onglet
-                permet d'ouvrir un dessin.</div>
-        </li>
-    </div>
+        <div class="section-title" *ngIf="!showUserManualSection.get('Outils d\'écriture')"
+            (click)="showUserManualSection.set('Outils d\'écriture', true)">
+            2. Outils
+            d'écriture <mat-icon>chevron_right</mat-icon>
+        </div>
+        <div class="section-title" *ngIf="showUserManualSection.get('Outils d\'écriture')"
+            (click)="showUserManualSection.set('Outils d\'écriture', false)">
+            2. Outils
+            d'écriture<mat-icon>expand_more</mat-icon>
+        </div>
 
-    <div class="section-title" *ngIf="!showUserManualSection.get('Outils d\'écriture')">
-        <mat-icon (click)="showUserManualSection.set('Outils d\'écriture', true)">chevron_right</mat-icon> Outils
-        d'écriture
-    </div>
-    <div class="section-title" *ngIf="showUserManualSection.get('Outils d\'écriture')">
-        <mat-icon (click)="showUserManualSection.set('Outils d\'écriture', false)">expand_more</mat-icon> Outils
-        d'écriture
-    </div>
-
-    <div *ngIf="showUserManualSection.get('Outils d\'écriture')">
-        <li>
-            <div class=title>Le crayon</div>
-            <div class="clearfix"> Le crayon est l’outil de base du logiciel de dessin. Il ne sert qu’à faire de simples
-                traits sans texture
-                particulière. Il a une pointe ronde. Le panneau d’attributs permet la configuration de l'épaisseur du
-                trait en pixels </div>
+        <div *ngIf="showUserManualSection.get('Outils d\'écriture')"
+            (click)="showUserManualSection.set('Outils d\'écriture', false)">
+            <li>
+                <div class=title>Le crayon</div>
+                <div class="clearfix"> Le crayon est l’outil de base du logiciel de dessin. Il ne sert qu’à faire de
+                    simples
+                    traits sans texture
+                    particulière. Il a une pointe ronde. Le panneau d’attributs permet la configuration de l'épaisseur
+                    du
+                    trait en pixels </div>
+            </li>
+            <li>
+                <div class=title>Stylo</div>
+                <div class="clearfix"> La particularité de cet outil est que le trait laissé sur la surface de dessin
+                    s’amincit en fonction de la
+                    vitesse de déplacement de la souris. Plus la vitesse est grande, plus le trait est mince. Le panneau
+                    d’attributs permet les configurations suivantes :
+            <li> •Épaisseur minimale du trait en pixels</li>
+            <li> •Épaisseur maximale du trait en pixels</li>
+        </div>
         </li>
         <li>
-            <div class=title>Stylo</div>
-            <div class="clearfix"> La particularité de cet outil est que le trait laissé sur la surface de dessin
-                s’amincit en fonction de la
-                vitesse de déplacement de la souris. Plus la vitesse est grande, plus le trait est mince. Le panneau
-                d’attributs permet les configurations suivantes :
-        <li> •Épaisseur minimale du trait en pixels</li>
-        <li> •Épaisseur maximale du trait en pixels</li>
-    </div>
-    </li>
-    <li>
-        <div class=title>Pinceau</div>
-        <div class="clearfix"> Cet outil est similaire au crayon. Il n’en diffère que par la texture du trait.
-            L’application offre
-            cinq textures différentes.
-            Le panneau d’attributs permet la configuration suivante :
-    <li> • Épaisseur du trait en pixels </li>
-    <li> • Texture du trait </li>
+            <div class=title>Pinceau</div>
+            <div class="clearfix"> Cet outil est similaire au crayon. Il n’en diffère que par la texture du trait.
+                L’application offre
+                cinq textures différentes.
+                Le panneau d’attributs permet la configuration suivante :
+        <li> • Épaisseur du trait en pixels </li>
+        <li> • Texture du trait </li>
     </div>
     </li>
     <li>
@@ -109,81 +126,180 @@
     <li> • Angle d’orientation de la ligne en degrés </li>
 
     <p>Il est aussi possible de changer l’angle de la ligne à l’aide de la roulette de la souris. À chaque cran de
-    roulette, une rotation de 15 degrés est effectuée. Si la touche Alt du clavier est maintenue enfoncée
-    pendant cette action, la rotation sera plutôt de 1 degré.</p></div>
+        roulette, une rotation de 15 degrés est effectuée. Si la touche Alt du clavier est maintenue enfoncée
+        pendant cette action, la rotation sera plutôt de 1 degré.</p>
+    </div>
     </li>
     <li>
         <div class=title>Aérosol</div>
-        <div class="clearfix"> <p>Cet outil simule un effet de peinture en aérosol. Dès que le bouton est enfoncé, un jet
-            de peinture est
-            vaporisé sous le pointeur de la souris. L’outil continu ensuite d’émettre de la peinture à intervalle
-            régulier jusqu’à qu’à ce que le bouton soit relâché.
-            Le panneau d’attributs permet les configurations suivantes :</p>
+        <div class="clearfix">
+            <p>Cet outil simule un effet de peinture en aérosol. Dès que le bouton est enfoncé, un jet
+                de peinture est
+                vaporisé sous le pointeur de la souris. L’outil continu ensuite d’émettre de la peinture à intervalle
+                régulier jusqu’à qu’à ce que le bouton soit relâché.
+                Le panneau d’attributs permet les configurations suivantes :</p>
     <li> • Nombre d’émissions par seconde </li>
     <li> • Diamètre du jet en pixels </li>
     </div>
     </li>
     <li>
         <div class=title>Efface</div>
-        <div class="clearfix"><p> Cet outil permet de supprimer des objets de la surface de dessin. Tout objet se trouvant
-            en contact avec l’efface lors d’un clic gauche est effacé. L’objet effacé est toujours celui « sur le dessus de la pile »
-            d’objets. Pour se servir de l’outil comme d’une brosse, il suffit de maintenir le bouton gauche enfoncé
-            et de déplacer la souris. Tout objet touché pendant le mouvement sera alors supprimé.
-            L’efface se trouve bien entendu centrée sur le pointeur de la souris. Elle doit être représentée par un
-            carré blanc de dimension configurable. C’est lors du contact entre ce carré et un objet qu’il y a
-            effacement. </p>
+        <div class="clearfix">
+            <p> Cet outil permet de supprimer des objets de la surface de dessin. Tout objet se trouvant
+                en contact avec l’efface lors d’un clic gauche est effacé. L’objet effacé est toujours celui « sur le
+                dessus de la pile »
+                d’objets. Pour se servir de l’outil comme d’une brosse, il suffit de maintenir le bouton gauche enfoncé
+                et de déplacer la souris. Tout objet touché pendant le mouvement sera alors supprimé.
+                L’efface se trouve bien entendu centrée sur le pointeur de la souris. Elle doit être représentée par un
+                carré blanc de dimension configurable. C’est lors du contact entre ce carré et un objet qu’il y a
+                effacement. </p>
             <p>Tel qu’expliqué ci-dessus, un glisser-déposer peut être employé pour effacer plusieurs objets. Dans un
-            contexte d’annuler-refaire (undo-redo en anglais), cet effacement ne constitue qu’une seule action.
-            Autrement dit, annuler une action d’effacement faite par glisser-déposer restituera l’ensemble des
-            objets effacés pendant cette action.</p>
+                contexte d’annuler-refaire (undo-redo en anglais), cet effacement ne constitue qu’une seule action.
+                Autrement dit, annuler une action d’effacement faite par glisser-déposer restituera l’ensemble des
+                objets effacés pendant cette action.</p>
             <p>Pour aider l’utilisateur à bien voir ce qu’il s’apprête à effacer, une altération visuelle temporaire des
-            objets survolés par l’efface doit avoir lieu. En effet, chaque objet se trouvant en contact avec l’image de
-            l’efface (carré blanc) doit se faire ajouter un contour rouge. Si l’objet avait déjà un contour, via un
-            attribut configurable, celui-ci est alors coloré en rouge et épaissi. L’altération visuelle d’un objet est
-            éliminée dès que celui-ci n’est plus en contact avec l’efface.
-            Le panneau d’attributs doit permettre la configuration suivante :
-            <li> • Taille de l’efface en pixels </li>
-        </p>
-        </div>
+                objets survolés par l’efface doit avoir lieu. En effet, chaque objet se trouvant en contact avec l’image
+                de
+                l’efface (carré blanc) doit se faire ajouter un contour rouge. Si l’objet avait déjà un contour, via un
+                attribut configurable, celui-ci est alors coloré en rouge et épaissi. L’altération visuelle d’un objet
+                est
+                éliminée dès que celui-ci n’est plus en contact avec l’efface.
+                Le panneau d’attributs doit permettre la configuration suivante :
+    <li> • Taille de l’efface en pixels </li>
+    </p>
+    </div>
     </li>
     <li>
         <div class=title>Applicateur de couleur</div>
-        <div class="clearfix"><p>Cet outil permet de changer la couleur d’un objet simplement en cliquant dessus. Un clic avec le
-            bouton gauche sur un objet fera changer sa couleur pour la couleur principale. Un clic avec le bouton
-            droit sur un objet fera changer la couleur de bordure, s’il en a une, pour la couleur secondaire.
-            </p> </div>
+        <div class="clearfix">
+            <p>Cet outil permet de changer la couleur d’un objet simplement en cliquant dessus. Un clic avec le
+                bouton gauche sur un objet fera changer sa couleur pour la couleur principale. Un clic avec le bouton
+                droit sur un objet fera changer la couleur de bordure, s’il en a une, pour la couleur secondaire.
+            </p>
+        </div>
     </li>
     <li>
         <div class=title>Pipette</div>
-        <div class="clearfix"><p>Cet outil est utilisé pour saisir la couleur sous le pointeur de la souris. Un clic avec le bouton gauche
-            assigne la couleur saisie à la couleur principale. Un clic avec bouton droit pour l’assigner à la couleur
-            secondaire</p></div>
+        <div class="clearfix">
+            <p>Cet outil est utilisé pour saisir la couleur sous le pointeur de la souris. Un clic avec le bouton gauche
+                assigne la couleur saisie à la couleur principale. Un clic avec bouton droit pour l’assigner à la
+                couleur
+                secondaire</p>
+        </div>
     </li>
     </div>
 
-    <div class="section-title" *ngIf="!showUserManualSection.get('Outils de formes')">
-        <mat-icon (click)="showUserManualSection.set('Outils de formes', true)">chevron_right</mat-icon> Outils de
-        formes
+    <div class="section-title" *ngIf="!showUserManualSection.get('Outils de formes')"
+        (click)="showUserManualSection.set('Outils de formes', true)">
+        3. Outils de
+        formes<mat-icon>chevron_right</mat-icon>
     </div>
-    <div class="section-title" *ngIf="showUserManualSection.get('Outils de formes')">
-        <mat-icon (click)="showUserManualSection.set('Outils de formes', false)">expand_more</mat-icon> Outils de formes
+    <div class="section-title" *ngIf="showUserManualSection.get('Outils de formes')"
+        (click)="showUserManualSection.set('Outils de formes', false)">
+        3. Outils de formes <mat-icon>expand_more
+        </mat-icon>
     </div>
-    <div class="section" *ngIf="showUserManualSection.get('Outils de formes')">
-        <p> Description des outils de formes </p>
+    <div class="section" *ngIf="showUserManualSection.get('Outils de formes')"
+        (click)="showUserManualSection.set('Outils de formes', false)">
+        <li>
+            <div class=title>Ligne</div>
+            <div class="clearfix">
+                <p>Cet outil permet de tracer une ligne d’un ou plusieurs segments. Un premier clic définit la position
+                    de
+                    départ de la ligne. Ensuite, chaque clic qui suit « connecte » avec le clic qui le précède pour
+                    former un
+                    segment de la ligne.</p>
+                <p>Un double-clic indique qu’il s’agit du dernier point. Un dernier segment est alors formé et la ligne
+                    est
+                    terminée. Si la touche Shift est enfoncée au moment de ce double-clic, ce n’est pas un, mais deux
+                    derniers segments qui sont créés. Le premier de ceux-ci est le segment normalement attendu, et
+                    le deuxième est un segment qui connecte le point du double-clic et le tout premier point de la
+                    ligne.
+                    Cela permet ainsi de « fermer » la ligne.
+                </p>
+                <p>Pendant la construction d’une ligne, si la touche d’échappement (Escape) est appuyée, la
+                    totalité de la ligne est annulée. Si la touche de retour arrière est appuyée
+                    (Backspace), le
+                    point le plus récent est supprimé. S’il s’agit du premier point, celui-ci n’est toutefois pas
+                    supprimé.</p>
+                <p>Le panneau d’attributs permet les configurations suivantes :
+        <li>• Type de jonction : arrondi, en angle, avec point</li>
+        <li>• Épaisseur de la ligne en pixels</li>
+        <li>• Diamètre des points de jonction (si l’option avec point est choisie)</li>
+        <li>• Motif de ligne : continu, pointillé (trait), pointillé (point)</li>
+        </p>
+    </div>
+    </li>
+
+    <li>
+        <div class=title>Rectangle</div>
+        <div class="clearfix">
+            <p>Cet outil permet de dessiner des rectangles. Si la touche Shift est maintenue appuyée, la forme sera
+                plutôt un carré. Celui-ci occupera la plus grande
+                aire possible et sera centré. À tout moment si la touche est relâchée, la forme inscrite devient un
+                rectangle de taille appropriée.
+                Le panneau d’attributs permet les configurations suivantes :
+    <li> • Type de tracé</li>
+    <li>• Épaisseur du trait de contour en pixels</li>
+    </p>
+    </div>
+    </li>
+
+    <li>
+        <div class=title>Ellipse</div>
+        <div class="clearfix">
+            <p>Cet outil adopte le même comportement que celui permettant de dessiner des rectangles. La seule
+                différence est que la forme dessinée est une ellipse. Comme pour l’outil rectangle, l’utilisation de la
+                touche Shift aura un effet. Ici, elle transformera l’ellipse en cercle.
+                Le panneau d’attributs permet les configurations suivantes :
+    <li>• Type de tracé</li>
+    <li>• Épaisseur du trait de contour en pixels</li>
+    </p>
+    </div>
+    </li>
+
+    <li>
+        <div class=title>Polygone</div>
+        <div class="clearfix">
+            <p>L’outil de polygone permet de
+                spécifier le nombre de côtés de la forme à dessiner.
+                Le panneau d’attributs permet les configurations suivantes :
+    <li>• Le type de tracé </li>
+    <li>• L'épaisseur du trait de contour en pixels </li>
+    <li>• Le nombre de côtés du polygone (de 3 à 12) </li>
+    </p>
+    </div>
+    </li>
+
+    <li>
+        <div class=title>Étampe</div>
+        <div class="clearfix">
+            <p>L’étampe est une petite image que l’on peut apposer sur le dessin. Pour appliquer une étampe, il suffit
+                d’un simple clic du bouton gauche à l’endroit
+                désiré.</p>
+            Le panneau d’attributs permet les configurations suivantes :
+    <li>• Le facteur de mise à échelle de l’étampe</li>
+    <li>• L'angle d’orientation de l’étampe en degrés</li>
+    <li>• Le choix d’étampe à partir d'une liste</li>
+    <p>Il est possible de changer l’angle d’orientation de l’étampe
+        avec la roulette de la souris.</p>
+    </div>
+    </li>
     </div>
 
-
-
-    <div class="section-title" *ngIf="!showUserManualSection.get('Liste des raccourcis')">
-        <mat-icon (click)="showUserManualSection.set('Liste des raccourcis', true)">chevron_right</mat-icon> Liste des
-        raccourcis
+    <div class="section-title" *ngIf="!showUserManualSection.get('Liste des raccourcis')"
+        (click)="showUserManualSection.set('Liste des raccourcis', true)">
+        4. Liste des
+        raccourcis<mat-icon>chevron_right</mat-icon>
     </div>
-    <div class="section-title" *ngIf="showUserManualSection.get('Liste des raccourcis')">
-        <mat-icon (click)="showUserManualSection.set('Liste des raccourcis', false)">expand_more</mat-icon>Liste des
-        raccourcis
+    <div class="section-title" *ngIf="showUserManualSection.get('Liste des raccourcis')"
+        (click)="showUserManualSection.set('Liste des raccourcis', false)">
+        4. Liste des
+        raccourcis <mat-icon>expand_more</mat-icon>
     </div>
 
-    <div class="section" *ngIf="showUserManualSection.get('Liste des raccourcis')">
+    <div class="section" *ngIf="showUserManualSection.get('Liste des raccourcis')"
+        (click)="showUserManualSection.set('Liste des raccourcis', false)">
         <div class='section-title'>Options de fichier</div>
         <table>
             <tr *ngFor="let shortcut of FILE_SHORTCUTS ">
@@ -206,11 +322,10 @@
             </tr>
         </table>
     </div>
-
-
+    </div>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button class="mat-raised-button mat-warn" (click)="close()">
+    <button class="mat-raised-button mat-primary" (click)="close()">
         Ok
     </button>
 </mat-dialog-actions>

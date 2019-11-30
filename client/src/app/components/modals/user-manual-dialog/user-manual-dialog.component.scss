@@ -1,8 +1,13 @@
+.menu {
+  padding-bottom: 20px;
+}
+
 .section-title{
-    font-weight:bold;
+    padding-top: 20px;
 }
 .section {
   padding-top: 10px;
+  
 }
 table, td{
     border: 1px solid black;
@@ -30,4 +35,8 @@ li { list-style:none;
 .title {
   font-weight: bold;
   padding-top: 20px;
+}
+
+.mat-icon {
+  vertical-align: middle;
 }
