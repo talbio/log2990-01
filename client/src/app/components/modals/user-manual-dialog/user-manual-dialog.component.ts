@@ -16,10 +16,12 @@ interface IShortcut {
 export class UserManualDialogComponent {
     protected readonly PENCIL = '../../../../assets/user-manual-icons/pencil.png';
     protected readonly SHAPE = '../../../../assets/user-manual-icons/shape.png';
+    protected readonly SELECTION = '../../../../assets/user-manual-icons/selection-tool.png';
+    protected readonly GRID = '../../../../assets/user-manual-icons/grid.png';
     protected readonly UNDO = '../../../../assets/user-manual-icons/undo.png';
     protected readonly REDO = '../../../../assets/user-manual-icons/redo.png';
     protected readonly COLOR = '../../../../assets/user-manual-icons/color.png';
-    protected readonly NEW = '../../../../assets/user-manual-icons/newDrawing.png';
+    protected readonly NEW = '../../../../assets/user-manual-icons/new-drawing.png';
     protected readonly SAVE = '../../../../assets/user-manual-icons/saveDrawing.png';
     protected readonly OPEN = '../../../../assets/user-manual-icons/openDrawing.png';
     protected readonly CLIPBOARD = '../../../../assets/user-manual-icons/clipboard.png';
