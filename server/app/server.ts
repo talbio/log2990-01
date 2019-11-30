@@ -11,8 +11,7 @@ export class Server {
     private readonly baseDix: number = 10;
     private server: http.Server;
 
-    constructor(@inject(Types.Application) private application: Application,
-                @inject(Types.MongoDbService) private mongoDb: MongoDbService) {
+    constructor(@inject(Types.Application) private application: Application) {
     }
 
     init(): void {
@@ -23,7 +22,6 @@ export class Server {
         this.server.listen(this.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on('listening', () => this.onListening());
-        this.mongoDb.connectDB();
     }
 
     private normalizePort(val: number | string): number | string | boolean {
