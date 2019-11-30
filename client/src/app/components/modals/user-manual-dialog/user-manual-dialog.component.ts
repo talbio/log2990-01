@@ -46,19 +46,18 @@ export class UserManualDialogComponent {
         ];
     protected readonly TOOL_SHORTCUTS: IShortcut[] =
         [{ description: 'Crayon', keys: 'C' },
+        { description: 'Stylo ', keys: 'Y' },
         { description: 'Pinceau', keys: 'W' },
         { description: 'Plume', keys: 'P' },
-        { description: 'Stylo ', keys: 'Y' },
         { description: 'Aérosol', keys: 'A' },
-        { description: 'Rectangle', keys: '1' },
-        { description: 'Ellipse', keys: '1' },
-        { description: 'Polygone', keys: '3' },
-        { description: 'Ligne', keys: 'L' },
-        { description: 'Texte', keys: 'T' },
-        { description: 'Applicateur de couleur ', keys: 'R' },
-        { description: 'Sceau de peinture', keys: 'B' },
         { description: 'Efface', keys: 'E' },
+        { description: 'Applicateur de couleur ', keys: 'R' },
         { description: 'Pipette', keys: 'I' },
+        { description: 'Ligne', keys: 'L' },
+        { description: 'Rectangle', keys: '1' },
+        { description: 'Ellipse', keys: '2' },
+        { description: 'Polygone', keys: '3' },
+        { description: 'Étampe', keys: '4'},
         { description: 'Sélection', keys: 'S' },
         ];
 
