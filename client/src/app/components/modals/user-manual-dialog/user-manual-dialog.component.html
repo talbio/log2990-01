@@ -17,104 +17,197 @@
             <p>Voici le rôle des différents onglets de la barre d'outils:</p>
 
             <li>
-                <div class="clearfix"><img src={{PENCIL}} alt="outils d'écriture" width="40" height="40"> Affiche la
+                <div class="clearfix"><img src={{PENCIL}} alt="outils d'écriture" width="40" height="40"> Cet icône
+                    affiche la
                     liste
                     d'outils d'écriture. Les outils d'écriture sont le crayon, le stylo, le pinceau, l'aérosol,
                     l'efface,
-                    l'applicateur de couleur, et la pipette. Pour plus d'information, voir la section du manuel
-                    d'instructions sur les outils d'écriture.</div>
+                    l'applicateur de couleur, et la pipette. Pour plus d'information, voir la section de ce manuel
+                    sur les outils d'écriture.</div>
             </li>
             <li>
-                <div class="clearfix"><img src={{SHAPE}} alt="outils de formes" width="40" height="40"> Affiche la liste
+                <div class="clearfix"><img src={{SHAPE}} alt="outils de formes" width="40" height="40"> Cet icône
+                    affiche la liste
                     d'outils d'ajout de formes. Les outils de forme sont la ligne, le rectangle, l'ellipse, le polygone
                     et
-                    l'étampe. Pour plus d'information, voir la section du manuel d'instructions sur les outils de forme.
+                    l'étampe. Pour plus d'information, voir la section de ce manuel sur les outils de forme.
                 </div>
             </li>
             <li>
-                <div class="clearfix"><img src={{CLIPBOARD}} alt="presse papier" width="40" height="40"> Affiche les
+                <div class="clearfix"><img src={{CLIPBOARD}} alt="presse papier" width="40" height="40"> Cet icône
+                    affiche les
                     options
-                    du presse-papier; copier, coller, couper, supprimer et dupliquer </div>
+                    du presse-papier; copier, coller, couper, supprimer et dupliquer. Pour plus d'information, voir la
+                    section de ce manuel sur les options du presse-papier. </div>
             </li>
             <li>
-                <div class="clearfix"><img src={{SELECTION}} alt="outil de sélection" width="40" height="40"> L'outil de
-                    sélection ...</div>
-            </li>
-            <li>
-                <div class="clearfix"><img src={{GRID}} alt="grille" width="40" height="40"> La grille...</div>
-            </li>
-            <li>
-                <div class="clearfix"> <img src={{UNDO}} alt="défaire" width="40" height="40"> Cet onglet permet
-                    d'annuler
-                    la dernière modification de l'espace de travail</div>
-            </li>
-            <li>
-                <div class="clearfix"><img src={{REDO}} alt="refaire" width="40" height="40"> Cet onglet permet de
-                    refaire
-                    la dernière modification si le bouton 'annuler' a été utilisé.</div>
-            </li>
-            <li>
-                <div class="clearfix"><img src={{COLOR}} alt="couleur" width="40" height="80"> Ceci représente la
-                    couleur
-                    primaire et secondaire. Sélectionner une de ces couleurs a comme effet d'ouvrir l'outil de sélection
-                    de
-                    couleurs. Puis, l'icône en forme de goutte permet l'inversion des couleurs primaires et secondaires.
+                <div class="clearfix"><img src={{SELECTION}} alt="outil de sélection" width="40" height="40">
+                    <p> Avec cet outil, il est possible de sélectionner un ou plusieurs objets de la surface de dessin
+                        par un simple 'click' pour un seul objet ou par un glisser-déposer pour plusieurs objets.
+                        Il est
+                        ensuite possible de déplacer les objets sélectionnés, de changer leurs dimensions ou de les
+                        faire pivoter. Un objet
+                        peut être
+                        dans deux états de sélection : sélectionné ou non sélectionné.
+                        Lorsqu’un ou plusieurs objets sont sélectionnés, une boite englobante doit les entourer. Cette
+                        dernière est un rectangle qui
+                        « encadre » le ou les objets sélectionnés.</p>
+                    <div class=title>Redimensionnement de la sélection</div>
+                    <p>C’est en déplaçant les points de contrôle de la boite englobante que l’on parvient à
+                        redimensionner les
+                        objets. Chaque déformation subie par la boite englobante est aussi appliquée, dans les mêmes
+                        proportions, aux objets sélectionnés qu’elle encadre.
+                        Si la touche Alt est maintenue appuyée pendant le déplacement d’un point de contrôle, le point
+                        opposé
+                        de celui-ci devra effectuer un déplacement d’une même grandeur, mais dans la direction opposée.
+                        Concrètement, cela produira un agrandissement ou rapetissement symétrique sur un ou deux axes et
+                        dont l’origine est le centre de la boite englobante. </p>
+                    <div class=title>Rotation d'une sélection</div>
+                    <p>Pour faire pivoter une sélection, il suffit d’utiliser la roulette de la souris. Le
+                        fonctionnement est le
+                        même que pour l’outil plume.
+                        Une sélection pivote autour de son centre. Autrement dit, elle pivote autour du centre de sa
+                        boite
+                        englobante. Si la touche Shift est maintenue enfoncée pendant la rotation, chaque objet pivotera
+                        individuellement sur lui-même (autour de son propre centre).
+                    </p>
                 </div>
             </li>
             <li>
-                <div class="clearfix"><img src={{NEW}} alt="nouveau dessin" width="40" height="40"> Cet onglet permet de
-                    modifier les paramètres par défaut de la zone de travail.</div>
-            </li>
-            <li>
-                <div class="clearfix"><img src={{SAVE}} alt="sauvegarder un dessin" width="40" height="40"> Cet onglet
-                    permet de sauvegarder un dessin.</div>
-            </li>
-            <li>
-                <div class="clearfix"> <img src={{OPEN}} alt="ouverture d'un dessin" width="40" height="40"> Cet onglet
-                    permet d'ouvrir un dessin.</div>
-            </li>
-        </div>
+                <div class="clearfix"><img src={{GRID}} alt="grille" width="40" height="40"> Cet outil permet d’afficher
+                    une grille superposée à la surface de dessin et de son contenu.
+                    Son point d’origine est le coin supérieur gauche de la surface. Il est possible d’activer ou de
+                    désactiver la grille, de lui assigner une valeur de transparence et d’indiquer la taille (en
+                    pixels) des carrés la composant.
+                    <div class=title>Magnétisme</div>
+                    <p>Lorsque cette option est activée, chaque fois qu’une boite englobante est déplacée celle-ci se
+                        « collera »
+                        ou s’alignera sur la ligne de grille la plus près. Cet alignement se fait en x et en y.
+                        Prenons en exemple un cas où le magnétisme est activé pour une grille ayant des carrés de cinq
+                        pixels
+                        de côté. Avec cette configuration, un objet déplacé ne suivra pas le mouvement du pointeur de la
+                        souris
+                        point par point. Il fera plutôt des bonds de cinq pixels pour s’aligner avec les lignes de la
+                        grille. Les
+                        bonds sont déterminés en arrondissant les valeurs de positions. Ainsi, un objet situé à la
+                        position 45 ne
+                        bougera pas sur l’axe si on le glisse aux positions 43, 44, 46 ou 47 de cet axe. Si le
+                        déplacement de la
+                        souris l’envoie aux positions 42 ou 41, l’objet sera aussitôt placé à 40. Dans l’autre sens, si
+                        on l’amène
+                        à 48 ou 49, la position sera arrondie à 50.
+                        22
+                        Le point utilisé pour l’alignement sur la grille peut être sélectionné à partir de la barre
+                        d'attributs. Il peut s’agir de l’un des
+                        neuf points suivant :
+            <li>• Le centre de la boite englobante</li>
+            <li>• L’un des huit points de contrôle de la boite englobante</li>
+            </p>
 
-        <div class="section-title" *ngIf="!showUserManualSection.get('Outils d\'écriture')"
-            (click)="showUserManualSection.set('Outils d\'écriture', true)">
-            2. Outils
-            d'écriture <mat-icon>chevron_right</mat-icon>
-        </div>
-        <div class="section-title" *ngIf="showUserManualSection.get('Outils d\'écriture')"
-            (click)="showUserManualSection.set('Outils d\'écriture', false)">
-            2. Outils
-            d'écriture<mat-icon>expand_more</mat-icon>
-        </div>
-
-        <div *ngIf="showUserManualSection.get('Outils d\'écriture')"
-            (click)="showUserManualSection.set('Outils d\'écriture', false)">
-            <li>
-                <div class=title>Le crayon</div>
-                <div class="clearfix"> Le crayon est l’outil de base du logiciel de dessin. Il ne sert qu’à faire de
-                    simples
-                    traits sans texture
-                    particulière. Il a une pointe ronde. Le panneau d’attributs permet la configuration de l'épaisseur
-                    du
-                    trait en pixels </div>
-            </li>
-            <li>
-                <div class=title>Stylo</div>
-                <div class="clearfix"> La particularité de cet outil est que le trait laissé sur la surface de dessin
-                    s’amincit en fonction de la
-                    vitesse de déplacement de la souris. Plus la vitesse est grande, plus le trait est mince. Le panneau
-                    d’attributs permet les configurations suivantes :
-            <li> •Épaisseur minimale du trait en pixels</li>
-            <li> •Épaisseur maximale du trait en pixels</li>
         </div>
         </li>
         <li>
-            <div class=title>Pinceau</div>
-            <div class="clearfix"> Cet outil est similaire au crayon. Il n’en diffère que par la texture du trait.
-                L’application offre
-                cinq textures différentes.
-                Le panneau d’attributs permet la configuration suivante :
-        <li> • Épaisseur du trait en pixels </li>
-        <li> • Texture du trait </li>
+            <div class="clearfix"> <img src={{UNDO}} alt="défaire" width="40" height="40">
+                <p> Ce bouton permet d'annuler la dernière modification sur le dessin. En activant la fonction annuler à
+                    répétition, l’utilisateur peut « reculer » dans l’état de son dessin, et ce
+                    jusqu’à en revenir à l’état de départ. C’est à dire, une surface vide ou le dessin initialement
+                    chargé de la
+                    galerie de dessins.
+                </p>
+            </div>
+        </li>
+        <li>
+            <div class="clearfix"><img src={{REDO}} alt="refaire" width="40" height="40"> Ce bouton permet de
+                refaire la dernière modification annulée. En activant la fonction refaire à répétition, l’utilisateur
+                peut « reculer » dans l’état de son dessin, et ce
+                jusqu’à en revenir à l’état de départ, avant d'avoir annuler des modifications. </div>
+        </li>
+        <li>
+            <div class="clearfix"><img src={{COLOR}} alt="couleur" width="40" height="80"> Ceci représente la
+                couleur
+                primaire et secondaire. Sélectionner une de ces couleurs a comme effet d'ouvrir l'outil de sélection
+                de
+                couleurs. Puis, l'icône en forme de goutte permet l'inversion des couleurs primaires et secondaires.
+            </div>
+        </li>
+        <li>
+            <div class="clearfix"><img src={{NEW}} alt="nouveau dessin" width="40" height="40"> Cet onglet présente un
+                formulaire de configuration de nouveau dessin où l’on y définit la largeur, la hauteur et
+                la couleur d’arrière-plan de la surface à créer.</div>
+        </li>
+        <li>
+            <div class="clearfix"><img src={{SAVE}} alt="sauvegarder un dessin" width="40" height="40">
+                <p>Cet onglet
+                    permet d'entrer un nom pour la sauvegarde d'un dessin. Celui-ci peut être sauvegardé sur le serveur
+                    de
+                    Polydessin ou localement sur l’ordinateur de l’utilisateur. Pour la sauvegarde locale, une boite de
+                    dialogue appropriée permettra à l’utilisateur de choisir l’emplacement de la sauvegarde.</p>
+                <p>
+                    L’utilisateur peut aussi définir une ou plusieurs étiquettes (tags en anglais) associées à son
+                    dessin.
+                    L’usage des étiquettes est optionnel et l’utilisateur peut sauvegarder son dessin sans problème même
+                    s’il n’en spécifie aucune.</p>
+            </div>
+        </li>
+        <li>
+            <div class="clearfix"> <img src={{OPEN}} alt="ouverture d'un dessin" width="40" height="40">
+                <p>Affiche une liste de tous les dessins sauvegardés sur le serveur. Cette liste peut être filtrée en
+                    spécifiant
+                    une ou plusieurs étiquettes. Chaque élément de la liste comporte un nom, des étiquettes (s’il y en
+                    a), et
+                    une représentation du dessin en format réduit. L’utilisateur peut ouvrir (charger) un de ces
+                    dessins.
+                    Cette action remplace la surface de dessin par celle décrite dans le fichier de dessin chargé.
+                    L’utilisateur
+                    peut aussi supprimer un dessin de la liste. Tous les dessins sont publics. Un utilisateur peut donc
+                    ouvrir
+                    ou supprimer n’importe quel dessin.
+                    Depuis l’interface de la galerie de dessins, l’utilisateur a aussi la possibilité de charger un
+                    dessin sauvegardé localement. Par exemple, via une boite de dialogue de sélection de fichier </p>
+            </div>
+        </li>
+    </div>
+
+    <div class="section-title" *ngIf="!showUserManualSection.get('Outils d\'écriture')"
+        (click)="showUserManualSection.set('Outils d\'écriture', true)">
+        2. Outils
+        d'écriture <mat-icon>chevron_right</mat-icon>
+    </div>
+    <div class="section-title" *ngIf="showUserManualSection.get('Outils d\'écriture')"
+        (click)="showUserManualSection.set('Outils d\'écriture', false)">
+        2. Outils
+        d'écriture<mat-icon>expand_more</mat-icon>
+    </div>
+
+    <div *ngIf="showUserManualSection.get('Outils d\'écriture')"
+        (click)="showUserManualSection.set('Outils d\'écriture', false)">
+        <li>
+            <div class=title>Crayon</div>
+            <div class="clearfix"> Le crayon est l’outil de base du logiciel de dessin. Il ne sert qu’à faire de
+                simples
+                traits sans texture
+                particulière. Il a une pointe ronde. Le panneau d’attributs permet la configuration de l'épaisseur
+                du
+                trait en pixels </div>
+        </li>
+        <li>
+            <div class=title>Stylo</div>
+            <div class="clearfix"> La particularité de cet outil est que le trait laissé sur la surface de dessin
+                s’amincit en fonction de la
+                vitesse de déplacement de la souris. Plus la vitesse est grande, plus le trait est mince. Le panneau
+                d’attributs permet les configurations suivantes :
+        <li> •Épaisseur minimale du trait en pixels</li>
+        <li> •Épaisseur maximale du trait en pixels</li>
+    </div>
+    </li>
+    <li>
+        <div class=title>Pinceau</div>
+        <div class="clearfix"> Cet outil est similaire au crayon. Il n’en diffère que par la texture du trait.
+            L’application offre
+            cinq textures différentes.
+            Le panneau d’attributs permet la configuration suivante :
+    <li> • Épaisseur du trait en pixels </li>
+    <li> • Texture du trait </li>
     </div>
     </li>
     <li>
@@ -288,51 +381,73 @@
     </div>
 
     <div class="section-title" *ngIf="!showUserManualSection.get('Presse-papier')"
-    (click)="showUserManualSection.set('Presse-papier', true)">
-    4. Options du presse-papier <mat-icon>chevron_right</mat-icon>
-</div>
-<div class="section-title" *ngIf="showUserManualSection.get('Presse-papier')"
-    (click)="showUserManualSection.set('Presse-papier', false)">
-    4. Options du presse-papier <mat-icon>expand_more
-    </mat-icon>
-</div>
-<div class="section" *ngIf="showUserManualSection.get('Presse-papier')"
-    (click)="showUserManualSection.set('Presse-papier', false)">
-    <li>
-        <div class=title>Copier</div>
-        <div class="clearfix"><p>Lorsque copier est activé, tous les objets présentement sélectionnés sont transférés vers le presse-papier. Les objets copiés ne disparaissent pas de la
-                surface de dessin. Ils sont seulement dupliqués dans le presse-papier. Avant de réaliser cette copie
-                d’objets, le presse-papier est au préalable vidé.
-            </p></div>
-</li>
-<li>
-        <div class=title>Dupliquer</div>
-        <div class="clearfix"><p>La duplication est une sorte de raccourci pour un copier-coller, mais avec une différence : le contenu
-                du presse-papier n’est pas altéré. Dupliquer prend donc la sélection, en crée une copie, puis la colle sur
-                la surface de dessin. Le décalage de position doit aussi s’appliquer. Quant au presse-papier, son contenu
-                reste le même.</p></div>
-</li>
-<li>
-        <div class=title>Couper</div>
-        <div class="clearfix"><p>Lorsque couper est activé, tous les objets présentement sélectionnés sont transférés vers le presse-papier. Concrètement, ces objets disparaissent de la surface de dessin pour être stockés dans le pressepapier. Avant de réaliser ce transfert d’objets, le presse-papier est au préalable vidé.
-            </p></div>
-</li>
-<li>
-        <div class=title>Supprimer</div>
-        <div class="clearfix"><p>Cette action retire les objets sélectionnés de la surface de dessin. Le contenu du presse-papier n’est pas
-                affecté par une action de suppression</p></div>
-</li>
-<li>
-        <div class=title>Coller</div>
-        <div class="clearfix"><p>Cette fonction crée une copie de chaque objet se trouvant dans le presse-papier et les ajoute à la surface
-                de dessin. Chaque nouvel objet est identique en tout point à celui d’origine sauf pour sa position qui est
-                légèrement décalée de l’originale. Le contenu du presse-papier n’est pas affecté par un collage. Quand
-                un collage est effectué, une sélection est créée avec l’ensemble des objets collés. S’il y avait déjà des
-                objets sélectionnés, ceux-ci deviennent non sélectionnés. Lorsque le contenu du presse-papier est finalement modifié par un nouveau couper ou
-                copier, la valeur de décalage retourne à son état initial.</p></div>
-</li>
-</div>
-    
+        (click)="showUserManualSection.set('Presse-papier', true)">
+        4. Options du presse-papier <mat-icon>chevron_right</mat-icon>
+    </div>
+    <div class="section-title" *ngIf="showUserManualSection.get('Presse-papier')"
+        (click)="showUserManualSection.set('Presse-papier', false)">
+        4. Options du presse-papier <mat-icon>expand_more
+        </mat-icon>
+    </div>
+    <div class="section" *ngIf="showUserManualSection.get('Presse-papier')"
+        (click)="showUserManualSection.set('Presse-papier', false)">
+        <li>
+            <div class=title>Copier</div>
+            <div class="clearfix">
+                <p>Lorsque copier est activé, tous les objets présentement sélectionnés sont transférés vers le
+                    presse-papier. Les objets copiés ne disparaissent pas de la
+                    surface de dessin. Ils sont seulement dupliqués dans le presse-papier. Avant de réaliser cette copie
+                    d’objets, le presse-papier est au préalable vidé.
+                </p>
+            </div>
+        </li>
+        <li>
+            <div class=title>Dupliquer</div>
+            <div class="clearfix">
+                <p>La duplication est une sorte de raccourci pour un copier-coller, mais avec une différence : le
+                    contenu
+                    du presse-papier n’est pas altéré. Dupliquer prend donc la sélection, en crée une copie, puis la
+                    colle sur
+                    la surface de dessin. Le décalage de position doit aussi s’appliquer. Quant au presse-papier, son
+                    contenu
+                    reste le même.</p>
+            </div>
+        </li>
+        <li>
+            <div class=title>Couper</div>
+            <div class="clearfix">
+                <p>Lorsque couper est activé, tous les objets présentement sélectionnés sont transférés vers le
+                    presse-papier. Concrètement, ces objets disparaissent de la surface de dessin pour être stockés dans
+                    le pressepapier. Avant de réaliser ce transfert d’objets, le presse-papier est au préalable vidé.
+                </p>
+            </div>
+        </li>
+        <li>
+            <div class=title>Supprimer</div>
+            <div class="clearfix">
+                <p>Cette action retire les objets sélectionnés de la surface de dessin. Le contenu du presse-papier
+                    n’est pas
+                    affecté par une action de suppression</p>
+            </div>
+        </li>
+        <li>
+            <div class=title>Coller</div>
+            <div class="clearfix">
+                <p>Cette fonction crée une copie de chaque objet se trouvant dans le presse-papier et les ajoute à la
+                    surface
+                    de dessin. Chaque nouvel objet est identique en tout point à celui d’origine sauf pour sa position
+                    qui est
+                    légèrement décalée de l’originale. Le contenu du presse-papier n’est pas affecté par un collage.
+                    Quand
+                    un collage est effectué, une sélection est créée avec l’ensemble des objets collés. S’il y avait
+                    déjà des
+                    objets sélectionnés, ceux-ci deviennent non sélectionnés. Lorsque le contenu du presse-papier est
+                    finalement modifié par un nouveau couper ou
+                    copier, la valeur de décalage retourne à son état initial.</p>
+            </div>
+        </li>
+    </div>
+
 
 
 
@@ -349,21 +464,21 @@
 
     <div class="section" *ngIf="showUserManualSection.get('Liste des raccourcis')"
         (click)="showUserManualSection.set('Liste des raccourcis', false)">
-        <div class='section-title'>Options de fichier</div>
+        <div class='title'>Options de fichier</div>
         <table>
             <tr *ngFor="let shortcut of FILE_SHORTCUTS ">
                 <td>{{shortcut.description}}</td>
                 <td class="keys">{{shortcut.keys}}</td>
             </tr>
         </table>
-        <div class="section-title">Manipulations de sélection</div>
+        <div class="title">Manipulations de sélection</div>
         <table>
             <tr *ngFor="let shortcut of MANIPULATION_SHORTCUTS ">
                 <td>{{shortcut.description}}</td>
                 <td class="keys">{{shortcut.keys}}</td>
             </tr>
         </table>
-        <div class="section-title">Sélection d'outils</div>
+        <div class="title">Sélection d'outils</div>
         <table>
             <tr *ngFor="let shortcut of TOOL_SHORTCUTS ">
                 <td>{{shortcut.description}}</td>
