@@ -36,7 +36,7 @@ const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =
 const httpClientSpy: jasmine.SpyObj<HttpClient> =
     jasmine.createSpyObj('HttpClient', ['get', 'post']);
 
-fdescribe('MagnetismGeneratorService', () => {
+describe('MagnetismGeneratorService', () => {
     let component: DrawingViewComponent;
     let fixture: ComponentFixture<DrawingViewComponent>;
     beforeEach(async(() => {
