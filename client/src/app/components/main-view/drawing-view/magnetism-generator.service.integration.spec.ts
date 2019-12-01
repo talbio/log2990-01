@@ -5,6 +5,9 @@ import { ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, Renderer2 } from '@angu
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { Tools } from 'src/app/data-structures/tools';
+import { MagnetismGeneratorService } from 'src/app/services/tools/magnetism-generator/magnetism-generator.service';
+import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
@@ -19,7 +22,7 @@ import { LastTenColorsComponent } from '../../modals/color-picker-module/last-te
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { DrawingViewComponent } from './drawing-view.component';
-import { DRAWING_SERVICES } from './integration-tests-environment.spec';
+import { CanvasDrawer, DRAWING_SERVICES } from './integration-tests-environment.spec';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
@@ -39,6 +42,7 @@ const httpClientSpy: jasmine.SpyObj<HttpClient> =
 describe('MagnetismGeneratorService', () => {
     let component: DrawingViewComponent;
     let fixture: ComponentFixture<DrawingViewComponent>;
+    let canvasDrawer: CanvasDrawer;
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [
@@ -72,6 +76,7 @@ describe('MagnetismGeneratorService', () => {
         ).compileComponents().then(() => {
             fixture = TestBed.createComponent(DrawingViewComponent);
             component = fixture.componentInstance;
+            canvasDrawer = new CanvasDrawer(fixture, component);
             fixture.detectChanges();
         });
     }));
@@ -110,7 +115,43 @@ describe('MagnetismGeneratorService', () => {
     });
 
     it('magnetism should align selection on grid', () => {
-      // TOUT DOUX
+        // magnetic dot is upper left side by default. Closest vertical line moving right is 100
+        const mousePositionService = fixture.debugElement.injector.get(MousePositionService);
+        const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
+        canvasDrawer.drawShapeOnCanvas(90, 90, 160, 160, Tools.Rectangle);
+        const grid = fixture.debugElement.injector.get(GridTogglerService);
+        grid._isMagnetic = true;
+        grid._gridSize = 100;
+        const selector = fixture.debugElement.injector.get(ObjectSelectorService);
+        const magnetism = fixture.debugElement.injector.get(MagnetismGeneratorService);
+        const mouseMoveEvent1 = new MouseEvent('mousemove', {
+            movementX: 100,
+            movementY: 0,
+          });
+        magnetism.setMovementDirection(mouseMoveEvent1);
+
+        // select all drawings and move selection
+        selector.selectAll();
+        selector.onMouseDown();
+        mousePositionService.canvasMousePositionX = 120;
+        mousePositionService.canvasMousePositionY = 120;
+        selector.translate();
+        selector.finishTranslation();
+
+        // get translation value
+        const drawing = svgHandle.querySelector('#rect0');
+        const transformation = (drawing as Element).getAttribute('transform');
+        const attributeIndex = (transformation as string).indexOf(`translate(`);
+        const spaceIndex = (transformation as string).indexOf(' ', attributeIndex);
+        const xTranslation = Number((transformation as string).substring(attributeIndex + 10, spaceIndex));
+        const endOfAttribute = (transformation as string).indexOf(')', spaceIndex);
+        const yTranslation = Number((transformation as string).substring(spaceIndex + 1, endOfAttribute));
+        expect( grid.magneticDot.x + xTranslation).toBe(100);
+        expect( yTranslation).toBe(0);
+        const gridRect = svgHandle.children[1];
+        const currentState = gridRect.getAttribute('visibility');
+        // works even with grid not showing
+        expect(currentState).toBe('hidden');
     });
 
 });
