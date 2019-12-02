@@ -39,7 +39,7 @@ export class DrawingsService {
     );
   }
 
-  httpDeleteDrawing(id: number): Promise<boolean> {
+  httpDeleteDrawing(id: string): Promise<boolean> {
     return this.httpClient.delete<boolean>(this.BASE_URL + id, this.HTTP_OPTIONS).toPromise();
   }
 
@@ -111,7 +111,6 @@ export class DrawingsService {
     const miniature: string = this.getMiniature();
     const canvasWidth: number = this.getCanvasWidth();
     const canvasHeight: number = this.getCanvasHeight();
-    const drawing: Drawing = {id: -1, name, svgElements, tags, miniature, canvasWidth, canvasHeight};
-    return drawing;
+    return {id: '', name, svgElements, tags, miniature, canvasWidth, canvasHeight};
   }
 }

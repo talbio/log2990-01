@@ -10,8 +10,7 @@ import {RendererSingleton} from '../renderer-singleton';
 import {ColorService} from '../tools/color/color.service';
 import {ToolManagerService} from '../tools/tool-manager/tool-manager.service';
 
-const USER_MANUAL_HEIGHT = '550px';
-const USER_MANUAL_WIDTH = '600px';
+const USER_MANUAL_WIDTH = '700px';
 
 export enum Color {
   primaryColor,
@@ -77,8 +76,7 @@ export class ModalManagerService {
 
   showUserManualDialog(): void {
     this.dialog.open(UserManualDialogComponent, {
-      height: USER_MANUAL_HEIGHT,
-      width: USER_MANUAL_WIDTH,
+       width: USER_MANUAL_WIDTH,
       data: {},
     });
   }

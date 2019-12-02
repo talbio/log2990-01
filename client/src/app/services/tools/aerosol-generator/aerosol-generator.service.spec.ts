@@ -1,12 +1,19 @@
+import { Renderer2 } from '@angular/core';
 import { inject, TestBed } from '@angular/core/testing';
 import { MousePositionService } from 'src/app/services/mouse-position/mouse-position.service';
 import { UndoRedoService } from 'src/app/services/undo-redo/undo-redo.service';
+import { RendererSingleton } from './../../renderer-singleton';
 import { AerosolGeneratorService } from './aerosol-generator.service';
 
 const undoRedoSpy: jasmine.SpyObj<UndoRedoService> =
   jasmine.createSpyObj('UndoRedoService', ['pushCommand']);
 const mouseSpy: jasmine.SpyObj<MousePositionService> =
   jasmine.createSpyObj('MousePositionService', ['canvasMousePositionX', 'canvasMousePositionY']);
+const rendererSpy: jasmine.SpyObj<Renderer2> =
+  jasmine.createSpyObj('Renderer2', ['createElement']);
+rendererSpy.createElement.and.callFake(() => {
+  // Do nothing
+});
 
 describe('Service: AerosolGenerator', () => {
   beforeEach(() => {
@@ -16,6 +23,7 @@ describe('Service: AerosolGenerator', () => {
       {provide: UndoRedoService, useValue: undoRedoSpy},
     ],
     });
+    RendererSingleton.instantiate(rendererSpy);
   });
 
   it('should ...', inject([AerosolGeneratorService], (service: AerosolGeneratorService) => {
@@ -62,28 +70,85 @@ describe('Service: AerosolGenerator', () => {
   describe('randomPointInRadius', () => {
     it('should return a random point within the spray radius of the mouse position', inject([AerosolGeneratorService],
       (service: AerosolGeneratorService) => {
-      // TODO
+      // We force different math random values to show that the result will vary with the seed
+      const mathSpy = spyOn(Math, 'random').and.returnValue(1);
+      // We spy on the service's x and y pos to make sure they are positive (as they should be)
+      spyOnProperty(service, 'xPos').and.returnValue(10);
+      spyOnProperty(service, 'yPos').and.returnValue(10);
+      const radius = service.sprayDiameter / 2;
+      const xPos = service.xPos;
+      const yPos = service.yPos;
+      const firstRandomPoint: number[] = service.randomPointInRadius();
+      // the first value is the position in the x axis
+      expect(firstRandomPoint[0]).toBeLessThanOrEqual(radius + xPos);
+      expect(firstRandomPoint[0]).toBeGreaterThanOrEqual((radius * -1) + xPos);
+      expect(firstRandomPoint[1]).toBeLessThanOrEqual(radius + yPos);
+      expect(firstRandomPoint[1]).toBeGreaterThanOrEqual((radius * -1) + yPos);
+      // the second value is the position in the y axis
+      mathSpy.and.returnValue(0.5);
+      const secondRandomPoint: number[] = service.randomPointInRadius();
+      expect(secondRandomPoint[0]).toBeLessThanOrEqual(radius + xPos);
+      expect(secondRandomPoint[0]).toBeGreaterThanOrEqual((radius * -1) + xPos);
+      expect(secondRandomPoint[1]).toBeLessThanOrEqual(radius + yPos);
+      expect(secondRandomPoint[1]).toBeGreaterThanOrEqual((radius * -1) + yPos);
+
+      expect(secondRandomPoint[0]).not.toEqual(firstRandomPoint[0]);
+      expect(secondRandomPoint[1]).not.toEqual(firstRandomPoint[1]);
     }));
   });
 
   describe('randomLength', () => {
     it('should return a random number between 0 and the spray radius', inject([AerosolGeneratorService],
       (service: AerosolGeneratorService) => {
-      // TODO
+      // We force different math random values to show that the result will vary with the seed
+      const mathSpy = spyOn(Math, 'random').and.returnValue(1);
+      const radius = service.sprayDiameter / 2;
+      const firstRandomLength = service.randomLength();
+      expect(firstRandomLength).toBeLessThanOrEqual(radius);
+      expect(firstRandomLength).toBeGreaterThanOrEqual(0);
+      mathSpy.and.returnValue(0.5);
+      const secondRandomLength = service.randomLength();
+      expect(secondRandomLength).toBeLessThanOrEqual(radius);
+      expect(secondRandomLength).toBeGreaterThanOrEqual(0);
+      expect(firstRandomLength).not.toEqual(secondRandomLength);
     }));
   });
 
   describe('randomAngle', () => {
     it('should return a random number between 0 and 2*PI', inject([AerosolGeneratorService],
        (service: AerosolGeneratorService) => {
-      // TODO
+      // We force different math random values to show that the result will vary with the seed
+      const mathSpy = spyOn(Math, 'random').and.returnValue(1);
+      const firstRandomAngle = service.randomAngle();
+      expect(firstRandomAngle).toBeLessThanOrEqual(2 * Math.PI);
+      expect(firstRandomAngle).toBeGreaterThanOrEqual(0);
+      mathSpy.and.returnValue(0.5);
+      const secondRandomAngle = service.randomAngle();
+      expect(secondRandomAngle).toBeLessThanOrEqual(2 * Math.PI);
+      expect(secondRandomAngle).toBeGreaterThanOrEqual(0);
+      expect(firstRandomAngle).not.toEqual(secondRandomAngle);
     }));
   });
 
   describe('generateDot', () => {
     it('should generate a dot with the correct properties', inject([AerosolGeneratorService],
       (service: AerosolGeneratorService) => {
-      // TODO
+      // We spy on drawElement to prevent integration, we want to check the values used for the call
+      let propertiesTable: [string, string][] = [];
+      const spyDraw = spyOn(service, 'drawElement').and.callFake((dot: SVGElement, properties: [string, string][]) => {
+        // Do nothing
+        propertiesTable = [...properties];
+      });
+      spyOn(service, 'randomPointInRadius').and.returnValue([10, 10]);
+      service.generateDot('fakeColor');
+      expect(spyDraw).toHaveBeenCalled();
+      // we look for a correct id
+      expect(propertiesTable[0]).toEqual(['id', `aerosolSpray${service.currentElementsNumber}`]);
+      // now we look for the fake coordinates created by our random point spy
+      expect(propertiesTable[2]).toEqual(['cx', '10']);
+      expect(propertiesTable[3]).toEqual(['cy', '10']);
+      // finally, we look for our fake color
+      expect(propertiesTable[5]).toEqual(['fill', 'fakeColor']);
     }));
   });
 });
