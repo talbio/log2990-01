@@ -18,6 +18,10 @@ export class EyedropperService {
     switch (object.nodeName) {
       case 'rect':
         // Rectangle
+        if (object.id === 'backgroundGrid') {
+          foundColor = RendererSingleton.canvas.style.backgroundColor as string;
+          break;
+        }
         foundColor = object.getAttribute('fill') as string;
         break;
       case 'path':
