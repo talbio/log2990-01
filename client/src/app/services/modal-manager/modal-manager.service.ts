@@ -61,6 +61,8 @@ export class ModalManagerService {
   }
 
   showSaveDrawingDialog(): void {
+    // disable selection if active so it does not get saved
+    this.toolManager.removeSelectorBoundingRect();
     this.dialog.open(SaveDrawingDialogComponent, {
       autoFocus: false,
       data: {},

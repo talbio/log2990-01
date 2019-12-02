@@ -1,19 +1,12 @@
-import { Renderer2 } from '@angular/core';
 import { inject, TestBed } from '@angular/core/testing';
 import { MousePositionService } from 'src/app/services/mouse-position/mouse-position.service';
 import { UndoRedoService } from 'src/app/services/undo-redo/undo-redo.service';
-import { RendererSingleton } from './../../renderer-singleton';
 import { AerosolGeneratorService } from './aerosol-generator.service';
 
 const undoRedoSpy: jasmine.SpyObj<UndoRedoService> =
   jasmine.createSpyObj('UndoRedoService', ['pushCommand']);
 const mouseSpy: jasmine.SpyObj<MousePositionService> =
   jasmine.createSpyObj('MousePositionService', ['canvasMousePositionX', 'canvasMousePositionY']);
-const rendererSpy: jasmine.SpyObj<Renderer2> =
-  jasmine.createSpyObj('Renderer2', ['createElement']);
-rendererSpy.createElement.and.callFake(() => {
-  // Do nothing
-});
 
 describe('Service: AerosolGenerator', () => {
   beforeEach(() => {
@@ -23,7 +16,6 @@ describe('Service: AerosolGenerator', () => {
       {provide: UndoRedoService, useValue: undoRedoSpy},
     ],
     });
-    RendererSingleton.instantiate(rendererSpy);
   });
 
   it('should ...', inject([AerosolGeneratorService], (service: AerosolGeneratorService) => {
@@ -127,28 +119,6 @@ describe('Service: AerosolGenerator', () => {
       expect(secondRandomAngle).toBeLessThanOrEqual(2 * Math.PI);
       expect(secondRandomAngle).toBeGreaterThanOrEqual(0);
       expect(firstRandomAngle).not.toEqual(secondRandomAngle);
-    }));
-  });
-
-  describe('generateDot', () => {
-    it('should generate a dot with the correct properties', inject([AerosolGeneratorService],
-      (service: AerosolGeneratorService) => {
-      // We spy on drawElement to prevent integration, we want to check the values used for the call
-      let propertiesTable: [string, string][] = [];
-      const spyDraw = spyOn(service, 'drawElement').and.callFake((dot: SVGElement, properties: [string, string][]) => {
-        // Do nothing
-        propertiesTable = [...properties];
-      });
-      spyOn(service, 'randomPointInRadius').and.returnValue([10, 10]);
-      service.generateDot('fakeColor');
-      expect(spyDraw).toHaveBeenCalled();
-      // we look for a correct id
-      expect(propertiesTable[0]).toEqual(['id', `aerosolSpray${service.currentElementsNumber}`]);
-      // now we look for the fake coordinates created by our random point spy
-      expect(propertiesTable[2]).toEqual(['cx', '10']);
-      expect(propertiesTable[3]).toEqual(['cy', '10']);
-      // finally, we look for our fake color
-      expect(propertiesTable[5]).toEqual(['fill', 'fakeColor']);
     }));
   });
 });
