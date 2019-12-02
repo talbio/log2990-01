@@ -5,8 +5,6 @@ import { RendererSingleton } from '../../renderer-singleton';
 import {setScaleAttribute, setTranslationAttribute} from '../../utilitary-functions/transform-functions';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 
-const MAX_CANVAS_WIDTH = 2000;
-const MAX_CANVAS_HEIGHT = 2000;
 const POINT_CONTROL_SIZE = 10;
 const STROKE_COLOR = Colors.BLUE;
 
@@ -123,8 +121,8 @@ export class ObjectSelectorService {
       this.isScaling = false;
       this.hasSetInitialScale = false;
       this.hasSetInitialTranslate = false;
-      this.currentBoundingRectDimensions = this.getBoundingRectDimensions();
     }
+    this.currentBoundingRectDimensions = this.getBoundingRectDimensions();
     this.mouseDown = false;
   }
 
@@ -189,28 +187,26 @@ export class ObjectSelectorService {
 
   private getBoundingRectDimensions(): Dimensions {
     const boundingRect: BoundingRect = {
-      left: MAX_CANVAS_WIDTH,
+      left: Number.MAX_SAFE_INTEGER,
       right: 0,
       bottom: 0,
-      top: MAX_CANVAS_HEIGHT,
+      top: Number.MAX_SAFE_INTEGER,
     };
 
     this.selectedElements.forEach( (svgElement: SVGElement) => {
-      const elementClientRectLeft = svgElement.getBoundingClientRect().left;
-      const elementClientRectRight = svgElement.getBoundingClientRect().right;
-      const elementClientRectTop = svgElement.getBoundingClientRect().top;
-      const elementClientRectBottom = svgElement.getBoundingClientRect().bottom;
-      if (elementClientRectLeft < boundingRect.left ) {
-        boundingRect.left = elementClientRectLeft;
+      const elementClientRect: ClientRect | DOMRect = svgElement.getBoundingClientRect();
+
+      if (elementClientRect.left < boundingRect.left ) {
+        boundingRect.left = elementClientRect.left;
       }
-      if (elementClientRectRight > boundingRect.right) {
-        boundingRect.right = elementClientRectRight;
+      if (elementClientRect.right > boundingRect.right) {
+        boundingRect.right = elementClientRect.right;
       }
-      if (elementClientRectTop < boundingRect.top) {
-        boundingRect.top = elementClientRectTop;
+      if (elementClientRect.top < boundingRect.top) {
+        boundingRect.top = elementClientRect.top;
       }
-      if (elementClientRectBottom > boundingRect.bottom) {
-        boundingRect.bottom = elementClientRectBottom;
+      if (elementClientRect.bottom > boundingRect.bottom) {
+        boundingRect.bottom = elementClientRect.bottom;
       }
     });
 
@@ -278,7 +274,6 @@ export class ObjectSelectorService {
       controlPoint.addEventListener('mousemove', () => {
         this.isScaling = true;
         this.currentMarker = controlPoint.id;
-
       });
       gBoundingRect.appendChild(controlPoint);
     });
