@@ -36,7 +36,7 @@ export class ObjectSelectorService {
 
   selectedElements: SVGElement[];
   private isTranslating: boolean;
-  private initialTranslateValues: Map<SVGElement, string>;
+  private initialTransformValues: Map<SVGElement, string>;
   hasBoundingRect: boolean;
   private mouseDown: boolean;
   startX: number;
@@ -51,7 +51,7 @@ export class ObjectSelectorService {
     this.hasBoundingRect = false;
     this.mouseDown = false;
     this.isTranslating = false;
-    this.initialTranslateValues = new Map<SVGElement, string>();
+    this.initialTransformValues = new Map<SVGElement, string>();
     this.selectedElements = [];
     this.startX = 0;
     this.startY = 0;
@@ -312,31 +312,40 @@ export class ObjectSelectorService {
 
   beginTranslation(): void {
     this.isTranslating = true;
-    this.initialTranslateValues = this.createTranslateMap(this.selectedElements);
+    this.beginTransformation();
+  }
+
+  beginTransformation(): void {
+    this.initialTransformValues = this.createTransformMap(this.selectedElements);
   }
 
   finishTranslation(): void {
     this.isTranslating = false;
-    const newTranslates: Map<SVGElement, string> = this.createTranslateMap(this.selectedElements);
-    this.pushTranslateCommand(newTranslates, this.initialTranslateValues);
+    this.finishTransformation();
   }
-  pushTranslateCommand(newTranslates: Map<SVGElement, string>, oldTranslates: Map<SVGElement, string>): void {
+
+  finishTransformation(): void {
+    const newTransforms: Map<SVGElement, string> = this.createTransformMap(this.selectedElements);
+    this.pushTransformCommand(newTransforms, this.initialTransformValues);
+  }
+
+  pushTransformCommand(newTransforms: Map<SVGElement, string>, oldTransforms: Map<SVGElement, string>): void {
     const svgElements: SVGElement[] = [...this.selectedElements];
     svgElements.push(this.boundingRect.children[1] as SVGElement);
     const command: Command = {
       execute(): void {
         svgElements.forEach((svgElement: SVGElement) =>
-          svgElement.setAttribute('transform', `${newTranslates.get(svgElement)}`));
+          svgElement.setAttribute('transform', `${newTransforms.get(svgElement)}`));
       },
       unexecute(): void {
         svgElements.forEach((svgElement: SVGElement) =>
-          svgElement.setAttribute('transform', `${oldTranslates.get(svgElement)}`));
+          svgElement.setAttribute('transform', `${oldTransforms.get(svgElement)}`));
       },
     };
     this.undoRedoService.pushCommand(command);
   }
 
-  createTranslateMap(elements: SVGElement[]): Map<SVGElement, string> {
+  createTransformMap(elements: SVGElement[]): Map<SVGElement, string> {
     const map: Map<SVGElement, string> = new Map<SVGElement, string>();
     // Add the bounding rect line
     const elementsWithBoundingRect: SVGElement[] = [...elements];
