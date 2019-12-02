@@ -36,6 +36,8 @@
 
 .mat-drawer-inner-container {
   overflow:hidden;
+  scrollbar-color: dark;
+  scrollbar-width: none;
 }
 
 .mat-drawer-inner-container::-webkit-scrollbar
