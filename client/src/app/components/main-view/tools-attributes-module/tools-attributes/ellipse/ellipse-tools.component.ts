@@ -5,6 +5,7 @@ import {EllipseGeneratorService} from '../../../../../services/tools/ellipse-gen
 @Component({
   selector: 'app-ellipse-tools',
   templateUrl: './ellipse-tools.component.html',
+  styleUrls: ['./../tool-attributes.component.scss'],
 })
 export class EllipseToolsComponent {
 

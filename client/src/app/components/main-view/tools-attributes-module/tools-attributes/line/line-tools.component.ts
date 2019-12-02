@@ -5,6 +5,7 @@ import {LineGeneratorService} from '../../../../../services/tools/line-generator
 @Component({
   selector: 'app-line-tools',
   templateUrl: './line-tools.component.html',
+  styleUrls: ['./../tool-attributes.component.scss'],
 })
 export class LineToolsComponent {
 

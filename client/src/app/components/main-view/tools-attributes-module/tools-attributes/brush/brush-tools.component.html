@@ -1,27 +1,28 @@
-<p mat-card-title>Paramètres de Pinceau</p>
-
-<mat-label>
-  Épaisseur du trait du pinceau en pixels: {{this.brushGenerator.strokeWidth}}
-</mat-label>
-<mat-slider [(ngModel)]="this.brushGenerator.strokeWidth"
-            min="5"
-            max="50"
-            step="0.5"
-            value="1.5"
-            thumbLabel
-            tickInterval="1">
-</mat-slider>
-
-<mat-form-field>
+<div>
+  <p mat-card-title>Paramètres du Pinceau</p>
+</div>
+<div>
   <mat-label>
-    Texture du pinceau:
+    Épaisseur du trait du pinceau en pixels: {{this.brushGenerator.strokeWidth}}
   </mat-label>
-  <mat-select (click)="this.previewRect(this.NUMBER_OF_TEXTURES)" [(ngModel)]="this.brushGenerator._currentBrushPattern">
-    <mat-option class="texture-option" *ngFor="let i of [1,2,3,4,5,6];" [value]="'url(#brushPattern'+i+')'">
-    <span class="texture-title"> Texture {{i}}</span> <img mat-list-avatar id="texturePreview{{i}}" class="texture-preview" matTooltip="Aperçu de la texture" />
-    </mat-option>
-  </mat-select>
-</mat-form-field>
-<svg width="20px" height="20px" id="brushPreview"></svg>
-
-
+</div>
+<div>
+  <mat-slider [(ngModel)]="this.brushGenerator.strokeWidth" min="5" max="50" step="0.5" value="1.5" thumbLabel
+    tickInterval="1">
+  </mat-slider>
+</div>
+<div>
+  <mat-form-field>
+    <mat-label>
+      Texture du pinceau:
+    </mat-label>
+    <mat-select (click)="this.previewRect(this.NUMBER_OF_TEXTURES)"
+      [(ngModel)]="this.brushGenerator._currentBrushPattern">
+      <mat-option class="texture-option" *ngFor="let i of [1,2,3,4,5,6];" [value]="'url(#brushPattern'+i+')'">
+        <span class="texture-title"> Texture {{i}}</span> <img mat-list-avatar id="texturePreview{{i}}"
+          class="texture-preview" matTooltip="Aperçu de la texture" />
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div><svg width="20px" height="20px" id="brushPreview"></svg></div>

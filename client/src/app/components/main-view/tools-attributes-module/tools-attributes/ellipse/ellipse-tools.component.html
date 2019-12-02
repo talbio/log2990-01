@@ -1,18 +1,18 @@
-<p mat-card-title>Paramètres de l'ellipse</p>
+<div><p mat-card-title>Paramètres de l'ellipse</p></div>
 
-<mat-label>
-  Épaisseur de l'ellipse: {{this.ellipseGenerator.strokeWidth}}
-</mat-label>
-<mat-slider [(ngModel)]="this.ellipseGenerator.strokeWidth"
+<div><mat-label>
+  Épaisseur de l'ellipse en pixels: {{this.ellipseGenerator.strokeWidth}}
+</mat-label></div>
+<div><mat-slider [(ngModel)]="this.ellipseGenerator.strokeWidth"
             min="1"
             max="10"
             step="0.5"
             value="1.5"
             thumbLabel
             tickInterval="1">
-</mat-slider>
+</mat-slider></div>
 
-<mat-form-field>
+<div><mat-form-field>
   <mat-label>
     Type de tracé:
   </mat-label>
@@ -21,4 +21,4 @@
     <mat-option [value]="PlotType.Full">Plein</mat-option>
     <mat-option [value]="PlotType.FullWithContour">Plein avec contour</mat-option>
   </mat-select>
-</mat-form-field>
+</mat-form-field></div>

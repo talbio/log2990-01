@@ -11,7 +11,7 @@ interface SelectionDot {
 @Component({
   selector: 'app-grid-tools',
   templateUrl: './grid.component.html',
-  styleUrls: ['./grid.component.scss'],
+  styleUrls: ['./../tool-attributes.component.scss'],
 })
 
 export class GridComponent {

@@ -42,7 +42,7 @@
 
 .mat-drawer-inner-container::-webkit-scrollbar
 {
-	width: 4px;
+	width: 0px;
 }
 .mat-drawer-inner-container:hover {
   overflow-y: scroll;
@@ -52,3 +52,6 @@
 	background-color: #2b3840;
 	border-radius: 4px;
 }
+
+//encapsulation-none
+//ng-deep

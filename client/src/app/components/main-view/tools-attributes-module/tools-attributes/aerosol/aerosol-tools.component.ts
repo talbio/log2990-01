@@ -4,6 +4,7 @@ import { AerosolGeneratorService } from './../../../../../services/tools/aerosol
 @Component({
   selector: 'app-aerosol-tools',
   templateUrl: './aerosol-tools.component.html',
+  styleUrls: ['./../tool-attributes.component.scss'],
 })
 export class AerosolToolsComponent {
 
