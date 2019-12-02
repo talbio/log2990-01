@@ -1,10 +1,11 @@
 // This finds out whether the element has a transform value and adapts the translation
-export const setTranslationAttribute = (element: SVGElement, xTranslation: number, yTranslation: number, erase?: boolean): void => {
+export const setTranslationAttribute =
+  (element: SVGElement, xTranslation: number, yTranslation: number, erase?: boolean, initialScale?: boolean): void => {
     const transformation = element.getAttribute('transform');
     let newTransform = '';
     if (!transformation) {
         newTransform = 'translate(' + xTranslation + ' ' + yTranslation + ')';
-    } else if (!transformation.includes('translate')) {
+    } else if (!transformation.includes('translate') || initialScale) {
         newTransform = 'translate(' + xTranslation + ' ' + yTranslation + ') ';
         newTransform += transformation;
     } else {
@@ -24,20 +25,20 @@ export const findTransformValues = (transformAttribute: string): number[] => {
   return [parseFloat(parts[1]), parseFloat(parts[2])];
 };
 
-export const setScaleAttribute = (element: SVGElement, xScale: number, yScale: number): void => {
+export const setScaleAttribute = (element: SVGElement, xScale: number, yScale: number, initialScale?: boolean): void => {
   const transformation = element.getAttribute('transform');
   let newTransform = '';
   if (!transformation) {
     newTransform = 'scale(' + xScale + ' ' + yScale + ')';
-  } else if (!transformation.includes('scale')) {
-    newTransform = 'scale(' + xScale + ' ' + yScale + ') ';
+  } else if (!transformation.includes('scale') || initialScale) {
+    const newScale = 'scale(' + xScale + ' ' + yScale + ') ';
     newTransform += transformation;
+    newTransform += newScale;
   } else {
     // const oldTranslation: number[] = findScaleValues(transformation);
-    const scaleBegin = transformation.indexOf('scale');
-    const scaleEnd = transformation.indexOf(')', scaleBegin);
-    newTransform =
-      transformation.substr(0, scaleBegin) + transformation.substr(scaleEnd + 1) +
+    const lastScaleBegin = transformation.lastIndexOf('scale');
+    // const lastScaleEnd = transformation.lastIndexOf(')', lastScaleBegin);
+    newTransform = transformation.substr(0, lastScaleBegin) + /* transformation.substr(lastScaleEnd + 1) + */
       'scale(' + (xScale) + ' ' + (yScale) + ') ';
   }
   element.setAttribute('transform', newTransform);

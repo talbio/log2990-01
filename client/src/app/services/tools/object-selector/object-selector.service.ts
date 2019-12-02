@@ -121,6 +121,9 @@ export class ObjectSelectorService {
     }
     if (this.isScaling) {
       this.isScaling = false;
+      this.hasSetInitialScale = false;
+      this.hasSetInitialTranslate = false;
+      this.currentBoundingRectDimensions = this.getBoundingRectDimensions();
     }
     this.mouseDown = false;
   }
@@ -275,16 +278,28 @@ export class ObjectSelectorService {
       controlPoint.addEventListener('mousemove', () => {
         this.isScaling = true;
         this.currentMarker = controlPoint.id;
+
       });
       gBoundingRect.appendChild(controlPoint);
     });
   }
 
   private currentBoundingRectDimensions: Dimensions;
+  private hasSetInitialScale = false;
+  private hasSetInitialTranslate = false;
+
   scale(): void {
-    // const width = this.boundingRect.getBoundingClientRect().width;
-    // const height = this.boundingRect.getBoundingClientRect().height;
-    // const dimensions = this.getBoundingRectDimensions();
+    if (!this.hasSetInitialScale) {
+      setScaleAttribute(this.gBoundingRect, 1, 1, true);
+      this.selectedElements.forEach( (svgElement: SVGElement) => setScaleAttribute(svgElement, 1, 1, true));
+      this.hasSetInitialScale = true;
+    }
+    if (!this.hasSetInitialTranslate) {
+      setTranslationAttribute(this.gBoundingRect, 0, 0, false, true);
+      this.selectedElements.forEach( (svgElement: SVGElement) => setTranslationAttribute(svgElement, 0, 0, false, true));
+      this.hasSetInitialTranslate = true;
+    }
+
     let scalingFactorX: number;
     let scalingFactorY: number;
 
@@ -317,10 +332,9 @@ export class ObjectSelectorService {
     }
 
     console.log(' x : ' + this.currentBoundingRectDimensions.x, 'y: ' + this.currentBoundingRectDimensions.y);
-
-    console.log('canvasY: ' + (this.mousePosition.canvasMousePositionY));
-    console.log('startY: ' + (this.startY));
-    console.log(this.currentBoundingRectDimensions.height);
+    // console.log('canvasY: ' + (this.mousePosition.canvasMousePositionY));
+    // console.log('startY: ' + (this.startY));
+    // console.log(this.currentBoundingRectDimensions.height);
 
     setScaleAttribute(this.gBoundingRect, scalingFactorX, scalingFactorY);
     setTranslationAttribute(this.gBoundingRect,
@@ -331,8 +345,7 @@ export class ObjectSelectorService {
       setScaleAttribute(svgElement, scalingFactorX, scalingFactorY);
       setTranslationAttribute(svgElement,
         - (this.currentBoundingRectDimensions.x * scalingFactorX - this.currentBoundingRectDimensions.x),
-        - (this.currentBoundingRectDimensions.y * scalingFactorY - this.currentBoundingRectDimensions.y),
-        true);
+        - (this.currentBoundingRectDimensions.y * scalingFactorY - this.currentBoundingRectDimensions.y), true);
     });
   }
 
