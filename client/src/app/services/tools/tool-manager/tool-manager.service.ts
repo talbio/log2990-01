@@ -31,10 +31,7 @@ export class ToolManagerService {
 
   set _activeTool(tool: Tools) {
     if (this.activeTool === Tools.Selector && tool !== Tools.Selector) {
-      if (this.objectSelector.hasBoundingRect) {
-        this.objectSelector.removeBoundingRect();
-        this.objectSelector.selectedElements = [];
-      }
+      this.removeSelectorBoundingRect();
     }
     this.activeTool = tool;
     this.setCurrentGenerator(tool);
@@ -203,6 +200,9 @@ export class ToolManagerService {
   }
 
   deleteAllDrawings(): void {
+    // Disable selection if it is active
+    this.removeSelectorBoundingRect();
+
     // Delete the elements
     this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
     for (let i = this.canvasElement.children.length - 1; i >= this.DEFAULT_NUMBER_OF_ELEMENTS ; i--) {
@@ -392,5 +392,15 @@ export class ToolManagerService {
       }
     });
     return isMultiplePart;
+  }
+
+  removeSelectorBoundingRect(): void {
+    if (this.objectSelector.selectorRect) {
+      this.objectSelector.finishSelection();
+    }
+    if (this.objectSelector.hasBoundingRect) {
+      this.objectSelector.removeBoundingRect();
+      this.objectSelector.selectedElements = [];
+    }
   }
 }
