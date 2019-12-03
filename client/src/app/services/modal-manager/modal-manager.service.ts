@@ -28,20 +28,22 @@ export class ModalManagerService {
   }
 
   showCreateDrawingDialog(): void {
-      const dialogRef = this.dialog.open(CreateDrawingDialogComponent, {
-        autoFocus: false,
-        data: {drawingNonEmpty: this.toolManager.drawingNonEmpty()},
-      });
-      dialogRef.afterClosed().subscribe((formValues: CreateDrawingFormValues) => {
-        if (formValues) {
-          RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'width', formValues.width.toString());
-          RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'height', formValues.height.toString());
-          RendererSingleton.renderer.setStyle(RendererSingleton.canvas, 'background-color', formValues.color.toString());
-        }
-      });
+    this.toolManager.removeSelectorBoundingRect();
+    const dialogRef = this.dialog.open(CreateDrawingDialogComponent, {
+      autoFocus: false,
+      data: {drawingNonEmpty: this.toolManager.drawingNonEmpty()},
+    });
+    dialogRef.afterClosed().subscribe((formValues: CreateDrawingFormValues) => {
+      if (formValues) {
+        RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'width', formValues.width.toString());
+        RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'height', formValues.height.toString());
+        RendererSingleton.renderer.setStyle(RendererSingleton.canvas, 'background-color', formValues.color.toString());
+      }
+    });
   }
 
   showColorPickerDialog(color: Color): void {
+    this.toolManager.removeSelectorBoundingRect();
     const dialogRef = this.dialog.open(ColorPickerDialogComponent,
       {
         data: { color: color === Color.primaryColor ? this.colorService.getPrimaryColor() : this.colorService.getSecondaryColor() },
@@ -61,7 +63,6 @@ export class ModalManagerService {
   }
 
   showSaveDrawingDialog(): void {
-    // disable selection if active so it does not get saved
     this.toolManager.removeSelectorBoundingRect();
     this.dialog.open(SaveDrawingDialogComponent, {
       autoFocus: false,
@@ -70,6 +71,7 @@ export class ModalManagerService {
   }
 
   showOpenDrawingDialog(): void {
+    this.toolManager.removeSelectorBoundingRect();
     this.dialog.open(OpenDrawingDialogComponent, {
       autoFocus: false,
       data: {drawingNonEmpty: this.toolManager.drawingNonEmpty()},
@@ -77,6 +79,7 @@ export class ModalManagerService {
   }
 
   showUserManualDialog(): void {
+    this.toolManager.removeSelectorBoundingRect();
     this.dialog.open(UserManualDialogComponent, {
        width: USER_MANUAL_WIDTH,
       data: {},
