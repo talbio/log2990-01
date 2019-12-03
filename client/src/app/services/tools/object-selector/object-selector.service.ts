@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
-import { Colors } from 'src/app/data-structures/colors';
-import { Command } from 'src/app/data-structures/command';
-import { MousePositionService } from '../../mouse-position/mouse-position.service';
-import { RendererSingleton } from '../../renderer-singleton';
+import {Injectable} from '@angular/core';
+import {Colors} from 'src/app/data-structures/colors';
+import {Command} from 'src/app/data-structures/command';
+import {MousePositionService} from '../../mouse-position/mouse-position.service';
+import {RendererSingleton} from '../../renderer-singleton';
+import {Transformation, TransformationService} from '../../transformation/transformation.service';
+import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
-import { TransformationService } from './../../transformation/transformation.service';
-import { UndoRedoService } from './../../undo-redo/undo-redo.service';
 
 const POINT_CONTROL_SIZE = 10;
 const STROKE_COLOR = Colors.BLUE;
@@ -82,6 +82,7 @@ export class ObjectSelectorService {
     this.startY = this.mousePosition.canvasMousePositionY;
   }
 
+  private initialValues: Map<SVGElement, string>;
   onMouseDown() {
     this.mouseDown = true;
     if (this.hasBoundingRect) {
@@ -91,6 +92,7 @@ export class ObjectSelectorService {
         this.removeGBoundingRect();
       }
       if (this.isScaling) {
+        this.initialValues  = this.createTransformationMap(this.selectedElements);
         this.updateStartPos();
         return;
       } else {
@@ -113,8 +115,8 @@ export class ObjectSelectorService {
           return;
         }
         if (this.isTranslating) {
-            this.translate();
-            return;
+          this.translate();
+          return;
         }
       } else {
         this.rectangleGenerator.updateElement(currentChildPosition, mouseEvent);
@@ -132,8 +134,6 @@ export class ObjectSelectorService {
     }
     if (this.isScaling) {
       this.isScaling = false;
-      this.hasSetInitialScale = false;
-      this.hasSetInitialTranslate = false;
     }
     this.currentBoundingRectDimensions = this.getBoundingRectDimensions();
     this.mouseDown = false;
@@ -294,21 +294,36 @@ export class ObjectSelectorService {
   }
 
   private currentBoundingRectDimensions: Dimensions;
-  private hasSetInitialScale = false;
-  private hasSetInitialTranslate = false;
+  // private hasSetInitialScale = false;
+  // private hasSetInitialTranslate = false;
 
   scale(): void {
-    if (!this.hasSetInitialScale) {
-      this.transform.setScaleAttribute(this.gBoundingRect, 1, 1, true);
-      this.selectedElements.forEach( (svgElement: SVGElement) => this.transform.setScaleAttribute(svgElement, 1, 1, true));
-      this.hasSetInitialScale = true;
-    }
-    if (!this.hasSetInitialTranslate) {
-      this.transform.setTranslationAttribute(this.gBoundingRect, 0, 0, false, true);
-      this.selectedElements.forEach( (svgElement: SVGElement) => this.transform.setTranslationAttribute(svgElement, 0, 0, false, true));
-      this.hasSetInitialTranslate = true;
-    }
 
+    const scalingFactors: [number, number] = this.getScalingFactors();
+    const scalingFactorX: number = scalingFactors[0];
+    const scalingFactorY: number = scalingFactors[1];
+
+    this.scaleElement(this.gBoundingRect, scalingFactorX, scalingFactorY);
+    this.selectedElements.forEach( (svgElement: SVGElement) => {
+      this.scaleElement(svgElement, scalingFactorX, scalingFactorY);
+    });
+
+  }
+
+  scaleElement(svgElement: SVGElement, scalingFactorX: number, scalingFactorY: number): void {
+    const initialScaleValues: [number, number] =
+      this.transform.getTransformationFromMatrix(this.initialValues.get(svgElement) as string, Transformation.SCALE);
+    const initialTranslateValues: [number, number] =
+      this.transform.getTransformationFromMatrix(this.initialValues.get(svgElement) as string, Transformation.TRANSLATE);
+    this.transform.scale(svgElement, scalingFactorX, scalingFactorY, initialScaleValues[0], initialScaleValues[1]);
+    console.log(initialTranslateValues);
+    const xCorrection = - this.currentBoundingRectDimensions.x * (scalingFactorX - 1);
+    const yCorrection = - this.currentBoundingRectDimensions.y * (scalingFactorY - 1);
+    console.log('xcorrection: ' + xCorrection)
+    this.transform.translate(svgElement, xCorrection, yCorrection, initialTranslateValues[0], initialTranslateValues[1]);
+  }
+
+  private getScalingFactors(): [number, number] {
     let scalingFactorX: number;
     let scalingFactorY: number;
 
@@ -336,26 +351,11 @@ export class ObjectSelectorService {
         scalingFactorX = 1;
         scalingFactorY = 1 + (this.mousePosition.canvasMousePositionY - this.startY) / this.currentBoundingRectDimensions.height;
         break;
-        default:
-          break;
+      default:
+        break;
     }
 
-    console.log(' x : ' + this.currentBoundingRectDimensions.x, 'y: ' + this.currentBoundingRectDimensions.y);
-    // console.log('canvasY: ' + (this.mousePosition.canvasMousePositionY));
-    // console.log('startY: ' + (this.startY));
-    // console.log(this.currentBoundingRectDimensions.height);
-
-    this.transform.setScaleAttribute(this.gBoundingRect, scalingFactorX, scalingFactorY);
-    this.transform.setTranslationAttribute(this.gBoundingRect,
-      - (this.currentBoundingRectDimensions.x * scalingFactorX - this.currentBoundingRectDimensions.x),
-      - (this.currentBoundingRectDimensions.y * scalingFactorY - this.currentBoundingRectDimensions.y), true);
-
-    this.selectedElements.forEach( (svgElement: SVGElement) => {
-      this.transform.setScaleAttribute(svgElement, scalingFactorX, scalingFactorY);
-      this.transform.setTranslationAttribute(svgElement,
-        - (this.currentBoundingRectDimensions.x * scalingFactorX - this.currentBoundingRectDimensions.x),
-        - (this.currentBoundingRectDimensions.y * scalingFactorY - this.currentBoundingRectDimensions.y), true);
-    });
+    return [scalingFactorX, scalingFactorY];
   }
 
   selectAll(): void {
@@ -375,11 +375,12 @@ export class ObjectSelectorService {
     const xMove = this.mousePosition.canvasMousePositionX - this.startX;
     const yMove = this.mousePosition.canvasMousePositionY - this.startY;
     this.selectedElements.forEach((svgElement: SVGElement) => {
-      this.transform.setTranslationAttribute(svgElement, xMove, yMove);
+      this.transform.translate(svgElement, xMove, yMove);
+      // this.transform.setTranslationAttribute(svgElement, xMove, yMove);
       this.startX = this.mousePosition.canvasMousePositionX;
       this.startY = this.mousePosition.canvasMousePositionY;
     });
-    this.transform.setTranslationAttribute(this.gBoundingRect as SVGElement, xMove, yMove);
+    this.transform.translate(this.gBoundingRect, xMove, yMove);
   }
 
   beginTranslation(): void {
@@ -397,7 +398,7 @@ export class ObjectSelectorService {
   }
 
   finishTransformation(): void {
-    this.transform.fuseTransforms([...this.selectedElements, this.gBoundingRect]);
+    // this.transform.fuseTransforms([...this.selectedElements, this.gBoundingRect]);
     const newTransforms: Map<SVGElement, string> = this.createTransformationMap(this.selectedElements);
     this.pushTransformCommand(newTransforms, this.initialTransformValues);
   }
@@ -426,9 +427,7 @@ export class ObjectSelectorService {
     // Iterate for each elements and the bounding line
     elementsWithBoundingRect.forEach((element: SVGElement) => {
       // Make sure that the element has a transform attribute
-      if (!element.getAttribute('transform')) {
-        element.setAttribute('transform', '');
-      }
+      this.transform.checkTransformAttribute(element);
       map.set(element, element.getAttribute('transform') as string);
     });
     return map;
