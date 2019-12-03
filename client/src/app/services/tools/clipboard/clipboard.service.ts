@@ -159,12 +159,18 @@ export class ClipboardService implements CommandGenerator {
   }
 
   pushPasteCommand(svgElements: SVGElement[]): void {
+    const removeGBoundingRect = () => {
+      if (this.selector.hasBoundingRect) {
+        this.selector.removeGBoundingRect();
+      }
+    };
     const command: Command = {
       execute(): void {
         svgElements.forEach((svgElement: SVGElement) =>
           RendererSingleton.renderer.appendChild(RendererSingleton.canvas, svgElement));
       },
       unexecute(): void {
+        removeGBoundingRect();
         svgElements.forEach((svgElement: SVGElement) =>
           RendererSingleton.canvas.removeChild(svgElement));
       },
@@ -173,8 +179,14 @@ export class ClipboardService implements CommandGenerator {
   }
 
   pushCutCommand(svgElements: SVGElement[]): void {
+    const removeGBoundingRect = () => {
+      if (this.selector.hasBoundingRect) {
+        this.selector.removeGBoundingRect();
+      }
+    };
     const command: Command = {
       execute(): void {
+        removeGBoundingRect();
         svgElements.forEach((svgElement: SVGElement) =>
           RendererSingleton.canvas.removeChild(svgElement));
         },

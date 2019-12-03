@@ -310,11 +310,12 @@ export class ObjectSelectorService {
     const scalingFactorX: number = scalingFactors[0];
     const scalingFactorY: number = scalingFactors[1];
 
-    this.scaleElement(this.gBoundingRect, scalingFactorX, scalingFactorY);
+    // this.scaleElement(this.gBoundingRect, scalingFactorX, scalingFactorY);
     this.selectedElements.forEach( (svgElement: SVGElement) => {
       this.scaleElement(svgElement, scalingFactorX, scalingFactorY);
     });
-
+    // this.removeGBoundingRect();
+    // this.addBoundingRect();
   }
 
   scaleElement(svgElement: SVGElement, scalingFactorX: number, scalingFactorY: number): void {
@@ -326,7 +327,7 @@ export class ObjectSelectorService {
     console.log(initialTranslateValues);
     const xCorrection = - this.currentBoundingRectDimensions.x * (scalingFactorX - 1);
     const yCorrection = - this.currentBoundingRectDimensions.y * (scalingFactorY - 1);
-    console.log('xcorrection: ' + xCorrection)
+    console.log('xcorrection: ' + xCorrection);
     this.transform.translate(svgElement, xCorrection, yCorrection, initialTranslateValues[0], initialTranslateValues[1]);
   }
 
@@ -389,8 +390,9 @@ export class ObjectSelectorService {
         this.startX = this.mousePosition.canvasMousePositionX;
         this.startY = this.mousePosition.canvasMousePositionY;
       });
-      this.transform.translate(this.boundingRect.children[1] as SVGElement, xMove, yMove);
     }
+    this.removeGBoundingRect();
+    this.addBoundingRect();
   }
 
   translateWithMagnetism() {
@@ -400,11 +402,9 @@ export class ObjectSelectorService {
     const yMove = newPosition[1];
     this.selectedElements.forEach((svgElement: SVGElement) => {
       this.transform.translate(svgElement, xMove, yMove);
-      // this.transform.setTranslationAttribute(svgElement, xMove, yMove);
       this.startX = this.mousePosition.canvasMousePositionX;
       this.startY = this.mousePosition.canvasMousePositionY;
     });
-    this.transform.translate(this.gBoundingRect, xMove, yMove);
   }
 
   beginTranslation(): void {
@@ -428,13 +428,20 @@ export class ObjectSelectorService {
 
   pushTransformCommand(newTransforms: Map<SVGElement, string>, oldTransforms: Map<SVGElement, string>): void {
     const svgElements: SVGElement[] = [...this.selectedElements];
-    svgElements.push(this.gBoundingRect as SVGElement);
+    const removeGBoundingRect = () => {
+      if (this.hasBoundingRect) {
+        this.removeGBoundingRect();
+      }
+    };
+    // svgElements.push(this.gBoundingRect as SVGElement);
     const command: Command = {
       execute(): void {
+        removeGBoundingRect();
         svgElements.forEach((svgElement: SVGElement) =>
           svgElement.setAttribute('transform', `${newTransforms.get(svgElement)}`));
       },
       unexecute(): void {
+        removeGBoundingRect();
         svgElements.forEach((svgElement: SVGElement) =>
         svgElement.setAttribute('transform', `${oldTransforms.get(svgElement)}`));
       },
@@ -444,11 +451,8 @@ export class ObjectSelectorService {
 
   createTransformationMap(elements: SVGElement[]): Map<SVGElement, string> {
     const map: Map<SVGElement, string> = new Map<SVGElement, string>();
-    // Add the bounding rect line
-    const elementsWithBoundingRect: SVGElement[] = [...elements];
-    elementsWithBoundingRect.push(this.gBoundingRect);
     // Iterate for each elements and the bounding line
-    elementsWithBoundingRect.forEach((element: SVGElement) => {
+    elements.forEach((element: SVGElement) => {
       // Make sure that the element has a transform attribute
       this.transform.checkTransformAttribute(element);
       map.set(element, element.getAttribute('transform') as string);
