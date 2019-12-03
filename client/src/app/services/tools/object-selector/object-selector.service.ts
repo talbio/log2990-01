@@ -428,7 +428,7 @@ export class ObjectSelectorService {
 
   pushTransformCommand(newTransforms: Map<SVGElement, string>, oldTransforms: Map<SVGElement, string>): void {
     const svgElements: SVGElement[] = [...this.selectedElements];
-    // svgElements.push(this.gBoundingRect as SVGElement);
+    svgElements.push(this.gBoundingRect as SVGElement);
     const command: Command = {
       execute(): void {
         svgElements.forEach((svgElement: SVGElement) =>
@@ -446,7 +446,7 @@ export class ObjectSelectorService {
     const map: Map<SVGElement, string> = new Map<SVGElement, string>();
     // Add the bounding rect line
     const elementsWithBoundingRect: SVGElement[] = [...elements];
-    // elementsWithBoundingRect.push(this.gBoundingRect);
+    elementsWithBoundingRect.push(this.gBoundingRect);
     // Iterate for each elements and the bounding line
     elementsWithBoundingRect.forEach((element: SVGElement) => {
       // Make sure that the element has a transform attribute

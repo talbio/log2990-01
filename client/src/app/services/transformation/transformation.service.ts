@@ -17,7 +17,7 @@ export class TransformationService {
 
   checkTransformAttribute(svgElement: SVGElement): void {
     if (!svgElement.getAttribute('transform')) {
-      svgElement.setAttribute('transform', 'matrix(1,0,0,1,0,0)') ;
+      svgElement.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
     }
   }
 
