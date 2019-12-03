@@ -39,6 +39,8 @@ export class ObjectSelectorService {
   hasBoundingRect: boolean;
   startX: number;
   startY: number;
+  startWidth: number;
+  startHeight: number;
 
   private isScaling: boolean;
   private currentMarker: string;
@@ -58,6 +60,8 @@ export class ObjectSelectorService {
     this.selectedElements = [];
     this.startX = 0;
     this.startY = 0;
+    this.startWidth = 0;
+    this.startHeight = 0;
   }
 
   get canvasBoundingRect(): BoundingRect {
@@ -84,14 +88,16 @@ export class ObjectSelectorService {
   updateStartPos(): void {
     this.startX = this.mousePosition.canvasMousePositionX;
     this.startY = this.mousePosition.canvasMousePositionY;
+    this.startWidth = this.currentBoundingRectDimensions.width;
+    this.startHeight = this.currentBoundingRectDimensions.height;
   }
 
-  private initialValues: Map<SVGElement, string>;
+  // private initialValues: Map<SVGElement, string>;
   onMouseDown() {
     this.mouseDown = true;
     if (this.hasBoundingRect) {
       if (this.isScaling) {
-        this.initialValues  = this.createTransformationMap(this.selectedElements);
+        this.initialTransformValues  = this.createTransformationMap(this.selectedElements);
         this.updateStartPos();
         return;
       }
@@ -102,8 +108,7 @@ export class ObjectSelectorService {
       } else {
         // initiate translation
         this.beginTranslation();
-        this.startX = this.mousePosition.canvasMousePositionX;
-        this.startY = this.mousePosition.canvasMousePositionY;
+        this.updateStartPos();
       }
     } else {
       this.selectedElements = [];
@@ -217,6 +222,7 @@ export class ObjectSelectorService {
 
       if (elementClientRect.left < boundingRect.left ) {
         boundingRect.left = elementClientRect.left;
+        // console.log('smoll x is: ' + elementClientRect.left);
       }
       if (elementClientRect.right > boundingRect.right) {
         boundingRect.right = elementClientRect.right;
@@ -265,6 +271,8 @@ export class ObjectSelectorService {
   }
 
   private appendControlPoints(rectDimensions: Dimensions, gBoundingRect: SVGGElement): void {
+    // console.log('x=' + Math.ceil(rectDimensions.x));
+    // console.log('y=' + Math.ceil(rectDimensions.y));
     const markers: [string, string][] = [
       [`${rectDimensions.x},${rectDimensions.y}`, 'top-left'],
       [`${rectDimensions.x + (rectDimensions.width / 2)},${rectDimensions.y}`, 'top-middle'],
@@ -306,64 +314,109 @@ export class ObjectSelectorService {
 
   scale(): void {
 
-    const scalingFactors: [number, number] = this.getScalingFactors();
+    const scalingFactors: [number, number, number, number] = this.getScalingFactors();
     const scalingFactorX: number = scalingFactors[0];
     const scalingFactorY: number = scalingFactors[1];
+    const xCorrection: number = scalingFactors[2];
+    const yCorrection: number = scalingFactors[3];
 
     // this.scaleElement(this.gBoundingRect, scalingFactorX, scalingFactorY);
     this.selectedElements.forEach( (svgElement: SVGElement) => {
-      this.scaleElement(svgElement, scalingFactorX, scalingFactorY);
+      this.scaleElement(svgElement, scalingFactorX, scalingFactorY, xCorrection, yCorrection);
+      // console.log(scalingFactorX, scalingFactorY);
     });
-    // this.removeGBoundingRect();
-    // this.addBoundingRect();
+    this.removeGBoundingRect();
+    this.addBoundingRect();
   }
 
-  scaleElement(svgElement: SVGElement, scalingFactorX: number, scalingFactorY: number): void {
+  scaleElement(svgElement: SVGElement, scalingFactorX: number, scalingFactorY: number, xCorrection: number, yCorrection: number): void {
     const initialScaleValues: [number, number] =
-      this.transform.getTransformationFromMatrix(this.initialValues.get(svgElement) as string, Transformation.SCALE);
+      this.transform.getTransformationFromMatrix(this.initialTransformValues.get(svgElement) as string, Transformation.SCALE);
     const initialTranslateValues: [number, number] =
-      this.transform.getTransformationFromMatrix(this.initialValues.get(svgElement) as string, Transformation.TRANSLATE);
+      this.transform.getTransformationFromMatrix(this.initialTransformValues.get(svgElement) as string, Transformation.TRANSLATE);
     this.transform.scale(svgElement, scalingFactorX, scalingFactorY, initialScaleValues[0], initialScaleValues[1]);
-    console.log(initialTranslateValues);
-    const xCorrection = - this.currentBoundingRectDimensions.x * (scalingFactorX - 1);
-    const yCorrection = - this.currentBoundingRectDimensions.y * (scalingFactorY - 1);
-    console.log('xcorrection: ' + xCorrection);
+    // console.log(initialTranslateValues);
+    // const xCorrection = -((this.startX - this.startWidth) * (scalingFactorX - 1));
+    // const xCorrection = (this.startX * (scalingFactorX - 1));
+    // const yCorrection = -((this.startY - this.startHeight) * (scalingFactorY - 1));
+    // console.log('xcorrection: ' + xCorrection);
     this.transform.translate(svgElement, xCorrection, yCorrection, initialTranslateValues[0], initialTranslateValues[1]);
   }
 
-  private getScalingFactors(): [number, number] {
+  // put to 0
+  // check necessary translation
+  // calculate ratio
+  private getScalingFactors(): [number, number, number, number] {
     let scalingFactorX: number;
     let scalingFactorY: number;
+    let xCorrection: number;
+    let yCorrection: number;
 
     scalingFactorY = 1;
     scalingFactorX = 1;
+    xCorrection = 0;
+    yCorrection = 0;
 
-    switch (this.currentMarker) {
-      case 'top-left':
-        break;
-      case 'top-middle':
-        scalingFactorX = 1;
-        scalingFactorY = 1;
-        break;
-      case 'top-right':
-        break;
-      case 'right-middle':
-        scalingFactorX = 1 + (this.mousePosition.canvasMousePositionX - this.startX) / this.currentBoundingRectDimensions.width;
-        scalingFactorY = 1;
-        break;
-      case 'bottom-right':
-        scalingFactorX = 1 + (this.mousePosition.canvasMousePositionX - this.startX) / this.currentBoundingRectDimensions.width;
-        scalingFactorY = 1 + (this.mousePosition.canvasMousePositionY - this.startY) / this.currentBoundingRectDimensions.height;
-        break;
-      case 'bottom-middle':
-        scalingFactorX = 1;
-        scalingFactorY = 1 + (this.mousePosition.canvasMousePositionY - this.startY) / this.currentBoundingRectDimensions.height;
-        break;
-      default:
-        break;
+    if (this.currentMarker.includes('top')) {
+      scalingFactorY = 1 + -(this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
+      yCorrection = -((this.startY + this.startHeight) * (scalingFactorY - 1));
+    } else if (this.currentMarker.includes('bottom')) {
+      scalingFactorY = 1 + (this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
+      yCorrection = -((this.startY - this.startHeight) * (scalingFactorY - 1));
     }
+    if (this.currentMarker.includes('left')) {
+      scalingFactorX = 1 + -(this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
+      xCorrection = -((this.startX + this.startWidth) * (scalingFactorX - 1));
+    } else if (this.currentMarker.includes('right')) {
+      scalingFactorX = 1 + (this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
+      xCorrection = -((this.startX - this.startWidth) * (scalingFactorX - 1));
+    }
+    // switch (this.currentMarker) {
+    //   case 'top-left':
+    //     scalingFactorX = 1 + -(this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
+    //     scalingFactorY = 1 + -(this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
+    //     xCorrection = -((this.startX + this.startWidth) * (scalingFactorX - 1));
+    //     yCorrection = -((this.startY + this.startHeight) * (scalingFactorY - 1));
+    //     break;
+    //   case 'top-middle':
+    //     scalingFactorY = 1 + -(this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
+    //     yCorrection = -((this.startY + this.startHeight) * (scalingFactorY - 1));
+    //     break;
+    //   case 'top-right':
+    //     scalingFactorY = 1 + -(this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
+    //     yCorrection = -((this.startY + this.startHeight) * (scalingFactorY - 1));
+    //     scalingFactorX = 1 + (this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
+    //     xCorrection = -((this.startX - this.startWidth) * (scalingFactorX - 1));
+    //     break;
+    //   case 'left-middle':
+    //     scalingFactorX = 1 + -(this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
+    //     xCorrection = -((this.startX + this.startWidth) * (scalingFactorX - 1));
+    //     break;
+    //   case 'right-middle':
+    //     scalingFactorX = 1 + (this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
+    //     xCorrection = -((this.startX - this.startWidth) * (scalingFactorX - 1));
+    //     break;
+    //   case 'bottom-left':
+    //     scalingFactorX = 1 + -(this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
+    //     scalingFactorY = 1 + (this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
+    //     xCorrection = -((this.startX + this.startWidth) * (scalingFactorX - 1));
+    //     yCorrection = -((this.startY - this.startHeight) * (scalingFactorY - 1));
+    //     break;
+    //   case 'bottom-middle':
+    //     scalingFactorY = 1 + (this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
+    //     yCorrection = -((this.startY - this.startHeight) * (scalingFactorY - 1));
+    //     break;
+    //   case 'bottom-right':
+    //     scalingFactorX = 1 + (this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
+    //     scalingFactorY = 1 + (this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
+    //     xCorrection = -((this.startX - this.startWidth) * (scalingFactorX - 1));
+    //     yCorrection = -((this.startY - this.startHeight) * (scalingFactorY - 1));
+    //     break;
+    //   default:
+    //     break;
+    // }
 
-    return [scalingFactorX, scalingFactorY];
+    return [scalingFactorX, scalingFactorY, xCorrection, yCorrection];
   }
 
   selectAll(): void {
