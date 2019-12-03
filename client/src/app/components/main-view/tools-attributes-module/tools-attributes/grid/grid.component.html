@@ -9,7 +9,7 @@
   <mat-checkbox [(ngModel)]="this.gridService._isMagnetic">Magnétisme </mat-checkbox>
 </div>
 
-<div><mat-label>Taille des mailles : {{this.gridService._gridSize}}</mat-label>
+<div><mat-label>Taille des mailles:  {{this.gridService._gridSize}}</mat-label>
 <mat-slider [(ngModel)]="this.gridService._gridSize" (input)="this.gridService.adjustGridSize($event)" min="10"
   max="100" step="1" thumbLabel tickInterval="1">
 </mat-slider></div>
@@ -18,15 +18,3 @@
 <mat-slider [(ngModel)]="this.gridService._gridOpacity" (input)="this.gridService.adjustGridOpacity($event)" min="0.1"
   max="1" step="0.01" thumbLabel tickInterval="1">
 </mat-slider></div>
-
-
-
-<div>
-  <mat-label>Sélection du point de magnétisme:</mat-label>
-</div>
-  <svg>
-    <rect x="10" y="10" width="100" height="50" stroke="black" fill="transparent" />
-    <circle *ngFor="let dot of selectionDots; let i = index" attr.cx="{{dot.x}}" attr.cy="{{dot.y}}" r="5"
-      stroke="black" attr.fill="{{dot.color}}"
-      (click)="showSelectedMagneticDot(i); this.gridService.setMagneticDot(i)" />
-  </svg>
