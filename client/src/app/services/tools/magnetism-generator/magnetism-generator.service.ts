@@ -6,6 +6,8 @@ import { GridTogglerService } from '../grid/grid-toggler.service';
 @Injectable()
 export class MagnetismGeneratorService {
     movementMap: Map<string, boolean> = new Map();
+    initialX: number;
+    initialY: number;
     private readonly BOUNDING_RECT_ID = 'boundingRect';
 
     constructor(private grid: GridTogglerService,
@@ -16,17 +18,20 @@ export class MagnetismGeneratorService {
     this.movementMap.set('down', false);
     }
 
-      getTranslationWithMagnetismValue(): number[] {
+      getTranslationWithMagnetismValue(initialX: number, initialY: number): number[] {
         const vertical =
         this.grid.getClosestVerticalLine(this.movementMap.get('left') as boolean, this.movementMap.get('right') as boolean);
         const horizontal =
         this.grid.getClosestHorizontalLine(this.movementMap.get('up') as boolean, this.movementMap.get('down') as boolean);
         let xMove = 0;
         let yMove = 0;
-        const distanceToClosestXLine = Math.abs(this.mousePosition.canvasMousePositionX - vertical);
-        const distanceToClosestYLine = Math.abs(this.mousePosition.canvasMousePositionY - horizontal);
+        const distanceToClosestXLine = Math.abs( this.grid.magneticDot.x - vertical)
+        - Math.abs(this.mousePosition.canvasMousePositionX - initialX);
+        const distanceToClosestYLine = Math.abs(this.grid.magneticDot.y - horizontal) -
+        Math.abs(this.mousePosition.canvasMousePositionY - initialY);
         if (this.isCloseEnough(distanceToClosestXLine) && !this.isOutOfCanvasBounderies('horizontal', vertical, this.grid.magneticDot.x)) {
           xMove = (vertical - this.grid.magneticDot.x);
+
         }
         if (this.isCloseEnough(distanceToClosestYLine) && !this.isOutOfCanvasBounderies('vertical', horizontal, this.grid.magneticDot.y)) {
           yMove = (horizontal - this.grid.magneticDot.y);
