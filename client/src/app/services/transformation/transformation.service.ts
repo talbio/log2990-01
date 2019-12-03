@@ -104,8 +104,4 @@ export class TransformationService {
     const parts = /scale\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(transformAttribute) as RegExpExecArray;
     return [parseFloat(parts[1]), parseFloat(parts[2])];
   }
-
-  fuseTransforms(elements: SVGElement[]) {
-    // TODO
-  }
 }

@@ -8,6 +8,7 @@ import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/t
 import { Tools } from 'src/app/data-structures/tools';
 import { MagnetismGeneratorService } from 'src/app/services/tools/magnetism-generator/magnetism-generator.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
+import { Transformation, TransformationService } from 'src/app/services/transformation/transformation.service';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
@@ -140,12 +141,11 @@ describe('MagnetismGeneratorService', () => {
 
         // get translation value
         const drawing = svgHandle.querySelector('#rect0');
-        const transformation = (drawing as Element).getAttribute('transform');
-        const attributeIndex = (transformation as string).indexOf(`translate(`);
-        const spaceIndex = (transformation as string).indexOf(' ', attributeIndex);
-        const xTranslation = Number((transformation as string).substring(attributeIndex + 10, spaceIndex));
-        const endOfAttribute = (transformation as string).indexOf(')', spaceIndex);
-        const yTranslation = Number((transformation as string).substring(spaceIndex + 1, endOfAttribute));
+        const transformation: string  = (drawing as Element).getAttribute('transform') as string;
+        const transformationService = fixture.debugElement.injector.get(TransformationService);
+        const translation = transformationService.getTransformationFromMatrix(transformation, Transformation.TRANSLATE);
+        const xTranslation = translation[0];
+        const yTranslation = translation[1];
         expect( grid.magneticDot.x + xTranslation).toBe(100);
         expect( yTranslation).toBe(0);
         const gridRect = svgHandle.children[1];
