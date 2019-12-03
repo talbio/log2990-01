@@ -40,7 +40,7 @@ export class ClipboardService implements CommandGenerator {
 
   slide(item: SVGElement) {
     this.getSlideLength(item);
-    this.transform.setTranslationAttribute(item, this.xSliding, this.ySliding);
+    this.transform.translate(item, this.xSliding, this.ySliding);
   }
 
   getSlideLength(item: SVGElement) {

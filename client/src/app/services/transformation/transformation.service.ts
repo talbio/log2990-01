@@ -9,8 +9,6 @@ export enum Transformation {
 @Injectable()
 export class TransformationService {
 
-
-
   private readonly X_TRANSLATE_INDEX = 4;
   private readonly Y_TRANSLATE_INDEX = 5;
 
@@ -72,7 +70,6 @@ export class TransformationService {
     const matrix: number[] = this.getNumericalMatrix(svgElement.getAttribute('transform') as string);
     matrix[this.X_TRANSLATE_INDEX] = (initialX !== undefined) ? initialX + x : matrix[this.X_TRANSLATE_INDEX] + x;
     matrix[this.Y_TRANSLATE_INDEX] = (initialY !== undefined) ? initialY + y : matrix[this.Y_TRANSLATE_INDEX] + y;
-    console.log(matrix);
     this.setMatrix(svgElement, matrix);
   }
 
