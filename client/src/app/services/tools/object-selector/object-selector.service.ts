@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import {Colors} from '../../../data-structures/colors';
+import { Colors } from 'src/app/data-structures/colors';
+import { Command } from 'src/app/data-structures/command';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
-import {setScaleAttribute, setTranslationAttribute} from '../../utilitary-functions/transform-functions';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
+import { TransformationService } from './../../transformation/transformation.service';
+import { UndoRedoService } from './../../undo-redo/undo-redo.service';
 
 const POINT_CONTROL_SIZE = 10;
 const STROKE_COLOR = Colors.BLUE;
@@ -30,6 +32,8 @@ export class ObjectSelectorService {
   private readonly G_BOUNDING_RECT_ID = 'gBoundingRect';
 
   selectedElements: SVGElement[];
+  private isTranslating: boolean;
+  private initialTranslateValues: Map<SVGElement, string>;
   hasBoundingRect: boolean;
   startX: number;
   startY: number;
@@ -39,10 +43,14 @@ export class ObjectSelectorService {
   private mouseDown: boolean;
 
   constructor(private mousePosition: MousePositionService,
-              private rectangleGenerator: RectangleGeneratorService) {
+              private rectangleGenerator: RectangleGeneratorService,
+              private transform: TransformationService,
+              private undoRedoService: UndoRedoService) {
     this.hasBoundingRect = false;
     this.mouseDown = false;
     this.isScaling = false;
+    this.isTranslating = false;
+    this.initialTranslateValues = new Map<SVGElement, string>();
     this.selectedElements = [];
     this.startX = 0;
     this.startY = 0;
@@ -86,8 +94,10 @@ export class ObjectSelectorService {
         this.updateStartPos();
         return;
       } else {
-        // translate
-        this.updateStartPos();
+        // initiate translation
+        this.beginTranslation();
+        this.startX = this.mousePosition.canvasMousePositionX;
+        this.startY = this.mousePosition.canvasMousePositionY;
       }
     } else {
       this.selectedElements = [];
@@ -102,9 +112,9 @@ export class ObjectSelectorService {
           this.scale();
           return;
         }
-        if (!this.isMouseOutsideGBoundingRect()) {
-          this.translate();
-          return;
+        if (this.hasBoundingRect && this.isTranslating) {
+            this.translate();
+            return;
         }
       } else {
         this.rectangleGenerator.updateElement(currentChildPosition, mouseEvent);
@@ -116,6 +126,9 @@ export class ObjectSelectorService {
   onMouseUp(): void {
     if (!this.hasBoundingRect) {
       this.finishSelection();
+    } else {
+      this.finishTranslation();
+      this.mouseDown = false;
     }
     if (this.isScaling) {
       this.isScaling = false;
@@ -127,20 +140,21 @@ export class ObjectSelectorService {
   }
 
   updateSelectedItems(): void {
-    const drawings = RendererSingleton.canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
+    const drawings = RendererSingleton.canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon, circle');
     drawings.forEach((svgElement: SVGElement) => {
       if (this.isElementInsideSelection(svgElement) && !this.selectedElements.includes(svgElement)) {
         this.selectedElements.push(svgElement);
-
-        if (svgElement.id.startsWith('penPath')) {
+        if (svgElement.id.startsWith('penPath') || svgElement.id.startsWith('featherPenPath') || svgElement.id.startsWith('aerosol')) {
           // Remove this instance since it will be pushed with foreach
           this.selectedElements.pop();
-          drawings.forEach((element) => {
+          drawings.forEach((element: SVGElement) => {
             if (element.id === svgElement.id) {
               this.selectedElements.push(element as SVGElement);
             }
-          }); }
-      }});
+          });
+        }
+      }
+    });
   }
 
   isElementInsideSelection(element: SVGElement): boolean {
@@ -285,13 +299,13 @@ export class ObjectSelectorService {
 
   scale(): void {
     if (!this.hasSetInitialScale) {
-      setScaleAttribute(this.gBoundingRect, 1, 1, true);
-      this.selectedElements.forEach( (svgElement: SVGElement) => setScaleAttribute(svgElement, 1, 1, true));
+      this.transform.setScaleAttribute(this.gBoundingRect, 1, 1, true);
+      this.selectedElements.forEach( (svgElement: SVGElement) => this.transform.setScaleAttribute(svgElement, 1, 1, true));
       this.hasSetInitialScale = true;
     }
     if (!this.hasSetInitialTranslate) {
-      setTranslationAttribute(this.gBoundingRect, 0, 0, false, true);
-      this.selectedElements.forEach( (svgElement: SVGElement) => setTranslationAttribute(svgElement, 0, 0, false, true));
+      this.transform.setTranslationAttribute(this.gBoundingRect, 0, 0, false, true);
+      this.selectedElements.forEach( (svgElement: SVGElement) => this.transform.setTranslationAttribute(svgElement, 0, 0, false, true));
       this.hasSetInitialTranslate = true;
     }
 
@@ -331,14 +345,14 @@ export class ObjectSelectorService {
     // console.log('startY: ' + (this.startY));
     // console.log(this.currentBoundingRectDimensions.height);
 
-    setScaleAttribute(this.gBoundingRect, scalingFactorX, scalingFactorY);
-    setTranslationAttribute(this.gBoundingRect,
+    this.transform.setScaleAttribute(this.gBoundingRect, scalingFactorX, scalingFactorY);
+    this.transform.setTranslationAttribute(this.gBoundingRect,
       - (this.currentBoundingRectDimensions.x * scalingFactorX - this.currentBoundingRectDimensions.x),
       - (this.currentBoundingRectDimensions.y * scalingFactorY - this.currentBoundingRectDimensions.y), true);
 
     this.selectedElements.forEach( (svgElement: SVGElement) => {
-      setScaleAttribute(svgElement, scalingFactorX, scalingFactorY);
-      setTranslationAttribute(svgElement,
+      this.transform.setScaleAttribute(svgElement, scalingFactorX, scalingFactorY);
+      this.transform.setTranslationAttribute(svgElement,
         - (this.currentBoundingRectDimensions.x * scalingFactorX - this.currentBoundingRectDimensions.x),
         - (this.currentBoundingRectDimensions.y * scalingFactorY - this.currentBoundingRectDimensions.y), true);
     });
@@ -357,15 +371,57 @@ export class ObjectSelectorService {
     }
   }
 
-  translate() {
+  translate(): void {
     const xMove = this.mousePosition.canvasMousePositionX - this.startX;
     const yMove = this.mousePosition.canvasMousePositionY - this.startY;
     this.selectedElements.forEach((svgElement: SVGElement) => {
-      setTranslationAttribute(svgElement, xMove, yMove);
+      this.transform.setTranslationAttribute(svgElement, xMove, yMove);
       this.startX = this.mousePosition.canvasMousePositionX;
       this.startY = this.mousePosition.canvasMousePositionY;
     });
-    setTranslationAttribute(this.gBoundingRect as SVGGElement, xMove, yMove);
+    this.transform.setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
+  }
+
+  beginTranslation(): void {
+    this.isTranslating = true;
+    this.initialTranslateValues = this.createTranslateMap(this.selectedElements);
+  }
+
+  finishTranslation(): void {
+    this.isTranslating = false;
+    const newTranslates: Map<SVGElement, string> = this.createTranslateMap(this.selectedElements);
+    this.pushTranslateCommand(newTranslates, this.initialTranslateValues);
+  }
+  pushTranslateCommand(newTranslates: Map<SVGElement, string>, oldTranslates: Map<SVGElement, string>): void {
+    const svgElements: SVGElement[] = [...this.selectedElements];
+    svgElements.push(this.boundingRect.children[1] as SVGElement);
+    const command: Command = {
+      execute(): void {
+        svgElements.forEach((svgElement: SVGElement) =>
+          svgElement.setAttribute('transform', `${newTranslates.get(svgElement)}`));
+        },
+      unexecute(): void {
+        svgElements.forEach((svgElement: SVGElement) =>
+        svgElement.setAttribute('transform', `${oldTranslates.get(svgElement)}`));
+      },
+    };
+    this.undoRedoService.pushCommand(command);
+  }
+
+  createTranslateMap(elements: SVGElement[]): Map<SVGElement, string> {
+    const map: Map<SVGElement, string> = new Map<SVGElement, string>();
+    // Add the bounding rect line
+    const elementsWithBoundingRect: SVGElement[] = [...elements];
+    elementsWithBoundingRect.push(this.boundingRect.children[1] as SVGElement);
+    // Iterate for each elements and the bounding line
+    elementsWithBoundingRect.forEach((element: SVGElement) => {
+      // Make sure that the element has a transform attribute
+      if (!element.getAttribute('transform')) {
+        element.setAttribute('transform', '');
+      }
+      map.set(element, element.getAttribute('transform') as string);
+    });
+    return map;
   }
 
 }

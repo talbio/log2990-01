@@ -16,12 +16,14 @@ import { AbstractToolButtonComponent } from './components/main-view/lateral-bar-
 import { ColorToolButtonsComponent } from './components/main-view/lateral-bar-module/color-tool-buttons/color-tool-buttons.component';
 import { LateralBarComponent } from './components/main-view/lateral-bar-module/lateral-bar/lateral-bar.component';
 import { ToolsAttributesBarComponent } from './components/main-view/tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
+import { AerosolToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/aerosol/aerosol-tools.component';
 import { BrushToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/brush/brush-tools.component';
 import { ColorApplicatorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/color-applicator/color-applicator-tools.component';
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
 import { EraserToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eraser/eraser-tools.component';
 import { EyedropperToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eyedropper/eyedropper-tools.component';
+import { FeatherPenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/feather-Pen/feather-Pen-tools.component';
 import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
 import { PenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pen/pen-tools.component';
@@ -36,6 +38,7 @@ import { LastTenColorsComponent } from './components/modals/color-picker-module/
 import { CreateDrawingDialogComponent } from './components/modals/create-drawing-dialog/create-drawing-dialog.component';
 import { GiveUpChangesDialogComponent } from './components/modals/give-up-changes-dialog/give-up-changes-dialog.component';
 import { FilterByTags } from './components/modals/open-drawing-dialog/filter-by-tags.pipe';
+import { LoaderComponent } from './components/modals/open-drawing-dialog/loader/loader.component';
 import { OpenDrawingDialogComponent } from './components/modals/open-drawing-dialog/open-drawing-dialog.component';
 import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dialog/save-drawing-dialog.component';
 import { UserManualDialogComponent } from './components/modals/user-manual-dialog/user-manual-dialog.component';
@@ -45,6 +48,7 @@ import { DrawingsService } from './services/back-end/drawings/drawings.service';
 import { MousePositionService } from './services/mouse-position/mouse-position.service';
 import { RendererSingleton } from './services/renderer-singleton';
 import { StorageService } from './services/storage/storage.service';
+import { AerosolGeneratorService } from './services/tools/aerosol-generator/aerosol-generator.service';
 import { BrushGeneratorService } from './services/tools/brush-generator/brush-generator.service';
 import { ClipboardService } from './services/tools/clipboard/clipboard.service';
 import { ColorApplicatorService } from './services/tools/color-applicator/color-applicator.service';
@@ -53,6 +57,7 @@ import { EllipseGeneratorService } from './services/tools/ellipse-generator/elli
 import { EmojiGeneratorService } from './services/tools/emoji-generator/emoji-generator.service';
 import { EraserService } from './services/tools/eraser/eraser.service';
 import { EyedropperService } from './services/tools/eyedropper/eyedropper.service';
+import { FeatherPenGeneratorService } from './services/tools/feather-Pen-generator/feather-Pen-generator.service';
 import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
 import { ObjectSelectorService } from './services/tools/object-selector/object-selector.service';
@@ -61,8 +66,7 @@ import { PencilGeneratorService } from './services/tools/pencil-generator/pencil
 import { PolygonGeneratorService } from './services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
-import { FeatherPenGeneratorService } from './services/tools/featherPen-generator/featherPen-generator.service';
-import { FeatherPenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/featherPen/featherPen-tools.component';
+import { TransformationService } from './services/transformation/transformation.service';
 
 const customNotifierOptions: NotifierOptions = {
   position: {
@@ -110,6 +114,7 @@ const customNotifierOptions: NotifierOptions = {
     WelcomeModalComponent,
     CreateDrawingDialogComponent,
     WorkZoneComponent,
+    LoaderComponent,
     DrawingViewComponent,
     WelcomeModalComponent,
     ColorToolButtonsComponent,
@@ -129,6 +134,7 @@ const customNotifierOptions: NotifierOptions = {
     RectangleToolsComponent,
     LineToolsComponent,
     EllipseToolsComponent,
+    AerosolToolsComponent,
     EmojiToolsComponent,
     EraserToolsComponent,
     BrushToolsComponent,
@@ -166,12 +172,14 @@ const customNotifierOptions: NotifierOptions = {
     BrushGeneratorService,
     ColorApplicatorService,
     ColorService,
+    AerosolGeneratorService,
     DrawingsService,
     ObjectSelectorService,
     GridTogglerService,
     NotifierService,
     LineGeneratorService,
     MousePositionService,
+    TransformationService,
     EyedropperService,
     ClipboardService,
     RendererSingleton,
@@ -195,9 +203,11 @@ const customNotifierOptions: NotifierOptions = {
     EmojiToolsComponent,
     EraserToolsComponent,
     BrushToolsComponent,
+    AerosolToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
     OpenDrawingDialogComponent,
+    LoaderComponent,
     PolygonToolsComponent,
     GridComponent,
   ],

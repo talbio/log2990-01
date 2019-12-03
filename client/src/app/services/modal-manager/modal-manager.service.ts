@@ -32,7 +32,6 @@ export class ModalManagerService {
       const dialogRef = this.dialog.open(CreateDrawingDialogComponent, {
         autoFocus: false,
         data: {drawingNonEmpty: this.toolManager.drawingNonEmpty()},
-        disableClose: true,
       });
       dialogRef.afterClosed().subscribe((formValues: CreateDrawingFormValues) => {
         if (formValues) {
@@ -47,7 +46,6 @@ export class ModalManagerService {
     const dialogRef = this.dialog.open(ColorPickerDialogComponent,
       {
         data: { color: color === Color.primaryColor ? this.colorService.getPrimaryColor() : this.colorService.getSecondaryColor() },
-        disableClose: true,
       });
     dialogRef.afterClosed().subscribe((colorSelectedByUser) => {
       if (colorSelectedByUser) {
@@ -74,7 +72,6 @@ export class ModalManagerService {
     this.dialog.open(OpenDrawingDialogComponent, {
       autoFocus: false,
       data: {drawingNonEmpty: this.toolManager.drawingNonEmpty()},
-      disableClose: true,
     });
   }
 

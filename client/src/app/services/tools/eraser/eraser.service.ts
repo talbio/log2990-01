@@ -45,7 +45,7 @@ export class EraserService {
 
     evaluateWhichDrawingsToErase(): void {
         if (this.eraseZone != null) {
-            const drawings = RendererSingleton.canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon');
+            const drawings = RendererSingleton.canvas.querySelectorAll('rect, path, ellipse, image, polyline, polygon, circle');
             const drawingPile = new Array();
             drawings.forEach((drawing) => {
                 this.warnBeforeErasing(drawing as SVGElement);
@@ -74,9 +74,16 @@ export class EraserService {
     }
 
     erase(drawing: SVGGElement): void {
-        if (drawing.id.startsWith('penPath')) {
-            const paths = RendererSingleton.canvas.querySelectorAll('path');
-            paths.forEach((path) => {
+        if (drawing.id.startsWith('penPath') || drawing.id.startsWith('featherPenPath') || drawing.id.startsWith('aerosolSpray')) {
+            let paths: NodeListOf<SVGElement>;
+            if (drawing.id.startsWith('featherPenPath')) {
+                paths = RendererSingleton.canvas.querySelectorAll('polygon');
+            } else if (drawing.id.startsWith('penPath')) {
+                paths = RendererSingleton.canvas.querySelectorAll('path');
+            } else {
+                paths = RendererSingleton.canvas.querySelectorAll('circle');
+            }
+            paths.forEach((path: SVGElement) => {
                 if (path.id === drawing.id) {
                     path.setAttribute('filter', '');
                     this.erasedDrawings.push(path);

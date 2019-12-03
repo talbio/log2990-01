@@ -2,6 +2,8 @@ import {PortalModule} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {ComponentFixture} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
+import { AerosolGeneratorService } from 'src/app/services/tools/aerosol-generator/aerosol-generator.service';
+import { TransformationService } from 'src/app/services/transformation/transformation.service';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import {AbstractWritingTool} from '../../../data-structures/abstract-writing-tool';
@@ -17,6 +19,7 @@ import {EllipseGeneratorService} from '../../../services/tools/ellipse-generator
 import {EmojiGeneratorService} from '../../../services/tools/emoji-generator/emoji-generator.service';
 import {EraserService} from '../../../services/tools/eraser/eraser.service';
 import {EyedropperService} from '../../../services/tools/eyedropper/eyedropper.service';
+import { FeatherPenGeneratorService } from '../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
 import {GridTogglerService} from '../../../services/tools/grid/grid-toggler.service';
 import {LineGeneratorService} from '../../../services/tools/line-generator/line-generator.service';
 import {ObjectSelectorService} from '../../../services/tools/object-selector/object-selector.service';
@@ -32,7 +35,6 @@ import {ColorSliderComponent} from '../../modals/color-picker-module/color-slide
 import {LastTenColorsComponent} from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import {ToolsAttributesBarComponent} from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
-import { FeatherPenGeneratorService } from './../../../services/tools/featherPen-generator/featherPen-generator.service';
 import {DrawingViewComponent} from './drawing-view.component';
 
 export const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =
@@ -69,19 +71,31 @@ export class CanvasDrawer {
     this.component.workZoneComponent.onDoubleClick(finalMouseEvent);
   }
 
+  async aerosolSpray() {
+      const toolManagerService = this.fixture.debugElement.injector.get(ToolManagerService);
+      toolManagerService._activeTool = Tools.Aerosol;
+      this.component.workZoneComponent.onMouseDown();
+      const doNothing = ((ms: number) => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+              resolve();
+          }, ms);
+        });
+      });
+      await doNothing(500);
+      // Wait since this works on an interval
+      this.component.workZoneComponent.onMouseUp();
+  }
+
   drawShapeOnCanvas(x1: number, y1: number, x2: number, y2: number, toolType: Tools)  {
     const toolManagerService = this.fixture.debugElement.injector.get(ToolManagerService);
     toolManagerService._activeTool = toolType;
-    let mouseEvent = new MouseEvent('mousedown', {
-      button: 0,
-      clientX: x1,
-      clientY: y1,
-    });
+
     const mousePositionService = this.fixture.debugElement.injector.get(MousePositionService);
     mousePositionService.canvasMousePositionX = x1;
     mousePositionService.canvasMousePositionY = y1;
-    this.component.workZoneComponent.onMouseDown(mouseEvent);
-    mouseEvent = new MouseEvent('mousemove', {
+    this.component.workZoneComponent.onMouseDown();
+    const mouseEvent = new MouseEvent('mousemove', {
       clientX: x2,
       clientY: y2,
     });
@@ -89,7 +103,7 @@ export class CanvasDrawer {
     mousePositionService.canvasMousePositionX = x2;
     mousePositionService.canvasMousePositionY = y2;
     this.component.workZoneComponent.onMouseMove(mouseEvent);
-    this.component.workZoneComponent.onMouseUp(mouseEvent);
+    this.component.workZoneComponent.onMouseUp();
   }
 
   // This returns the child at 'position' from the canvas's last position (1 for last)
@@ -101,6 +115,7 @@ export const DRAWING_SERVICES = [
   AbstractGenerator,
   AbstractWritingTool,
   AbstractClosedShape,
+  AerosolGeneratorService,
   RectangleGeneratorService,
   EllipseGeneratorService,
   EmojiGeneratorService,
@@ -113,6 +128,7 @@ export const DRAWING_SERVICES = [
   ClipboardService,
   UndoRedoService,
   FeatherPenGeneratorService,
+  TransformationService,
   MousePositionService,
   ObjectSelectorService,
   GridTogglerService,

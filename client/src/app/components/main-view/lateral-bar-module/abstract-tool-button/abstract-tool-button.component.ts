@@ -7,7 +7,7 @@ export interface ToolProperties {
   tool: Tools;
   matToolTip: string;
   icon: string;
-  isSvgIcon: boolean;
+  isMainBarItem: boolean;
 }
 
 @Component({

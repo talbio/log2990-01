@@ -54,9 +54,15 @@ export class UserManualDialogComponent {
     constructor(private dialogRef: MatDialogRef<UserManualDialogComponent>,
     ) {
         this.modalManager._isModalActive = true;
+        this.afterClose();
     }
 
     close(): void {
         this.dialogRef.close();
+    }
+    afterClose(): void {
+        this.dialogRef.afterClosed().subscribe(() => {
+        this.modalManager._isModalActive = false;
+    });
     }
 }

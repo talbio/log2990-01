@@ -1,6 +1,5 @@
 <mat-dialog-content>
-
-  <app-color-palette [hue]="_hue"
+  <app-color-palette [hue]="hue"
                      (colorSelected)="onColorSelected($event)">
   </app-color-palette>
 
@@ -37,13 +36,13 @@
 
 <mat-dialog-actions>
 
-    <button [disabled]="!isColorModified()&&!isOpacityModified() "
-            (click)="submit()">
-      Modifier la couleur
-    </button>
+  <button (click)="close()" class="mat-raised-button mat-warn">
+    Annuler
+  </button>
 
-    <button (click)="close()">
-      Annuler
-    </button>
+  <button [disabled]="!isColorModified()&&!isOpacityModified() "
+          (click)="submit()" class="mat-raised-button mat-primary">
+    Modifier la couleur
+  </button>
 
 </mat-dialog-actions>

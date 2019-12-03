@@ -111,6 +111,15 @@ describe('UndoRedoService integrations tests', () => {
       await expectCreationToBeUndoable(Tools.Brush, 'brushPath0');
       await expectCreationToBeRedoable('brushPath0');
     });
+
+    it('should be able to undo and redo an aerosol spray', async () => {
+      const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
+      await canvasDrawer.aerosolSpray();
+      const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
+      undoRedoService.undo();
+      await expect(svgCanvas.querySelector('#aerosolSpray0')).toBe(null);
+      await expectCreationToBeRedoable('aerosolSpray0');
+    });
   });
 
   describe('ColorApplicator', () => {

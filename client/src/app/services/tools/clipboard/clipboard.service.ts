@@ -3,9 +3,9 @@ import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import {Command, CommandGenerator} from '../../../data-structures/command';
 import { RendererSingleton } from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
-import { setTranslationAttribute } from '../../utilitary-functions/transform-functions';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import {ToolManagerService} from '../tool-manager/tool-manager.service';
+import { TransformationService } from './../../transformation/transformation.service';
 
 @Injectable()
 export class ClipboardService implements CommandGenerator {
@@ -19,7 +19,8 @@ export class ClipboardService implements CommandGenerator {
 
   constructor(private selector: ObjectSelectorService,
               private toolManager: ToolManagerService,
-              private undoRedoService: UndoRedoService) {
+              private undoRedoService: UndoRedoService,
+              private transform: TransformationService) {
     this.selectedItems = [];
     this.memorizedElements = [];
     this.sideImpacts = [false, false];
@@ -39,7 +40,7 @@ export class ClipboardService implements CommandGenerator {
 
   slide(item: SVGElement) {
     this.getSlideLength(item);
-    setTranslationAttribute(item, this.xSliding, this.ySliding);
+    this.transform.setTranslationAttribute(item, this.xSliding, this.ySliding);
   }
 
   getSlideLength(item: SVGElement) {
