@@ -84,15 +84,14 @@ describe('MagnetismGeneratorService', () => {
     it('#getTranslationWithMagnetismValue() should return values that get the selected dot to closest horizontal line', () => {
         // moving horizontally, closest line is at x = 100
         const mousePosition: MousePositionService = TestBed.get(MousePositionService);
-        mousePosition.canvasMousePositionX = 90;
-        mousePosition.canvasMousePositionY = 90;
         const magnetism: MagnetismGeneratorService = TestBed.get(MagnetismGeneratorService);
-        const positiveMouseMove = {movementX: 5, movementY: 0};
+        const positiveMouseMove = {movementX: 1, movementY: 0};
         magnetism.setMovementDirection(positiveMouseMove as MouseEvent);
         const grid: GridTogglerService = TestBed.get(MagnetismGeneratorService);
         grid._gridSize = 100;
         spyOn(magnetism, 'isOutOfCanvasBounderies').and.returnValue(false);
-        const translationValue: number[] = magnetism.getTranslationWithMagnetismValue();
+        mousePosition.canvasMousePositionX = 51;
+        const translationValue: number[] = magnetism.getTranslationWithMagnetismValue(0, 0);
         expect(translationValue[0]).toEqual(100);
         expect(translationValue[1]).toEqual(0);
     });
@@ -100,15 +99,15 @@ describe('MagnetismGeneratorService', () => {
     it('#getTranslationWithMagnetismValue() should return values that get the selected dot to closest vertical line', () => {
         // moving vertically, closest line is at y = 100
         const mousePosition: MousePositionService = TestBed.get(MousePositionService);
-        mousePosition.canvasMousePositionX = 0;
-        mousePosition.canvasMousePositionY = 90;
         const magnetism: MagnetismGeneratorService = TestBed.get(MagnetismGeneratorService);
-        const positiveMouseMove = {movementX: 0, movementY: 5};
+        const positiveMouseMove = {movementX: 0, movementY: 1};
         magnetism.setMovementDirection(positiveMouseMove as MouseEvent);
         const grid: GridTogglerService = TestBed.get(MagnetismGeneratorService);
         grid._gridSize = 100;
         spyOn(magnetism, 'isOutOfCanvasBounderies').and.returnValue(false);
-        const translationValue: number[] = magnetism.getTranslationWithMagnetismValue();
+        mousePosition.canvasMousePositionY = 51;
+        // mouse position went from 0 to 51, moving the selection close enough
+        const translationValue: number[] = magnetism.getTranslationWithMagnetismValue(0, 0);
         expect(translationValue[0]).toEqual(0);
         expect(translationValue[1]).toEqual(100);
     });

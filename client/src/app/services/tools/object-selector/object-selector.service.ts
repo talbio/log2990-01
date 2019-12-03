@@ -37,6 +37,8 @@ export class ObjectSelectorService {
   private isTranslating: boolean;
   private initialTransformValues: Map<SVGElement, string>;
   hasBoundingRect: boolean;
+  initialX: number;
+  initialY: number;
   startX: number;
   startY: number;
   startWidth: number;
@@ -95,6 +97,8 @@ export class ObjectSelectorService {
   // private initialValues: Map<SVGElement, string>;
   onMouseDown() {
     this.mouseDown = true;
+    this.initialX = this.mousePosition.canvasMousePositionX;
+    this.initialY = this.mousePosition.canvasMousePositionY;
     if (this.hasBoundingRect) {
       if (this.isScaling) {
         this.initialTransformValues  = this.createTransformationMap(this.selectedElements);
@@ -107,8 +111,8 @@ export class ObjectSelectorService {
         this.removeGBoundingRect();
       } else {
         // initiate translation
-        this.beginTranslation();
         this.updateStartPos();
+        this.beginTranslation();
       }
     } else {
       this.selectedElements = [];
@@ -154,7 +158,7 @@ export class ObjectSelectorService {
     drawings.forEach((svgElement: SVGElement) => {
       if (this.isElementInsideSelection(svgElement) && !this.selectedElements.includes(svgElement)) {
         this.selectedElements.push(svgElement);
-        if (svgElement.id.startsWith('penPath') || svgElement.id.startsWith('featherPenPath') || svgElement.id.startsWith('aerosol')) {
+        if (svgElement.id.startsWith('penPath') || svgElement.id.startsWith('featherPenPath') || svgElement.id.startsWith('aerosol')) {
           // Remove this instance since it will be pushed with foreach
           this.selectedElements.pop();
           drawings.forEach((element: SVGElement) => {
@@ -401,9 +405,13 @@ export class ObjectSelectorService {
 
   translateWithMagnetism() {
     this.grid.setSelectedDotPosition(this.getBoundingRectDimensions() as DOMRect);
-    const newPosition: number[] = this.magnetism.getTranslationWithMagnetismValue();
+    const newPosition: number[] = this.magnetism.getTranslationWithMagnetismValue(this.initialX, this.initialY);
     const xMove = newPosition[0];
     const yMove = newPosition[1];
+    if (xMove !== 0 || yMove !== 0) {
+      this.initialX = this.mousePosition.canvasMousePositionX;
+      this.initialY = this.mousePosition.canvasMousePositionY;
+    }
     this.selectedElements.forEach((svgElement: SVGElement) => {
       this.transform.translate(svgElement, xMove, yMove);
       this.startX = this.mousePosition.canvasMousePositionX;
