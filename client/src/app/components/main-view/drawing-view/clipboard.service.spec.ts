@@ -328,12 +328,12 @@ describe('DrawingViewComponent', () => {
     // since duplicate utilizes the command pattern in the same way as paste, let's just test duplicate
     clipboardService.duplicate();
     undoRedo.undo();
-    // defs + grid + initialRect + boundingRect = 4
-    expect(workChilds.length).toEqual(initialChildrenLength + 2);
+    // defs + grid + initialRect = 3, the boundingrect is removed by the undo
+    expect(workChilds.length).toEqual(initialChildrenLength + 1);
 
     undoRedo.redo();
-    // defs + grid + initialRect + boundingRect + clone = 5
-    expect(workChilds.length).toEqual(initialChildrenLength + 3);
+    // defs + grid + initialRect + clone = 4, the boundingrect was removed by the undo
+    expect(workChilds.length).toEqual(initialChildrenLength + 2);
     expect(workChilds[2]).toEqual(itemToBeDuplicated);
 
   });
