@@ -43,6 +43,7 @@ export class ObjectSelectorService {
   startY: number;
   startWidth: number;
   startHeight: number;
+  scaleFromCenter: boolean;
 
   private isScaling: boolean;
   private currentMarker: string;
@@ -64,6 +65,7 @@ export class ObjectSelectorService {
     this.startY = 0;
     this.startWidth = 0;
     this.startHeight = 0;
+    this.scaleFromCenter = false;
   }
 
   get canvasBoundingRect(): BoundingRect {
@@ -124,7 +126,7 @@ export class ObjectSelectorService {
     if (this.mouseDown) {
       if (this.hasBoundingRect) {
         if (this.isScaling) {
-          this.scale();
+          this.scale(mouseEvent.shiftKey);
           return;
         }
         if (this.isTranslating) {
@@ -316,21 +318,21 @@ export class ObjectSelectorService {
   // private hasSetInitialScale = false;
   // private hasSetInitialTranslate = false;
 
-  scale(): void {
-
-    const scalingFactors: [number, number, number, number] = this.getScalingFactors();
-    const scalingFactorX: number = scalingFactors[0];
-    const scalingFactorY: number = scalingFactors[1];
-    const xCorrection: number = scalingFactors[2];
-    const yCorrection: number = scalingFactors[3];
-
-    // this.scaleElement(this.gBoundingRect, scalingFactorX, scalingFactorY);
-    this.selectedElements.forEach( (svgElement: SVGElement) => {
-      this.scaleElement(svgElement, scalingFactorX, scalingFactorY, xCorrection, yCorrection);
-      // console.log(scalingFactorX, scalingFactorY);
-    });
-    this.removeGBoundingRect();
-    this.addBoundingRect();
+  scale(preserveRatio: boolean): void {
+    if (this.isScaling) {
+      const scalingFactors: [number, number, number, number] = this.getScalingFactors(preserveRatio);
+      const scalingFactorX: number = scalingFactors[0];
+      const scalingFactorY: number = scalingFactors[1];
+      const xCorrection: number = scalingFactors[2];
+      const yCorrection: number = scalingFactors[3];
+      // this.scaleElement(this.gBoundingRect, scalingFactorX, scalingFactorY);
+      this.selectedElements.forEach( (svgElement: SVGElement) => {
+        this.scaleElement(svgElement, scalingFactorX, scalingFactorY, xCorrection, yCorrection);
+        // console.log(scalingFactorX, scalingFactorY);
+      });
+      this.removeGBoundingRect();
+      this.addBoundingRect();
+    }
   }
 
   scaleElement(svgElement: SVGElement, scalingFactorX: number, scalingFactorY: number, xCorrection: number, yCorrection: number): void {
@@ -345,33 +347,59 @@ export class ObjectSelectorService {
     this.transform.translate(svgElement, xCorrection, yCorrection, correctedInitialX, correctedInitialY);
   }
 
-  private getScalingFactors(): [number, number, number, number] {
+  private getScalingFactors(preserveRatio: boolean): [number, number, number, number] {
     let scalingFactorX: number;
     let scalingFactorY: number;
-    let xCorrection: number;
-    let yCorrection: number;
 
     scalingFactorY = 1;
     scalingFactorX = 1;
-    xCorrection = 0;
-    yCorrection = 0;
 
     if (this.currentMarker.includes('top')) {
       scalingFactorY = 1 + -(this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
-      yCorrection = -((this.startY + this.startHeight) * (scalingFactorY - 1));
     } else if (this.currentMarker.includes('bottom')) {
       scalingFactorY = 1 + (this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
-      yCorrection = -((this.startY - this.startHeight) * (scalingFactorY - 1));
     }
     if (this.currentMarker.includes('left')) {
       scalingFactorX = 1 + -(this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
-      xCorrection = -((this.startX + this.startWidth) * (scalingFactorX - 1));
     } else if (this.currentMarker.includes('right')) {
       scalingFactorX = 1 + (this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
-      xCorrection = -((this.startX - this.startWidth) * (scalingFactorX - 1));
     }
+    if (preserveRatio) {
+      if (Math.abs(scalingFactorX) > Math.abs(scalingFactorY)) {
+        scalingFactorY = scalingFactorX;
+      } else {
+        scalingFactorX = scalingFactorY;
+      }
+    }
+    const corrections: number[] = this.calculateCorrection(scalingFactorX, scalingFactorY);
+    return [scalingFactorX, scalingFactorY, corrections[0], corrections[1]];
+  }
 
-    return [scalingFactorX, scalingFactorY, xCorrection, yCorrection];
+  calculateCorrection(scalingFactorX: number, scalingFactorY: number): number[] {
+    let xCorrection: number;
+    let yCorrection: number;
+    xCorrection = 0;
+    yCorrection = 0;
+    let height: number;
+    let width: number;
+    if (this.scaleFromCenter) {
+      height = this.startHeight / 2;
+      width = this.startWidth / 2;
+    } else {
+      height = this.startHeight;
+      width = this.startWidth;
+    }
+    if (this.currentMarker.includes('top')) {
+      yCorrection = -((this.startY + height) * (scalingFactorY - 1));
+    } else if (this.currentMarker.includes('bottom')) {
+      yCorrection = -((this.startY - height) * (scalingFactorY - 1));
+    }
+    if (this.currentMarker.includes('left')) {
+      xCorrection = -((this.startX + width) * (scalingFactorX - 1));
+    } else if (this.currentMarker.includes('right')) {
+      xCorrection = -((this.startX - width) * (scalingFactorX - 1));
+    }
+    return [xCorrection, yCorrection];
   }
 
   selectAll(): void {
