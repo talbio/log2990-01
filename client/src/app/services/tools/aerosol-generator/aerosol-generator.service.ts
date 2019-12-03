@@ -49,12 +49,14 @@ export class AerosolGeneratorService extends AbstractWritingTool {
   }
 
   finishElement(): void {
-    this.mouseDown = false;
-    this.stopSpray();
-    this.currentElementsNumber += 1;
-    this.pushGeneratorCommand(...this.dotArray);
-    this.dotArray = [];
-    this.subpathIndex = 0;
+    if (this.mouseDown) {
+      this.mouseDown = false;
+      this.stopSpray();
+      this.currentElementsNumber += 1;
+      this.pushGeneratorCommand(...this.dotArray);
+      this.dotArray = [];
+      this.subpathIndex = 0;
+    }
   }
 
   spray(color: string) {

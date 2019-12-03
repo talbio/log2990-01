@@ -1,5 +1,14 @@
+.menu {
+  padding-bottom: 20px;
+}
+
 .section-title{
-    font-weight:bold;
+    padding-top: 20px;
+    
+}
+.section {
+  padding-top: 10px;
+  
 }
 table, td{
     border: 1px solid black;
@@ -13,3 +22,22 @@ table{
 .keys {
     text-align: center;
   }
+
+li { list-style:none;
+  }
+
+.clearfix {
+  overflow: auto;
+  border: 1px solid black;;
+  padding: 10px;
+  margin: 10px;
+}
+
+.title {
+  font-weight: bold;
+  padding-top: 20px;
+}
+
+.mat-icon {
+  vertical-align: middle;
+}

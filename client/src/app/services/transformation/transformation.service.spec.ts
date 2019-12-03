@@ -5,7 +5,7 @@ import { TransformationService } from './transformation.service';
 describe('Service: Transformation', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [TransformationService]
+      providers: [TransformationService],
     });
   });
 

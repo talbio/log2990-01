@@ -5,6 +5,7 @@ import { PolygonGeneratorService } from './../../../../../services/tools/polygon
 @Component({
   selector: 'app-polygon-tools',
   templateUrl: './polygon-tools.component.html',
+  styleUrls: ['./../tool-attributes.component.scss'],
 })
 export class PolygonToolsComponent {
 

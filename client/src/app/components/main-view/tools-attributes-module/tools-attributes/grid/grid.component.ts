@@ -5,10 +5,13 @@ import { GridTogglerService } from './../../../../../services/tools/grid/grid-to
 @Component({
   selector: 'app-grid-tools',
   templateUrl: './grid.component.html',
+  styleUrls: ['./../tool-attributes.component.scss'],
 })
+
 export class GridComponent {
 
-  constructor(protected gridService: GridTogglerService) { }
+  constructor(protected gridService: GridTogglerService) {
+  }
 
   protected get PlotType() {
     return PlotType;

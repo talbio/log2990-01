@@ -1,10 +1,12 @@
-import {Injectable} from '@angular/core';
-import {Colors} from 'src/app/data-structures/colors';
-import {Command} from 'src/app/data-structures/command';
-import {MousePositionService} from '../../mouse-position/mouse-position.service';
-import {RendererSingleton} from '../../renderer-singleton';
-import {Transformation, TransformationService} from '../../transformation/transformation.service';
-import {UndoRedoService} from '../../undo-redo/undo-redo.service';
+import { Injectable } from '@angular/core';
+import { Colors } from 'src/app/data-structures/colors';
+import { Command } from 'src/app/data-structures/command';
+import { MousePositionService } from '../../mouse-position/mouse-position.service';
+import { RendererSingleton } from '../../renderer-singleton';
+import { Transformation, TransformationService } from '../../transformation/transformation.service';
+import { UndoRedoService } from '../../undo-redo/undo-redo.service';
+import { GridTogglerService } from '../grid/grid-toggler.service';
+import { MagnetismGeneratorService } from '../magnetism-generator/magnetism-generator.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 
 const POINT_CONTROL_SIZE = 10;
@@ -44,7 +46,9 @@ export class ObjectSelectorService {
 
   constructor(private mousePosition: MousePositionService,
               private rectangleGenerator: RectangleGeneratorService,
+              private magnetism: MagnetismGeneratorService,
               private transform: TransformationService,
+              private grid: GridTogglerService,
               private undoRedoService: UndoRedoService) {
     this.hasBoundingRect = false;
     this.mouseDown = false;
@@ -115,6 +119,7 @@ export class ObjectSelectorService {
           return;
         }
         if (this.isTranslating) {
+          this.magnetism.setMovementDirection(mouseEvent);
           this.translate();
           return;
         }
@@ -373,9 +378,26 @@ export class ObjectSelectorService {
     }
   }
 
-  translate(): void {
-    const xMove = this.mousePosition.canvasMousePositionX - this.startX;
-    const yMove = this.mousePosition.canvasMousePositionY - this.startY;
+  translate() {
+    if (this.grid.isMagnetic) {
+      this.translateWithMagnetism();
+    } else {
+      const xMove = this.mousePosition.canvasMousePositionX - this.startX;
+      const yMove = this.mousePosition.canvasMousePositionY - this.startY;
+      this.selectedElements.forEach((svgElement: SVGElement) => {
+        this.transform.translate(svgElement, xMove, yMove);
+        this.startX = this.mousePosition.canvasMousePositionX;
+        this.startY = this.mousePosition.canvasMousePositionY;
+      });
+      this.transform.translate(this.boundingRect.children[1] as SVGElement, xMove, yMove);
+    }
+  }
+
+  translateWithMagnetism() {
+    this.grid.setSelectedDotPosition(this.getBoundingRectDimensions() as DOMRect);
+    const newPosition: number[] = this.magnetism.getTranslationWithMagnetismValue();
+    const xMove = newPosition[0];
+    const yMove = newPosition[1];
     this.selectedElements.forEach((svgElement: SVGElement) => {
       this.transform.translate(svgElement, xMove, yMove);
       // this.transform.setTranslationAttribute(svgElement, xMove, yMove);
@@ -400,7 +422,6 @@ export class ObjectSelectorService {
   }
 
   finishTransformation(): void {
-    // this.transform.fuseTransforms([...this.selectedElements, this.gBoundingRect]);
     const newTransforms: Map<SVGElement, string> = this.createTransformationMap(this.selectedElements);
     this.pushTransformCommand(newTransforms, this.initialTransformValues);
   }
@@ -412,7 +433,7 @@ export class ObjectSelectorService {
       execute(): void {
         svgElements.forEach((svgElement: SVGElement) =>
           svgElement.setAttribute('transform', `${newTransforms.get(svgElement)}`));
-        },
+      },
       unexecute(): void {
         svgElements.forEach((svgElement: SVGElement) =>
         svgElement.setAttribute('transform', `${oldTransforms.get(svgElement)}`));
