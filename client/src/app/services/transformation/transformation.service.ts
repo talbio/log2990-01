@@ -14,7 +14,7 @@ setTranslationAttribute =
       newTransform = 'translate(' + xTranslation + ' ' + yTranslation + ') ';
       newTransform += transformation;
     } else {
-      const oldTranslation: number[] = this.findTransformValues(transformation);
+      const oldTranslation: number[] = this.findTranslateValues(transformation);
       const translateBegin = transformation.indexOf('translate');
       const translateEnd = transformation.indexOf(')', translateBegin);
       newTransform =
@@ -25,7 +25,7 @@ setTranslationAttribute =
     element.setAttribute('transform', newTransform) ;
   }
 
-findTransformValues = (transformAttribute: string): number[] => {
+findTranslateValues = (transformAttribute: string): number[] => {
   const parts  = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(transformAttribute) as RegExpExecArray;
   return [parseFloat(parts[1]), parseFloat(parts[2])];
 }
@@ -52,5 +52,9 @@ findTransformValues = (transformAttribute: string): number[] => {
   findScaleValues = (transformAttribute: string): number[] => {
     const parts = /scale\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(transformAttribute) as RegExpExecArray;
     return [parseFloat(parts[1]), parseFloat(parts[2])];
+  }
+
+  fuseTransforms(elements: SVGElement[]) {
+    // TODO
   }
 }
