@@ -149,9 +149,9 @@ describe('DrawingViewComponent', () => {
     const feather = fixture.debugElement.injector.get(FeatherPenGeneratorService);
     toolManager._activeTool = Tools.Feather;
 
-    const forcedFloorAngle = 0;
-    const forcedCeilingAngle = 179;
-    feather.angle = forcedFloorAngle;
+    const floorAngle = 0;
+    const ceilingAngle = 180;
+    feather.angle = floorAngle;
 
     // A positive delta is suppose to reduce the angle,
     // but we'll expect the result to be bigger when we encounter the floor
@@ -159,7 +159,7 @@ describe('DrawingViewComponent', () => {
       deltaY: 1,
     });
     component.workZoneComponent.onMouseWheel(wheelEvent1);
-    expect(feather.angle).toEqual(forcedCeilingAngle);
+    expect(feather.angle).toEqual(ceilingAngle - 15);
 
     // A negative delta is suppose to increase the angle,
     // but we'll expect the result to be smaller when we reach the ceiling
@@ -167,7 +167,7 @@ describe('DrawingViewComponent', () => {
       deltaY: -1,
     });
     component.workZoneComponent.onMouseWheel(wheelEvent2);
-    expect(feather.angle).toEqual(forcedFloorAngle);
+    expect(feather.angle).toEqual(floorAngle);
   });
 
   it(`should be able to change angle during a feather stroke`, () => {

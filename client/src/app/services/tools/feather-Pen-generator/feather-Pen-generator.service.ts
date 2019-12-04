@@ -59,7 +59,8 @@ export class FeatherPenGeneratorService extends AbstractWritingTool {
     if (mouseEvent.deltaY < 0) {
         this.angle  += this.rotationStep;
     } else { this.angle  -= this.rotationStep; }
-    this.angle  = this.angle % 180;
+    if (this.angle < 0) { this.angle += 180; }
+    if (this.angle >= 180) { this.angle -= 180; }
   }
 
   createElement(mainColors: string[]) {
