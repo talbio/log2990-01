@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import {Tools} from '../../../data-structures/tools';
 import {RendererSingleton} from '../../renderer-singleton';
+import {ScaleService} from '../../transformations/scale.service';
 import { AerosolGeneratorService } from '../aerosol-generator/aerosol-generator.service';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
 import { ColorApplicatorService } from '../color-applicator/color-applicator.service';
@@ -10,7 +11,7 @@ import { EllipseGeneratorService } from '../ellipse-generator/ellipse-generator.
 import { EmojiGeneratorService } from '../emoji-generator/emoji-generator.service';
 import { EraserService } from '../eraser/eraser.service';
 import { EyedropperService } from '../eyedropper/eyedropper.service';
-import { FeatherPenGeneratorService } from '../feather-Pen-generator/feather-Pen-generator.service';
+import { FeatherPenGeneratorService } from '../feather-pen-generator/feather-pen-generator.service';
 import { LineGeneratorService } from '../line-generator/line-generator.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import { PenGeneratorService } from '../pen-generator/pen-generator.service';
@@ -55,7 +56,8 @@ export class ToolManagerService {
               private eyedropper: EyedropperService,
               private eraser: EraserService,
               private featherGenerator: FeatherPenGeneratorService,
-              protected colorService: ColorService) {
+              protected colorService: ColorService,
+              private scaleService: ScaleService) {
     this._activeTool = Tools.Pencil;
     this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
     this.initializeGenerators();
@@ -157,14 +159,14 @@ export class ToolManagerService {
     this.emojiGenerator.lowerRotationStep();
     this.featherGenerator.lowerRotationStep();
     this.objectSelector.lowerRotationStep();
-    this.objectSelector.scaleFromCenter = true;
+    this.scaleService.scaleFromCenter = true;
   } // To extract??
 
   changeElementAltUp() {
     this.emojiGenerator.higherRotationStep();
     this.featherGenerator.higherRotationStep();
     this.objectSelector.higherRotationStep();
-    this.objectSelector.scaleFromCenter = false;
+    this.scaleService.scaleFromCenter = false;
   } // To extract??
 
   changeElementShiftDown() {
