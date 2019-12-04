@@ -1,15 +1,15 @@
 import {ChangeDetectorRef, NO_ERRORS_SCHEMA, Renderer2} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
-import { Tools } from '../../../data-structures/tools';
-import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
-import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
-import {ColorService} from '../../../services/tools/color/color.service';
-import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
-import {UndoRedoService} from '../../../services/undo-redo/undo-redo.service';
-import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
-import { DrawingViewComponent } from './drawing-view.component';
-import {STUB_COMPONENTS} from './drawing-view.component.spec';
+import { Tools } from '../../../../data-structures/tools';
+import { ModalManagerService } from '../../../../services/modal-manager/modal-manager.service';
+import { MousePositionService } from '../../../../services/mouse-position/mouse-position.service';
+import {ColorService} from '../../../../services/tools/color/color.service';
+import { ToolManagerService } from '../../../../services/tools/tool-manager/tool-manager.service';
+import {UndoRedoService} from '../../../../services/undo-redo/undo-redo.service';
+import { ToolsAttributesBarComponent } from '../../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
+import { DrawingViewComponent } from '../drawing-view.component';
+import {STUB_COMPONENTS} from '../drawing-view.component.spec';
 import {
   CanvasDrawer,
   COMPONENTS,

@@ -2,8 +2,8 @@ import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import {catchError} from 'rxjs/operators';
-import {Drawing} from '../../../../../../common/communication/Drawing';
-import {RendererSingleton} from '../../renderer-singleton';
+import {Drawing} from '../../../../../common/communication/Drawing';
+import {RendererSingleton} from '../renderer-singleton';
 
 @Injectable({
   providedIn: 'root',

@@ -6,7 +6,7 @@ import {NotifierModule, NotifierService} from 'angular-notifier';
 import { of } from 'rxjs';
 import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
 import {DemoMaterialModule} from '../../../material.module';
-import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
+import {DrawingsService} from '../../../services/drawings/drawings.service';
 import { SaveDrawingDialogComponent } from './save-drawing-dialog.component';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
