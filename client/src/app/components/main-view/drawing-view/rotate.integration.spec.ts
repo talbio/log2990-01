@@ -123,47 +123,6 @@ fdescribe('Rotation', () => {
         expect(rectMat[1]).toBeCloseTo(secondExpectedMat[2]);
     });
 
-    it('should be able to rotate several elements of any type at once', () => {
-      const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
-      const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-      const selector = fixture.debugElement.injector.get(ObjectSelectorService);
-      const mouse = fixture.debugElement.injector.get(MousePositionService);
-
-      // Set up the canvas
-      canvasDrawer.drawShapeOnCanvas(100, 100, 200, 200, Tools.Polygon);
-      canvasDrawer.drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
-      const polygon: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 2);
-      const rectangle: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 1);
-      toolManagerService._activeTool = Tools.Selector;
-      const mouseEvent = new MouseEvent('mousedown', {
-        button: 0,
-        clientX: 150,
-        clientY: 150,
-      });
-      mouse.canvasMousePositionX = 100;
-      mouse.canvasMousePositionY = 100;
-      selector.onMouseDown();
-      mouse.canvasMousePositionX = 200;
-      mouse.canvasMousePositionY = 250;
-      // last child is bounding box
-      selector.onMouseMove(svgCanvas.children.length - 1, mouseEvent);
-      selector.onMouseUp();
-
-      // 15 degrees
-      canvasDrawer.rotateElement(150, 150);
-      const newRectTransform = rectangle.getAttribute('transform') as string;
-      const newPolygonTransform = polygon.getAttribute('transform') as string;
-
-      const expectedMatrix = [-1.0606601717798212, -1.0606601717798214, 0.848528137423857, -0.8485281374238569,
-        322.74296456276625, 582.7423133572969];
-      const matRect = transform.getTransformationFromMatrix(newRectTransform, Transformation.ROTATE);
-      expect(matRect[0]).toBeCloseTo(expectedMatrix[1]);
-      expect(matRect[1]).toBeCloseTo(expectedMatrix[2]);
-      const matPolygon = transform.getTransformationFromMatrix(newPolygonTransform, Transformation.ROTATE);
-      expect(matPolygon[0]).toBeCloseTo(expectedMatrix[1]);
-      expect(matPolygon[1]).toBeCloseTo(expectedMatrix[2]);
-    });
-
     it('should be able to rotate an element who recieved another type of transformation', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
       canvasDrawer.drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
@@ -203,70 +162,4 @@ fdescribe('Rotation', () => {
       expect(mat[1]).toBeCloseTo(expectedMatrix[2], 1);
     });
 
-    it(`should change the angle of the selection with a mouse's wheel mouvement`, () => {
-      // Setting up the event
-      const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-      toolManagerService._activeTool = Tools.Selector;
-
-      rotate.angle = 153;
-      const initialAngle = rotate.angle;
-
-      const wheelEvent = new WheelEvent('mousewheel', {
-        deltaY: -1,
-      });
-
-      component.workZoneComponent.onMouseWheel(wheelEvent);
-
-      // Verify that the angle really changed and that the initial step is of 15
-      expect(rotate.angle).toEqual(initialAngle + 15);
-    });
-
-    it(`should change the step of changes to the angle with the wheel when alt is used`, () => {
-      // Setting up the event
-      const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-      toolManagerService._activeTool = Tools.Selector;
-
-      const initialAngle = rotate.angle;
-
-      const wheelEvent = new WheelEvent('mousewheel', {
-        deltaY: -1,
-      });
-      toolManagerService.changeElementAltDown();
-      // component.workZoneComponent.onMouseWheel(wheelEvent);
-      toolManagerService.rotateDispatcher(wheelEvent);
-      // When alt is used
-      expect(rotate.angle).toEqual(initialAngle + 1);
-      const newAngle = rotate.angle;
-
-      toolManagerService.changeElementAltUp();
-      component.workZoneComponent.onMouseWheel(wheelEvent);
-      // When alt is unused
-      expect(rotate.angle).toEqual(newAngle + 15);
-    });
-
-    it(`should infinitely increase or decrease the angle (go full circle)`, () => {
-      // Setting up the event
-      const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-      toolManagerService._activeTool = Tools.Selector;
-
-      const floorAngle = 0;
-      const ceilingAngle = 360;
-      rotate.angle = floorAngle;
-
-      // A positive delta is suppose to reduce the angle,
-      // but we'll expect the result to be bigger when we encounter the floor
-      const wheelEvent1 = new WheelEvent('mousewheel', {
-        deltaY: 1,
-      });
-      component.workZoneComponent.onMouseWheel(wheelEvent1);
-      expect(rotate.angle).toEqual(ceilingAngle - 15);
-
-      // A negative delta is suppose to increase the angle,
-      // but we'll expect the result to be smaller when we reach the ceiling
-      const wheelEvent2 = new WheelEvent('mousewheel', {
-        deltaY: -1,
-      });
-      component.workZoneComponent.onMouseWheel(wheelEvent2);
-      expect(rotate.angle).toEqual(floorAngle);
-    });
 });

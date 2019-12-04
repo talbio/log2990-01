@@ -46,8 +46,8 @@ export class RotateService {
     if (mouseWheel.deltaY < 0) {
       this.angle  += this.rotationStep;
     } else { this.angle  -= this.rotationStep; }
-    if (this.angle < 0) { this.angle += 360; }
-    if (this.angle >= 360) { this.angle -= 360; }
+    console.log(this.angle);
+    this.angle = this.angle % 360;
   }
 
   beginRotation() {
