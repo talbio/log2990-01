@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Colors } from 'src/app/data-structures/colors';
 import { Command } from 'src/app/data-structures/command';
-import { MAX_ROTATION_STEP, MIN_ROTATION_STEP } from 'src/app/data-structures/constants';
+import { MAX_ROTATION_STEP, MIN_ROTATION_STEP, ROTATION_MAX_DELAY_TIME } from 'src/app/data-structures/constants';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
 import { Transformation, TransformationService } from '../../transformation/transformation.service';
@@ -48,6 +48,7 @@ export class ObjectSelectorService {
   startWidth: number;
   startHeight: number;
   scaleFromCenter: boolean;
+  private rotationTimer: number;
 
   rotationStep: number;
   angle: number;
@@ -76,6 +77,7 @@ export class ObjectSelectorService {
     this.startWidth = 0;
     this.startHeight = 0;
     this.scaleFromCenter = false;
+    this.rotationTimer = 0;
   }
 
   get canvasBoundingRect(): BoundingRect {
@@ -240,7 +242,6 @@ export class ObjectSelectorService {
 
       if (elementClientRect.left < boundingRect.left ) {
         boundingRect.left = elementClientRect.left;
-        // console.log('smoll x is: ' + elementClientRect.left);
       }
       if (elementClientRect.right > boundingRect.right) {
         boundingRect.right = elementClientRect.right;
@@ -289,8 +290,6 @@ export class ObjectSelectorService {
   }
 
   private appendControlPoints(rectDimensions: Dimensions, gBoundingRect: SVGGElement): void {
-    // console.log('x=' + Math.ceil(rectDimensions.x));
-    // console.log('y=' + Math.ceil(rectDimensions.y));
     const markers: [string, string][] = [
       [`${rectDimensions.x},${rectDimensions.y}`, 'top-left'],
       [`${rectDimensions.x + (rectDimensions.width / 2)},${rectDimensions.y}`, 'top-middle'],
@@ -320,6 +319,7 @@ export class ObjectSelectorService {
         if (!this.isScaling) {
           this.isScaling = true;
           this.currentMarker = controlPoint.id;
+          this.beginTransformation();
         }
       });
       gBoundingRect.appendChild(controlPoint);
@@ -335,10 +335,8 @@ export class ObjectSelectorService {
       const scalingFactorY: number = scalingFactors[1];
       const xCorrection: number = scalingFactors[2];
       const yCorrection: number = scalingFactors[3];
-      // this.scaleElement(this.gBoundingRect, scalingFactorX, scalingFactorY);
       this.selectedElements.forEach( (svgElement: SVGElement) => {
         this.scaleElement(svgElement, scalingFactorX, scalingFactorY, xCorrection, yCorrection);
-        // console.log(scalingFactorX, scalingFactorY);
       });
       this.removeGBoundingRect();
       this.addBoundingRect();
@@ -348,7 +346,6 @@ export class ObjectSelectorService {
   scaleElement(svgElement: SVGElement, scalingFactorX: number, scalingFactorY: number, xCorrection: number, yCorrection: number): void {
     const initialScaleValues: [number, number] =
       this.transform.getTransformationFromMatrix(this.initialTransformValues.get(svgElement) as string, Transformation.SCALE);
-    // console.log('scales values: ' + initialScaleValues[0] + ', ' + initialScaleValues[1]);
     const initialTranslateValues: [number, number] =
       this.transform.getTransformationFromMatrix(this.initialTransformValues.get(svgElement) as string, Transformation.TRANSLATE);
     this.transform.scale(svgElement, scalingFactorX, scalingFactorY, initialScaleValues[0], initialScaleValues[1]);
@@ -472,6 +469,7 @@ export class ObjectSelectorService {
   }
 
   finishRotation(): void {
+    this.angle = 0;
     this.isRotating = false;
     this.finishTransformation();
   }
@@ -524,6 +522,10 @@ export class ObjectSelectorService {
   }
 
   changeAngle(mouseWheel: WheelEvent) {
+    window.clearTimeout(this.rotationTimer);
+    this.rotationTimer = window.setTimeout(() => {
+      this.finishRotation();
+    }, ROTATION_MAX_DELAY_TIME);
     if (mouseWheel.deltaY < 0) {
       this.angle  += this.rotationStep;
     } else { this.angle  -= this.rotationStep; }
@@ -538,6 +540,9 @@ export class ObjectSelectorService {
   beginRotation() {
     this.isRotating = true;
     this.beginTransformation();
+    this.rotationTimer = window.setTimeout(() => {
+      this.finishRotation();
+    }, ROTATION_MAX_DELAY_TIME);
   }
 
   rotateSelectedElements(mouseWheel: WheelEvent) {
@@ -546,16 +551,26 @@ export class ObjectSelectorService {
     }
     this.changeAngle(mouseWheel);
     this.selectedElements.forEach((element: SVGElement) => {
-      this.rotateSingleElement(element);
+      this.rotateSingleElement(element, mouseWheel);
     });
   }
 
-  rotateSingleElement(element: SVGElement) {
+  rotateSingleElement(element: SVGElement, mouseWheel: WheelEvent) {
     if (this.hasBoundingRect) {
-      const centerX: number = parseFloat(this.boundingRect.getAttribute('x') as string) +
-        parseFloat(this.boundingRect.getAttribute('width') as string) / 2;
-      const centerY: number = parseFloat(this.boundingRect.getAttribute('y') as string) +
-        parseFloat(this.boundingRect.getAttribute('height') as string) / 2;
+      let centerX: number;
+      let centerY: number;
+      if (mouseWheel.shiftKey) {
+        centerX = (element.getBoundingClientRect().left + element.getBoundingClientRect().width / 2)
+        - RendererSingleton.canvas.getBoundingClientRect().left;
+        centerY = (element.getBoundingClientRect().top + element.getBoundingClientRect().height / 2)
+        - RendererSingleton.canvas.getBoundingClientRect().top;
+      } else {
+        centerX = parseFloat(this.boundingRect.getAttribute('x') as string) +
+          parseFloat(this.boundingRect.getAttribute('width') as string) / 2;
+        centerY = parseFloat(this.boundingRect.getAttribute('y') as string) +
+          parseFloat(this.boundingRect.getAttribute('height') as string) / 2;
+      }
+
       const initialTransform: string = this.initialTransformValues.get(element) as string;
       const translates: number[] = this.transform.getTransformationFromMatrix(initialTransform, Transformation.TRANSLATE);
       const scales: number[] = this.transform.getTransformationFromMatrix(initialTransform, Transformation.SCALE);
