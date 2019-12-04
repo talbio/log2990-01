@@ -81,8 +81,6 @@ export class TransformationService {
     this.setMatrix(svgElement, matrix);
   }
 
-  rotate()
-
   setScaleAttribute = (element: SVGElement, xScale: number, yScale: number, initialScale?: boolean): void => {
     const transformation = element.getAttribute('transform');
     let newTransform = '';
