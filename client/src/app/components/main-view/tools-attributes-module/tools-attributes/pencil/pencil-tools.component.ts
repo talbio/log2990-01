@@ -4,6 +4,7 @@ import {PencilGeneratorService} from '../../../../../services/tools/pencil-gener
 @Component({
   selector: 'app-pencil-tools',
   templateUrl: './pencil-tools.component.html',
+  styleUrls: ['./../tool-attributes.component.scss'],
 })
 export class PencilToolsComponent {
 

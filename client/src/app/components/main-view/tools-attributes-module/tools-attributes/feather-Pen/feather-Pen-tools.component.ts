@@ -4,6 +4,7 @@ import { FeatherPenGeneratorService } from '../../../../../services/tools/feathe
 @Component({
   selector: 'app-featherPen-tools',
   templateUrl: './feather-Pen-tools.component.html',
+  styleUrls: ['./../tool-attributes.component.scss'],
 })
 export class FeatherPenToolsComponent {
 

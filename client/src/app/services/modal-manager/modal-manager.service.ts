@@ -10,8 +10,7 @@ import {RendererSingleton} from '../renderer-singleton';
 import {ColorService} from '../tools/color/color.service';
 import {ToolManagerService} from '../tools/tool-manager/tool-manager.service';
 
-const USER_MANUAL_HEIGHT = '550px';
-const USER_MANUAL_WIDTH = '600px';
+const USER_MANUAL_WIDTH = '700px';
 
 export enum Color {
   primaryColor,
@@ -29,20 +28,22 @@ export class ModalManagerService {
   }
 
   showCreateDrawingDialog(): void {
-      const dialogRef = this.dialog.open(CreateDrawingDialogComponent, {
-        autoFocus: false,
-        data: {drawingNonEmpty: this.toolManager.drawingNonEmpty()},
-      });
-      dialogRef.afterClosed().subscribe((formValues: CreateDrawingFormValues) => {
-        if (formValues) {
-          RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'width', formValues.width.toString());
-          RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'height', formValues.height.toString());
-          RendererSingleton.renderer.setStyle(RendererSingleton.canvas, 'background-color', formValues.color.toString());
-        }
-      });
+    this.toolManager.removeSelectorBoundingRect();
+    const dialogRef = this.dialog.open(CreateDrawingDialogComponent, {
+      autoFocus: false,
+      data: {drawingNonEmpty: this.toolManager.drawingNonEmpty()},
+    });
+    dialogRef.afterClosed().subscribe((formValues: CreateDrawingFormValues) => {
+      if (formValues) {
+        RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'width', formValues.width.toString());
+        RendererSingleton.renderer.setAttribute(RendererSingleton.canvas, 'height', formValues.height.toString());
+        RendererSingleton.renderer.setStyle(RendererSingleton.canvas, 'background-color', formValues.color.toString());
+      }
+    });
   }
 
   showColorPickerDialog(color: Color): void {
+    this.toolManager.removeSelectorBoundingRect();
     const dialogRef = this.dialog.open(ColorPickerDialogComponent,
       {
         data: { color: color === Color.primaryColor ? this.colorService.getPrimaryColor() : this.colorService.getSecondaryColor() },
@@ -62,6 +63,7 @@ export class ModalManagerService {
   }
 
   showSaveDrawingDialog(): void {
+    this.toolManager.removeSelectorBoundingRect();
     this.dialog.open(SaveDrawingDialogComponent, {
       autoFocus: false,
       data: {},
@@ -69,6 +71,7 @@ export class ModalManagerService {
   }
 
   showOpenDrawingDialog(): void {
+    this.toolManager.removeSelectorBoundingRect();
     this.dialog.open(OpenDrawingDialogComponent, {
       autoFocus: false,
       data: {drawingNonEmpty: this.toolManager.drawingNonEmpty()},
@@ -76,9 +79,9 @@ export class ModalManagerService {
   }
 
   showUserManualDialog(): void {
+    this.toolManager.removeSelectorBoundingRect();
     this.dialog.open(UserManualDialogComponent, {
-      height: USER_MANUAL_HEIGHT,
-      width: USER_MANUAL_WIDTH,
+       width: USER_MANUAL_WIDTH,
       data: {},
     });
   }

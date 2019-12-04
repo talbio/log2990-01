@@ -42,6 +42,14 @@
   </mat-list-item>
 
   <mat-divider></mat-divider>
+  
+  <mat-list-item *ngFor="let otherToolButtonProperties of otherToolsButtonsProperties">
+    <app-abstract-tool-button
+    [attributesSideNav]="attributesSideNav" [toolProperties]="otherToolButtonProperties">
+    </app-abstract-tool-button>
+    <mat-divider></mat-divider>
+  </mat-list-item>
+
   <br />
   <mat-list-item>
     <div id="undo-redo">

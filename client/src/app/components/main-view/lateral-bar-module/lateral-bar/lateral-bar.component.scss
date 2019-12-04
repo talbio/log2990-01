@@ -1,7 +1,7 @@
 .bottomStick {
   align-content: center;
-  position: absolute;
-  bottom: 0
+  position: relative;
+  bottom: 0;
 }
 
 .bottomRelative {
@@ -15,6 +15,7 @@
 
 .color-tool{
   padding-top: 50px;
+  padding-bottom: 50px;
 }
 
 .icon {
@@ -32,3 +33,23 @@
 .mat-list-item {
   display: inline;
 }
+
+.mat-drawer-inner-container {
+  overflow:hidden;
+  scrollbar-color: dark;
+  scrollbar-width: none;
+}
+
+.mat-drawer-inner-container::-webkit-scrollbar
+{
+	width: 0px;
+}
+.mat-drawer-inner-container:hover {
+  overflow-y: scroll;
+}
+.mat-drawer-inner-container::-webkit-scrollbar-thumb
+{
+	background-color: #2b3840;
+	border-radius: 4px;
+}
+

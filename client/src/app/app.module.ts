@@ -30,6 +30,7 @@ import { PenToolsComponent } from './components/main-view/tools-attributes-modul
 import { PencilToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/pencil/pencil-tools.component';
 import { PolygonToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/polygon/polygon-tools.component';
 import { RectangleToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/rectangle/rectangle-tools.component';
+import { SelectorToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/selector-tools/selector-tools.component';
 import { WorkZoneComponent } from './components/main-view/work-zone/work-zone.component';
 import { ColorPaletteComponent } from './components/modals/color-picker-module/color-palette/color-palette.component';
 import { ColorPickerDialogComponent } from './components/modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
@@ -60,6 +61,7 @@ import { EyedropperService } from './services/tools/eyedropper/eyedropper.servic
 import { FeatherPenGeneratorService } from './services/tools/feather-Pen-generator/feather-Pen-generator.service';
 import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
+import { MagnetismGeneratorService } from './services/tools/magnetism-generator/magnetism-generator.service';
 import { ObjectSelectorService } from './services/tools/object-selector/object-selector.service';
 import { PenGeneratorService } from './services/tools/pen-generator/pen-generator.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
@@ -137,6 +139,7 @@ const customNotifierOptions: NotifierOptions = {
     AerosolToolsComponent,
     EmojiToolsComponent,
     EraserToolsComponent,
+    SelectorToolsComponent,
     BrushToolsComponent,
     EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
@@ -186,6 +189,7 @@ const customNotifierOptions: NotifierOptions = {
     EraserService,
     PenGeneratorService,
     FeatherPenGeneratorService,
+    MagnetismGeneratorService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [
@@ -202,6 +206,7 @@ const customNotifierOptions: NotifierOptions = {
     EllipseToolsComponent,
     EmojiToolsComponent,
     EraserToolsComponent,
+    SelectorToolsComponent,
     BrushToolsComponent,
     AerosolToolsComponent,
     EyedropperToolsComponent,

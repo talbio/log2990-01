@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 import {ComponentFixture} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 import { AerosolGeneratorService } from 'src/app/services/tools/aerosol-generator/aerosol-generator.service';
+import { MagnetismGeneratorService } from 'src/app/services/tools/magnetism-generator/magnetism-generator.service';
 import { TransformationService } from 'src/app/services/transformation/transformation.service';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
@@ -135,6 +136,7 @@ export const DRAWING_SERVICES = [
   PolygonGeneratorService,
   EraserService,
   PenGeneratorService,
+  MagnetismGeneratorService,
 ];
 
 export const COMPONENTS = [

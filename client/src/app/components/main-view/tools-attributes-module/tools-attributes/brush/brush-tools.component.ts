@@ -6,7 +6,7 @@ const DEFAULT_WIDTH = '20';
 @Component({
   selector: 'app-brush-tools',
   templateUrl: './brush-tools.component.html',
-  styleUrls: ['./brush-tools.component.scss'],
+  styleUrls: ['./../tool-attributes.component.scss'],
 })
 export class BrushToolsComponent {
   protected readonly NUMBER_OF_TEXTURES = 6;

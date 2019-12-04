@@ -31,10 +31,7 @@ export class ToolManagerService {
 
   set _activeTool(tool: Tools) {
     if (this.activeTool === Tools.Selector && tool !== Tools.Selector) {
-      if (this.objectSelector.hasBoundingRect) {
-        this.objectSelector.removeBoundingRect();
-        this.objectSelector.selectedElements = [];
-      }
+      this.removeSelectorBoundingRect();
     }
     this.activeTool = tool;
     this.setCurrentGenerator(tool);
@@ -160,12 +157,14 @@ export class ToolManagerService {
     this.emojiGenerator.lowerRotationStep();
     this.featherGenerator.lowerRotationStep();
     this.objectSelector.lowerRotationStep();
+    this.objectSelector.scaleFromCenter = true;
   } // To extract??
 
   changeElementAltUp() {
     this.emojiGenerator.higherRotationStep();
     this.featherGenerator.higherRotationStep();
     this.objectSelector.higherRotationStep();
+    this.objectSelector.scaleFromCenter = false;
   } // To extract??
 
   changeElementShiftDown() {
@@ -178,6 +177,9 @@ export class ToolManagerService {
       case Tools.Ellipse:
         // change into circle
         this.ellipseGenerator.updateCircle(this.numberOfElements);
+        break;
+      case Tools.Selector:
+        this.objectSelector.scale(true);
         break;
       default:
         return;
@@ -195,6 +197,9 @@ export class ToolManagerService {
         // change into ellipse
         this.ellipseGenerator.updateEllipse(this.numberOfElements);
         break;
+      case Tools.Selector:
+        this.objectSelector.scale(false);
+        break;
       default:
         return;
     }
@@ -205,6 +210,9 @@ export class ToolManagerService {
   }
 
   deleteAllDrawings(): void {
+    // Disable selection if it is active
+    this.removeSelectorBoundingRect();
+
     // Delete the elements
     this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
     for (let i = this.canvasElement.children.length - 1; i >= this.DEFAULT_NUMBER_OF_ELEMENTS ; i--) {
@@ -226,26 +234,18 @@ export class ToolManagerService {
   }
 
   escapePress() {
-    switch (this._activeTool) {
-      case Tools.Line:
-        this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
-        this.lineGenerator.deleteLineBlock(this.canvasElement, this.numberOfElements);
-        this.numberOfElements = this.canvasElement.children.length;
-        break;
-      default:
-        return;
+    if (this._activeTool === Tools.Line) {
+      this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
+      this.lineGenerator.deleteLineBlock(this.canvasElement, this.numberOfElements);
+      this.numberOfElements = this.canvasElement.children.length;
     }
   }
 
   backSpacePress() {
-    switch (this._activeTool) {
-      case Tools.Line:
+    if (this._activeTool === Tools.Line) {
         this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
         this.lineGenerator.deleteLine();
         this.lineGenerator.updateElement(this.numberOfElements);
-        break;
-      default:
-        return;
     }
   }
 
@@ -396,5 +396,15 @@ export class ToolManagerService {
       }
     });
     return isMultiplePart;
+  }
+
+  removeSelectorBoundingRect(): void {
+    if (this.objectSelector.selectorRect) {
+      this.objectSelector.finishSelection();
+    }
+    if (this.objectSelector.hasBoundingRect) {
+      this.objectSelector.removeGBoundingRect();
+      this.objectSelector.selectedElements = [];
+    }
   }
 }
