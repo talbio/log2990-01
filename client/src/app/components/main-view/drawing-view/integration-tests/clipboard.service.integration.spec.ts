@@ -14,13 +14,13 @@ import { ClipboardService } from '../../../../services/tools/clipboard/clipboard
 import { ColorService } from '../../../../services/tools/color/color.service';
 import { ObjectSelectorService } from '../../../../services/tools/object-selector/object-selector.service';
 import { ToolManagerService } from '../../../../services/tools/tool-manager/tool-manager.service';
+import { UndoRedoService } from '../../../../services/undo-redo/undo-redo.service';
 import { ColorPaletteComponent } from '../../../modals/color-picker-module/color-palette/color-palette.component';
 import { ColorPickerDialogComponent } from '../../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 import { ColorSliderComponent } from '../../../modals/color-picker-module/color-slider/color-slider.component';
 import { LastTenColorsComponent } from '../../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../../work-zone/work-zone.component';
-import { UndoRedoService } from '../../../../services/undo-redo/undo-redo.service';
 import { DrawingViewComponent } from '../drawing-view.component';
 import { DRAWING_SERVICES } from './integration-tests-environment.spec';
 
