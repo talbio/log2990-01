@@ -522,7 +522,8 @@ export class ObjectSelectorService {
     if (mouseWheel.deltaY < 0) {
       this.angle  += this.rotationStep;
     } else { this.angle  -= this.rotationStep; }
-    this.angle  = this.angle % 360;
+    if (this.angle < 0) { this.angle += 360; }
+    if (this.angle >= 360) { this.angle -= 360; }
   }
 
   getBoundingBox(): SVGElement {
