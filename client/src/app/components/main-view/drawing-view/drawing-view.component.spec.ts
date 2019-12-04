@@ -832,8 +832,6 @@ describe('DrawingViewComponent', () => {
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
   toolManagerService._activeTool = Tools.Stamp;
   // Create the work-zone
-  const svgHandle = component.workZoneComponent['canvasElement'] as SVGElement;
-  const children = svgHandle.childNodes;
   const wheelSpy = spyOn(component.workZoneComponent, 'onMouseWheel').and.callThrough();
   let wheelEvent = new WheelEvent('mousewheel', {
     deltaY: -500,
@@ -848,9 +846,9 @@ describe('DrawingViewComponent', () => {
   component.workZoneComponent.onMouseWheel(wheelEvent);
   }
   component.workZoneComponent.onMouseDown();
-  let emoji = svgHandle.childNodes[children.length - 1] as Element;
-  let angle = (emoji.getAttribute('transform') as string).substr(7, 3) ;
-  expect(parseFloat(angle)).toBeLessThanOrEqual(360);
+  const emojiGenerator = fixture.debugElement.injector.get(EmojiGeneratorService);
+  let angle = emojiGenerator.rotationAngle;
+  expect(angle).toBeLessThanOrEqual(360);
 
   // It shouldn't be possible to lower the angle under 0
   wheelEvent = new WheelEvent('mousewheel', {
@@ -860,9 +858,8 @@ describe('DrawingViewComponent', () => {
     component.workZoneComponent.onMouseWheel(wheelEvent);
     }
   component.workZoneComponent.onMouseDown();
-  emoji = svgHandle.childNodes[children.length - 1] as Element;
-  angle = (emoji.getAttribute('transform') as string).substr(7, 1) ;
-  expect(parseFloat(angle)).toBeGreaterThanOrEqual(0);
+  angle = emojiGenerator.rotationAngle;
+  expect(angle).toBeGreaterThanOrEqual(0);
 });
 
   it('should be possible to modify an emoji rotation step from 15 to 1 with the ALT button', () => {

@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DemoMaterialModule } from 'src/app/material.module';
 import { MousePositionService } from 'src/app/services/mouse-position/mouse-position.service';
 import { EmojiGeneratorService } from 'src/app/services/tools/emoji-generator/emoji-generator.service';
+import { TransformationService } from 'src/app/services/transformation/transformation.service';
 import { EmojiToolsComponent } from './emoji-tools.component';
 
 describe('EmojiToolsComponent', () => {
@@ -11,7 +12,7 @@ describe('EmojiToolsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ EmojiToolsComponent ],
       imports: [DemoMaterialModule],
-      providers: [  EmojiGeneratorService, MousePositionService ],
+      providers: [  EmojiGeneratorService, MousePositionService, TransformationService ],
     })
     .compileComponents().then(() => {
       fixture = TestBed.createComponent(EmojiToolsComponent);
