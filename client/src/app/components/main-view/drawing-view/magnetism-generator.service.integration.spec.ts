@@ -24,6 +24,7 @@ import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-at
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { DrawingViewComponent } from './drawing-view.component';
 import { CanvasDrawer, DRAWING_SERVICES } from './integration-tests-environment.spec';
+import {TranslateService} from "../../../services/transformations/translate.service";
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
@@ -125,6 +126,7 @@ describe('MagnetismGeneratorService', () => {
         grid._gridSize = 100;
         const selector = fixture.debugElement.injector.get(ObjectSelectorService);
         const magnetism = fixture.debugElement.injector.get(MagnetismService);
+        const translate = fixture.debugElement.injector.get(TranslateService);
         const mouseMoveEvent1 = new MouseEvent('mousemove', {
             movementX: 100,
             movementY: 0,
@@ -137,7 +139,7 @@ describe('MagnetismGeneratorService', () => {
         mousePositionService.canvasMousePositionX = 120;
         mousePositionService.canvasMousePositionY = 120;
         selector.translate();
-        selector.finishTranslation();
+        translate.finishTranslation();
 
         // get translation value
         const drawing = svgHandle.querySelector('#rect0');
