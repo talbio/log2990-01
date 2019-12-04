@@ -29,8 +29,8 @@ export class ObjectSelectorService {
 
   selectedElements: SVGElement[];
   hasBoundingRect: boolean;
-  initialDomRect: DOMRect;
 
+  private initialDomRect: DOMRect;
   private currentDomRect: DOMRect;
   private mouseDown: boolean;
   private initialTransformValues: Map<SVGElement, string>;
