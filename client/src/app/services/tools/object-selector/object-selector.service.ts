@@ -12,6 +12,8 @@ const STROKE_COLOR = Colors.BLACK;
 
 const MAX_CANVAS_WIDTH = 2000;
 const MAX_CANVAS_HEIGHT = 2000;
+//const INITIAL_ROTATE = 'rotate(0 0 0)';
+const INITIAL_MATRIX = 'matrix(1, 0, 0, 1, 0, 0) translate(0, 0)';
 
 interface Box {
   x: number;
@@ -31,25 +33,16 @@ interface BoundingRect {
 @Injectable()
 export class ObjectSelectorService {
 
-  private readonly SELECTOR_RECT_ID = 'selectorRect';
-  private readonly BOUNDING_RECT_ID = 'boundingRect';
-
-  selectedElements: SVGElement[];
-  private isTranslating: boolean;
-  private initialTranslateValues: Map<SVGElement, string>;
-  hasBoundingRect: boolean;
-  private mouseDown: boolean;
-  startX: number;
-  startY: number;
-  angle: number;
-  rotationStep: number;
-
+  isRotating: boolean;
+  lastRotate: string;
+  lastMatrix: string;
   constructor(private mousePosition: MousePositionService,
               private rectangleGenerator: RectangleGeneratorService,
               private transform: TransformationService,
               private undoRedoService: UndoRedoService) {
     this.hasBoundingRect = false;
     this.mouseDown = false;
+    this.isRotating = false;
     this.isTranslating = false;
     this.initialTranslateValues = new Map<SVGElement, string>();
     this.selectedElements = [];
@@ -75,6 +68,20 @@ export class ObjectSelectorService {
   get boundingRect(): SVGElement {
     return RendererSingleton.canvas.querySelector('#' + this.BOUNDING_RECT_ID) as SVGElement;
   }
+
+  private readonly SELECTOR_RECT_ID = 'selectorRect';
+  private readonly BOUNDING_RECT_ID = 'boundingRect';
+
+  selectedElements: SVGElement[];
+  private isTranslating: boolean;
+  private initialTranslateValues: Map<SVGElement, string>;
+  hasBoundingRect: boolean;
+  private mouseDown: boolean;
+  startX: number;
+  startY: number;
+  angle: number;
+  rotationStep: number;
+  private currentBoundingRectDimensions: Box;
 
   onMouseDown() {
     this.mouseDown = true;
@@ -157,6 +164,7 @@ export class ObjectSelectorService {
     if (this.selectedElements.length !== 0) {
       this.addBoundingRect();
     }
+    this.isRotating = false;
     this.mouseDown = false;
   }
 
@@ -180,11 +188,13 @@ export class ObjectSelectorService {
     this.hasBoundingRect = false;
     const boundingRect: SVGElement = RendererSingleton.renderer.selectRootElement('#boundingRect', true) as SVGElement;
     RendererSingleton.canvas.removeChild(boundingRect);
+    this.isRotating = false;
   }
 
   addBoundingRect(): void {
     this.hasBoundingRect = true;
     const boundingBox = this.getBoundingRectDimensions();
+    this.currentBoundingRectDimensions = boundingBox;
     this.drawBoundingRect(boundingBox);
   }
 
@@ -306,6 +316,7 @@ export class ObjectSelectorService {
     const newTranslates: Map<SVGElement, string> = this.createTranslateMap(this.selectedElements);
     this.pushTranslateCommand(newTranslates, this.initialTranslateValues);
   }
+
   pushTranslateCommand(newTranslates: Map<SVGElement, string>, oldTranslates: Map<SVGElement, string>): void {
     const svgElements: SVGElement[] = [...this.selectedElements];
     svgElements.push(this.boundingRect.children[1] as SVGElement);
@@ -355,52 +366,134 @@ export class ObjectSelectorService {
     if (this.angle  < 0) {this.angle  = 359; }
   }
 
+  getBoundingBox(): SVGElement {
+    const boundingRect = RendererSingleton.canvas.children[RendererSingleton.canvas.children.length - 1] as SVGElement;
+    return boundingRect.children[1] as SVGElement;
+  }
+
+  initializeRotateValue(element: SVGElement) {
+    const currentTransform = element.getAttribute('transform');
+    if (!currentTransform) {
+    //   element.setAttribute('transform', INITIAL_ROTATE);
+      element.setAttribute('transform', INITIAL_MATRIX);
+    } else {
+      const initializedTransform = '' + currentTransform + ' ' + INITIAL_MATRIX;
+      element.setAttribute('transform', initializedTransform);
+    }
+  }
+
+  beginRotation() {
+    this.isRotating = true;
+    // this.lastRotate = INITIAL_ROTATE;
+    this.lastMatrix = INITIAL_MATRIX;
+    this.selectedElements.forEach((element: SVGElement) => {
+      this.initializeRotateValue(element);
+    });
+    const box = this.getBoundingBox();
+    this.initializeRotateValue(box);
+  }
+
   rotateSelectedElements(mouseWheel: WheelEvent) {
+    if (!this.isRotating) {
+      this.beginRotation();
+    }
     this.changeAngle(mouseWheel);
-    const box = this.getBoundingRectDimensions();
+    // const newMatrix = this.produceRotateData();
+    this.selectedElements.forEach((element: SVGElement) => {
+      // this.rotateSingleElement(element, newMatrix);
+      this.rotateSingleElement(element);
+    });
+    // this.rotateSingleElement(this.getBoundingBox(), newMatrix);
+    this.rotateSingleElement(this.getBoundingBox());
+    // this.lastMatrix = newMatrix;
+  }
+
+  rotateSingleElement(element: SVGElement) {
+    const currentTransform = element.getAttribute('transform') as string;
+    const matrixBeginIndex = currentTransform.lastIndexOf('matrix(');
+    this.lastMatrix = currentTransform.substr(matrixBeginIndex);
+    const newTransform = currentTransform.replace(this.lastMatrix, this.produceRotateData(element));
+    element.setAttribute('transform', newTransform);
+  }
+
+  degreesToRadians(angle: number) {
+    return angle * (Math.PI / 180);
+  }
+
+  degreesToWhateverThatIs(angle: number) {
+    return angle / 360;
+  }
+
+  produceRotateData(element: SVGElement): string {
+    const box = this.currentBoundingRectDimensions;
     const xCenter = box.x + box.width / 2;
     const yCenter = box.y + box.height / 2;
-    const newRotationString = ' rotate(' + this.angle + ' ' + xCenter + ' ' + yCenter + ')';
-    this.selectedElements.forEach((element: SVGElement) => {
-      if (element.getAttribute('transform') !== null) {
-        element.setAttribute('transform', newRotationString);
-      } else if (this.alreadyRotating(element)) {
-        this.adaptRotation(element);
-      } else {
-        element.setAttribute('transform', element.getAttribute('transform') + newRotationString);
-      }
-    });
+    // return 'rotate(' + this.angle + ' ' + Math.round(xCenter) + ' ' + Math.round(yCenter) + ') ';
+    // if (this.selectedElements.length === 1) {
+    const cos = Math.cos(this.degreesToRadians(this.angle));
+    const sin = Math.sin(this.degreesToRadians(this.angle));
+    // return 'matrix(' + cos + ', ' + sin + ', ' + -sin + ', ' + cos + ', ' +
+    //  xCenter + ', ' + yCenter + ') translate(' + -xCenter + ', ' + -yCenter + ')';
+    const newTransform = this.produceMatrix(cos, sin, -sin, cos, xCenter, yCenter);
+    const newMatrix = this.multiplyMatrices(this.getMatrixInHtml(element), newTransform);
+    return this.produceMatrixHtml(newMatrix) + ' translate(' + newMatrix[2][0] + ', ' + newMatrix[2][1] + ') ';
+    // } else {
+
+    // }
   }
 
-  alreadyRotating(element: SVGElement): boolean {
-    const currentTransform = element.getAttribute('transform');
-    if (currentTransform.lastIndexOf('rotate(') !== -1) {
-      const lastRotation = currentTransform.lastIndexOf('rotate(');
-      const lastRotate = currentTransform.substr(lastRotation + 7);
-      const rotationAngle = lastRotate.split(' ');
-      const box = this.getBoundingRectDimensions();
-      const xCenter = box.x + box.width / 2;
-      const yCenter = box.y + box.height / 2;
-      if (parseFloat(rotationAngle[1]) === xCenter && rotationAngle[2] === yCenter as unknown as string + ')' ) {
-        return true;
-      } else { return false; }
-    } else {
-      return false;
-    }
-    // const distanceFromNewest = currentTransform.length - lastRotation;
-    // if (distanceFromNewest > 21) { return true; } else { return false; }
+  produceMatrix(a: number, b: number, c: number, d: number, e: number, f: number): number[][] {
+    const matrix = [[0]];
+    matrix[0] = [a, b, 0];
+    matrix[1] = [c, d, 0];
+    matrix[2] = [e, f, 1];
+    return matrix;
   }
 
-  adaptRotation(element: SVGElement) {
-    const currentTransform = element.getAttribute('transform');
-    const lastRotation = currentTransform.lastIndexOf('rotate(');
-    const lastRotate = currentTransform.substr(lastRotation + 7);
-    const rotationAngle = lastRotate.split(' ');
-    rotationAngle[0] = this.angle as unknown as string;
-    let newTransform = currentTransform.substr(0, lastRotation + 7);
-    rotationAngle.forEach((part: string) => {
-      newTransform += part;
+  produceMatrixHtml(mat: number[][]): string {
+    return 'matrix(' + mat[0][0] + ', ' + mat[0][1] + ', ' + mat[1][0] + ', ' + mat[1][1] + ', ' + mat[2][0] + ', ' + mat[2][1] +
+      ') translate(' + -mat[2][0] + ', ' + -mat[2][1] + ')';
+  }
+
+  multiplyMatrices(mat2: number[][], mat1: number[][]): number[][] {
+    const matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    // 1st line
+    matrix[0][0] = mat1[0][0] * mat2[0][0] + mat1[1][0] * mat2[0][1] + mat1[2][0] * mat2[0][2];
+    matrix[1][0] = mat1[0][0] * mat2[1][0] + mat1[1][0] * mat2[1][1] + mat1[2][0] * mat2[1][2];
+    matrix[2][0] = mat1[0][0] * mat2[2][0] + mat1[1][0] * mat2[2][1] + mat1[2][0] * mat2[2][2];
+
+    // 2nd line
+    matrix[0][1] = mat1[0][1] * mat2[0][0] + mat1[1][1] * mat2[0][1] + mat1[2][1] * mat2[0][2];
+    matrix[1][1] = mat1[0][1] * mat2[1][0] + mat1[1][1] * mat2[1][1] + mat1[2][1] * mat2[1][2];
+    matrix[2][1] = mat1[0][1] * mat2[2][0] + mat1[1][1] * mat2[2][1] + mat1[2][1] * mat2[2][2];
+
+    // 3rd line
+    matrix[0][2] = mat1[0][2] * mat2[0][0] + mat1[1][2] * mat2[0][1] + mat1[2][2] * mat2[0][2];
+    matrix[1][2] = mat1[0][2] * mat2[1][0] + mat1[1][2] * mat2[1][1] + mat1[2][2] * mat2[1][2];
+    matrix[2][2] = mat1[0][2] * mat2[2][0] + mat1[1][2] * mat2[2][1] + mat1[2][2] * mat2[2][2];
+    return matrix;
+  }
+
+  actualizeMatrix(element: SVGElement, matToMultiply: number[][]): number[][] {
+    return this.multiplyMatrices(this.getMatrixInHtml(element), matToMultiply);
+  }
+
+  getMatrixInHtml(element: SVGElement): number[][] {
+    const before = element.getAttribute('transform') as string;
+    const matrixBeginIndex = before.lastIndexOf('matrix(') + 7;
+    const matrixEndIndex = before.lastIndexOf('translate(') - 2;
+    // const translateBeginIndex
+    const matrixInner = before.substring(matrixBeginIndex, matrixEndIndex);
+    const eachSlots = matrixInner.split(', ');
+    const param: number[] = [];
+    eachSlots.forEach((slot: string) => {
+      param.push(parseFloat(slot));
     });
-    element.setAttribute('transform', newTransform);
+    return this.produceMatrix(param[0], param[1], param[2], param[3], param[4], param[5]);
+  }
+
+  findTranslateValues = (transformAttribute: string): number[] => {
+    const parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(transformAttribute) as RegExpExecArray;
+    return [parseFloat(parts[1]), parseFloat(parts[2])];
   }
 }
