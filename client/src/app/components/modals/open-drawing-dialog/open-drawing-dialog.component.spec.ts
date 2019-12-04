@@ -6,7 +6,7 @@ import {Observable, of} from 'rxjs';
 import { UndoRedoService } from 'src/app/services/undo-redo/undo-redo.service';
 import {Drawing} from '../../../../../../common/communication/Drawing';
 import {DemoMaterialModule} from '../../../material.module';
-import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
+import {DrawingsService} from '../../../services/drawings/drawings.service';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
 import {DialogData} from '../create-drawing-dialog/create-drawing-dialog.component';
 import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';

@@ -44,7 +44,7 @@ import { SaveDrawingDialogComponent } from './components/modals/save-drawing-dia
 import { UserManualDialogComponent } from './components/modals/user-manual-dialog/user-manual-dialog.component';
 import { WelcomeModalComponent } from './components/modals/welcome-modal/welcome-modal.component';
 import { DemoMaterialModule } from './material.module';
-import { DrawingsService } from './services/back-end/drawings/drawings.service';
+import { DrawingsService } from './services/drawings/drawings.service';
 import { MousePositionService } from './services/mouse-position/mouse-position.service';
 import { RendererSingleton } from './services/renderer-singleton';
 import { StorageService } from './services/storage/storage.service';

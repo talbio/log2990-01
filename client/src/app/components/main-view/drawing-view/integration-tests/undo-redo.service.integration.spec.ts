@@ -1,15 +1,15 @@
 import {ChangeDetectorRef, NO_ERRORS_SCHEMA, Renderer2} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
-import { Tools } from '../../../data-structures/tools';
-import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
-import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
-import {ColorService} from '../../../services/tools/color/color.service';
-import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
-import {UndoRedoService} from '../../../services/undo-redo/undo-redo.service';
-import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
-import { DrawingViewComponent } from './drawing-view.component';
-import {STUB_COMPONENTS} from './drawing-view.component.spec';
+import { Tools } from '../../../../data-structures/tools';
+import { ModalManagerService } from '../../../../services/modal-manager/modal-manager.service';
+import { MousePositionService } from '../../../../services/mouse-position/mouse-position.service';
+import {ColorService} from '../../../../services/tools/color/color.service';
+import { ToolManagerService } from '../../../../services/tools/tool-manager/tool-manager.service';
+import {UndoRedoService} from '../../../../services/undo-redo/undo-redo.service';
+import { ToolsAttributesBarComponent } from '../../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
+import { DrawingViewComponent } from '../drawing-view.component';
+import {STUB_COMPONENTS} from '../drawing-view.component.spec';
 import {
   CanvasDrawer,
   COMPONENTS,
@@ -220,6 +220,16 @@ describe('UndoRedoService integrations tests', () => {
       const rectangle: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 1);
       const initialTranslate = 'matrix(1,0,0,1,0,0)';
       canvasDrawer.translateElement(150, 150);
+      const newTranslate: string = rectangle.getAttribute('transform') as string;
+      expectPropertyToBeUndoAndRedoable(rectangle, 'transform', newTranslate, initialTranslate);
+    });
+
+    it('should be able to undo and redo a scaling', () => {
+      const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
+      canvasDrawer.drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
+      const rectangle: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 1);
+      const initialTranslate = 'matrix(1,0,0,1,0,0)';
+      canvasDrawer.scaleElement(100, 100);
       const newTranslate: string = rectangle.getAttribute('transform') as string;
       expectPropertyToBeUndoAndRedoable(rectangle, 'transform', newTranslate, initialTranslate);
     });

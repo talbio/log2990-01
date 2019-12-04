@@ -18,37 +18,6 @@ export class TransformService {
   private readonly X_ROTATE_INDEX = 1;
   private readonly Y_ROTATE_INDEX = 2;
 
-  checkTransformAttribute(svgElement: SVGElement): void {
-    if (!svgElement.getAttribute('transform')) {
-      svgElement.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
-    }
-  }
-
-  private getNumericalMatrix(matrix: string): number[] {
-    const firstParenthesis = matrix.indexOf('(');
-    return (matrix.substring(firstParenthesis + 1, matrix.length - 1).split(',').map(Number));
-  }
-
-  private setMatrix(svgElement: SVGElement, matrix: number[]): void {
-    const strMatrix: string = 'matrix(' + matrix.join(',') + ')';
-    svgElement.setAttribute('transform', strMatrix);
-  }
-
-  getTransformationFromElement(svgElement: SVGElement, transformType: Transformation): [number, number] {
-    this.checkTransformAttribute(svgElement);
-    const matrix: number[] = this.getNumericalMatrix(svgElement.getAttribute('transform') as string);
-    switch (transformType) {
-      case Transformation.SCALE:
-        return [matrix[this.X_SCALE_INDEX], matrix[this.Y_SCALE_INDEX]];
-      case Transformation.TRANSLATE:
-        return [matrix[this.X_TRANSLATE_INDEX], matrix[this.Y_TRANSLATE_INDEX]];
-      case Transformation.ROTATE:
-        return [matrix[this.X_ROTATE_INDEX], matrix[this.Y_ROTATE_INDEX]];
-      default:
-        return [0, 0];
-    }
-  }
-
   getTransformationFromMatrix(matrix: string, transformType: Transformation): [number, number] {
     const numericalMatrix: number[] = this.getNumericalMatrix(matrix);
     switch (transformType) {
@@ -61,12 +30,6 @@ export class TransformService {
       default:
         return [0, 0];
     }
-  }
-
-  getScaleValues(svgElement: SVGElement): [number, number] {
-    this.checkTransformAttribute(svgElement);
-    const matrix: number[] = this.getNumericalMatrix(svgElement.getAttribute('transform') as string);
-    return [matrix[this.X_SCALE_INDEX], matrix[this.Y_SCALE_INDEX]];
   }
 
   translate(svgElement: SVGElement, x: number, y: number, initialX?: number, initialY?: number): void {
@@ -143,7 +106,24 @@ export class TransformService {
     matrix[2][2] = mat1[0][2] * mat2[2][0] + mat1[1][2] * mat2[2][1] + mat1[2][2] * mat2[2][2];
     return matrix;
   }
+
   degreesToRadians(angle: number) {
     return angle * (Math.PI / 180);
+  }
+
+  private checkTransformAttribute(svgElement: SVGElement): void {
+    if (!svgElement.getAttribute('transform')) {
+      svgElement.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
+    }
+  }
+
+  private getNumericalMatrix(matrix: string): number[] {
+    const firstParenthesis = matrix.indexOf('(');
+    return (matrix.substring(firstParenthesis + 1, matrix.length - 1).split(',').map(Number));
+  }
+
+  private setMatrix(svgElement: SVGElement, matrix: number[]): void {
+    const strMatrix: string = 'matrix(' + matrix.join(',') + ')';
+    svgElement.setAttribute('transform', strMatrix);
   }
 }

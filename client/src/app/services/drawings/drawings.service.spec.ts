@@ -3,8 +3,8 @@ import {Renderer2} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
 import { OpenDrawingDialogComponent } from 'src/app/components/modals/open-drawing-dialog/open-drawing-dialog.component';
-import {RendererSingleton} from '../../renderer-singleton';
-import {ToolManagerService} from '../../tools/tool-manager/tool-manager.service';
+import {RendererSingleton} from '../renderer-singleton';
+import {ToolManagerService} from '../tools/tool-manager/tool-manager.service';
 import { DrawingsService } from './drawings.service';
 
 const MINIMUM_DRAWING_SVGELEMENTS = '<defs></defs><rect></rect>';

@@ -2,7 +2,7 @@ import {AfterViewInit, Component, Renderer2} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef} from '@angular/material/dialog';
 import { NotifierService } from 'angular-notifier';
-import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
+import {DrawingsService} from '../../../services/drawings/drawings.service';
 import {ModalManagerSingleton} from '../modal-manager-singleton';
 
 @Component({

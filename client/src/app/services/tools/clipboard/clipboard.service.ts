@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import {Command, CommandGenerator} from '../../../data-structures/command';
 import { RendererSingleton } from '../../renderer-singleton';
+import { TransformService } from '../../transformations/transform.service';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import {ToolManagerService} from '../tool-manager/tool-manager.service';
-import { TransformService } from '../../transformations/transform.service';
 
 @Injectable()
 export class ClipboardService implements CommandGenerator {

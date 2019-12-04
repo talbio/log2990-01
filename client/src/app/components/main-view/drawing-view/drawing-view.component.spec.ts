@@ -28,7 +28,7 @@ import { LastTenColorsComponent } from '../../modals/color-picker-module/last-te
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { DrawingViewComponent } from './drawing-view.component';
-import { DRAWING_SERVICES } from './integration-tests-environment.spec';
+import { DRAWING_SERVICES } from './integration-tests/integration-tests-environment.spec';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/

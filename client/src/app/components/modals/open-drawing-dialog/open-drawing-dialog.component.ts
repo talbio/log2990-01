@@ -8,7 +8,7 @@ import { DRAWING_KEYS_COUNT } from 'src/app/data-structures/constants';
 import { LocalOpenError } from 'src/app/data-structures/custom-errors';
 import { ToolManagerService } from 'src/app/services/tools/tool-manager/tool-manager.service';
 import { Drawing } from '../../../../../../common/communication/Drawing';
-import {DrawingsService} from '../../../services/back-end/drawings/drawings.service';
+import {DrawingsService} from '../../../services/drawings/drawings.service';
 import {GiveUpChangesDialogComponent} from '../give-up-changes-dialog/give-up-changes-dialog.component';
 import { ModalManagerSingleton } from '../modal-manager-singleton';
 import { ClipboardService } from './../../../services/tools/clipboard/clipboard.service';
