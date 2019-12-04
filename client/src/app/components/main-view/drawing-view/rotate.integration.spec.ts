@@ -21,6 +21,7 @@ import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-at
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { DrawingViewComponent } from './drawing-view.component';
 import { CanvasDrawer, DRAWING_SERVICES } from './integration-tests-environment.spec';
+import { TransformationService, Transformation } from '../../../services/transformation/transformation.service';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
@@ -40,6 +41,7 @@ const httpClientSpy: jasmine.SpyObj<HttpClient> =
 fdescribe('Rotation', () => {
     let component: DrawingViewComponent;
     let fixture: ComponentFixture<DrawingViewComponent>;
+    let transform: TransformationService;
     let canvasDrawer: CanvasDrawer;
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -75,20 +77,21 @@ fdescribe('Rotation', () => {
             fixture = TestBed.createComponent(DrawingViewComponent);
             component = fixture.componentInstance;
             canvasDrawer = new CanvasDrawer(fixture, component);
+            transform = fixture.debugElement.injector.get(TransformationService);
             fixture.detectChanges();
         });
     }));
 
-    const extractMatrix = (matrix: string): number[] => {
-      const matrixBeginIndex = matrix.lastIndexOf('matrix(') + 7;
-      const matrixInner = matrix.substring(matrixBeginIndex, matrix.length - 1);
-      const eachSlots = matrixInner.split(',');
-      const param: number[] = [];
-      eachSlots.forEach((slot: string) => {
-        param.push(parseFloat(slot));
-      });
-      return param;
-    };
+    // const extractMatrix = (matrix: string): number[] => {
+    //   const matrixBeginIndex = matrix.lastIndexOf('matrix(') + 7;
+    //   const matrixInner = matrix.substring(matrixBeginIndex, matrix.length - 1);
+    //   const eachSlots = matrixInner.split(',');
+    //   const param: number[] = [];
+    //   eachSlots.forEach((slot: string) => {
+    //     param.push(parseFloat(slot));
+    //   });
+    //   return param;
+    // };
 
     it('should be able to rotate a selected element', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
@@ -100,28 +103,32 @@ fdescribe('Rotation', () => {
       // from https://matrix.reshish.com/multCalculation.php
       const expectedMatrix = [0.9659258262890683, 0.25881904510252074, -0.25881904510252074,
           0.9659258262890683, 44.22551667794383, -33.935435167031244];
-
-      const mat = extractMatrix(transformMatrix);
-      for (let i = 0 ; i < 6 ; i++) {
-        expect(mat[i]).toBeCloseTo(expectedMatrix[i]);
-      }
+      const mat = transform.getTransformationFromMatrix(transformMatrix, Transformation.ROTATE);
+      expect(mat[0]).toBeCloseTo(expectedMatrix[1]);
+      expect(mat[1]).toBeCloseTo(expectedMatrix[2]);
     });
 
     it('should be able to rotate an element several times in a row', () => {
         const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
         canvasDrawer.drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
         const rectangle: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 1);
+        // from https://matrix.reshish.com/multCalculation.php
+        const firstExpectedMat = [0.9659258262890683, 0.25881904510252074, -0.25881904510252074,
+            0.9659258262890683, 44.22551667794383, -33.935435167031244];
+        const secondExpectedMat = [0.8660254037844387, 0.49999999999999994, -0.49999999999999994,
+            0.8660254037844387, 95.72722234321724, -55.26814242547397];
+
         canvasDrawer.rotateElement(150, 150);
         let transformMatrix: string;
         transformMatrix = rectangle.getAttribute('transform') as string;
-        const firstExpectedMat = [0.9659258262890683, 0.25881904510252074, -0.25881904510252074,
-            0.9659258262890683, 44.22551667794383, -33.935435167031244];
-        const secondExpectedMat =
-          'matrix(0.8660254037844387,0.49999999999999994,-0.49999999999999994,0.8660254037844387,95.72722234321724,-55.26814242547397)';
-        expect(transformMatrix).toBeCloseTo(firstExpectedMat);
+        let rectMat = transform.getTransformationFromMatrix(transformMatrix, Transformation.ROTATE);
+        expect(rectMat[0]).toBeCloseTo(firstExpectedMat[1]);
+        expect(rectMat[1]).toBeCloseTo(firstExpectedMat[2]);
         canvasDrawer.rotateElement(150, 150);
         transformMatrix = rectangle.getAttribute('transform') as string;
-        expect(transformMatrix).toBeCloseTo(secondExpectedMat);
+        rectMat = transform.getTransformationFromMatrix(transformMatrix, Transformation.ROTATE);
+        expect(rectMat[0]).toBeCloseTo(secondExpectedMat[1]);
+        expect(rectMat[1]).toBeCloseTo(secondExpectedMat[2]);
     });
 
     it('should be able to rotate several elements of any type at once', () => {
@@ -136,8 +143,6 @@ fdescribe('Rotation', () => {
       const polygon: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 2);
       const rectangle: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 1);
       toolManagerService._activeTool = Tools.Selector;
-      const previousRectTransform = rectangle.getAttribute('transform') as string;
-      const previousPolygonTransform = polygon.getAttribute('transform') as string;
       const mouseEvent = new MouseEvent('mousedown', {
         button: 0,
         clientX: 150,
@@ -154,17 +159,17 @@ fdescribe('Rotation', () => {
 
       // 15 degrees
       canvasDrawer.rotateElement(150, 150);
+      const newRectTransform = rectangle.getAttribute('transform') as string;
+      const newPolygonTransform = polygon.getAttribute('transform') as string;
 
       const expectedMatrix = [-1.0606601717798212, -1.0606601717798214, 0.848528137423857, -0.8485281374238569,
         322.74296456276625, 582.7423133572969];
-      const matRect = extractMatrix(previousRectTransform);
-      for (let i = 0 ; i < 6 ; i++) {
-        expect(matRect[i]).toBeCloseTo(expectedMatrix[i]);
-      }
-      const matPolygon = extractMatrix(previousPolygonTransform);
-      for (let i = 0 ; i < 6 ; i++) {
-        expect(matPolygon[i]).toBeCloseTo(expectedMatrix[i]);
-      }
+      const matRect = transform.getTransformationFromMatrix(newRectTransform, Transformation.ROTATE);
+      expect(matRect[0]).toBeCloseTo(expectedMatrix[1]);
+      expect(matRect[1]).toBeCloseTo(expectedMatrix[2]);
+      const matPolygon = transform.getTransformationFromMatrix(newPolygonTransform, Transformation.ROTATE);
+      expect(matPolygon[0]).toBeCloseTo(expectedMatrix[1]);
+      expect(matPolygon[1]).toBeCloseTo(expectedMatrix[2]);
     });
 
     it('should be able to rotate an element who recieved another type of transformation', () => {
@@ -197,14 +202,13 @@ fdescribe('Rotation', () => {
       const newTransform = rectangle.getAttribute('transform') as string;
 
       // from https://matrix.reshish.com/multCalculation.php
-      const expectedMatrix = [1.4488887394336025, 0.3882285676537811, -0.3105828541230249,
-        1.159110991546882, 99.0816909256643, 96.95602268543558];
+      const expectedMatrix = [0.8693332436601615, 0.23293714059226867, -0.23293714059226867,
+        0.8693332436601615, 57.83211865570736, -10.564264070790024];
       // matrix(0.8693332436601615,-0.2329371405922686,0.2329371405922686,0.8693332436601615,-12.564258484295205,59.83212294237558)
       // matrix(0.8693332436601615,0.23293714059226867,-0.23293714059226867,0.8693332436601615,57.83211865570736,-10.564264070790024)
-      const mat = extractMatrix(newTransform);
-      for (let i = 0 ; i < 6 ; i++) {
-        expect(mat[i]).toBeCloseTo(expectedMatrix[i]);
-      }
+      const mat = transform.getTransformationFromMatrix(newTransform, Transformation.ROTATE);
+      expect(mat[0]).toBeCloseTo(expectedMatrix[1], 1);
+      expect(mat[1]).toBeCloseTo(expectedMatrix[2], 1);
     });
 
     it(`should change the angle of the selection with a mouse's wheel mouvement`, () => {

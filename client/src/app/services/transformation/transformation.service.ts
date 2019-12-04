@@ -57,7 +57,8 @@ export class TransformationService {
         return [numericalMatrix[this.X_SCALE_INDEX], numericalMatrix[this.Y_SCALE_INDEX]];
       case Transformation.TRANSLATE:
         return [numericalMatrix[this.X_TRANSLATE_INDEX], numericalMatrix[this.Y_TRANSLATE_INDEX]];
-        // TODO: default case should not exist, implement for rotate
+      case Transformation.ROTATE:
+        return [numericalMatrix[this.X_ROTATE_INDEX], numericalMatrix[this.Y_ROTATE_INDEX]];
       default:
         return [0, 0];
     }
