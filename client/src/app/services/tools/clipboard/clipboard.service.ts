@@ -40,7 +40,7 @@ export class ClipboardService implements CommandGenerator {
 
   slide(item: SVGElement) {
     this.getSlideLength(item);
-    this.transform.setTranslationAttribute(item, this.xSliding, this.ySliding);
+    this.transform.translate(item, this.xSliding, this.ySliding);
   }
 
   getSlideLength(item: SVGElement) {
@@ -103,7 +103,7 @@ export class ClipboardService implements CommandGenerator {
     for (const item of this.selectedItems) {
       RendererSingleton.canvas.removeChild(item);
     }
-    this.selector.removeBoundingRect();
+    this.selector.removeGBoundingRect();
     this.selector.selectedElements = [];
     this.pushCutCommand(this.selectedItems);
   }
@@ -152,19 +152,25 @@ export class ClipboardService implements CommandGenerator {
     for (const item of this.selector.selectedElements) {
       RendererSingleton.canvas.removeChild(item);
     }
-    this.selector.removeBoundingRect();
+    this.selector.removeGBoundingRect();
     this.selector.selectedElements = [];
 
     this.pushCutCommand(this.selectedItems);
   }
 
   pushPasteCommand(svgElements: SVGElement[]): void {
+    const removeGBoundingRect = () => {
+      if (this.selector.hasBoundingRect) {
+        this.selector.removeGBoundingRect();
+      }
+    };
     const command: Command = {
       execute(): void {
         svgElements.forEach((svgElement: SVGElement) =>
           RendererSingleton.renderer.appendChild(RendererSingleton.canvas, svgElement));
       },
       unexecute(): void {
+        removeGBoundingRect();
         svgElements.forEach((svgElement: SVGElement) =>
           RendererSingleton.canvas.removeChild(svgElement));
       },
@@ -173,8 +179,14 @@ export class ClipboardService implements CommandGenerator {
   }
 
   pushCutCommand(svgElements: SVGElement[]): void {
+    const removeGBoundingRect = () => {
+      if (this.selector.hasBoundingRect) {
+        this.selector.removeGBoundingRect();
+      }
+    };
     const command: Command = {
       execute(): void {
+        removeGBoundingRect();
         svgElements.forEach((svgElement: SVGElement) =>
           RendererSingleton.canvas.removeChild(svgElement));
         },

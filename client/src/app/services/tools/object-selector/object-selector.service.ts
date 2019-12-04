@@ -3,17 +3,16 @@ import { Colors } from 'src/app/data-structures/colors';
 import { Command } from 'src/app/data-structures/command';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
+import { Transformation, TransformationService } from '../../transformation/transformation.service';
+import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 import { GridTogglerService } from '../grid/grid-toggler.service';
 import { MagnetismGeneratorService } from '../magnetism-generator/magnetism-generator.service';
-import { RectangleGeneratorService } from '../rectangle-generator/rectangle-generator.service';
-import { TransformationService } from './../../transformation/transformation.service';
-import { UndoRedoService } from './../../undo-redo/undo-redo.service';
-const STROKE_COLOR = Colors.BLACK;
+import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
 
-const MAX_CANVAS_WIDTH = 2000;
-const MAX_CANVAS_HEIGHT = 2000;
+const POINT_CONTROL_SIZE = 10;
+const STROKE_COLOR = Colors.BLUE;
 
-interface Box {
+interface Dimensions {
   x: number;
   y: number;
   width: number;
@@ -27,22 +26,28 @@ interface BoundingRect {
   bottom: number;
 }
 
-// @ts-ignore
 @Injectable()
 export class ObjectSelectorService {
 
   private readonly SELECTOR_RECT_ID = 'selectorRect';
   private readonly BOUNDING_RECT_ID = 'boundingRect';
+  private readonly G_BOUNDING_RECT_ID = 'gBoundingRect';
 
   selectedElements: SVGElement[];
   private isTranslating: boolean;
   private initialTransformValues: Map<SVGElement, string>;
   hasBoundingRect: boolean;
-  private mouseDown: boolean;
   initialX: number;
   initialY: number;
   startX: number;
   startY: number;
+  startWidth: number;
+  startHeight: number;
+  scaleFromCenter: boolean;
+
+  private isScaling: boolean;
+  private currentMarker: string;
+  private mouseDown: boolean;
 
   constructor(private mousePosition: MousePositionService,
               private rectangleGenerator: RectangleGeneratorService,
@@ -52,14 +57,18 @@ export class ObjectSelectorService {
               private undoRedoService: UndoRedoService) {
     this.hasBoundingRect = false;
     this.mouseDown = false;
+    this.isScaling = false;
     this.isTranslating = false;
     this.initialTransformValues = new Map<SVGElement, string>();
     this.selectedElements = [];
     this.startX = 0;
     this.startY = 0;
+    this.startWidth = 0;
+    this.startHeight = 0;
+    this.scaleFromCenter = false;
   }
 
-  get canvasBoxRect(): BoundingRect {
+  get canvasBoundingRect(): BoundingRect {
     return {
       left: RendererSingleton.canvas.getBoundingClientRect().left,
       right: RendererSingleton.canvas.getBoundingClientRect().right,
@@ -73,23 +82,39 @@ export class ObjectSelectorService {
   }
 
   get boundingRect(): SVGElement {
-    return RendererSingleton.canvas.querySelector('#' + this.BOUNDING_RECT_ID) as SVGElement;
+    return this.gBoundingRect.querySelector('#' + this.BOUNDING_RECT_ID) as SVGGElement;
   }
 
+  get gBoundingRect(): SVGGElement {
+    return RendererSingleton.canvas.querySelector('#' + this.G_BOUNDING_RECT_ID) as SVGGElement;
+  }
+
+  updateStartPos(): void {
+    this.startX = this.mousePosition.canvasMousePositionX;
+    this.startY = this.mousePosition.canvasMousePositionY;
+    this.startWidth = this.currentBoundingRectDimensions.width;
+    this.startHeight = this.currentBoundingRectDimensions.height;
+  }
+
+  // private initialValues: Map<SVGElement, string>;
   onMouseDown() {
     this.mouseDown = true;
     this.initialX = this.mousePosition.canvasMousePositionX;
     this.initialY = this.mousePosition.canvasMousePositionY;
     if (this.hasBoundingRect) {
-      if (this.isMouseOutsideOfBoundingRect()) {
+      if (this.isScaling) {
+        this.initialTransformValues  = this.createTransformationMap(this.selectedElements);
+        this.updateStartPos();
+        return;
+      }
+      if (this.isMouseOutsideGBoundingRect()) {
         this.selectedElements = [];
         this.rectangleGenerator.createTemporaryRectangle(this.SELECTOR_RECT_ID);
-        this.removeBoundingRect();
+        this.removeGBoundingRect();
       } else {
         // initiate translation
+        this.updateStartPos();
         this.beginTranslation();
-        this.startX = this.mousePosition.canvasMousePositionX;
-        this.startY = this.mousePosition.canvasMousePositionY;
       }
     } else {
       this.selectedElements = [];
@@ -97,13 +122,21 @@ export class ObjectSelectorService {
     }
   }
 
-  onMouseMove(currentChildPosition: number, mouseEvent: MouseEvent) {
+  onMouseMove(currentChildPosition: number, mouseEvent: MouseEvent): void {
     if (this.mouseDown) {
-      if (this.hasBoundingRect && this.isTranslating) {
-        this.magnetism.setMovementDirection(mouseEvent);
-        this.translate();
+      if (this.hasBoundingRect) {
+        if (this.isScaling) {
+          this.scale(mouseEvent.shiftKey);
+          return;
+        }
+        if (this.isTranslating) {
+          this.magnetism.setMovementDirection(mouseEvent);
+          this.translate();
+          return;
+        }
       } else {
-        this.updateSelection(currentChildPosition, mouseEvent);
+        this.rectangleGenerator.updateElement(currentChildPosition, mouseEvent);
+        return;
       }
     }
   }
@@ -115,12 +148,11 @@ export class ObjectSelectorService {
       this.finishTranslation();
       this.mouseDown = false;
     }
-  }
-
-  updateSelection(currentChildPosition: number, mouseEvent: MouseEvent) {
-    if (this.mouseDown) {
-      this.rectangleGenerator.updateElement(currentChildPosition, mouseEvent);
+    if (this.isScaling) {
+      this.isScaling = false;
     }
+    this.currentBoundingRectDimensions = this.getBoundingRectDimensions();
+    this.mouseDown = false;
   }
 
   updateSelectedItems(): void {
@@ -151,7 +183,8 @@ export class ObjectSelectorService {
   }
 
   isSvgDrawing(element: SVGElement): boolean {
-    return (element.id !== 'selectorRect') && (element.id !== 'backgroundGrid') && (element.id !== '');
+    return (element.id !== this.SELECTOR_RECT_ID) && (element.id !== 'backgroundGrid') && (element.id !== '') &&
+      (element.id !== this.BOUNDING_RECT_ID);
   }
 
   finishSelection(): void {
@@ -160,66 +193,56 @@ export class ObjectSelectorService {
     if (this.selectedElements.length !== 0) {
       this.addBoundingRect();
     }
-    this.mouseDown = false;
   }
 
-  isMouseOutsideOfBoundingRect(): boolean {
-    const boundingClientRect = this.boundingRect.getBoundingClientRect();
-    return this.mousePosition.canvasMousePositionX < boundingClientRect.left - this.canvasBoxRect.left ||
-      this.mousePosition.canvasMousePositionX > boundingClientRect.right - this.canvasBoxRect.left ||
-      this.mousePosition.canvasMousePositionY < boundingClientRect.top - this.canvasBoxRect.top ||
-      this.mousePosition.canvasMousePositionY > boundingClientRect.bottom - this.canvasBoxRect.top;
+  isMouseOutsideGBoundingRect(): boolean {
+    const clientRect = this.boundingRect.getBoundingClientRect();
+    return this.mousePosition.canvasMousePositionX < clientRect.left - this.canvasBoundingRect.left ||
+      this.mousePosition.canvasMousePositionX > clientRect.right - this.canvasBoundingRect.left ||
+      this.mousePosition.canvasMousePositionY < clientRect.top - this.canvasBoundingRect.top ||
+      this.mousePosition.canvasMousePositionY > clientRect.bottom - this.canvasBoundingRect.top;
   }
 
-  getWidthRect(rect: DOMRect): number {
-    return rect.left - rect.right;
-  }
-
-  getHeightRect(rect: DOMRect): number {
-    return rect.top - rect.bottom;
-  }
-
-  removeBoundingRect(): void {
+  removeGBoundingRect(): void {
     this.hasBoundingRect = false;
-    const boundingRect: SVGElement = RendererSingleton.renderer.selectRootElement('#boundingRect', true) as SVGElement;
-    RendererSingleton.canvas.removeChild(boundingRect);
+    RendererSingleton.canvas.removeChild(this.gBoundingRect);
   }
 
   addBoundingRect(): void {
     this.hasBoundingRect = true;
     const boundingBox = this.getBoundingRectDimensions();
-    this.drawBoundingRect(boundingBox);
+    this.currentBoundingRectDimensions = boundingBox;
+    this.drawGBoundingRect(boundingBox);
   }
 
-  private getBoundingRectDimensions(): Box {
+  private getBoundingRectDimensions(): Dimensions {
     const boundingRect: BoundingRect = {
-      left: MAX_CANVAS_WIDTH,
+      left: Number.MAX_SAFE_INTEGER,
       right: 0,
       bottom: 0,
-      top: MAX_CANVAS_HEIGHT,
+      top: Number.MAX_SAFE_INTEGER,
     };
 
-    this.selectedElements.forEach((svgElement: SVGElement) => {
-      const elementClientRectLeft = svgElement.getBoundingClientRect().left;
-      const elementClientRectRight = svgElement.getBoundingClientRect().right;
-      const elementClientRectTop = svgElement.getBoundingClientRect().top;
-      const elementClientRectBottom = svgElement.getBoundingClientRect().bottom;
-      if (elementClientRectLeft < boundingRect.left) {
-        boundingRect.left = elementClientRectLeft;
+    this.selectedElements.forEach( (svgElement: SVGElement) => {
+      const elementClientRect: ClientRect | DOMRect = svgElement.getBoundingClientRect();
+
+      if (elementClientRect.left < boundingRect.left ) {
+        boundingRect.left = elementClientRect.left;
+        // console.log('smoll x is: ' + elementClientRect.left);
       }
-      if (elementClientRectRight > boundingRect.right) {
-        boundingRect.right = elementClientRectRight;
+      if (elementClientRect.right > boundingRect.right) {
+        boundingRect.right = elementClientRect.right;
       }
-      if (elementClientRectTop < boundingRect.top) {
-        boundingRect.top = elementClientRectTop;
+      if (elementClientRect.top < boundingRect.top) {
+        boundingRect.top = elementClientRect.top;
       }
-      if (elementClientRectBottom > boundingRect.bottom) {
-        boundingRect.bottom = elementClientRectBottom;
+      if (elementClientRect.bottom > boundingRect.bottom) {
+        boundingRect.bottom = elementClientRect.bottom;
       }
     });
 
-    boundingRect.left -= this.canvasBoxRect.left;
-    boundingRect.right -= this.canvasBoxRect.left;
+    boundingRect.left -= this.canvasBoundingRect.left;
+    boundingRect.right -= this.canvasBoundingRect.left;
 
     return {
       x: boundingRect.left,
@@ -229,50 +252,154 @@ export class ObjectSelectorService {
     };
   }
 
-  private drawBoundingRect(boundingBox: Box) {
-    const boundingRect: SVGElement = RendererSingleton.renderer.createElement('svg', 'svg');
-    boundingRect.setAttribute('id', 'boundingRect');
-    const defs: SVGElement = RendererSingleton.renderer.createElement('defs', 'svg');
-    const marker: SVGElement = RendererSingleton.renderer.createElement('marker', 'svg');
-    const circle: SVGElement = RendererSingleton.renderer.createElement('circle', 'svg');
-    const polyline: SVGElement = RendererSingleton.renderer.createElement('polyline', 'svg');
+  private drawGBoundingRect(rectDimensions: Dimensions) {
+    const gBoundingRect: SVGGElement = RendererSingleton.renderer.createElement('g', 'svg');
+    gBoundingRect.setAttribute('id', this.G_BOUNDING_RECT_ID);
+    this.appendBoundingRect(rectDimensions, gBoundingRect);
+    this.appendControlPoints(rectDimensions, gBoundingRect);
+    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, gBoundingRect);
+  }
 
-    // circle attributes
-    RendererSingleton.renderer.setAttribute(circle, 'cx', '5');
-    RendererSingleton.renderer.setAttribute(circle, 'cy', '5');
-    RendererSingleton.renderer.setAttribute(circle, 'r', '20');
-    RendererSingleton.renderer.setAttribute(circle, 'fill', 'red');
+  private appendBoundingRect(rectDimensions: Dimensions, gBoundingRect: SVGGElement): void {
+    const boundingRect: SVGElement = RendererSingleton.renderer.createElement('rect', 'svg');
+    boundingRect.setAttribute('id', this.BOUNDING_RECT_ID);
+    const properties: [string, string][] = [
+      ['x', `${rectDimensions.x}`],
+      ['y', `${rectDimensions.y}`],
+      ['height', `${rectDimensions.height}`],
+      ['width', `${rectDimensions.width}`],
+      ['fill', 'transparent'],
+      ['stroke', `${STROKE_COLOR}`],
+      ['stroke', `${STROKE_COLOR}`],
+    ];
+    properties.forEach( (property: [string, string]) => boundingRect.setAttribute(property[0], property[1]));
+    gBoundingRect.appendChild(boundingRect);
+  }
 
-    // marker attributes
-    RendererSingleton.renderer.setAttribute(marker, 'id', 'dot');
-    RendererSingleton.renderer.setAttribute(marker, 'viewBox', '0 0 10 10');
-    RendererSingleton.renderer.setAttribute(marker, 'refX', '5');
-    RendererSingleton.renderer.setAttribute(marker, 'refY', '5');
-    RendererSingleton.renderer.setAttribute(marker, 'markerWidth', '5');
-    RendererSingleton.renderer.setAttribute(marker, 'markerHeight', '5');
+  private appendControlPoints(rectDimensions: Dimensions, gBoundingRect: SVGGElement): void {
+    // console.log('x=' + Math.ceil(rectDimensions.x));
+    // console.log('y=' + Math.ceil(rectDimensions.y));
+    const markers: [string, string][] = [
+      [`${rectDimensions.x},${rectDimensions.y}`, 'top-left'],
+      [`${rectDimensions.x + (rectDimensions.width / 2)},${rectDimensions.y}`, 'top-middle'],
+      [`${rectDimensions.x + rectDimensions.width},${rectDimensions.y}`, 'top-right'],
+      [`${rectDimensions.x + rectDimensions.width},${rectDimensions.y + (rectDimensions.height / 2)}`, 'right-middle'],
+      [`${rectDimensions.x + rectDimensions.width},${rectDimensions.y + rectDimensions.height}`, 'bottom-right'],
+      [`${rectDimensions.x + (rectDimensions.width / 2)},${rectDimensions.y + rectDimensions.height}`, 'bottom-middle'],
+      [`${rectDimensions.x},${rectDimensions.y + rectDimensions.height}`, 'bottom-left'],
+      [`${rectDimensions.x},${rectDimensions.y + (rectDimensions.height / 2)}`, 'left-middle'],
+    ];
 
-    // polyline attributes
-    RendererSingleton.renderer.setAttribute(polyline, 'points',
-      `${boundingBox.x},${boundingBox.y}
-      ${boundingBox.x + (boundingBox.width / 2)},${boundingBox.y}
-      ${boundingBox.x + boundingBox.width},${boundingBox.y}
-      ${boundingBox.x + boundingBox.width},${boundingBox.y + (boundingBox.height / 2)}
-      ${boundingBox.x + boundingBox.width},${boundingBox.y + boundingBox.height}
-      ${boundingBox.x + (boundingBox.width / 2)},${boundingBox.y + boundingBox.height}
-      ${boundingBox.x},${boundingBox.y + boundingBox.height}
-      ${boundingBox.x},${boundingBox.y + (boundingBox.height / 2)}
-      ${boundingBox.x},${boundingBox.y}`);
-    RendererSingleton.renderer.setAttribute(polyline, 'stroke', `${STROKE_COLOR}`);
-    RendererSingleton.renderer.setAttribute(polyline, 'fill', 'transparent');
-    RendererSingleton.renderer.setAttribute(polyline, 'marker-start', 'url(#dot)');
-    RendererSingleton.renderer.setAttribute(polyline, 'marker-mid', 'url(#dot)');
+    markers.forEach( (marker: [string, string]) => {
+      const commaIndex = marker[0].indexOf(',');
+      const x: number = parseFloat(marker[0].substr(0, commaIndex));
+      const y: number = parseFloat(marker[0].substr(commaIndex + 1, marker[0].length));
+      const properties: [string, string][] = [
+        ['id', marker[1]],
+        ['x', `${x - POINT_CONTROL_SIZE / 2}`],
+        ['y', `${y - POINT_CONTROL_SIZE / 2}`],
+        ['height', `${POINT_CONTROL_SIZE}`],
+        ['width', `${POINT_CONTROL_SIZE}`],
+        ['fill', `${STROKE_COLOR}`],
+      ];
+      const controlPoint: SVGElement = RendererSingleton.renderer.createElement('rect', 'svg');
+      properties.forEach( (property: [string, string]) => controlPoint.setAttribute(property[0], property[1]));
+      controlPoint.addEventListener('mousedown', () => {
+        if (!this.isScaling) {
+          this.isScaling = true;
+          this.currentMarker = controlPoint.id;
+        }
+      });
+      gBoundingRect.appendChild(controlPoint);
+    });
+  }
 
-    // nesting children
-    RendererSingleton.renderer.appendChild(marker, circle);
-    RendererSingleton.renderer.appendChild(defs, marker);
-    RendererSingleton.renderer.appendChild(boundingRect, defs);
-    RendererSingleton.renderer.appendChild(boundingRect, polyline);
-    RendererSingleton.renderer.appendChild(RendererSingleton.canvas, boundingRect);
+  private currentBoundingRectDimensions: Dimensions;
+  // private hasSetInitialScale = false;
+  // private hasSetInitialTranslate = false;
+
+  scale(preserveRatio: boolean): void {
+    if (this.isScaling) {
+      const scalingFactors: [number, number, number, number] = this.getScalingFactors(preserveRatio);
+      const scalingFactorX: number = scalingFactors[0];
+      const scalingFactorY: number = scalingFactors[1];
+      const xCorrection: number = scalingFactors[2];
+      const yCorrection: number = scalingFactors[3];
+      // this.scaleElement(this.gBoundingRect, scalingFactorX, scalingFactorY);
+      this.selectedElements.forEach( (svgElement: SVGElement) => {
+        this.scaleElement(svgElement, scalingFactorX, scalingFactorY, xCorrection, yCorrection);
+        // console.log(scalingFactorX, scalingFactorY);
+      });
+      this.removeGBoundingRect();
+      this.addBoundingRect();
+    }
+  }
+
+  scaleElement(svgElement: SVGElement, scalingFactorX: number, scalingFactorY: number, xCorrection: number, yCorrection: number): void {
+    const initialScaleValues: [number, number] =
+      this.transform.getTransformationFromMatrix(this.initialTransformValues.get(svgElement) as string, Transformation.SCALE);
+    // console.log('scales values: ' + initialScaleValues[0] + ', ' + initialScaleValues[1]);
+    const initialTranslateValues: [number, number] =
+      this.transform.getTransformationFromMatrix(this.initialTransformValues.get(svgElement) as string, Transformation.TRANSLATE);
+    this.transform.scale(svgElement, scalingFactorX, scalingFactorY, initialScaleValues[0], initialScaleValues[1]);
+    const correctedInitialX = initialTranslateValues[0] * scalingFactorX;
+    const correctedInitialY = initialTranslateValues[1] * scalingFactorY;
+    this.transform.translate(svgElement, xCorrection, yCorrection, correctedInitialX, correctedInitialY);
+  }
+
+  private getScalingFactors(preserveRatio: boolean): [number, number, number, number] {
+    let scalingFactorX: number;
+    let scalingFactorY: number;
+
+    scalingFactorY = 1;
+    scalingFactorX = 1;
+
+    if (this.currentMarker.includes('top')) {
+      scalingFactorY = 1 + -(this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
+    } else if (this.currentMarker.includes('bottom')) {
+      scalingFactorY = 1 + (this.mousePosition.canvasMousePositionY - this.startY) / this.startHeight;
+    }
+    if (this.currentMarker.includes('left')) {
+      scalingFactorX = 1 + -(this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
+    } else if (this.currentMarker.includes('right')) {
+      scalingFactorX = 1 + (this.mousePosition.canvasMousePositionX - this.startX) / this.startWidth;
+    }
+    if (preserveRatio) {
+      if (Math.abs(scalingFactorX) > Math.abs(scalingFactorY)) {
+        scalingFactorY = scalingFactorX;
+      } else {
+        scalingFactorX = scalingFactorY;
+      }
+    }
+    const corrections: number[] = this.calculateCorrection(scalingFactorX, scalingFactorY);
+    return [scalingFactorX, scalingFactorY, corrections[0], corrections[1]];
+  }
+
+  calculateCorrection(scalingFactorX: number, scalingFactorY: number): number[] {
+    let xCorrection: number;
+    let yCorrection: number;
+    xCorrection = 0;
+    yCorrection = 0;
+    let height: number;
+    let width: number;
+    if (this.scaleFromCenter) {
+      height = this.startHeight / 2;
+      width = this.startWidth / 2;
+    } else {
+      height = this.startHeight;
+      width = this.startWidth;
+    }
+    if (this.currentMarker.includes('top')) {
+      yCorrection = -((this.startY + height) * (scalingFactorY - 1));
+    } else if (this.currentMarker.includes('bottom')) {
+      yCorrection = -((this.startY - height) * (scalingFactorY - 1));
+    }
+    if (this.currentMarker.includes('left')) {
+      xCorrection = -((this.startX + width) * (scalingFactorX - 1));
+    } else if (this.currentMarker.includes('right')) {
+      xCorrection = -((this.startX - width) * (scalingFactorX - 1));
+    }
+    return [xCorrection, yCorrection];
   }
 
   selectAll(): void {
@@ -295,12 +422,13 @@ export class ObjectSelectorService {
       const xMove = this.mousePosition.canvasMousePositionX - this.startX;
       const yMove = this.mousePosition.canvasMousePositionY - this.startY;
       this.selectedElements.forEach((svgElement: SVGElement) => {
-        this.transform.setTranslationAttribute(svgElement, xMove, yMove);
+        this.transform.translate(svgElement, xMove, yMove);
         this.startX = this.mousePosition.canvasMousePositionX;
         this.startY = this.mousePosition.canvasMousePositionY;
       });
-      this.transform.setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
     }
+    this.removeGBoundingRect();
+    this.addBoundingRect();
   }
 
   translateWithMagnetism() {
@@ -313,9 +441,10 @@ export class ObjectSelectorService {
       this.initialY = this.mousePosition.canvasMousePositionY;
     }
     this.selectedElements.forEach((svgElement: SVGElement) => {
-      this.transform.setTranslationAttribute(svgElement, xMove, yMove);
+      this.transform.translate(svgElement, xMove, yMove);
+      this.startX = this.mousePosition.canvasMousePositionX;
+      this.startY = this.mousePosition.canvasMousePositionY;
     });
-    this.transform.setTranslationAttribute(this.boundingRect.children[1] as SVGElement, xMove, yMove);
   }
 
   beginTranslation(): void {
@@ -324,7 +453,7 @@ export class ObjectSelectorService {
   }
 
   beginTransformation(): void {
-    this.initialTransformValues = this.createTransformMap(this.selectedElements);
+    this.initialTransformValues = this.createTransformationMap(this.selectedElements);
   }
 
   finishTranslation(): void {
@@ -333,37 +462,39 @@ export class ObjectSelectorService {
   }
 
   finishTransformation(): void {
-    const newTransforms: Map<SVGElement, string> = this.createTransformMap(this.selectedElements);
+    const newTransforms: Map<SVGElement, string> = this.createTransformationMap(this.selectedElements);
     this.pushTransformCommand(newTransforms, this.initialTransformValues);
   }
 
   pushTransformCommand(newTransforms: Map<SVGElement, string>, oldTransforms: Map<SVGElement, string>): void {
     const svgElements: SVGElement[] = [...this.selectedElements];
-    svgElements.push(this.boundingRect.children[1] as SVGElement);
+    const removeGBoundingRect = () => {
+      if (this.hasBoundingRect) {
+        this.removeGBoundingRect();
+      }
+    };
+    // svgElements.push(this.gBoundingRect as SVGElement);
     const command: Command = {
       execute(): void {
+        removeGBoundingRect();
         svgElements.forEach((svgElement: SVGElement) =>
           svgElement.setAttribute('transform', `${newTransforms.get(svgElement)}`));
       },
       unexecute(): void {
+        removeGBoundingRect();
         svgElements.forEach((svgElement: SVGElement) =>
-          svgElement.setAttribute('transform', `${oldTransforms.get(svgElement)}`));
+        svgElement.setAttribute('transform', `${oldTransforms.get(svgElement)}`));
       },
     };
     this.undoRedoService.pushCommand(command);
   }
 
-  createTransformMap(elements: SVGElement[]): Map<SVGElement, string> {
+  createTransformationMap(elements: SVGElement[]): Map<SVGElement, string> {
     const map: Map<SVGElement, string> = new Map<SVGElement, string>();
-    // Add the bounding rect line
-    const elementsWithBoundingRect: SVGElement[] = [...elements];
-    elementsWithBoundingRect.push(this.boundingRect.children[1] as SVGElement);
     // Iterate for each elements and the bounding line
-    elementsWithBoundingRect.forEach((element: SVGElement) => {
+    elements.forEach((element: SVGElement) => {
       // Make sure that the element has a transform attribute
-      if (!element.getAttribute('transform')) {
-        element.setAttribute('transform', '');
-      }
+      this.transform.checkTransformAttribute(element);
       map.set(element, element.getAttribute('transform') as string);
     });
     return map;
