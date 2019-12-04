@@ -37,6 +37,8 @@ import {LastTenColorsComponent} from '../../modals/color-picker-module/last-ten-
 import {ToolsAttributesBarComponent} from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
 import {DrawingViewComponent} from './drawing-view.component';
+import {ScaleService} from "../../../services/transformations/scale.service";
+import {TranslateService} from "../../../services/transformations/translate.service";
 
 export const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =
   jasmine.createSpyObj('ModalManagerService', ['showCreateDrawingDialog']);
@@ -180,6 +182,8 @@ export const DRAWING_SERVICES = [
   UndoRedoService,
   FeatherPenGeneratorService,
   TransformService,
+  ScaleService,
+  TranslateService,
   MousePositionService,
   ObjectSelectorService,
   GridTogglerService,
