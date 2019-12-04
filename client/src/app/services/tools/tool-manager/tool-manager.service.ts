@@ -157,13 +157,13 @@ export class ToolManagerService {
     this.emojiGenerator.lowerRotationStep();
     this.featherGenerator.lowerRotationStep();
     this.objectSelector.scaleFromCenter = true;
-  } // To extract??
+  }
 
   changeElementAltUp() {
     this.emojiGenerator.higherRotationStep();
     this.featherGenerator.higherRotationStep();
     this.objectSelector.scaleFromCenter = false;
-  } // To extract??
+  }
 
   changeElementShiftDown() {
     this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);

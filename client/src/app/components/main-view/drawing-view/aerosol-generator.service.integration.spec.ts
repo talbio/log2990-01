@@ -12,7 +12,6 @@ import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-at
 import { DrawingViewComponent } from './drawing-view.component';
 import {STUB_COMPONENTS} from './drawing-view.component.spec';
 import {
-//   CanvasDrawer,
   COMPONENTS,
   DRAWING_SERVICES,
   IMPORTS,
@@ -34,7 +33,6 @@ const doNothing = ((ms: number) => {
 describe('Aerosol integrations tests', () => {
   let component: DrawingViewComponent;
   let fixture: ComponentFixture<DrawingViewComponent>;
-  // let canvasDrawer: CanvasDrawer;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -51,7 +49,6 @@ describe('Aerosol integrations tests', () => {
     ).compileComponents().then(() => {
       fixture = TestBed.createComponent(DrawingViewComponent);
       component = fixture.componentInstance;
-      // canvasDrawer = new CanvasDrawer(fixture, component);
       fixture.detectChanges();
     });
   }));
