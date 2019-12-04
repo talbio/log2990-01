@@ -7,7 +7,7 @@ export enum Transformation {
 }
 
 @Injectable()
-export class TransformationService {
+export class TransformService {
 
   private readonly X_TRANSLATE_INDEX = 4;
   private readonly Y_TRANSLATE_INDEX = 5;
