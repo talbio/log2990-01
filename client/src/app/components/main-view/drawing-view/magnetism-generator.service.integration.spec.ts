@@ -6,9 +6,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { Tools } from 'src/app/data-structures/tools';
-import { MagnetismGeneratorService } from 'src/app/services/tools/magnetism-generator/magnetism-generator.service';
+import { MagnetismService } from 'src/app/services/tools/magnetism/magnetism.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
-import { Transformation, TransformationService } from 'src/app/services/transformation/transformation.service';
+import { Transformation, TransformService } from 'src/app/services/transformations/transform.service';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
@@ -124,7 +124,7 @@ describe('MagnetismGeneratorService', () => {
         grid._isMagnetic = true;
         grid._gridSize = 100;
         const selector = fixture.debugElement.injector.get(ObjectSelectorService);
-        const magnetism = fixture.debugElement.injector.get(MagnetismGeneratorService);
+        const magnetism = fixture.debugElement.injector.get(MagnetismService);
         const mouseMoveEvent1 = new MouseEvent('mousemove', {
             movementX: 100,
             movementY: 0,
@@ -142,7 +142,7 @@ describe('MagnetismGeneratorService', () => {
         // get translation value
         const drawing = svgHandle.querySelector('#rect0');
         const transformation: string  = (drawing as Element).getAttribute('transform') as string;
-        const transformationService = fixture.debugElement.injector.get(TransformationService);
+        const transformationService = fixture.debugElement.injector.get(TransformService);
         const translation = transformationService.getTransformationFromMatrix(transformation, Transformation.TRANSLATE);
         const xTranslation = translation[0];
         const yTranslation = translation[1];

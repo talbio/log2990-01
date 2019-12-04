@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TransformationService } from 'src/app/services/transformation/transformation.service';
+import { TransformService } from 'src/app/services/transformations/transform.service';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
@@ -57,7 +57,7 @@ export class EmojiGeneratorService extends AbstractGenerator {
 
   constructor(protected mouse: MousePositionService,
               protected undoRedoService: UndoRedoService,
-              private transform: TransformationService) {
+              private transform: TransformService) {
     super(mouse, undoRedoService);
     this.emoji = Emojis.LEAF;
     this.angle = MIN_ROTATION_ANGLE;

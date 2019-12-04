@@ -4,7 +4,7 @@ import { RendererSingleton } from '../../renderer-singleton';
 import { GridTogglerService } from '../grid/grid-toggler.service';
 
 @Injectable()
-export class MagnetismGeneratorService {
+export class MagnetismService {
     movementMap: Map<string, boolean> = new Map();
     initialX: number;
     initialY: number;

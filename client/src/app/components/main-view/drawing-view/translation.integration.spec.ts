@@ -6,7 +6,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { Tools } from 'src/app/data-structures/tools';
-import { Transformation, TransformationService } from 'src/app/services/transformation/transformation.service';
+import { Transformation, TransformService } from 'src/app/services/transformations/transform.service';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { RendererSingleton } from '../../../services/renderer-singleton';
@@ -122,7 +122,7 @@ describe('Translation', () => {
         canvasDrawer.drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
         const rectangle: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 1);
         canvasDrawer.scaleElement(100, 100);
-        const transformationService = fixture.debugElement.injector.get(TransformationService);
+        const transformationService = fixture.debugElement.injector.get(TransformService);
         let matrix = rectangle.getAttribute('transform') as string;
         const firstTranslate: number[] = transformationService.getTransformationFromMatrix(matrix, Transformation.TRANSLATE);
         canvasDrawer.translateElement(150, 150);

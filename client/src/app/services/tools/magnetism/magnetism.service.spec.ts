@@ -1,21 +1,21 @@
 import { TestBed } from '@angular/core/testing';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { GridTogglerService } from '../grid/grid-toggler.service';
-import { MagnetismGeneratorService } from './magnetism-generator.service';
+import { MagnetismService } from './magnetism.service';
 
 describe('MagnetismGeneratorService', () => {
     beforeEach(() => TestBed.configureTestingModule({
         providers: [
-            MagnetismGeneratorService, MousePositionService, GridTogglerService],
+            MagnetismService, MousePositionService, GridTogglerService],
     }));
 
     it('should be created', () => {
-        const magnetism: MagnetismGeneratorService = TestBed.get(MagnetismGeneratorService);
+        const magnetism: MagnetismService = TestBed.get(MagnetismService);
         expect(magnetism).toBeTruthy();
     });
 
     it('#setMovementDirection should set the right direction', () => {
-    const magnetism: MagnetismGeneratorService = TestBed.get(MagnetismGeneratorService);
+    const magnetism: MagnetismService = TestBed.get(MagnetismService);
     // movement is initialized as being false
     magnetism.movementMap.forEach((direction) => { expect(direction).not.toBeTruthy(); });
     // set movement in positive direction (down and right)
@@ -37,8 +37,8 @@ describe('MagnetismGeneratorService', () => {
     });
 
     it('#isCloseEnough should return true if distance is less than half a grid square size', () => {
-        const magnetism: MagnetismGeneratorService = TestBed.get(MagnetismGeneratorService);
-        const grid: GridTogglerService = TestBed.get(MagnetismGeneratorService);
+        const magnetism: MagnetismService = TestBed.get(MagnetismService);
+        const grid: GridTogglerService = TestBed.get(MagnetismService);
         grid._gridSize = 100;
         let distanceToLine = 49;
         expect(magnetism.isCloseEnough(distanceToLine)).toBeTruthy();
@@ -47,7 +47,7 @@ describe('MagnetismGeneratorService', () => {
     });
 
     it('#isOutOfCanvasBounderies should detect if translation would be out of bounderies', () => {
-        const magnetism: MagnetismGeneratorService = TestBed.get(MagnetismGeneratorService);
+        const magnetism: MagnetismService = TestBed.get(MagnetismService);
         // where parameters are selectorLeftSide(or top), selectorRightSide(or bottom), movement, canvas width(or height)
         expect(magnetism.isOutOfBounderies(50, 100, 10, 200)).not.toBeTruthy();
         expect(magnetism.isOutOfBounderies(50, 100, 10, 100)).toBeTruthy();
@@ -84,10 +84,10 @@ describe('MagnetismGeneratorService', () => {
     it('#getTranslationWithMagnetismValue() should return values that get the selected dot to closest horizontal line', () => {
         // moving horizontally, closest line is at x = 100
         const mousePosition: MousePositionService = TestBed.get(MousePositionService);
-        const magnetism: MagnetismGeneratorService = TestBed.get(MagnetismGeneratorService);
+        const magnetism: MagnetismService = TestBed.get(MagnetismService);
         const positiveMouseMove = {movementX: 1, movementY: 0};
         magnetism.setMovementDirection(positiveMouseMove as MouseEvent);
-        const grid: GridTogglerService = TestBed.get(MagnetismGeneratorService);
+        const grid: GridTogglerService = TestBed.get(MagnetismService);
         grid._gridSize = 100;
         spyOn(magnetism, 'isOutOfCanvasBounderies').and.returnValue(false);
         mousePosition.canvasMousePositionX = 51;
@@ -99,10 +99,10 @@ describe('MagnetismGeneratorService', () => {
     it('#getTranslationWithMagnetismValue() should return values that get the selected dot to closest vertical line', () => {
         // moving vertically, closest line is at y = 100
         const mousePosition: MousePositionService = TestBed.get(MousePositionService);
-        const magnetism: MagnetismGeneratorService = TestBed.get(MagnetismGeneratorService);
+        const magnetism: MagnetismService = TestBed.get(MagnetismService);
         const positiveMouseMove = {movementX: 0, movementY: 1};
         magnetism.setMovementDirection(positiveMouseMove as MouseEvent);
-        const grid: GridTogglerService = TestBed.get(MagnetismGeneratorService);
+        const grid: GridTogglerService = TestBed.get(MagnetismService);
         grid._gridSize = 100;
         spyOn(magnetism, 'isOutOfCanvasBounderies').and.returnValue(false);
         mousePosition.canvasMousePositionY = 51;

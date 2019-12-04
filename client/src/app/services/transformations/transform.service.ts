@@ -46,7 +46,6 @@ export class TransformationService {
         return [matrix[this.X_ROTATE_INDEX], matrix[this.Y_ROTATE_INDEX]];
       default:
         return [0, 0];
-
     }
   }
 

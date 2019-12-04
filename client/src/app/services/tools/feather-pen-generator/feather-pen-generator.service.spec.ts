@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { BOTTOM_AFTER, BOTTOM_BEFORE, TOP_AFTER, TOP_BEFORE } from 'src/app/data-structures/constants';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
-import { FeatherPenGeneratorService } from './feather-Pen-generator.service';
+import { FeatherPenGeneratorService } from './feather-pen-generator.service';
 
 describe('featherPenGeneratorService', () => {
   beforeEach(() => TestBed.configureTestingModule({

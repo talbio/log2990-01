@@ -11,7 +11,7 @@ import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
 import { ColorService } from '../../../services/tools/color/color.service';
-import { FeatherPenGeneratorService } from '../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
+import { FeatherPenGeneratorService } from '../../../services/tools/feather-pen-generator/feather-pen-generator.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { ColorPaletteComponent } from '../../modals/color-picker-module/color-palette/color-palette.component';
 import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';

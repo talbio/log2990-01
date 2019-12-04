@@ -3,8 +3,8 @@ import {CommonModule} from '@angular/common';
 import {ComponentFixture} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 import { AerosolGeneratorService } from 'src/app/services/tools/aerosol-generator/aerosol-generator.service';
-import { MagnetismGeneratorService } from 'src/app/services/tools/magnetism-generator/magnetism-generator.service';
-import { TransformationService } from 'src/app/services/transformation/transformation.service';
+import { MagnetismService } from 'src/app/services/tools/magnetism/magnetism.service';
+import { TransformService } from 'src/app/services/transformations/transform.service';
 import {AbstractClosedShape} from '../../../data-structures/abstract-closed-shape';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import {AbstractWritingTool} from '../../../data-structures/abstract-writing-tool';
@@ -20,7 +20,7 @@ import {EllipseGeneratorService} from '../../../services/tools/ellipse-generator
 import {EmojiGeneratorService} from '../../../services/tools/emoji-generator/emoji-generator.service';
 import {EraserService} from '../../../services/tools/eraser/eraser.service';
 import {EyedropperService} from '../../../services/tools/eyedropper/eyedropper.service';
-import { FeatherPenGeneratorService } from '../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
+import { FeatherPenGeneratorService } from '../../../services/tools/feather-pen-generator/feather-pen-generator.service';
 import {GridTogglerService} from '../../../services/tools/grid/grid-toggler.service';
 import {LineGeneratorService} from '../../../services/tools/line-generator/line-generator.service';
 import {ObjectSelectorService} from '../../../services/tools/object-selector/object-selector.service';
@@ -179,14 +179,14 @@ export const DRAWING_SERVICES = [
   ClipboardService,
   UndoRedoService,
   FeatherPenGeneratorService,
-  TransformationService,
+  TransformService,
   MousePositionService,
   ObjectSelectorService,
   GridTogglerService,
   PolygonGeneratorService,
   EraserService,
   PenGeneratorService,
-  MagnetismGeneratorService,
+  MagnetismService,
 ];
 
 export const COMPONENTS = [

@@ -5,7 +5,7 @@ import { RendererSingleton } from '../../renderer-singleton';
 import {UndoRedoService} from '../../undo-redo/undo-redo.service';
 import { ObjectSelectorService } from '../object-selector/object-selector.service';
 import {ToolManagerService} from '../tool-manager/tool-manager.service';
-import { TransformationService } from './../../transformation/transformation.service';
+import { TransformService } from '../../transformations/transform.service';
 
 @Injectable()
 export class ClipboardService implements CommandGenerator {
@@ -20,7 +20,7 @@ export class ClipboardService implements CommandGenerator {
   constructor(private selector: ObjectSelectorService,
               private toolManager: ToolManagerService,
               private undoRedoService: UndoRedoService,
-              private transform: TransformationService) {
+              private transform: TransformService) {
     this.selectedItems = [];
     this.memorizedElements = [];
     this.sideImpacts = [false, false];
