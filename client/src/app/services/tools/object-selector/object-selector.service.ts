@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Colors } from 'src/app/data-structures/colors';
 import { Command } from 'src/app/data-structures/command';
+import {BOUNDING_RECT_ID, G_BOUNDING_RECT_ID, SELECTOR_RECT_ID} from '../../../data-structures/constants';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { RendererSingleton } from '../../renderer-singleton';
 import {RotateService} from '../../transformations/rotate.service';
@@ -22,10 +23,6 @@ interface Dimensions {
   left: number;
   right: number;
 }
-
-export const SELECTOR_RECT_ID = 'selectorRect';
-export const BOUNDING_RECT_ID = 'boundingRect';
-export const G_BOUNDING_RECT_ID = 'gBoundingRect';
 
 @Injectable()
 export class ObjectSelectorService {
