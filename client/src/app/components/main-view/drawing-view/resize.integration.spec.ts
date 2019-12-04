@@ -6,7 +6,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { Tools } from 'src/app/data-structures/tools';
-import { Transformation, TransformationService } from 'src/app/services/transformation/transformation.service';
+import { Transformation, TransformService } from 'src/app/services/transformations/transform.service';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { RendererSingleton } from '../../../services/renderer-singleton';
@@ -40,7 +40,7 @@ describe('Resize', () => {
     let component: DrawingViewComponent;
     let fixture: ComponentFixture<DrawingViewComponent>;
     let canvasDrawer: CanvasDrawer;
-    let transformationService: TransformationService;
+    let transformationService: TransformService;
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [
@@ -75,7 +75,7 @@ describe('Resize', () => {
             fixture = TestBed.createComponent(DrawingViewComponent);
             component = fixture.componentInstance;
             canvasDrawer = new CanvasDrawer(fixture, component);
-            transformationService = fixture.debugElement.injector.get(TransformationService);
+            transformationService = fixture.debugElement.injector.get(TransformService);
             fixture.detectChanges();
         });
     }));

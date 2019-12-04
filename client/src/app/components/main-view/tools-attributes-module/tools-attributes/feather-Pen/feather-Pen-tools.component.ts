@@ -1,5 +1,5 @@
 import { Component} from '@angular/core';
-import { FeatherPenGeneratorService } from '../../../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
+import { FeatherPenGeneratorService } from '../../../../../services/tools/feather-pen-generator/feather-pen-generator.service';
 
 @Component({
   selector: 'app-featherPen-tools',
