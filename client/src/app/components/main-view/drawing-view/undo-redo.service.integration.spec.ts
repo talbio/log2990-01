@@ -223,5 +223,15 @@ describe('UndoRedoService integrations tests', () => {
       const newTranslate: string = rectangle.getAttribute('transform') as string;
       expectPropertyToBeUndoAndRedoable(rectangle, 'transform', newTranslate, initialTranslate);
     });
+
+    it('should be able to undo and redo a scaling', () => {
+      const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
+      canvasDrawer.drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
+      const rectangle: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 1);
+      const initialTranslate = 'matrix(1,0,0,1,0,0)';
+      canvasDrawer.scaleElement(100, 100);
+      const newTranslate: string = rectangle.getAttribute('transform') as string;
+      expectPropertyToBeUndoAndRedoable(rectangle, 'transform', newTranslate, initialTranslate);
+    });
   });
 });
