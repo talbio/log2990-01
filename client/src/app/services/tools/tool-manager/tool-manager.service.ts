@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import {Tools} from '../../../data-structures/tools';
 import {RendererSingleton} from '../../renderer-singleton';
+import {RotateService} from '../../transformations/rotate.service';
 import {ScaleService} from '../../transformations/scale.service';
 import { AerosolGeneratorService } from '../aerosol-generator/aerosol-generator.service';
 import { BrushGeneratorService } from '../brush-generator/brush-generator.service';
@@ -57,7 +58,8 @@ export class ToolManagerService {
               private eraser: EraserService,
               private featherGenerator: FeatherPenGeneratorService,
               protected colorService: ColorService,
-              private scaleService: ScaleService) {
+              private scaleService: ScaleService,
+              private rotateService: RotateService) {
     this._activeTool = Tools.Pencil;
     this.numberOfElements = this.DEFAULT_NUMBER_OF_ELEMENTS;
     this.initializeGenerators();
@@ -158,14 +160,14 @@ export class ToolManagerService {
   changeElementAltDown() {
     this.emojiGenerator.lowerRotationStep();
     this.featherGenerator.lowerRotationStep();
-    this.objectSelector.lowerRotationStep();
+    this.rotateService.lowerRotationStep();
     this.scaleService.scaleFromCenter = true;
   } // To extract??
 
   changeElementAltUp() {
     this.emojiGenerator.higherRotationStep();
     this.featherGenerator.higherRotationStep();
-    this.objectSelector.higherRotationStep();
+    this.rotateService.higherRotationStep();
     this.scaleService.scaleFromCenter = false;
   } // To extract??
 
@@ -256,8 +258,8 @@ export class ToolManagerService {
       this.emojiGenerator.rotateEmoji(mouseEvent);
     } else if (this.activeGenerator === this.featherGenerator) {
       this.featherGenerator.rotateFeather(mouseEvent);
-    } else if (this.objectSelector.selectedElements !== null) {
-      this.objectSelector.rotateSelectedElements(mouseEvent);
+    } else if (!this.objectSelector.selectedElements.length && this.activeTool === Tools.Selector) {
+      this.objectSelector.rotate(mouseEvent);
     }
   }
 
