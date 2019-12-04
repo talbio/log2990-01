@@ -135,6 +135,32 @@ export class CanvasDrawer {
     selector.onMouseMove(0, mouseEvent);
     selector.onMouseUp();
   }
+  scaleElement(xPos: number, yPos: number) {
+    const toolManagerService = this.fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Selector;
+    const mouseEvent = new MouseEvent('mousedown', {
+      button: 0,
+      clientX: xPos,
+      clientY: yPos,
+      bubbles: true,
+    });
+    // we select the object
+    const mouse = this.fixture.debugElement.injector.get(MousePositionService);
+    mouse.canvasMousePositionX = xPos;
+    mouse.canvasMousePositionY = yPos;
+    const selector = this.fixture.debugElement.injector.get(ObjectSelectorService);
+    selector.onMouseDown();
+    selector.onMouseUp();
+    // now we select the top left resize square
+    const resizeSquare = this.fixture.debugElement.nativeElement.querySelector('#top-left');
+    resizeSquare.dispatchEvent(mouseEvent);
+    selector.onMouseDown();
+    mouse.canvasMousePositionX = xPos + 10;
+    mouse.canvasMousePositionY = yPos + 10;
+    // currentChildPosition is not important here so we put 0
+    selector.onMouseMove(0, mouseEvent);
+    selector.onMouseUp();
+  }
 }
 export const DRAWING_SERVICES = [
   AbstractGenerator,
