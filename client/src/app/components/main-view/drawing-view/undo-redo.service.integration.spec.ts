@@ -67,6 +67,16 @@ describe('UndoRedoService integrations tests', () => {
     expect(component).toBeTruthy();
   });
 
+  const expectPropertyToBeUndoAndRedoable =
+    (svgElement: SVGElement, property: string, newAttribute: string, ancientAttribute: string) => {
+    expect(svgElement.getAttribute(property)).toBe(newAttribute);
+    const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
+    undoRedoService.undo();
+    expect(svgElement.getAttribute(property)).toBe(ancientAttribute);
+    undoRedoService.redo();
+    expect(svgElement.getAttribute(property)).toBe(newAttribute);
+  };
+
   describe('Generators', () => {
     it('should be able to undo and redo a rectangle', async () => {
       await expectCreationToBeUndoable(Tools.Rectangle, 'rect0');
@@ -153,16 +163,6 @@ describe('UndoRedoService integrations tests', () => {
       element.dispatchEvent(mouseEvent);
     };
 
-    const expectPropertyToBeUndoAndRedoable =
-      (svgElement: SVGElement, property: string, newAttribute: string, ancientAttribute: string) => {
-      expect(svgElement.getAttribute(property)).toBe(newAttribute);
-      const undoRedoService = fixture.debugElement.injector.get(UndoRedoService);
-      undoRedoService.undo();
-      expect(svgElement.getAttribute(property)).toBe(ancientAttribute);
-      undoRedoService.redo();
-      expect(svgElement.getAttribute(property)).toBe(newAttribute);
-    };
-
     /**
      * since closed forms are treated in the same way for the color change,
      * we test only for a rectangle and we can assert that it will also work for ellipse and polygon.
@@ -211,6 +211,17 @@ describe('UndoRedoService integrations tests', () => {
       const pen: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 1);
       applyColorApplicatorOnElement(100, 100, pen, changedColor, true);
       expectPropertyToBeUndoAndRedoable(pen, 'stroke', changedColor, initialColor);
+    });
+  });
+  describe('Transformations', () => {
+    it('should be able to undo and redo a translation', () => {
+      const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
+      canvasDrawer.drawShapeOnCanvas(100, 100, 200, 200, Tools.Rectangle);
+      const rectangle: SVGElement = canvasDrawer.getLastSvgElement(svgCanvas, 1);
+      const initialTranslate = 'matrix(1,0,0,1,0,0)';
+      canvasDrawer.translateElement(150, 150);
+      const newTranslate: string = rectangle.getAttribute('transform') as string;
+      expectPropertyToBeUndoAndRedoable(rectangle, 'transform', newTranslate, initialTranslate);
     });
   });
 });
