@@ -7,21 +7,20 @@ import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { Tools } from 'src/app/data-structures/tools';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
-import { DemoMaterialModule } from '../../../material.module';
-import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
-import { RendererSingleton } from '../../../services/renderer-singleton';
-import { ColorService } from '../../../services/tools/color/color.service';
-import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
-import { ColorPaletteComponent } from '../../modals/color-picker-module/color-palette/color-palette.component';
-import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
-import { ColorSliderComponent } from '../../modals/color-picker-module/color-slider/color-slider.component';
-import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
-import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
-import { WorkZoneComponent } from '../work-zone/work-zone.component';
-import { MousePositionService } from './../../../services/mouse-position/mouse-position.service';
-import { TransformService, Transformation } from './../../../services/transformations/transform.service';
-import { RotateService } from './../../../services/transformations/rotate.service';
-import { DrawingViewComponent } from './drawing-view.component';
+import { DemoMaterialModule } from '../../../../material.module';
+import { ModalManagerService } from '../../../../services/modal-manager/modal-manager.service';
+import { MousePositionService } from '../../../../services/mouse-position/mouse-position.service';
+import { RendererSingleton } from '../../../../services/renderer-singleton';
+import { ColorService } from '../../../../services/tools/color/color.service';
+import { ToolManagerService } from '../../../../services/tools/tool-manager/tool-manager.service';
+import { Transformation, TransformService } from '../../../../services/transformations/transform.service';
+import { ColorPaletteComponent } from '../../../modals/color-picker-module/color-palette/color-palette.component';
+import { ColorPickerDialogComponent } from '../../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
+import { ColorSliderComponent } from '../../../modals/color-picker-module/color-slider/color-slider.component';
+import { LastTenColorsComponent } from '../../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
+import { ToolsAttributesBarComponent } from '../../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
+import { WorkZoneComponent } from '../../work-zone/work-zone.component';
+import { DrawingViewComponent } from '../drawing-view.component';
 import { CanvasDrawer, DRAWING_SERVICES } from './integration-tests-environment.spec';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
@@ -39,12 +38,11 @@ const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =
 const httpClientSpy: jasmine.SpyObj<HttpClient> =
     jasmine.createSpyObj('HttpClient', ['get', 'post']);
 
-fdescribe('Rotation', () => {
+describe('Rotation', () => {
     let component: DrawingViewComponent;
     let fixture: ComponentFixture<DrawingViewComponent>;
     let transform: TransformService;
     let canvasDrawer: CanvasDrawer;
-    let rotate: RotateService;
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [
@@ -77,7 +75,6 @@ fdescribe('Rotation', () => {
         },
         ).compileComponents().then(() => {
             fixture = TestBed.createComponent(DrawingViewComponent);
-            rotate = fixture.debugElement.injector.get(RotateService);
             component = fixture.componentInstance;
             canvasDrawer = new CanvasDrawer(fixture, component);
             transform = fixture.debugElement.injector.get(TransformService);
