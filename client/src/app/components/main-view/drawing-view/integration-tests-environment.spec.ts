@@ -111,6 +111,30 @@ export class CanvasDrawer {
   getLastSvgElement(svgHandle: SVGElement, position: number)  {
     return svgHandle.children.item(svgHandle.children.length - position) as SVGElement;
   }
+  translateElement(xPos: number, yPos: number) {
+    const toolManagerService = this.fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Selector;
+    const mouseEvent = new MouseEvent('mousemove', {
+      button: 0,
+      clientX: xPos,
+      clientY: yPos,
+      bubbles: true,
+    });
+    // we select the object
+    const mouse = this.fixture.debugElement.injector.get(MousePositionService);
+    mouse.canvasMousePositionX = xPos;
+    mouse.canvasMousePositionY = yPos;
+    const selector = this.fixture.debugElement.injector.get(ObjectSelectorService);
+    selector.onMouseDown();
+    selector.onMouseUp();
+    // now we move it 10 to the down-right
+    selector.onMouseDown();
+    mouse.canvasMousePositionX = xPos + 10;
+    mouse.canvasMousePositionY = yPos + 10;
+    // currentChildPosition is not important here so we put 0
+    selector.onMouseMove(0, mouseEvent);
+    selector.onMouseUp();
+  }
 }
 export const DRAWING_SERVICES = [
   AbstractGenerator,
