@@ -31,7 +31,7 @@ export class DrawingsService {
                             drawings.push(drawing);
                         }}).catch( (err: Error) => Promise.reject(err));
             }));
-        }).catch( (err: Error) => Promise.reject(err));
+        });
         return drawings;
     }
 

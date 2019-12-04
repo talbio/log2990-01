@@ -39,13 +39,13 @@ export class MongoDbService {
                     this.mongoClient = client;
                 });
             } catch (error) {
-                console.log('MongoDb connection failed ! The error was: ' + error);
+                console.error('MongoDb connection failed ! The error was: ' + error);
             }
         }
     }
 
     async getDrawings(): Promise<MongoDbDrawing[] | Error> {
-        await this.retrieveDrawingCollection().catch( (error) => Promise.reject(error));
+        await this.retrieveDrawingCollection();
         const mongoDbDrawings: MongoDbDrawing[] = [];
         const drawingsCollection: Collection<MongoDbDrawing> = await this.mongoClient.db(DATABASE_NAME).collection(DRAWINGS_COLLECTION);
         const drawings: Cursor<MongoDbDrawing> = await drawingsCollection.find();
@@ -56,7 +56,7 @@ export class MongoDbService {
     }
 
     async postDrawing(drawing: Drawing): Promise<string | Error> {
-        await this.retrieveDrawingCollection().catch( (error) => Promise.reject(error));
+        await this.retrieveDrawingCollection();
 
         let id = '';
         const metaData: DrawingMetaData = {
@@ -74,8 +74,8 @@ export class MongoDbService {
     }
 
     async deleteDrawing(id: string): Promise<void | Error> {
-        await this.retrieveDrawingCollection().catch( (error) => Promise.reject(error));
-        await this.drawingsCollection.deleteOne({ _id: new ObjectId(id) }).catch( (error) => Promise.reject(error));
+        await this.retrieveDrawingCollection();
+        await this.drawingsCollection.deleteOne({ _id: new ObjectId(id) });
     }
 
     private async retrieveDrawingCollection(): Promise<void | Error> {
