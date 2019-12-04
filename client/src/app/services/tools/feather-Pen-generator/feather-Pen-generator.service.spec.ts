@@ -11,8 +11,8 @@ describe('featherPenGeneratorService', () => {
     it('should be able to rotate infinitely in both ways', () => {
       const feather: FeatherPenGeneratorService = TestBed.get(FeatherPenGeneratorService);
       const initialAngle = feather.angle;
-      const forcedCeilingAngle = 179;
-      const forcedFloorAngle = 0;
+      const ceilingAngle = 180;
+      const floorAngle = 0;
       const wheelEventUp = new WheelEvent('mousewheel', {
         deltaY: -1,
       });
@@ -26,13 +26,13 @@ describe('featherPenGeneratorService', () => {
       feather.rotateFeather(wheelEventDown);
       expect(feather.angle).toEqual(initialAngle);
 
-      feather.angle = forcedCeilingAngle;
+      feather.angle = ceilingAngle;
       feather.rotateFeather(wheelEventUp);
-      expect(feather.angle).toEqual(forcedFloorAngle);
+      expect(feather.angle).toEqual(15);
 
-      feather.angle = forcedFloorAngle;
+      feather.angle = floorAngle;
       feather.rotateFeather(wheelEventDown);
-      expect(feather.angle).toEqual(forcedCeilingAngle);
+      expect(feather.angle).toEqual(165);
     });
   });
 
