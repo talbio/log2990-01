@@ -29,6 +29,8 @@ import {PencilGeneratorService} from '../../../services/tools/pencil-generator/p
 import {PolygonGeneratorService} from '../../../services/tools/polygon-generator/polygon-generator.service';
 import {RectangleGeneratorService} from '../../../services/tools/rectangle-generator/rectangle-generator.service';
 import {ToolManagerService} from '../../../services/tools/tool-manager/tool-manager.service';
+import {ScaleService} from '../../../services/transformations/scale.service';
+import {TranslateService} from '../../../services/transformations/translate.service';
 import {UndoRedoService} from '../../../services/undo-redo/undo-redo.service';
 import {ColorPaletteComponent} from '../../modals/color-picker-module/color-palette/color-palette.component';
 import {ColorPickerDialogComponent} from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
@@ -37,8 +39,6 @@ import {LastTenColorsComponent} from '../../modals/color-picker-module/last-ten-
 import {ToolsAttributesBarComponent} from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import {WorkZoneComponent} from '../work-zone/work-zone.component';
 import {DrawingViewComponent} from './drawing-view.component';
-import {ScaleService} from "../../../services/transformations/scale.service";
-import {TranslateService} from "../../../services/transformations/translate.service";
 
 export const modalManagerSpy: jasmine.SpyObj<ModalManagerService> =
   jasmine.createSpyObj('ModalManagerService', ['showCreateDrawingDialog']);

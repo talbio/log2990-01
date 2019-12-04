@@ -16,6 +16,7 @@ import { RendererSingleton } from '../../../services/renderer-singleton';
 import { ColorService } from '../../../services/tools/color/color.service';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
+import {TranslateService} from '../../../services/transformations/translate.service';
 import { ColorPaletteComponent } from '../../modals/color-picker-module/color-palette/color-palette.component';
 import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 import { ColorSliderComponent } from '../../modals/color-picker-module/color-slider/color-slider.component';
@@ -24,7 +25,6 @@ import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-at
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
 import { DrawingViewComponent } from './drawing-view.component';
 import { CanvasDrawer, DRAWING_SERVICES } from './integration-tests-environment.spec';
-import {TranslateService} from "../../../services/transformations/translate.service";
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
