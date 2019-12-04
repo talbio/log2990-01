@@ -1,5 +1,3 @@
-import { MousePositionService } from './../../../services/mouse-position/mouse-position.service';
-import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -8,6 +6,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { Tools } from 'src/app/data-structures/tools';
+import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { RendererSingleton } from '../../../services/renderer-singleton';
@@ -19,9 +18,11 @@ import { ColorSliderComponent } from '../../modals/color-picker-module/color-sli
 import { LastTenColorsComponent } from '../../modals/color-picker-module/last-ten-colors/last-ten-colors.component';
 import { ToolsAttributesBarComponent } from '../tools-attributes-module/tools-attributes-bar/tools-attributes-bar.component';
 import { WorkZoneComponent } from '../work-zone/work-zone.component';
+import { MousePositionService } from './../../../services/mouse-position/mouse-position.service';
+import { TransformService, Transformation } from './../../../services/transformations/transform.service';
+import { RotateService } from './../../../services/transformations/rotate.service';
 import { DrawingViewComponent } from './drawing-view.component';
 import { CanvasDrawer, DRAWING_SERVICES } from './integration-tests-environment.spec';
-import { TransformationService, Transformation } from '../../../services/transformation/transformation.service';
 
 /* tslint:disable:max-classes-per-file for mocking classes*/
 /* tslint:disable:no-string-literal for testing purposes*/
@@ -41,8 +42,9 @@ const httpClientSpy: jasmine.SpyObj<HttpClient> =
 fdescribe('Rotation', () => {
     let component: DrawingViewComponent;
     let fixture: ComponentFixture<DrawingViewComponent>;
-    let transform: TransformationService;
+    let transform: TransformService;
     let canvasDrawer: CanvasDrawer;
+    let rotate: RotateService;
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [
@@ -75,23 +77,13 @@ fdescribe('Rotation', () => {
         },
         ).compileComponents().then(() => {
             fixture = TestBed.createComponent(DrawingViewComponent);
+            rotate = fixture.debugElement.injector.get(RotateService);
             component = fixture.componentInstance;
             canvasDrawer = new CanvasDrawer(fixture, component);
-            transform = fixture.debugElement.injector.get(TransformationService);
+            transform = fixture.debugElement.injector.get(TransformService);
             fixture.detectChanges();
         });
     }));
-
-    // const extractMatrix = (matrix: string): number[] => {
-    //   const matrixBeginIndex = matrix.lastIndexOf('matrix(') + 7;
-    //   const matrixInner = matrix.substring(matrixBeginIndex, matrix.length - 1);
-    //   const eachSlots = matrixInner.split(',');
-    //   const param: number[] = [];
-    //   eachSlots.forEach((slot: string) => {
-    //     param.push(parseFloat(slot));
-    //   });
-    //   return param;
-    // };
 
     it('should be able to rotate a selected element', () => {
       const svgCanvas = component.workZoneComponent.canvasElement as SVGElement;
@@ -214,11 +206,10 @@ fdescribe('Rotation', () => {
     it(`should change the angle of the selection with a mouse's wheel mouvement`, () => {
       // Setting up the event
       const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-      const selector = fixture.debugElement.injector.get(ObjectSelectorService);
       toolManagerService._activeTool = Tools.Selector;
 
-      selector.angle = 153;
-      const initialAngle = selector.angle;
+      rotate.angle = 153;
+      const initialAngle = rotate.angle;
 
       const wheelEvent = new WheelEvent('mousewheel', {
         deltaY: -1,
@@ -227,41 +218,40 @@ fdescribe('Rotation', () => {
       component.workZoneComponent.onMouseWheel(wheelEvent);
 
       // Verify that the angle really changed and that the initial step is of 15
-      expect(selector.angle).toEqual(initialAngle + 15);
+      expect(rotate.angle).toEqual(initialAngle + 15);
     });
 
     it(`should change the step of changes to the angle with the wheel when alt is used`, () => {
       // Setting up the event
       const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-      const selector = fixture.debugElement.injector.get(ObjectSelectorService);
       toolManagerService._activeTool = Tools.Selector;
 
-      const initialAngle = selector.angle;
+      const initialAngle = rotate.angle;
 
       const wheelEvent = new WheelEvent('mousewheel', {
         deltaY: -1,
       });
       toolManagerService.changeElementAltDown();
-      component.workZoneComponent.onMouseWheel(wheelEvent);
+      // component.workZoneComponent.onMouseWheel(wheelEvent);
+      toolManagerService.rotateDispatcher(wheelEvent);
       // When alt is used
-      expect(selector.angle).toEqual(initialAngle + 1);
-      const newAngle = selector.angle;
+      expect(rotate.angle).toEqual(initialAngle + 1);
+      const newAngle = rotate.angle;
 
       toolManagerService.changeElementAltUp();
       component.workZoneComponent.onMouseWheel(wheelEvent);
       // When alt is unused
-      expect(selector.angle).toEqual(newAngle + 15);
+      expect(rotate.angle).toEqual(newAngle + 15);
     });
 
     it(`should infinitely increase or decrease the angle (go full circle)`, () => {
       // Setting up the event
       const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);
-      const selector = fixture.debugElement.injector.get(ObjectSelectorService);
       toolManagerService._activeTool = Tools.Selector;
 
       const floorAngle = 0;
       const ceilingAngle = 360;
-      selector.angle = floorAngle;
+      rotate.angle = floorAngle;
 
       // A positive delta is suppose to reduce the angle,
       // but we'll expect the result to be bigger when we encounter the floor
@@ -269,7 +259,7 @@ fdescribe('Rotation', () => {
         deltaY: 1,
       });
       component.workZoneComponent.onMouseWheel(wheelEvent1);
-      expect(selector.angle).toEqual(ceilingAngle - 15);
+      expect(rotate.angle).toEqual(ceilingAngle - 15);
 
       // A negative delta is suppose to increase the angle,
       // but we'll expect the result to be smaller when we reach the ceiling
@@ -277,6 +267,6 @@ fdescribe('Rotation', () => {
         deltaY: -1,
       });
       component.workZoneComponent.onMouseWheel(wheelEvent2);
-      expect(selector.angle).toEqual(floorAngle);
+      expect(rotate.angle).toEqual(floorAngle);
     });
 });
