@@ -608,7 +608,7 @@ export class ObjectSelectorService {
     const before = element.getAttribute('transform') as string;
     const beginningOfMatrix = 7;
     if (before.lastIndexOf('matrix(') === 0) {
-      return [0, 0, 0, 0, 0, 0];
+      return [1, 0, 0, 1, 0, 0];
     }
     const endOfMatrix = before.indexOf(')');
     const matrixInner = before.substring(beginningOfMatrix, endOfMatrix);
@@ -620,8 +620,40 @@ export class ObjectSelectorService {
     return param;
   }
 
-  findTranslateValues = (transformAttribute: string): number[] => {
-    const parts = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(transformAttribute) as RegExpExecArray;
-    return [parseFloat(parts[1]), parseFloat(parts[2])];
+  multiplyMatrices(mat2: number[][], mat1: number[][]): number[][] {
+    const matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    // 1st line
+    matrix[0][0] = mat1[0][0] * mat2[0][0] + mat1[1][0] * mat2[0][1] + mat1[2][0] * mat2[0][2];
+    matrix[1][0] = mat1[0][0] * mat2[1][0] + mat1[1][0] * mat2[1][1] + mat1[2][0] * mat2[1][2];
+    matrix[2][0] = mat1[0][0] * mat2[2][0] + mat1[1][0] * mat2[2][1] + mat1[2][0] * mat2[2][2];
+
+    // 2nd line
+    matrix[0][1] = mat1[0][1] * mat2[0][0] + mat1[1][1] * mat2[0][1] + mat1[2][1] * mat2[0][2];
+    matrix[1][1] = mat1[0][1] * mat2[1][0] + mat1[1][1] * mat2[1][1] + mat1[2][1] * mat2[1][2];
+    matrix[2][1] = mat1[0][1] * mat2[2][0] + mat1[1][1] * mat2[2][1] + mat1[2][1] * mat2[2][2];
+
+    // 3rd line
+    matrix[0][2] = mat1[0][2] * mat2[0][0] + mat1[1][2] * mat2[0][1] + mat1[2][2] * mat2[0][2];
+    matrix[1][2] = mat1[0][2] * mat2[1][0] + mat1[1][2] * mat2[1][1] + mat1[2][2] * mat2[1][2];
+    matrix[2][2] = mat1[0][2] * mat2[2][0] + mat1[1][2] * mat2[2][1] + mat1[2][2] * mat2[2][2];
+    return matrix;
+  }
+
+  actualizeMatrix(element: SVGElement, matToMultiply: number[][]): number[][] {
+    return this.multiplyMatrices(this.getMatrixInHtml(element), matToMultiply);
+  }
+
+  getMatrixInHtml(element: SVGElement): number[][] {
+    const before = element.getAttribute('transform') as string;
+    const matrixBeginIndex = before.lastIndexOf('matrix(') + 7;
+    const matrixEndIndex = before.lastIndexOf('translate(') - 2;
+    // const translateBeginIndex
+    const matrixInner = before.substring(matrixBeginIndex, matrixEndIndex);
+    const eachSlots = matrixInner.split(', ');
+    const param: number[] = [];
+    eachSlots.forEach((slot: string) => {
+      param.push(parseFloat(slot));
+    });
+    return this.produceMatrix(param[0], param[1], param[2], param[3], param[4], param[5]);
   }
 }
