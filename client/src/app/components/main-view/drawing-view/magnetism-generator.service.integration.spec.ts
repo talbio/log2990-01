@@ -6,9 +6,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { Tools } from 'src/app/data-structures/tools';
-import { MagnetismGeneratorService } from 'src/app/services/tools/magnetism-generator/magnetism-generator.service';
+import { MagnetismService } from 'src/app/services/tools/magnetism/magnetism.service';
 import { ObjectSelectorService } from 'src/app/services/tools/object-selector/object-selector.service';
-import { Transformation, TransformationService } from 'src/app/services/transformation/transformation.service';
+import { Transformation, TransformService } from 'src/app/services/transformations/transform.service';
 import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
@@ -16,6 +16,7 @@ import { RendererSingleton } from '../../../services/renderer-singleton';
 import { ColorService } from '../../../services/tools/color/color.service';
 import { GridTogglerService } from '../../../services/tools/grid/grid-toggler.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
+import {TranslateService} from '../../../services/transformations/translate.service';
 import { ColorPaletteComponent } from '../../modals/color-picker-module/color-palette/color-palette.component';
 import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
 import { ColorSliderComponent } from '../../modals/color-picker-module/color-slider/color-slider.component';
@@ -124,7 +125,8 @@ describe('MagnetismGeneratorService', () => {
         grid._isMagnetic = true;
         grid._gridSize = 100;
         const selector = fixture.debugElement.injector.get(ObjectSelectorService);
-        const magnetism = fixture.debugElement.injector.get(MagnetismGeneratorService);
+        const magnetism = fixture.debugElement.injector.get(MagnetismService);
+        const translate = fixture.debugElement.injector.get(TranslateService);
         const mouseMoveEvent1 = new MouseEvent('mousemove', {
             movementX: 100,
             movementY: 0,
@@ -137,12 +139,12 @@ describe('MagnetismGeneratorService', () => {
         mousePositionService.canvasMousePositionX = 120;
         mousePositionService.canvasMousePositionY = 120;
         selector.translate();
-        selector.finishTranslation();
+        translate.finishTranslation();
 
         // get translation value
         const drawing = svgHandle.querySelector('#rect0');
         const transformation: string  = (drawing as Element).getAttribute('transform') as string;
-        const transformationService = fixture.debugElement.injector.get(TransformationService);
+        const transformationService = fixture.debugElement.injector.get(TransformService);
         const translation = transformationService.getTransformationFromMatrix(transformation, Transformation.TRANSLATE);
         const xTranslation = translation[0];
         const yTranslation = translation[1];

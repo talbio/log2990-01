@@ -3,7 +3,7 @@ import { MousePositionService } from '../../mouse-position/mouse-position.servic
 import { RendererSingleton } from '../../renderer-singleton';
 import { GridTogglerService } from '../grid/grid-toggler.service';
 
-enum Direction {
+export enum Direction {
   Up = 'UP',
   Down = 'DOWN',
   Left = 'LEFT',
@@ -11,7 +11,7 @@ enum Direction {
 }
 
 @Injectable()
-export class MagnetismGeneratorService {
+export class MagnetismService {
     private readonly HORIZONTAL: string;
     private readonly VERTICAL: string;
     private readonly BOUNDING_RECT_ID = '#boundingRect';

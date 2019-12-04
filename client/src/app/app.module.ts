@@ -57,17 +57,17 @@ import { EllipseGeneratorService } from './services/tools/ellipse-generator/elli
 import { EmojiGeneratorService } from './services/tools/emoji-generator/emoji-generator.service';
 import { EraserService } from './services/tools/eraser/eraser.service';
 import { EyedropperService } from './services/tools/eyedropper/eyedropper.service';
-import { FeatherPenGeneratorService } from './services/tools/feather-Pen-generator/feather-Pen-generator.service';
+import { FeatherPenGeneratorService } from './services/tools/feather-pen-generator/feather-pen-generator.service';
 import { GridTogglerService } from './services/tools/grid/grid-toggler.service';
 import { LineGeneratorService } from './services/tools/line-generator/line-generator.service';
-import { MagnetismGeneratorService } from './services/tools/magnetism-generator/magnetism-generator.service';
+import { MagnetismService } from './services/tools/magnetism/magnetism.service';
 import { ObjectSelectorService } from './services/tools/object-selector/object-selector.service';
 import { PenGeneratorService } from './services/tools/pen-generator/pen-generator.service';
 import { PencilGeneratorService } from './services/tools/pencil-generator/pencil-generator.service';
 import { PolygonGeneratorService } from './services/tools/polygon-generator/polygon-generator.service';
 import { RectangleGeneratorService } from './services/tools/rectangle-generator/rectangle-generator.service';
 import { ToolManagerService } from './services/tools/tool-manager/tool-manager.service';
-import { TransformationService } from './services/transformation/transformation.service';
+import { TransformService } from './services/transformations/transform.service';
 
 const customNotifierOptions: NotifierOptions = {
   position: {
@@ -180,14 +180,14 @@ const customNotifierOptions: NotifierOptions = {
     NotifierService,
     LineGeneratorService,
     MousePositionService,
-    TransformationService,
+    TransformService,
     EyedropperService,
     ClipboardService,
     RendererSingleton,
     EraserService,
     PenGeneratorService,
     FeatherPenGeneratorService,
-    MagnetismGeneratorService,
+    MagnetismService,
   ],
   bootstrap: [DrawingViewComponent],
   entryComponents: [

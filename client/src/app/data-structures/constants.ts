@@ -57,3 +57,7 @@ export const DOT_RADIUS_RATIO = 0.4;
 export const DEFAULT_PENCIL_ICON = 'create';
 export const DEFAULT_SHAPE_ICON = 'rectangle';
 export const DEFAULT_DOTS_PER_SPRAY = 6;
+export const ROTATION_MAX_DELAY_TIME = 1000;
+export const SELECTOR_RECT_ID = 'selectorRect';
+export const BOUNDING_RECT_ID = 'boundingRect';
+export const G_BOUNDING_RECT_ID = 'gBoundingRect';

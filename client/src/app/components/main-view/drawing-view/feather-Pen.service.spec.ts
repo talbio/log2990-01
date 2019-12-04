@@ -11,7 +11,7 @@ import { DemoMaterialModule } from '../../../material.module';
 import { ModalManagerService } from '../../../services/modal-manager/modal-manager.service';
 import { MousePositionService } from '../../../services/mouse-position/mouse-position.service';
 import { ColorService } from '../../../services/tools/color/color.service';
-import { FeatherPenGeneratorService } from '../../../services/tools/feather-Pen-generator/feather-Pen-generator.service';
+import { FeatherPenGeneratorService } from '../../../services/tools/feather-pen-generator/feather-pen-generator.service';
 import { ToolManagerService } from '../../../services/tools/tool-manager/tool-manager.service';
 import { ColorPaletteComponent } from '../../modals/color-picker-module/color-palette/color-palette.component';
 import { ColorPickerDialogComponent } from '../../modals/color-picker-module/color-picker-dialog/color-picker-dialog.component';
@@ -148,9 +148,9 @@ describe('DrawingViewComponent', () => {
     const feather = fixture.debugElement.injector.get(FeatherPenGeneratorService);
     toolManager._activeTool = Tools.Feather;
 
-    const forcedFloorAngle = 0;
-    const forcedCeilingAngle = 179;
-    feather.angle = forcedFloorAngle;
+    const floorAngle = 0;
+    const ceilingAngle = 180;
+    feather.angle = floorAngle;
 
     // A positive delta is suppose to reduce the angle,
     // but we'll expect the result to be bigger when we encounter the floor
@@ -158,7 +158,7 @@ describe('DrawingViewComponent', () => {
       deltaY: 1,
     });
     component.workZoneComponent.onMouseWheel(wheelEvent1);
-    expect(feather.angle).toEqual(forcedCeilingAngle);
+    expect(feather.angle).toEqual(ceilingAngle - 15);
 
     // A negative delta is suppose to increase the angle,
     // but we'll expect the result to be smaller when we reach the ceiling
@@ -166,7 +166,7 @@ describe('DrawingViewComponent', () => {
       deltaY: -1,
     });
     component.workZoneComponent.onMouseWheel(wheelEvent2);
-    expect(feather.angle).toEqual(forcedFloorAngle);
+    expect(feather.angle).toEqual(floorAngle);
   });
 
   it(`should be able to change angle during a feather stroke`, () => {
