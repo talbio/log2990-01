@@ -471,6 +471,11 @@ export class ObjectSelectorService {
     this.finishTransformation();
   }
 
+  finishRotation(): void {
+    this.isRotating = false;
+    this.finishTransformation();
+  }
+
   finishTransformation(): void {
     const newTransforms: Map<SVGElement, string> = this.createTransformationMap(this.selectedElements);
     this.pushTransformCommand(newTransforms, this.initialTransformValues);
@@ -556,11 +561,7 @@ export class ObjectSelectorService {
       const scales: number[] = this.transform.getTransformationFromMatrix(initialTransform, Transformation.SCALE);
       const rotates: number[] = this.transform.getTransformationFromMatrix(initialTransform, Transformation.ROTATE);
       const matrix: number[][] = [[scales[0], rotates[0], 0], [rotates[1], scales[1], 0], [translates[0], translates[1], 1]];
-      this.transform.rotate(element, matrix, this.degreesToRadians(this.angle), centerX, centerY);
+      this.transform.rotate(element, matrix, this.transform.degreesToRadians(this.angle), centerX, centerY);
     }
-  }
-
-  degreesToRadians(angle: number) {
-    return angle * (Math.PI / 180);
   }
 }

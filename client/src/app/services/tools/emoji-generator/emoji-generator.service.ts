@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TransformationService } from 'src/app/services/transformation/transformation.service';
 import {AbstractGenerator} from '../../../data-structures/abstract-generator';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import {RendererSingleton} from '../../renderer-singleton';
@@ -55,7 +56,8 @@ export class EmojiGeneratorService extends AbstractGenerator {
   private rotationStep: number;
 
   constructor(protected mouse: MousePositionService,
-              protected undoRedoService: UndoRedoService) {
+              protected undoRedoService: UndoRedoService,
+              private transform: TransformationService) {
     super(mouse, undoRedoService);
     this.emoji = Emojis.LEAF;
     this.angle = MIN_ROTATION_ANGLE;
@@ -103,7 +105,7 @@ export class EmojiGeneratorService extends AbstractGenerator {
       RendererSingleton.renderer.setAttribute(img, 'href', `${this.emoji}`);
       RendererSingleton.renderer.setAttribute(img, 'width', `${this.width * this.scalingFactor}`);
       RendererSingleton.renderer.setAttribute(img, 'height', `${this.height * this.scalingFactor}`);
-      RendererSingleton.renderer.setAttribute(img, 'transform', `rotate(${this.angle} ${this.xPos} ${(this.yPos)})`);
+      RendererSingleton.renderer.setAttribute(img, 'transform', this.rotationMatrix());
       RendererSingleton.canvas.appendChild(img);
       this.pushGeneratorCommand(img);
       this.currentElementsNumber ++;
@@ -118,6 +120,11 @@ export class EmojiGeneratorService extends AbstractGenerator {
   finishElement(mouseEvent?: MouseEvent | undefined): void {
     // Needs to be implemented, do nothing
     return;
+  }
+
+  rotationMatrix(): string {
+    const matrix = this.transform.completeRotationMatrix(this.angle, this.xPos, this.yPos);
+    return `matrix(${matrix[0][0]},${matrix[0][1]},${matrix[1][0]},${matrix[1][1]},${matrix[2][0]},${matrix[2][1]})`;
   }
 
   rotateEmoji(mouseEvent: WheelEvent): void {

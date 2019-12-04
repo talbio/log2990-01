@@ -823,8 +823,8 @@ describe('DrawingViewComponent', () => {
     expect(wheelSpy).toHaveBeenCalled();
     expect(mouseSpy).toHaveBeenCalled();
     const emoji = svgHandle.childNodes[children.length - 1] as Element;
-    const angle = (emoji.getAttribute('transform') as string).substr(7, 2) ;
-    expect(angle).toEqual('15');
+    const matrix: string = emoji.getAttribute('transform') as string;
+    expect(matrix).not.toEqual('matrix(1,0,0,1,0,0)');
   });
 
   it('shouldnt be possible to enter an angle under 0 or over 360 for the rotation', () => {
@@ -886,8 +886,9 @@ describe('DrawingViewComponent', () => {
   expect(wheelSpy).toHaveBeenCalled();
   expect(mouseSpy).toHaveBeenCalled();
   const emoji = svgHandle.childNodes[children.length - 1] as Element;
-  const angle = (emoji.getAttribute('transform') as string).substr(7, 2) ;
-  expect(angle).toEqual('1 ');
+  expect(emoji.getAttribute('transform')).not.toBeNull();
+  const emojiGenerator = fixture.debugElement.injector.get(EmojiGeneratorService);
+  expect(emojiGenerator.rotationAngle).toEqual(1);
 });
   it('should be impossible to add an emoji if no emoji is selected', () => {
   const toolManagerService = fixture.debugElement.injector.get(ToolManagerService);

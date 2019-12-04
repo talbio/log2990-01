@@ -98,30 +98,6 @@ export class TransformationService {
     this.setMatrix(svgElement, matrix);
   }
 
-  setScaleAttribute = (element: SVGElement, xScale: number, yScale: number, initialScale?: boolean): void => {
-    const transformation = element.getAttribute('transform');
-    let newTransform = '';
-    if (!transformation) {
-      newTransform = 'scale(' + xScale + ' ' + yScale + ')';
-    } else if (!transformation.includes('scale') || initialScale) {
-      const newScale = 'scale(' + xScale + ' ' + yScale + ') ';
-      newTransform += transformation;
-      newTransform += newScale;
-    } else {
-      // const oldTranslation: number[] = findScaleValues(transformation);
-      const lastScaleBegin = transformation.lastIndexOf('scale');
-      // const lastScaleEnd = transformation.lastIndexOf(')', lastScaleBegin);
-      newTransform = transformation.substr(0, lastScaleBegin) + /* transformation.substr(lastScaleEnd + 1) + */
-        'scale(' + (xScale) + ' ' + (yScale) + ') ';
-    }
-    element.setAttribute('transform', newTransform);
-  }
-
-  findScaleValues = (transformAttribute: string): number[] => {
-    const parts = /scale\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(transformAttribute) as RegExpExecArray;
-    return [parseFloat(parts[1]), parseFloat(parts[2])];
-  }
-
   rotationMatrix(angle: number, centerX: number, centerY: number): number[][] {
     return this.produceMatrix(Math.cos(angle), Math.sin(angle), -Math.sin(angle), Math.cos(angle), centerX, centerY);
   }
@@ -166,5 +142,8 @@ export class TransformationService {
     matrix[1][2] = mat1[0][2] * mat2[1][0] + mat1[1][2] * mat2[1][1] + mat1[2][2] * mat2[1][2];
     matrix[2][2] = mat1[0][2] * mat2[2][0] + mat1[1][2] * mat2[2][1] + mat1[2][2] * mat2[2][2];
     return matrix;
+  }
+  degreesToRadians(angle: number) {
+    return angle * (Math.PI / 180);
   }
 }
