@@ -19,7 +19,7 @@ export class ScaleService {
     this.scaleFromCenter = false;
   }
 
-  scale(preserveRatio: boolean, selectedElements: SVGElement[]): void {
+  scale(preserveRatio: boolean, elements: SVGElement[]): void {
     if (this.isScaling) {
       const scalingFactors: [number, number, number, number] = this.getScalingFactors(preserveRatio);
       const scalingFactorX: number = scalingFactors[0];
@@ -27,11 +27,10 @@ export class ScaleService {
       const xCorrection: number = scalingFactors[2];
       const yCorrection: number = scalingFactors[3];
       // this.scaleElement(this.gBoundingRect, scalingFactorX, scalingFactorY);
-      selectedElements.forEach( (svgElement: SVGElement) => {
+      elements.forEach( (svgElement: SVGElement) => {
         this.scaleElement(svgElement, scalingFactorX, scalingFactorY, xCorrection, yCorrection);
         // console.log(scalingFactorX, scalingFactorY);
       });
-
     }
   }
 
