@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { MousePositionService } from '../../mouse-position/mouse-position.service';
 import { GridTogglerService } from '../grid/grid-toggler.service';
-import { MagnetismService } from './magnetism.service';
+import { Direction, MagnetismService } from './magnetism.service';
 
 describe('MagnetismGeneratorService', () => {
     beforeEach(() => TestBed.configureTestingModule({
@@ -21,18 +21,18 @@ describe('MagnetismGeneratorService', () => {
     // set movement in positive direction (down and right)
     const positiveMouseMove = {movementX: 20, movementY: 20};
     magnetism.setMovementDirection(positiveMouseMove as MouseEvent);
-    expect(magnetism.movementMap.get('up')).not.toBeTruthy();
-    expect(magnetism.movementMap.get('down')).toBeTruthy();
-    expect(magnetism.movementMap.get('left')).not.toBeTruthy();
-    expect(magnetism.movementMap.get('right')).toBeTruthy();
+    expect(magnetism.movementMap.get(Direction.Up)).not.toBeTruthy();
+    expect(magnetism.movementMap.get(Direction.Down)).toBeTruthy();
+    expect(magnetism.movementMap.get(Direction.Left)).not.toBeTruthy();
+    expect(magnetism.movementMap.get(Direction.Right)).toBeTruthy();
 
     // set movement in negative direction (left and up)
     const negativeMouseMove = {movementX: -20, movementY: -20};
     magnetism.setMovementDirection(negativeMouseMove as MouseEvent);
-    expect(magnetism.movementMap.get('up')).toBeTruthy();
-    expect(magnetism.movementMap.get('down')).not.toBeTruthy();
-    expect(magnetism.movementMap.get('left')).toBeTruthy();
-    expect(magnetism.movementMap.get('right')).not.toBeTruthy();
+    expect(magnetism.movementMap.get(Direction.Up)).toBeTruthy();
+    expect(magnetism.movementMap.get(Direction.Down)).not.toBeTruthy();
+    expect(magnetism.movementMap.get(Direction.Left)).toBeTruthy();
+    expect(magnetism.movementMap.get(Direction.Right)).not.toBeTruthy();
 
     });
 

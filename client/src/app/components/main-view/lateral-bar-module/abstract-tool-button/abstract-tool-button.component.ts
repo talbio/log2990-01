@@ -1,7 +1,7 @@
-import {Component, Input, ViewEncapsulation} from '@angular/core';
-import {MatSidenav} from '@angular/material/sidenav';
-import {Tools} from '../../../../data-structures/tools';
-import {ToolManagerService} from '../../../../services/tools/tool-manager/tool-manager.service';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { MatSidenav } from '@angular/material/sidenav';
+import { Tools } from '../../../../data-structures/tools';
+import { ToolManagerService } from '../../../../services/tools/tool-manager/tool-manager.service';
 
 export interface ToolProperties {
   tool: Tools;
@@ -29,12 +29,16 @@ export class AbstractToolButtonComponent {
 
   protected toggleAttributesAndSetTool() {
     const tool: Tools = this.toolProperties.tool;
-    if (this.toolManager._activeTool === tool) {
+    if (this.toolManager._activeTool === tool && tool !== Tools.Eyedropper) {
       void this.attributesSideNav.toggle();
     } else {
+      if (tool === Tools.Eyedropper) {
+        void this.attributesSideNav.close();
+        this.toolManager._activeTool = tool;
+        return;
+      }
       this.toolManager._activeTool = tool;
       void this.attributesSideNav.open();
     }
   }
-
 }

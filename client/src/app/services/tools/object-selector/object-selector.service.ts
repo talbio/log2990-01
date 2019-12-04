@@ -12,6 +12,7 @@ import { UndoRedoService } from '../../undo-redo/undo-redo.service';
 import { GridTogglerService } from '../grid/grid-toggler.service';
 import { MagnetismService } from '../magnetism/magnetism.service';
 import {RectangleGeneratorService} from '../rectangle-generator/rectangle-generator.service';
+import { ROTATION_MAX_DELAY_TIME } from 'src/app/data-structures/constants';
 
 const POINT_CONTROL_SIZE = 10;
 const STROKE_COLOR = Colors.BLUE;
@@ -153,7 +154,14 @@ export class ObjectSelectorService {
     if (!this.rotateService.isRotating) {
       this.beginTransformation();
       this.rotateService.beginRotation();
+      this.initialTransformValues  = this.createTransformationMap(this.selectedElements);
+      this.rotateService.initialTransformValues = this.initialTransformValues;
     }
+    window.clearTimeout(this.rotateService.rotationTimer);
+    this.rotateService.rotationTimer = window.setTimeout(() => {
+      this.rotateService.finishRotation();
+      this.finishTransformation();
+    }, ROTATION_MAX_DELAY_TIME);
     this.rotateService.rotateElements(this.selectedElements, mouseWheel);
   }
 

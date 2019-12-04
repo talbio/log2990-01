@@ -22,7 +22,6 @@ import { ColorApplicatorToolsComponent } from './components/main-view/tools-attr
 import { EllipseToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/ellipse/ellipse-tools.component';
 import { EmojiToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/emojis/emoji-tools.component';
 import { EraserToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eraser/eraser-tools.component';
-import { EyedropperToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/eyedropper/eyedropper-tools.component';
 import { FeatherPenToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/feather-Pen/feather-Pen-tools.component';
 import { GridComponent } from './components/main-view/tools-attributes-module/tools-attributes/grid/grid.component';
 import { LineToolsComponent } from './components/main-view/tools-attributes-module/tools-attributes/line/line-tools.component';
@@ -141,7 +140,6 @@ const customNotifierOptions: NotifierOptions = {
     EraserToolsComponent,
     SelectorToolsComponent,
     BrushToolsComponent,
-    EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
     PolygonToolsComponent,
     FeatherPenToolsComponent,
@@ -209,7 +207,6 @@ const customNotifierOptions: NotifierOptions = {
     SelectorToolsComponent,
     BrushToolsComponent,
     AerosolToolsComponent,
-    EyedropperToolsComponent,
     ColorApplicatorToolsComponent,
     OpenDrawingDialogComponent,
     LoaderComponent,

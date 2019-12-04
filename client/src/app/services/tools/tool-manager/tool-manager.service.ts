@@ -162,14 +162,14 @@ export class ToolManagerService {
     this.featherGenerator.lowerRotationStep();
     this.rotateService.lowerRotationStep();
     this.scaleService.scaleFromCenter = true;
-  } // To extract??
+  }
 
   changeElementAltUp() {
     this.emojiGenerator.higherRotationStep();
     this.featherGenerator.higherRotationStep();
     this.rotateService.higherRotationStep();
     this.scaleService.scaleFromCenter = false;
-  } // To extract??
+  }
 
   changeElementShiftDown() {
     this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);
@@ -258,7 +258,7 @@ export class ToolManagerService {
       this.emojiGenerator.rotateEmoji(mouseEvent);
     } else if (this.activeGenerator === this.featherGenerator) {
       this.featherGenerator.rotateFeather(mouseEvent);
-    } else if (!this.objectSelector.selectedElements.length && this.activeTool === Tools.Selector) {
+    } else if (this.objectSelector.selectedElements.length && this.activeTool === Tools.Selector) {
       this.objectSelector.rotate(mouseEvent);
     }
   }

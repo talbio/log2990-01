@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   BOUNDING_RECT_ID, G_BOUNDING_RECT_ID,
   MAX_ROTATION_STEP,
-  MIN_ROTATION_STEP,
-  ROTATION_MAX_DELAY_TIME
+  MIN_ROTATION_STEP
 } from '../../data-structures/constants';
 import {RendererSingleton} from '../renderer-singleton';
 import {Transformation, TransformService} from './transform.service';
@@ -13,7 +12,7 @@ import {Transformation, TransformService} from './transform.service';
 })
 export class RotateService {
 
-  private rotationTimer: number;
+  rotationTimer: number;
   isRotating: boolean;
   lastRotate: string;
   rotationStep: number;
@@ -44,10 +43,6 @@ export class RotateService {
   }
 
   changeAngle(mouseWheel: WheelEvent) {
-    window.clearTimeout(this.rotationTimer);
-    this.rotationTimer = window.setTimeout(() => {
-      this.finishRotation();
-    }, ROTATION_MAX_DELAY_TIME);
     if (mouseWheel.deltaY < 0) {
       this.angle  += this.rotationStep;
     } else { this.angle  -= this.rotationStep; }
@@ -56,15 +51,11 @@ export class RotateService {
 
   beginRotation() {
     this.isRotating = true;
-    this.rotationTimer = window.setTimeout(() => {
-      this.finishRotation();
-    }, ROTATION_MAX_DELAY_TIME);
   }
 
   finishRotation(): void {
     this.angle = 0;
     this.isRotating = false;
-    // this.finishTransformation();
   }
 
   rotateElements(elements: SVGElement[], mouseWheel: WheelEvent) {
