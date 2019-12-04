@@ -111,7 +111,7 @@ export class TransformService {
     return angle * (Math.PI / 180);
   }
 
-  private checkTransformAttribute(svgElement: SVGElement): void {
+  checkTransformAttribute(svgElement: SVGElement): void {
     if (!svgElement.getAttribute('transform')) {
       svgElement.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
     }

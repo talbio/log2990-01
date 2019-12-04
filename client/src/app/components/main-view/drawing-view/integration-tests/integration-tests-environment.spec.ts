@@ -163,6 +163,23 @@ export class CanvasDrawer {
     selector.onMouseMove(0, mouseEvent);
     selector.onMouseUp();
   }
+
+  rotateElement(xPos: number, yPos: number) {
+    const toolManagerService = this.fixture.debugElement.injector.get(ToolManagerService);
+    toolManagerService._activeTool = Tools.Selector;
+    const wheelEvent = new WheelEvent('mousewheel', {
+      deltaY: -1,
+    });
+    // we select the object
+    const mouse = this.fixture.debugElement.injector.get(MousePositionService);
+    mouse.canvasMousePositionX = xPos;
+    mouse.canvasMousePositionY = yPos;
+    const selector = this.fixture.debugElement.injector.get(ObjectSelectorService);
+    selector.onMouseDown();
+    selector.onMouseUp();
+
+    toolManagerService.rotateDispatcher(wheelEvent);
+  }
 }
 export const DRAWING_SERVICES = [
   AbstractGenerator,
