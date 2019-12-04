@@ -162,14 +162,14 @@ export class ToolManagerService {
     this.featherGenerator.lowerRotationStep();
     this.rotateService.lowerRotationStep();
     this.scaleService.scaleFromCenter = true;
-  } // To extract??
+  }
 
   changeElementAltUp() {
     this.emojiGenerator.higherRotationStep();
     this.featherGenerator.higherRotationStep();
     this.rotateService.higherRotationStep();
     this.scaleService.scaleFromCenter = false;
-  } // To extract??
+  }
 
   changeElementShiftDown() {
     this.canvasElement = RendererSingleton.renderer.selectRootElement('#canvas', true);

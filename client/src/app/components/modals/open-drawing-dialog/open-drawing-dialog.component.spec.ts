@@ -257,7 +257,6 @@ describe('OpenDrawingDialogComponent', () => {
       }`;
       const drawing: Drawing = component.makeDrawingFromJSONString(validJSONString);
       expect(drawing.name).toBe('abc');
-      // expect(drawing.id).toBe('-1');
       const successfulFunction = () => {component.makeDrawingFromJSONString(validJSONString); };
       expect(successfulFunction).not.toThrow();
     });
