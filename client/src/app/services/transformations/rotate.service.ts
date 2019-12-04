@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
-import {MAX_ROTATION_STEP, MIN_ROTATION_STEP, ROTATION_MAX_DELAY_TIME} from '../../data-structures/constants';
+import {
+  BOUNDING_RECT_ID, G_BOUNDING_RECT_ID,
+  MAX_ROTATION_STEP,
+  MIN_ROTATION_STEP,
+  ROTATION_MAX_DELAY_TIME
+} from '../../data-structures/constants';
 import {RendererSingleton} from '../renderer-singleton';
-import {BOUNDING_RECT_ID, G_BOUNDING_RECT_ID} from '../tools/object-selector/object-selector.service';
 import {Transformation, TransformService} from './transform.service';
 
 @Injectable({
