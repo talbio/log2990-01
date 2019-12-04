@@ -154,10 +154,13 @@ export class ObjectSelectorService {
     if (!this.rotateService.isRotating) {
       this.beginTransformation();
       this.rotateService.beginRotation();
+      this.initialTransformValues  = this.createTransformationMap(this.selectedElements);
+      this.rotateService.initialTransformValues = this.initialTransformValues;
     }
     window.clearTimeout(this.rotateService.rotationTimer);
     this.rotateService.rotationTimer = window.setTimeout(() => {
       this.rotateService.finishRotation();
+      this.finishTransformation();
     }, ROTATION_MAX_DELAY_TIME);
     this.rotateService.rotateElements(this.selectedElements, mouseWheel);
   }

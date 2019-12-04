@@ -258,7 +258,7 @@ export class ToolManagerService {
       this.emojiGenerator.rotateEmoji(mouseEvent);
     } else if (this.activeGenerator === this.featherGenerator) {
       this.featherGenerator.rotateFeather(mouseEvent);
-    } else if (!this.objectSelector.selectedElements.length && this.activeTool === Tools.Selector) {
+    } else if (this.objectSelector.selectedElements.length && this.activeTool === Tools.Selector) {
       this.objectSelector.rotate(mouseEvent);
     }
   }
