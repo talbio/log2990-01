@@ -13,8 +13,6 @@ import {RectangleGeneratorService} from '../rectangle-generator/rectangle-genera
 const POINT_CONTROL_SIZE = 10;
 const STROKE_COLOR = Colors.BLUE;
 
-const INITIAL_MATRIX = 'matrix(1,0,0,1,0,0) translate(0, 0)';
-
 interface Dimensions {
   x: number;
   y: number;
@@ -34,7 +32,6 @@ export class ObjectSelectorService {
 
   isRotating: boolean;
   lastRotate: string;
-  lastMatrix: string;
 
   private readonly SELECTOR_RECT_ID = 'selectorRect';
   private readonly BOUNDING_RECT_ID = 'boundingRect';
@@ -533,22 +530,9 @@ export class ObjectSelectorService {
     return boundingRect.children[1] as SVGElement;
   }
 
-  initializeRotateValue(element: SVGElement) {
-    const currentTransform = element.getAttribute('transform');
-    if (!currentTransform) {
-      element.setAttribute('transform', INITIAL_MATRIX);
-    } else {
-      const initializedTransform = '' + currentTransform + ' ' + INITIAL_MATRIX;
-      element.setAttribute('transform', initializedTransform);
-    }
-  }
-
   beginRotation() {
     this.isRotating = true;
-    this.lastMatrix = INITIAL_MATRIX;
-    this.selectedElements.forEach((element: SVGElement) => {
-      this.initializeRotateValue(element);
-    });
+    this.beginTransformation();
   }
 
   rotateSelectedElements(mouseWheel: WheelEvent) {
@@ -562,98 +546,21 @@ export class ObjectSelectorService {
   }
 
   rotateSingleElement(element: SVGElement) {
-    const currentTransform = element.getAttribute('transform') as string;
-    const matrixBeginIndex = currentTransform.lastIndexOf('matrix(');
-    this.lastMatrix = currentTransform.substr(matrixBeginIndex, (currentTransform.length - matrixBeginIndex));
-    const newTransform = currentTransform.replace(this.lastMatrix, this.produceRotateData(element));
-    element.setAttribute('transform', newTransform);
+    if (this.hasBoundingRect) {
+      const centerX: number = parseFloat(this.boundingRect.getAttribute('x') as string) +
+        parseFloat(this.boundingRect.getAttribute('width') as string) / 2;
+      const centerY: number = parseFloat(this.boundingRect.getAttribute('y') as string) +
+        parseFloat(this.boundingRect.getAttribute('height') as string) / 2;
+      const initialTransform: string = this.initialTransformValues.get(element) as string;
+      const translates: number[] = this.transform.getTransformationFromMatrix(initialTransform, Transformation.TRANSLATE);
+      const scales: number[] = this.transform.getTransformationFromMatrix(initialTransform, Transformation.SCALE);
+      const rotates: number[] = this.transform.getTransformationFromMatrix(initialTransform, Transformation.ROTATE);
+      const matrix: number[][] = [[scales[0], rotates[0], 0], [rotates[1], scales[1], 0], [translates[0], translates[1], 1]];
+      this.transform.rotate(element, matrix, this.degreesToRadians(this.angle), centerX, centerY);
+    }
   }
 
   degreesToRadians(angle: number) {
     return angle * (Math.PI / 180);
-  }
-
-  degreesToWhateverThatIs(angle: number) {
-    return angle / 360;
-  }
-
-  produceRotateData(element: SVGElement): string {
-    const box = this.currentBoundingRectDimensions;
-    const priorMatrix = this.getPriorMatrix(element);
-    // const scalingFactors = this.getScalingFactors(true);
-    console.log(priorMatrix + ' is prior translation');
-    const xCenter = (box.x + box.width / 2) - priorMatrix[4];
-    const yCenter = (box.y + box.height / 2) - priorMatrix[5];
-    const cos = Math.cos(this.degreesToRadians(this.angle));
-    const sin = Math.sin(this.degreesToRadians(this.angle));
-    const newTransform = this.produceMatrix(cos, sin, -sin, cos, xCenter / priorMatrix[0], yCenter / priorMatrix[3]);
-    // const newTransform = this.produceMatrix(cos, sin, -sin, cos, xCenter / priorMatrix[0], yCenter / priorMatrix[3]);
-    return this.produceMatrixHtml(newTransform, [0, 0]);
-  }
-
-  produceMatrix(a: number, b: number, c: number, d: number, e: number, f: number): number[][] {
-    const matrix = [[0]];
-    matrix[0] = [a, b, 0];
-    matrix[1] = [c, d, 0];
-    matrix[2] = [e, f, 1];
-    return matrix;
-  }
-
-  produceMatrixHtml(mat: number[][], priorTranslate: number[]): string {
-    return 'matrix(' + mat[0][0] + ',' + mat[0][1] + ',' + mat[1][0] + ',' + mat[1][1] + ',' + mat[2][0] +
-      ',' + mat[2][1] + ') translate(' + -(mat[2][0]) + ', ' + -(mat[2][1]) + ')';
-  }
-
-  getPriorMatrix(element: SVGElement): number[] {
-    const before = element.getAttribute('transform') as string;
-    const beginningOfMatrix = 7;
-    if (before.lastIndexOf('matrix(') === 0) {
-      return [1, 0, 0, 1, 0, 0];
-    }
-    const endOfMatrix = before.indexOf(')');
-    const matrixInner = before.substring(beginningOfMatrix, endOfMatrix);
-    const eachSlots = matrixInner.split(',');
-    const param: number[] = [];
-    eachSlots.forEach((slot: string) => {
-      param.push(parseFloat(slot));
-    });
-    return param;
-  }
-
-  multiplyMatrices(mat2: number[][], mat1: number[][]): number[][] {
-    const matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-    // 1st line
-    matrix[0][0] = mat1[0][0] * mat2[0][0] + mat1[1][0] * mat2[0][1] + mat1[2][0] * mat2[0][2];
-    matrix[1][0] = mat1[0][0] * mat2[1][0] + mat1[1][0] * mat2[1][1] + mat1[2][0] * mat2[1][2];
-    matrix[2][0] = mat1[0][0] * mat2[2][0] + mat1[1][0] * mat2[2][1] + mat1[2][0] * mat2[2][2];
-
-    // 2nd line
-    matrix[0][1] = mat1[0][1] * mat2[0][0] + mat1[1][1] * mat2[0][1] + mat1[2][1] * mat2[0][2];
-    matrix[1][1] = mat1[0][1] * mat2[1][0] + mat1[1][1] * mat2[1][1] + mat1[2][1] * mat2[1][2];
-    matrix[2][1] = mat1[0][1] * mat2[2][0] + mat1[1][1] * mat2[2][1] + mat1[2][1] * mat2[2][2];
-
-    // 3rd line
-    matrix[0][2] = mat1[0][2] * mat2[0][0] + mat1[1][2] * mat2[0][1] + mat1[2][2] * mat2[0][2];
-    matrix[1][2] = mat1[0][2] * mat2[1][0] + mat1[1][2] * mat2[1][1] + mat1[2][2] * mat2[1][2];
-    matrix[2][2] = mat1[0][2] * mat2[2][0] + mat1[1][2] * mat2[2][1] + mat1[2][2] * mat2[2][2];
-    return matrix;
-  }
-
-  actualizeMatrix(element: SVGElement, matToMultiply: number[][]): number[][] {
-    return this.multiplyMatrices(this.getMatrixInHtml(element), matToMultiply);
-  }
-
-  getMatrixInHtml(element: SVGElement): number[][] {
-    const before = element.getAttribute('transform') as string;
-    const matrixBeginIndex = before.lastIndexOf('matrix(') + 7;
-    const matrixEndIndex = before.lastIndexOf('translate(') - 2;
-    // const translateBeginIndex
-    const matrixInner = before.substring(matrixBeginIndex, matrixEndIndex);
-    const eachSlots = matrixInner.split(', ');
-    const param: number[] = [];
-    eachSlots.forEach((slot: string) => {
-      param.push(parseFloat(slot));
-    });
-    return this.produceMatrix(param[0], param[1], param[2], param[3], param[4], param[5]);
   }
 }
