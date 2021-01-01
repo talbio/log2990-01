@@ -1,5 +1,4 @@
-# Log2990
-Projet généré avec [Angular CLI](https://github.com/angular/angular-cli) version 8.1.2.
+
 
 # Important
 Les commandes commençant par `npm` ou `yarn` devront être exécutées dans les dossiers `client` et `server`.
